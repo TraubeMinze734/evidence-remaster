@@ -13,7 +13,6 @@
 
 
 
-#ifndef HAVE_ECORE
 #  include <signal.h>
 
 typedef struct _Ecore_Event_Exe_Exit { /** Process exit event */
@@ -26,7 +25,6 @@ typedef struct _Ecore_Event_Exe_Exit { /** Process exit event */
   void      *ext_data;      /**< Extension data - not used */
   siginfo_t  data;          /**< Signal info */
 } Ecore_Event_Exe_Exit;
-#endif
 
 
 
@@ -48,9 +46,7 @@ typedef struct _eslist {
 
 
 
-#ifndef HAVE_ECORE
 void     util_sigchld_handler(int num,siginfo_t *si,void *data);
-#endif
 void    *util_sigchld_handler_add(int (*func)(void *data,int type,void *event),const void *data);
 void    *util_sigchld_handler_del(void *handle);
 

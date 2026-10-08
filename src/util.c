@@ -47,7 +47,6 @@
 
 
 
-#ifndef HAVE_ECORE
 
 typedef struct _sigchld_handler {
   int                     (*func)(void *data,int type,void *event);
@@ -140,15 +139,6 @@ void *util_sigchld_handler_del(void *handle) {
 
 
 
-#else
-
-void *util_sigchld_handler_add(int (*func)(void *data,int type,void *event),const void *data) {
-  return (void *)ecore_event_handler_add(ECORE_EVENT_EXE_EXIT,func,data); }
-
-void *util_sigchld_handler_del(void *handle) {
-  return (void *)ecore_event_handler_del(handle); }
-
-#endif
 
 
 
