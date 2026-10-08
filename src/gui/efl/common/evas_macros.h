@@ -1,5 +1,8 @@
 #include "gui/common/icon_list.h"
 #include "theme.h"
+#ifdef HAVE_EVAS2
+#  include "evas_compat.h"   /* gradient API removed from modern EFL */
+#endif
 
 #ifndef ICON_EL_PRE
 #  define ICON_EL_ADD(t,l,ex,ey) \

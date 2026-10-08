@@ -20,6 +20,7 @@ GLIB2=no; if have_pc glib-2.0; then GLIB2=yes; GLIB2_CFLAGS=$(pc_cflags glib-2.0
 
 # --- optional ------------------------------------------------------------
 GTK2=no;  if have_pc gtk+-2.0; then GTK2=yes; GTK2_CFLAGS=$(pc_cflags gtk+-2.0); GTK2_LIBS=$(pc_libs gtk+-2.0); fi
+CAIRO=no; if have_pc cairo; then CAIRO=yes; CAIRO_CFLAGS=$(pc_cflags cairo); CAIRO_LIBS=$(pc_libs cairo); fi
 EFL=no;   if have_pc evas ecore ecore-evas edje; then EFL=yes; EVAS_CFLAGS=$(pc_cflags evas ecore ecore-evas edje); EVAS_LIBS=$(pc_libs evas ecore ecore-evas edje); fi
 IMLIB2=no; if have_pc imlib2; then IMLIB2=yes; IMLIB2_CFLAGS=$(pc_cflags imlib2); IMLIB2_LIBS=$(pc_libs imlib2); fi
 ECOREIPC=no; if have_pc ecore-ipc; then ECOREIPC=yes; ECOREIPC_CFLAGS=$(pc_cflags ecore-ipc); ECOREIPC_LIBS=$(pc_libs ecore-ipc); fi
@@ -90,6 +91,8 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   echo "GTK2 ?= $GTK2"
   echo "GTK2_CFLAGS ?= $GTK2_CFLAGS"
   echo "GTK2_LIBS ?= $GTK2_LIBS"
+  echo "CAIRO_CFLAGS ?= $CAIRO_CFLAGS"
+  echo "CAIRO_LIBS ?= $CAIRO_LIBS"
   echo "EFL ?= $EFL"
   echo "EVAS_CFLAGS ?= $EVAS_CFLAGS"
   echo "EVAS_LIBS ?= $EVAS_LIBS"
