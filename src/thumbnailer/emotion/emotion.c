@@ -27,6 +27,7 @@
 #include "debug.h"
 #include "errors.h"
 #include "util.h"            /* esprintf() */
+#include "evidence.h"        /* main_thread (the GUI thread) */
 
 #include "../thumbnail_private.h"
 #include "../thumbnail_plugin.h"
@@ -53,7 +54,9 @@ typedef struct _emotion_param {
   int          dummy;
 } emotion_param;
 
-static pthread_t emotion_main_thread;   /* the GUI thread, set in init() */
+/* the GUI thread: evidence sets main_thread in main() before the
+   thumbnailer workers are ever started; the plugin's init() may run in
+   a worker, so we cannot remember the identity ourselves */
 
 
 
@@ -78,7 +81,7 @@ static void _emotion_hs_dispatch(void *data) {
 static void emotion_in_main(void (*cb)(void *),void *data) {
   emotion_handshake hs;
 
-  if(pthread_equal(pthread_self(),emotion_main_thread)) {
+  if(pthread_equal(pthread_self(),main_thread)) {
     cb(data);
     return; }
 
@@ -236,12 +239,6 @@ static void _emotion_live_in_main(void *data) {
  */
 int thumbnail_plugin_init(thumbnail_plugin *tp) {
   static int disclaimer=0;
-
-#ifdef HAVE_EVAS2
-  /* remember which thread is the GUI main thread; all Evas/Emotion
-     objects must be created there (cf. file comment) */
-  emotion_main_thread=pthread_self();
-#endif
 
   /* what we handle.  emotion delegates to whatever backend is installed
      (gstreamer by default, xine optionally), so register the common
