@@ -93,7 +93,7 @@ int thumbnail_plugin_init(thumbnail_plugin *tp) {
     E(1,"\n*** engaged Emotion movie thumbnailer. this may use a lot of RAM and CPU;\n"
          "*** if you prefer a 'light' file-manager, you may want to disable this...\n\n"); }
 
-  return (TP_IMAGE|TP_VIDEO|(TP_IMLIB)
+  return (TP_IMAGE|TP_VIDEO
 #ifdef HAVE_IMLIB2
           |TP_IMLIB
 #endif
