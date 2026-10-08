@@ -194,6 +194,7 @@ do-install:
 	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
 	done
 	cp -r evidence.themes/fonts $(DESTDIR)$(PREFIX)/share/evidence/themes/ || true
+	ln -sfn rephormed $(DESTDIR)$(PREFIX)/share/evidence/themes/default
 	install -d $(DESTDIR)$(PREFIX)/share/evidence/icons
 	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS; do \
 	  tar -xzf icons/$$i.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || echo "iconset $$i skipped"; \
