@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
 #include <limits.h>   /* PATH_MAX */
 #include <errno.h>
 #include <time.h>
@@ -255,6 +256,28 @@ static int thumbnail_plugins_setup_file_get_date(const char *path,const char *fi
   return ret; }
 
 
+/* the plugin directory's mtime does not change when a plugin file is
+   overwritten ('make install' just cp's over it), so measure the newest
+   plugin file instead of the directory containing them */
+static int thumbnail_plugins_setup_plugins_get_date(const char *path,time_t *r) {
+  DIR           *dir;
+  struct dirent *de;
+  struct stat    st;
+  char          *n;
+  *r=0;
+  if(!(dir=opendir(path)))
+    return NOIR_FAIL;
+  while((de=readdir(dir))) {
+    size_t l=strlen(de->d_name);
+    if((l>3)&&!strcmp(de->d_name+l-3,".so")) {
+      if((n=file_compose_path(path,de->d_name,NULL))) {
+        if(!stat(n,&st)&&(st.st_mtime>*r))
+          *r=st.st_mtime;
+        free(n); } } }
+  closedir(dir);
+  return *r?NOIR_SUCC:NOIR_FAIL; }
+
+
 
 static int thumbnail_plugins_setup_uptodate_p(const char *setup) {
   time_t  tnp,icons,live,mouseover;
@@ -264,7 +287,7 @@ static int thumbnail_plugins_setup_uptodate_p(const char *setup) {
   if(!path)
     return FALSE;
 
-  thumbnail_plugins_setup_file_get_date(TNP_DIR,NULL,      &tnp);
+  thumbnail_plugins_setup_plugins_get_date(TNP_DIR,          &tnp);
   if(!tnp)
     goto done;
 
