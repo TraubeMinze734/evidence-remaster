@@ -59,15 +59,6 @@
 /******************************************************************************/
 
 
-enum {
-  ARG_0,                    /**< Skip 0, an invalid argument ID */
-  ARG_EVAS_ENGINE,          /**< Evas engine type (GL, software, ...) */
-  ARG_SIZE_REQUEST_X,
-  ARG_SIZE_REQUEST_Y,
-};
-
-
-
 /******************************************************************************/
 
 
@@ -142,21 +133,22 @@ static void gevas_init(GtkgEvas *ev) {
 
 
 
-guint gevas_get_type(void) {
-  static guint ev_type=0;
+GType gevas_get_type(void) {
+  static GType ev_type=0;
 
   if(!ev_type) {
-    static const GtkTypeInfo ev_info={
-      "GtkgEvas",
-      sizeof(GtkgEvas),
+    static const GTypeInfo ev_info={
       sizeof(GtkgEvasClass),
-      (GtkClassInitFunc)  gevas_class_init,
-      (GtkObjectInitFunc) gevas_init,
       NULL,
       NULL,
-      (GtkClassInitFunc) NULL };
+      (GClassInitFunc)  gevas_class_init,
+      NULL,
+      NULL,
+      sizeof(GtkgEvas),
+      0,
+      (GInstanceInitFunc) gevas_init };
 
-    ev_type=gtk_type_unique(gtk_widget_get_type(),&ev_info); }
+    ev_type=g_type_register_static(GTK_TYPE_WIDGET,"GtkgEvas",&ev_info,0); }
 
   return ev_type; }
 
@@ -176,7 +168,7 @@ GtkWidget *gevas_new(char *engine) {
   GtkgEvas *ev;
   char     *dflt_engine="buffer";
 
-  if(!(ev=gtk_type_new(gevas_get_type())))
+  if(!(ev=g_object_new(gevas_get_type(),NULL)))
     return NULL;
 
   gevas_set_size_request_x(ev,200);
@@ -530,51 +522,6 @@ static void gevas_destroy(GtkObject *object) {
   GTK_OBJECT_CLASS(parent_class)->destroy(object); }
 
 
-static void gevas_set_arg(GtkObject *object,GtkArg *arg,guint arg_id) {
-  GtkgEvas *ev;
-
-  g_return_if_fail(object!=NULL);
-  g_return_if_fail(GTK_IS_GEVAS(object));
-
-  ev=GTK_GEVAS(object);
-
-  switch (arg_id) {
-    case ARG_EVAS_ENGINE:
-      E(0,"evas engine-type may only be set at creation time!\n");
-      break;
-
-    case ARG_SIZE_REQUEST_X:
-      ev->size_request_x=GTK_VALUE_INT(*arg);
-      break;
-
-    case ARG_SIZE_REQUEST_Y:
-      ev->size_request_y=GTK_VALUE_INT(*arg);
-      break; }}
-
-
-
-static void gevas_get_arg(GtkObject *object,GtkArg *arg,guint arg_id) {
-  GtkgEvas *ev;
-
-  g_return_if_fail(object!=NULL);
-  g_return_if_fail(GTK_IS_GEVAS(object));
-
-  ev=GTK_GEVAS(object);
-
-  switch (arg_id) {
-    case ARG_EVAS_ENGINE:
-      GTK_VALUE_STRING(*arg)=ev->evas_engine;
-      break;
-    case ARG_SIZE_REQUEST_X:
-      GTK_VALUE_INT(*arg)=ev->size_request_x;
-      break;
-    case ARG_SIZE_REQUEST_Y:
-      GTK_VALUE_INT(*arg)=ev->size_request_y;
-      break;
-    default:
-      arg->type=GTK_TYPE_INVALID;
-      break; }}
-
 
 
 static void gevas_class_init(GtkgEvasClass *klass) {
@@ -585,7 +532,7 @@ static void gevas_class_init(GtkgEvasClass *klass) {
   go=(GObjectClass*)klass;
   object_class=(GtkObjectClass*)klass;
   widget_class=(GtkWidgetClass*)klass;
-  parent_class=gtk_type_class(gtk_widget_get_type());
+  parent_class=g_type_class_peek(GTK_TYPE_WIDGET);
 
   widget_class->realize=gevas_realize;
   widget_class->unrealize=gevas_unrealize;
@@ -597,13 +544,7 @@ static void gevas_class_init(GtkgEvasClass *klass) {
   widget_class->focus_in_event=gevas_focus_in;
   widget_class->focus_out_event=gevas_focus_out;
 
-  object_class->get_arg=gevas_get_arg;
-  object_class->set_arg=gevas_set_arg;
-  object_class->destroy=gevas_destroy;
-
-
-  gtk_object_add_arg_type(GTK_GEVAS_SIZE_REQUEST_X,GTK_TYPE_INT,GTK_ARG_READWRITE,ARG_SIZE_REQUEST_X);
-  gtk_object_add_arg_type(GTK_GEVAS_SIZE_REQUEST_Y,GTK_TYPE_INT,GTK_ARG_READWRITE,ARG_SIZE_REQUEST_Y); }
+  object_class->destroy=gevas_destroy; }
 
 
 
