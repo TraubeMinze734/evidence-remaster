@@ -4,6 +4,8 @@
 TOP := $(CURDIR)
 include config.mk
 
+.DEFAULT_GOAL := all
+
 CC      ?= cc
 CSTD    ?= gnu89
 CFLAGS  ?= -O2 -g
@@ -92,8 +94,36 @@ ifeq ($(GTK2)$(EFL),nono)
 OBJS += src/gui/headless.o
 endif
 
+# --- plugins -----------------------------------------------------------------
+# built into ./lib/evidence/... so they are found relative to the binary
+# NOTE: 'all' must stay the first target in this file
+PLUGINS := lib/evidence/backend/posix.so lib/evidence/backend/null.so \
+           lib/evidence/metadata/folder.so \
+           lib/evidence/actions/null.so
+
+PLUG_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS)
+PLUG_LINK    := -shared -fPIC $(CORE_LIBS)
+
+lib/evidence/backend/posix.so: src/providers/backends/file_posix.c src/providers/backends/file_direct.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ src/providers/backends/file_posix.c src/providers/backends/file_direct.c
+
+lib/evidence/backend/null.so: src/providers/backends/file_null.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+
+lib/evidence/metadata/folder.so: src/providers/folder/folder.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+
+lib/evidence/actions/null.so: src/actions/null/null.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+
+plugins: $(PLUGINS)
+
 # --- rules ---------------------------------------------------------------------
-all: evidence
+all: evidence plugins
 
 evidence: $(OBJS)
 	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(X11_LIBS) $(LDLIBS)
@@ -109,8 +139,9 @@ config.h config.mk: configure.sh
 
 clean:
 	rm -f $(OBJS) evidence
+	rm -rf lib
 
 distclean: clean
 	rm -f config.h config.mk
 
-.PHONY: all clean distclean
+.PHONY: all clean distclean plugins
