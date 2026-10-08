@@ -169,14 +169,16 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
 
   emotion_object_file_set(em,file);
 
+  /* emotion loads asynchronously; poll the length until it is known
+     (emotion_object_ready() does not exist in modern EFL).  best-effort:
+     without spinning a main-loop we may not get a picture, but the
+     metadata will be there. */
   while(tries++<MAX_TRIES) {
-    if(emotion_object_ready(em)||(emotion_object_file_get(em)&&emotion_object_play_length_get(em)>0.0))
+    len=emotion_object_play_length_get(em);
+    if(len>0.0)
       break;
-    /* not ready yet; emotion needs the main-loop.  we can't spin one
-       here, so rely on the synchronous open.  sleep a little. */
     usleep(100000); }
 
-  len=emotion_object_play_length_get(em);
   if(len<=0.0) {
     E(1,"no video in \"%s\"?\n",file);
     evas_object_del(em);
