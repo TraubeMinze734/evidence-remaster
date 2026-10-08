@@ -85,6 +85,9 @@ endif
 
 # efl backend
 ifeq ($(EFL),yes)
+# core files may #include <Evas.h> behind #ifdef HAVE_EVAS2 as well
+# (ipc_main.c -> theme.h), so make the flags global like the GTK2 ones
+BASE_CFLAGS += $(EVAS_CFLAGS)
 EFL_COMMON_SRC := $(wildcard src/gui/efl/common/*.c)
 EFL_ICONVIEW_SRC := $(wildcard src/gui/efl/icon_view/*.c)
 endif
