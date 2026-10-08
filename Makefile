@@ -54,6 +54,9 @@ THUMBNAILER_LIBS := $(CORE_LIBS)
 # --- GUI backends ---------------------------------------------------------------
 # gtk2 backend
 ifeq ($(GTK2),yes)
+# any source may #include <gtk/gtk.h> behind #ifdef HAVE_GTK2, so make the
+# flags global (the headers/impl guard themselves)
+BASE_CFLAGS += $(GTK2_CFLAGS)
 GUI_SRC += $(filter-out src/gui/gtk2/gui_gtk2.c,$(wildcard src/gui/gtk2/*.c))
 GTK2_SUBDIRS := src/gui/gtk2/common src/gui/gtk2/browser_view src/gui/gtk2/tree_view src/gui/gtk2/icon_view
 GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(wildcard $(d)/*.c))

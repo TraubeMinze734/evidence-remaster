@@ -12,6 +12,8 @@
 #endif
 #ifdef HAVE_GLIB2
 #  include <glib.h>
+#endif
+#ifdef HAVE_GTK2
 #  include <gtk/gtk.h>
 #endif
 
@@ -598,8 +600,12 @@ void qsrt(void *a[],void *data,int lo,int hi,int (*compare)(const void *,const v
  * @return 0 for no, !0 for yes
  */
 int events_pending(void) {
-#ifdef HAVE_GLIB2
+#if defined(HAVE_ECORE)
+  return ecore_main_loop_iterate(), 0;
+#elif defined(HAVE_GTK2)
   return gdk_events_pending();
+#elif defined(HAVE_GLIB2)
+  return g_main_context_pending(NULL);
 #else
 #  warning uh-oh love has come to town ### FIXME
 #endif
@@ -654,9 +660,11 @@ int timeout_remove(void **h) {
 
 
 void *idle_enter_add(int prio,int (*fun)(void *),void *data) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_ECORE)
   return ecore_idle_enterer_add(fun,data);
-#else
+#elif defined(HAVE_GLIB2)
+  { (void)prio; return (void *)g_idle_add((GSourceFunc)fun,data); }
+#elif defined(HAVE_GTK2)
   return (void *)gtk_idle_add_priority(prio,fun,data);
 #endif
   return NULL; }
@@ -670,10 +678,13 @@ int idle_enter_remove(void **h) {
   if(!(handle=*h))
     return NOIR_IGNORED;
   *h=NULL;
-#ifdef HAVE_ECORE
+#if defined(HAVE_ECORE)
   ecore_idle_enterer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
+  g_source_remove((guint)handle);
+  return NOIR_SUCC;
+#elif defined(HAVE_GTK2)
   gtk_idle_remove((guint)handle);
   return NOIR_SUCC;
 #endif
@@ -694,11 +705,17 @@ int mainloop_once(void) {
 
 
 int mainloop_quit(void) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_ECORE)
   ecore_main_loop_quit();
   return NOIR_SUCC;
-#elif defined(HAVE_GLIB2)
+#elif defined(HAVE_GTK2)
   gtk_main_quit();
+  return NOIR_SUCC;
+#elif defined(HAVE_GLIB2)
+  { GMainContext *ctx=g_main_context_default();
+    if(g_main_context_acquire(ctx)) {
+      g_main_context_wakeup(ctx);
+      g_main_context_release(ctx); } }
   return NOIR_SUCC;
 #endif
   return NOIR_NOTSUPP; }
