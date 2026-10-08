@@ -35,6 +35,7 @@
 
 
 #include <errno.h>
+#include <string.h>    /* memset() */
 
 #include <fcntl.h>    /* O_RDONLY */
 #include <ctype.h>    /* tolower() */
@@ -680,7 +681,7 @@ static inline int evidence_thumb_write_png(char *file,Evidence_Thumb *e,const ch
       ret=NOIR_OOM;
       goto done; }
 
-    if(setjmp(png_ptr->jmpbuf)) {
+    if(setjmp(png_jmpbuf(png_ptr))) {
       png_destroy_write_struct(&png_ptr,&info_ptr);
       ret=NOIR_FAIL;
       goto done; }
