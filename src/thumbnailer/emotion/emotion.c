@@ -56,7 +56,12 @@ typedef struct _emotion_param {
 
 /* the GUI thread: evidence sets main_thread in main() before the
    thumbnailer workers are ever started; the plugin's init() may run in
-   a worker, so we cannot remember the identity ourselves */
+   a worker, so we cannot remember the identity ourselves.
+   evidence's thumbnailer 'protected mode' fork()s a task process; in
+   that child there is no mainloop to dispatch to, so we run inline
+   there (the child has its private copy of the world and only produces
+   an Imlib image; the live path is never requested from the child). */
+static pid_t emotion_parent_pid;
 
 
 
@@ -81,7 +86,8 @@ static void _emotion_hs_dispatch(void *data) {
 static void emotion_in_main(void (*cb)(void *),void *data) {
   emotion_handshake hs;
 
-  if(pthread_equal(pthread_self(),main_thread)) {
+  if(pthread_equal(pthread_self(),main_thread)||
+     (getpid()!=emotion_parent_pid)) {   /* fork()ed thumbnailer task */
     cb(data);
     return; }
 
@@ -251,6 +257,10 @@ static void _emotion_live_in_main(void *data) {
  */
 int thumbnail_plugin_init(thumbnail_plugin *tp) {
   static int disclaimer=0;
+
+#ifdef HAVE_EVAS2
+  emotion_parent_pid=getpid();
+#endif
 
   /* what we handle.  emotion delegates to whatever backend is installed
      (gstreamer by default, xine optionally), so register the common
