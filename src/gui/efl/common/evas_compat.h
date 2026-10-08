@@ -18,6 +18,7 @@
 #ifndef EVAS_COMPAT_H
 #define EVAS_COMPAT_H
 
+#include "config.h"
 #include <Evas.h>
 
 #ifdef HAVE_EVAS2

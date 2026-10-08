@@ -1,3 +1,4 @@
+#include "config.h"
 #include "gui/common/icon_list.h"
 #include "theme.h"
 #ifdef HAVE_EVAS2
