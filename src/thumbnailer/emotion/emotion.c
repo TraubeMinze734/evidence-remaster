@@ -316,7 +316,7 @@ int thumbnail_plugin_live(thumbnail_plugin *tp,struct _Evidence_Thumb *e,thumbna
     r->et=e;
     pthread_mutex_init(&r->mtx,NULL);
     pthread_cond_init(&r->cond,NULL);
-    ecore_main_loop_thread_call(_emotion_live_in_main,r);
+    ecore_main_loop_thread_safe_call_async(_emotion_live_in_main,r);
     pthread_mutex_lock(&r->mtx);
     while(!r->done)
       pthread_cond_wait(&r->cond,&r->mtx);
