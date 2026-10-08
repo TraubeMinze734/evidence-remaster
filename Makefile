@@ -170,4 +170,38 @@ clean:
 distclean: clean
 	rm -f config.h config.mk
 
-.PHONY: all clean distclean plugins
+# --- install -------------------------------------------------------------------
+# mimics the original autotools install-data-local (Makefile.am): binary,
+# setup files, data images, themes, icon-sets (from their tarballs), plugins,
+# theme engines.  set PREFIX=/usr for a system-wide install, the default is
+# /usr/local.  use DESTDIR for packaging/pseudo installs.
+PREFIX ?= /usr/local
+
+install: all
+	$(MAKE) do-install
+
+do-install:
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 0755 evidence $(DESTDIR)$(PREFIX)/bin/evidence
+	install -d $(DESTDIR)$(PREFIX)/share/evidence
+	install -m 0644 setup/mime.types setup/mime.alii setup/mime.icons \
+	                setup/mime.handlers setup/evidence.menu \
+	                setup/evidence.providers setup/evidence.handlers \
+	                $(DESTDIR)$(PREFIX)/share/evidence/
+	install -m 0644 data/*.png data/README $(DESTDIR)$(PREFIX)/share/evidence/
+	install -d $(DESTDIR)$(PREFIX)/share/evidence/themes
+	for t in tosh efm fishtank metallo nautilus rephormed LCARS OtE; do \
+	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
+	done
+	cp -r evidence.themes/fonts $(DESTDIR)$(PREFIX)/share/evidence/themes/ || true
+	install -d $(DESTDIR)$(PREFIX)/share/evidence/icons
+	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS; do \
+	  tar -xzf icons/$$i.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || echo "iconset $$i skipped"; \
+	done
+	cd $(DESTDIR)$(PREFIX)/share/evidence/icons && ln -sfn rephormed default
+	tar -xzf icons/emblems.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || true
+	install -d $(DESTDIR)$(PREFIX)/lib/evidence
+	cp -r lib/evidence/* $(DESTDIR)$(PREFIX)/lib/evidence/
+	cd $(DESTDIR)$(PREFIX)/lib/evidence/backend && ln -sfn posix.so fsxs.so
+
+.PHONY: all clean distclean plugins install do-install
