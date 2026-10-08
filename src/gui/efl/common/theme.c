@@ -167,10 +167,12 @@ int theme_idle_start(noir_sess *ns) {
       t->idle_hndl_iconview=timeout_add(t->idle_freq_iconview,(int (*)(void *))t->idle_func_iconview,&(t->idle_data_iconview)); }
 
   if(il) {
-    h=t->rubber_new(il);
-    t->rubber_dst(&h);
-    h=t->tb_set(il,NULL,"",0);
-    t->tb_dst(&h); }
+    if(t->rubber_new&&t->rubber_dst) {
+      h=t->rubber_new(il);
+      t->rubber_dst(&h); }
+    if(t->tb_set&&t->tb_dst) {
+      h=t->tb_set(il,NULL,"",0);
+      t->tb_dst(&h); } }
   else
     E(0,"could not initialize rubber-band and type-buffer listeners!?\n");
 

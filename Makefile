@@ -135,15 +135,22 @@ lib/evidence/actions/null.so: src/actions/null/null.c
 ifeq ($(EFL),yes)
 ENGINE_SRC := $(filter-out src/gui/efl/engines/e_bg.c src/gui/efl/engines/sb_edb.c \
                       src/gui/efl/engines/rb_edb.c src/gui/efl/engines/bg_ebg.c \
-                      src/gui/efl/engines/bg_ebg_trans.c, \
+                      src/gui/efl/engines/bg_ebg_trans.c \
+                      src/gui/efl/engines/ia_common.c src/gui/efl/engines/ix_textpath.c, \
                       $(wildcard src/gui/efl/engines/*.c))
+# some engines consist of more than one source file (cf. engines/Makefile.am)
+ENGINE_EXTRA := ia_grey:ia_common ia_throb:ia_common ia_solid:ia_common \
+                ia_basic:ia_common ia_grow:ia_common ia_growfade:ia_common \
+                ia_creepy:ia_common ia_creepology:ia_common \
+                ix_rephormed:ix_textpath ix_LCARS:ix_textpath
+ENGINE_GET_EXTRA = $(strip $(foreach e,$(ENGINE_EXTRA),$(if $(filter $(1),$(firstword $(subst :, ,$(e)))), $(word 2,$(subst :, ,$(e))))))
 ENGINES := $(patsubst src/gui/efl/engines/%.c,lib/evidence/gui/efl/engines/%.so,$(ENGINE_SRC))
 ENGINE_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS) $(EVAS_CFLAGS) -I$(TOP)/src -I$(TOP)/src/gui/common \
                  -I$(TOP)/src/gui/efl/common -I$(TOP)/src/gui/efl/engines -fPIC
 ENGINE_LINK := -shared
 lib/evidence/gui/efl/engines/%.so: src/gui/efl/engines/%.c config.h
 	@mkdir -p $(dir $@)
-	$(CC) $(ENGINE_CFLAGS) $(ENGINE_LINK) -o $@ $<
+	$(CC) $(ENGINE_CFLAGS) $(ENGINE_LINK) -o $@ $< $(addsuffix .c,$(addprefix src/gui/efl/engines/,$(call ENGINE_GET_EXTRA,$*)))
 endif
 
 plugins: $(PLUGINS) $(ENGINES)
