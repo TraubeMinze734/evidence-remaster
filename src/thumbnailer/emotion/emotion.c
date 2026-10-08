@@ -207,8 +207,11 @@ typedef struct {
    frames to a sink whose object is gone ('LOCKED') and trashes state */
 static void _emotion_live_del_cb(void *data,Evas *e,Evas_Object *o,void *einfo) {
   (void)data; (void)e; (void)einfo;
+  /* synchronous teardown: pause, then unload (closes the engine
+     instance and drops the image data).  emotion_object_file_set(NULL)
+     only *starts* an asynchronous close -- racing the imminent free */
   emotion_object_play_set(o,0);
-  emotion_object_file_set(o,NULL); }
+  efl_file_unload(o); }
 
 static void _emotion_live_in_main(void *data) {
   emotion_live_ctx *c=(emotion_live_ctx *)data;
