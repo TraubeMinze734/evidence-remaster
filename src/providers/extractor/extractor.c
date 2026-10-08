@@ -60,7 +60,10 @@ int meta_plugin_exit(void *data) {
  * @return a handle that will be handed to meta_plugin_exit() before the module is unloaded
  */
 void *meta_plugin_init(void) {
-  struct EXTRACTOR_PluginList *extractors=EXTRACTOR_plugin_add_defaults(EXTRACTOR_OPTION_DEFAULT_POLICY);
+  /* run the extractor plugins in-process: by default libextractor forks
+   helper processes, which is fatal in a GTK/X client (children inherit
+   the X connection; 'Fatal IO error 11' on exit). */
+  struct EXTRACTOR_PluginList *extractors=EXTRACTOR_plugin_add_defaults(EXTRACTOR_OPTION_IN_PROCESS);
 
 #ifdef EVIL_HACK
   if(!sp) {
