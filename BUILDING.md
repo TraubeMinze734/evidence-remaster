@@ -8,8 +8,11 @@ works with modern toolchains. Use the new lightweight build instead:
     ./evidence
 
 `configure.sh` uses pkg-config to detect optional dependencies and writes
-`config.h` and `config.mk`. Nothing is installed yet (`make install` follows
-in a later step).
+`config.h` and `config.mk`. Run `make install` to install the binary, setup files (mime.types,
+menus, providers), themes, icon-sets, plugins and theme engines below
+`PREFIX` (default `/usr/local`, override with `PREFIX=/usr make install`).
+The program finds its data via `PACKAGE_DATA_DIR`, which configure.sh
+derives from the same `PREFIX`.
 
 ## Detected dependencies
 
