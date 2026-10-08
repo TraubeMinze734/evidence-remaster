@@ -16,6 +16,7 @@
 #endif
 
 #include <iconv.h>
+#include <limits.h>       /* PATH_MAX */
 #include <sys/types.h>
 #include <sys/time.h>    /* gimetimeofday() */
 #include <stdio.h>       /* NULL */
@@ -510,7 +511,7 @@ int util_parse_line(char *in,char **o1,char **o2,char **o3,char **o4) {
  * @param size - the buffer to rewrite
  */
 char *unit_size(char *size) {
-  gchar *unit="byte";
+  char *unit="byte";
 #ifdef HAVE_STRTOULL
   unsigned long long s=strtoull(size,NULL,10);
 #elif defined(HAVE_STRTOUL)

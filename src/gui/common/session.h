@@ -18,6 +18,12 @@ typedef enum _sn_mode {
   SESSION_CREATE,
   SESSION_COPY } sn_mode;
 
+typedef enum {
+  START_IN_TREEVIEW=0,
+  START_IN_BROWSER,
+  START_IN_ICONVIEW,
+  START_IN_CREDITS } noir_viewtype;
+
 
 
 int             noir_sess_client_unregister(noir_sess *,client_funs *);
