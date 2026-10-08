@@ -1,0 +1,113 @@
+\hypertarget{icon_8c}{
+\section{icon.c File Reference}
+\label{icon_8c}\index{icon.c@{icon.c}}
+}
+load/resize icon-image data; convert to Gtk\-Widget or Gdk\-Pixbuf. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+Gtk\-Widget $\ast$ \hyperlink{icon_8c_a1}{icon\_\-get\_\-by\_\-path\_\-no\_\-resize} (const char $\ast$ip)
+\begin{CompactList}\small\item\em create a GTK-\char`\"{}icon\char`\"{} from an image. \item\end{CompactList}\item 
+Gdk\-Pixbuf $\ast$ \hyperlink{icon_8c_a2}{pixbuf\_\-get\_\-by\_\-path\_\-no\_\-resize} (const char $\ast$ip)
+\begin{CompactList}\small\item\em create a GDK pixbuf from an image. \item\end{CompactList}\item 
+Gdk\-Pixbuf $\ast$ \hyperlink{icon_8c_a3}{pixbuf\_\-get\_\-by\_\-path\_\-and\_\-resize} (const char $\ast$ip, int size, int interpolate)
+\begin{CompactList}\small\item\em create a GDK pixbuf from an image and resize it if necessary. \item\end{CompactList}\item 
+static Gtk\-Widget $\ast$ \hyperlink{icon_8c_a4}{icon\_\-get\_\-by\_\-path} (const char $\ast$text, const char $\ast$ip)
+\begin{CompactList}\small\item\em create a GTK-\char`\"{}icon\char`\"{} for a file. \item\end{CompactList}\item 
+Gtk\-Widget $\ast$ \hyperlink{icon_8c_a5}{icon\_\-get\_\-by\_\-file} (const char $\ast$text, const char $\ast$file, const char $\ast$mime)
+\begin{CompactList}\small\item\em create a GTK-\char`\"{}icon\char`\"{} for a file, by thumbnailing it, or by finding an image for its MIME-type. \item\end{CompactList}\item 
+\hypertarget{icon_8c_a6}{
+int \hyperlink{icon_8c_a6}{icon\_\-exit} (void)}
+\label{icon_8c_a6}
+
+\begin{CompactList}\small\item\em deinitialize icon sub-system. \item\end{CompactList}\item 
+int \hyperlink{icon_8c_a7}{icon\_\-init} (void)
+\begin{CompactList}\small\item\em initialize icon sub-system. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+load/resize icon-image data; convert to Gtk\-Widget or Gdk\-Pixbuf. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{icon_8c_a5}{
+\index{icon.c@{icon.c}!icon_get_by_file@{icon\_\-get\_\-by\_\-file}}
+\index{icon_get_by_file@{icon\_\-get\_\-by\_\-file}!icon.c@{icon.c}}
+\subsubsection[icon\_\-get\_\-by\_\-file]{\setlength{\rightskip}{0pt plus 5cm}Gtk\-Widget$\ast$ icon\_\-get\_\-by\_\-file (const char $\ast$ {\em text}, const char $\ast$ {\em file}, const char $\ast$ {\em mime})}}
+\label{icon_8c_a5}
+
+
+create a GTK-\char`\"{}icon\char`\"{} for a file, by thumbnailing it, or by finding an image for its MIME-type. 
+
+called from \hyperlink{browser__view_8c_a12}{browser\_\-view::browser\_\-view\_\-dir()} to create column-icons. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em text}]- the text for the icon's label \item[{\em file}]- the file the icon stands for \item[{\em mime}]- the file's MIME-type\end{description}
+\end{Desc}
+\hypertarget{icon_8c_a4}{
+\index{icon.c@{icon.c}!icon_get_by_path@{icon\_\-get\_\-by\_\-path}}
+\index{icon_get_by_path@{icon\_\-get\_\-by\_\-path}!icon.c@{icon.c}}
+\subsubsection[icon\_\-get\_\-by\_\-path]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Widget$\ast$ icon\_\-get\_\-by\_\-path (const char $\ast$ {\em text}, const char $\ast$ {\em ip})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon_8c_a4}
+
+
+create a GTK-\char`\"{}icon\char`\"{} for a file. 
+
+called from \hyperlink{browser__view_8c_a12}{browser\_\-view::browser\_\-view\_\-dir()} to create column-icons. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em text}]- the text for the icon's label \item[{\em ip}]- the file containing the image-data for the icon\end{description}
+\end{Desc}
+\hypertarget{icon_8c_a1}{
+\index{icon.c@{icon.c}!icon_get_by_path_no_resize@{icon\_\-get\_\-by\_\-path\_\-no\_\-resize}}
+\index{icon_get_by_path_no_resize@{icon\_\-get\_\-by\_\-path\_\-no\_\-resize}!icon.c@{icon.c}}
+\subsubsection[icon\_\-get\_\-by\_\-path\_\-no\_\-resize]{\setlength{\rightskip}{0pt plus 5cm}Gtk\-Widget$\ast$ icon\_\-get\_\-by\_\-path\_\-no\_\-resize (const char $\ast$ {\em ip})}}
+\label{icon_8c_a1}
+
+
+create a GTK-\char`\"{}icon\char`\"{} from an image. 
+
+most basic procedure -- no labels, conversions, searching, or resizing. called from \hyperlink{about_8c_a1}{about::about\_\-init()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ip}]- icon-path\end{description}
+\end{Desc}
+\hypertarget{icon_8c_a7}{
+\index{icon.c@{icon.c}!icon_init@{icon\_\-init}}
+\index{icon_init@{icon\_\-init}!icon.c@{icon.c}}
+\subsubsection[icon\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-init (void)}}
+\label{icon_8c_a7}
+
+
+initialize icon sub-system. 
+
+tries to find a picture of the user for her home-directory.\hypertarget{icon_8c_a3}{
+\index{icon.c@{icon.c}!pixbuf_get_by_path_and_resize@{pixbuf\_\-get\_\-by\_\-path\_\-and\_\-resize}}
+\index{pixbuf_get_by_path_and_resize@{pixbuf\_\-get\_\-by\_\-path\_\-and\_\-resize}!icon.c@{icon.c}}
+\subsubsection[pixbuf\_\-get\_\-by\_\-path\_\-and\_\-resize]{\setlength{\rightskip}{0pt plus 5cm}Gdk\-Pixbuf$\ast$ pixbuf\_\-get\_\-by\_\-path\_\-and\_\-resize (const char $\ast$ {\em ip}, int {\em size}, int {\em interpolate})}}
+\label{icon_8c_a3}
+
+
+create a GDK pixbuf from an image and resize it if necessary. 
+
+called by various in icon-view, tooltip, shelf, actions. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ip}]- icon-path \item[{\em size}]- if image exceeds box of size$\ast$size, scale it to fit (retain aspect) \item[{\em interpolate}]- quality: GDK\_\-INTERP\_\-BILINEAR or GDK\_\-INTERP\_\-HYPER\end{description}
+\end{Desc}
+\hypertarget{icon_8c_a2}{
+\index{icon.c@{icon.c}!pixbuf_get_by_path_no_resize@{pixbuf\_\-get\_\-by\_\-path\_\-no\_\-resize}}
+\index{pixbuf_get_by_path_no_resize@{pixbuf\_\-get\_\-by\_\-path\_\-no\_\-resize}!icon.c@{icon.c}}
+\subsubsection[pixbuf\_\-get\_\-by\_\-path\_\-no\_\-resize]{\setlength{\rightskip}{0pt plus 5cm}Gdk\-Pixbuf$\ast$ pixbuf\_\-get\_\-by\_\-path\_\-no\_\-resize (const char $\ast$ {\em ip})}}
+\label{icon_8c_a2}
+
+
+create a GDK pixbuf from an image. 
+
+most basic procedure -- no labels, conversions, searching, or resizing. called by various in icon-view. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ip}]- icon-path\end{description}
+\end{Desc}

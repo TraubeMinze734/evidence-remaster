@@ -1,0 +1,482 @@
+\hypertarget{icon__list_8c}{
+\section{icon\_\-list.c File Reference}
+\label{icon__list_8c}\index{icon_list.c@{icon\_\-list.c}}
+}
+generic parts of icon-lists. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{icon__list_8c_a4}{icon\_\-el\_\-new} (icon\_\-state state, int xo, int yo, int w, int h, void $\ast$data, void $\ast$next)
+\begin{CompactList}\small\item\em create new icon-element. \item\end{CompactList}\item 
+void \hyperlink{icon__list_8c_a5}{icon\_\-el\_\-dst} (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$e)
+\begin{CompactList}\small\item\em destruct an icon-element. \item\end{CompactList}\item 
+\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{icon__list_8c_a6}{icon\_\-el\_\-dst\_\-all} (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$e)
+\begin{CompactList}\small\item\em destruct an icon-element and all its successors. \item\end{CompactList}\item 
+\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{icon__list_8c_a7}{icon\_\-el\_\-get\_\-by\_\-tag} (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$el, element\_\-tag t, void $\ast$$\ast$o)
+\begin{CompactList}\small\item\em find icon-element by tag. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{icon__list_8c_a8}{icon\_\-el\_\-dst\_\-by\_\-tag} (\hyperlink{struct__icon}{icon} $\ast$i, element\_\-tag t)
+\begin{CompactList}\small\item\em destruct icon-element by tag. \item\end{CompactList}\item 
+void \hyperlink{icon__list_8c_a9}{icon\_\-dst} (\hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em destruct an icon and its elements. \item\end{CompactList}\item 
+void \hyperlink{icon__list_8c_a10}{icon\_\-dst\_\-all} (\hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em destruct an icon and all its successors. \item\end{CompactList}\item 
+void \hyperlink{icon__list_8c_a11}{icon\_\-list\_\-destroy} (void $\ast$il)
+\begin{CompactList}\small\item\em destruct an icon-list and all its icons. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a12}{icon\_\-list\_\-layout\_\-all} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em recalc layout of all icons in list. \item\end{CompactList}\item 
+static int \hyperlink{icon__list_8c_a13}{icon\_\-compare} (const void $\ast$flags, const void $\ast$a, const void $\ast$b)
+\begin{CompactList}\small\item\em compare two icons (for sort-order) \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a14}{icon\_\-list\_\-resort} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em sort icons in icon-list. \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{icon__list_8c_a15}{make\_\-label} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, const char $\ast$in)
+\begin{CompactList}\small\item\em make icon-label with suggested wrap-points. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{icon__list_8c_a16}{icon\_\-list\_\-icon\_\-insert} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int index, const char $\ast$name, const char $\ast$file, const char $\ast$label, const char $\ast$thumb, void $\ast$user1, void $\ast$user2, int redraw)
+\begin{CompactList}\small\item\em insert icon into icon-list. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{icon__list_8c_a17}{icon\_\-list\_\-icon\_\-insert\_\-sorted} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, const char $\ast$name, const char $\ast$file, const char $\ast$label, const char $\ast$thumb, void $\ast$user1, void $\ast$user2, int redraw)
+\begin{CompactList}\small\item\em determine index, insert icon into icon-list. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a18}{icon\_\-list\_\-icon\_\-remove} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, int redraw)
+\begin{CompactList}\small\item\em remove an icon from the icon-list. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a19}{icon\_\-list\_\-icon\_\-in\_\-rubber} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em find out whether icon is in rubber-band selection. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a20}{icon\_\-list\_\-icon\_\-visible} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em find out whether icon is exposed. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{icon__list_8c_a21}{icon\_\-list\_\-get\_\-icon\_\-by\_\-index} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int in)
+\begin{CompactList}\small\item\em get icon number 'in'. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{icon__list_8c_a22}{icon\_\-list\_\-get\_\-icon\_\-by\_\-file} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, const char $\ast$file)
+\begin{CompactList}\small\item\em get the icon that represents a given file. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{icon__list_8c_a23}{icon\_\-list\_\-get\_\-icon\_\-at} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int x, int y)
+\begin{CompactList}\small\item\em get the icon at a given coordinate \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a24}{icon\_\-list\_\-get\_\-index\_\-at} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int x, int y)
+\begin{CompactList}\small\item\em find out the index of the icon at a given coordinate \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a25}{icon\_\-list\_\-set\_\-separators} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, const char $\ast$sep)
+\begin{CompactList}\small\item\em set separators for word-wrap. \item\end{CompactList}\item 
+static int \hyperlink{icon__list_8c_a26}{icon\_\-list\_\-scroll\_\-do} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em do the actual footwork for the scrolling routines. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a27}{icon\_\-list\_\-scroll\_\-abs} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int sx, int sy)
+\begin{CompactList}\small\item\em scroll icon-list to absolute position. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a28}{icon\_\-list\_\-scroll\_\-rel} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int sx, int sy)
+\begin{CompactList}\small\item\em scroll relative to current position. \item\end{CompactList}\item 
+int \hyperlink{icon__list_8c_a29}{icon\_\-list\_\-scroll\_\-pg} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int sx, int sy)
+\begin{CompactList}\small\item\em scroll icon-list page-wise. \item\end{CompactList}\item 
+\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ \hyperlink{icon__list_8c_a30}{icon\_\-list\_\-rst} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em reset icon-list. \item\end{CompactList}\item 
+\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ \hyperlink{icon__list_8c_a31}{icon\_\-list\_\-new} (const char $\ast$name, void $\ast$theme, void $\ast$canvas, int wpad, int hpad, int flags)
+\begin{CompactList}\small\item\em create new icon-list \item\end{CompactList}\item 
+void \hyperlink{icon__list_8c_a32}{icon\_\-list\_\-resized} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, long w, long h)
+\begin{CompactList}\small\item\em adjust size of icon-list. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+generic parts of icon-lists. 
+
+right now only used when compiling with specific parts from evas2.c, should replace gnome-icon-list in the future, however. 
+
+\subsection{Function Documentation}
+\hypertarget{icon__list_8c_a13}{
+\index{icon_list.c@{icon\_\-list.c}!icon_compare@{icon\_\-compare}}
+\index{icon_compare@{icon\_\-compare}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-compare]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-compare (const void $\ast$ {\em flags}, const void $\ast$ {\em a}, const void $\ast$ {\em b})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__list_8c_a13}
+
+
+compare two icons (for sort-order) 
+
+\begin{Desc}
+\item[Returns:]-1,0,+1 \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flags}]sort-flags \item[{\em a}]the first icon \item[{\em b}]the second icon\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a9}{
+\index{icon_list.c@{icon\_\-list.c}!icon_dst@{icon\_\-dst}}
+\index{icon_dst@{icon\_\-dst}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-dst (\hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{icon__list_8c_a9}
+
+
+destruct an icon and its elements. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]- the icon to release\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a10}{
+\index{icon_list.c@{icon\_\-list.c}!icon_dst_all@{icon\_\-dst\_\-all}}
+\index{icon_dst_all@{icon\_\-dst\_\-all}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-dst\_\-all]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-dst\_\-all (\hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{icon__list_8c_a10}
+
+
+destruct an icon and all its successors. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]- the first icon to release\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a5}{
+\index{icon_list.c@{icon\_\-list.c}!icon_el_dst@{icon\_\-el\_\-dst}}
+\index{icon_el_dst@{icon\_\-el\_\-dst}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-el\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-el\_\-dst (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ {\em e})}}
+\label{icon__list_8c_a5}
+
+
+destruct an icon-element. 
+
+if e-$>$data is set, will call \hyperlink{icon__list_8h_a74}{icon\_\-el\_\-data\_\-dst()}. since the nature of the data is GUI-specific (Evas\_\-Object or such), \hyperlink{icon__list_8h_a74}{icon\_\-el\_\-data\_\-dst()} is as well. it must be defined in the GUI-specific module. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the element to destruct\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a6}{
+\index{icon_list.c@{icon\_\-list.c}!icon_el_dst_all@{icon\_\-el\_\-dst\_\-all}}
+\index{icon_el_dst_all@{icon\_\-el\_\-dst\_\-all}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-el\_\-dst\_\-all]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__el}{icon\_\-el}$\ast$ icon\_\-el\_\-dst\_\-all (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ {\em e})}}
+\label{icon__list_8c_a6}
+
+
+destruct an icon-element and all its successors. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the first element to destruct (normally the first element of the icon)\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a8}{
+\index{icon_list.c@{icon\_\-list.c}!icon_el_dst_by_tag@{icon\_\-el\_\-dst\_\-by\_\-tag}}
+\index{icon_el_dst_by_tag@{icon\_\-el\_\-dst\_\-by\_\-tag}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-el\_\-dst\_\-by\_\-tag]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ icon\_\-el\_\-dst\_\-by\_\-tag (\hyperlink{struct__icon}{icon} $\ast$ {\em i}, element\_\-tag {\em t})}}
+\label{icon__list_8c_a8}
+
+
+destruct icon-element by tag. 
+
+convenience function. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]- the icon to remove elements from \item[{\em t}]- tag to look for (all matches)\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a7}{
+\index{icon_list.c@{icon\_\-list.c}!icon_el_get_by_tag@{icon\_\-el\_\-get\_\-by\_\-tag}}
+\index{icon_el_get_by_tag@{icon\_\-el\_\-get\_\-by\_\-tag}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-el\_\-get\_\-by\_\-tag]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__el}{icon\_\-el}$\ast$ icon\_\-el\_\-get\_\-by\_\-tag (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ {\em el}, element\_\-tag {\em t}, void $\ast$$\ast$ {\em o})}}
+\label{icon__list_8c_a7}
+
+
+find icon-element by tag. 
+
+convenience function. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em el}]- first element in list \item[{\em t}]- tag to look for (first match) \item[{\em o}]- where to copy the data-element of the found icon\_\-el, or NULL\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a4}{
+\index{icon_list.c@{icon\_\-list.c}!icon_el_new@{icon\_\-el\_\-new}}
+\index{icon_el_new@{icon\_\-el\_\-new}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-el\_\-new]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__el}{icon\_\-el}$\ast$ icon\_\-el\_\-new (icon\_\-state {\em state}, int {\em xo}, int {\em yo}, int {\em w}, int {\em h}, void $\ast$ {\em data}, void $\ast$ {\em next})}}
+\label{icon__list_8c_a4}
+
+
+create new icon-element. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em state}]- this element should be visible when the icon is in 'state' \item[{\em xo}]- x-offset to icon's upper-left corner (to \char`\"{}icon-x\char`\"{}) \item[{\em yo}]- y-offset to icon's upper-left corner (to \char`\"{}icon-y\char`\"{}) \item[{\em w}]- width of element \item[{\em h}]- height of element \item[{\em data}]- payload (e.g. an Evas\_\-Object) \item[{\em next}]- next element, or NULL for EOL\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a11}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_destroy@{icon\_\-list\_\-destroy}}
+\index{icon_list_destroy@{icon\_\-list\_\-destroy}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-destroy]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-list\_\-destroy (void $\ast$ {\em il})}}
+\label{icon__list_8c_a11}
+
+
+destruct an icon-list and all its icons. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list to release\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a23}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_get_icon_at@{icon\_\-list\_\-get\_\-icon\_\-at}}
+\index{icon_list_get_icon_at@{icon\_\-list\_\-get\_\-icon\_\-at}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-get\_\-icon\_\-at]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ icon\_\-list\_\-get\_\-icon\_\-at (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em x}, int {\em y})}}
+\label{icon__list_8c_a23}
+
+
+get the icon at a given coordinate 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em x}]- icon-list relative x (0..) \item[{\em y}]- icon-list relative y (0..)\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a22}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_get_icon_by_file@{icon\_\-list\_\-get\_\-icon\_\-by\_\-file}}
+\index{icon_list_get_icon_by_file@{icon\_\-list\_\-get\_\-icon\_\-by\_\-file}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-get\_\-icon\_\-by\_\-file]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ icon\_\-list\_\-get\_\-icon\_\-by\_\-file (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, const char $\ast$ {\em file})}}
+\label{icon__list_8c_a22}
+
+
+get the icon that represents a given file. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em file}]- the file to find the icon for\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a21}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_get_icon_by_index@{icon\_\-list\_\-get\_\-icon\_\-by\_\-index}}
+\index{icon_list_get_icon_by_index@{icon\_\-list\_\-get\_\-icon\_\-by\_\-index}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-get\_\-icon\_\-by\_\-index]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ icon\_\-list\_\-get\_\-icon\_\-by\_\-index (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em in})}}
+\label{icon__list_8c_a21}
+
+
+get icon number 'in'. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em in}]- the index\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a24}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_get_index_at@{icon\_\-list\_\-get\_\-index\_\-at}}
+\index{icon_list_get_index_at@{icon\_\-list\_\-get\_\-index\_\-at}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-get\_\-index\_\-at]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-get\_\-index\_\-at (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em x}, int {\em y})}}
+\label{icon__list_8c_a24}
+
+
+find out the index of the icon at a given coordinate 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em x}]- icon-list relative x (0..) \item[{\em y}]- icon-list relative y (0..)\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a19}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_icon_in_rubber@{icon\_\-list\_\-icon\_\-in\_\-rubber}}
+\index{icon_list_icon_in_rubber@{icon\_\-list\_\-icon\_\-in\_\-rubber}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-icon\_\-in\_\-rubber]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-icon\_\-in\_\-rubber (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})\hspace{0.3cm}{\tt  \mbox{[}inline\mbox{]}}}}
+\label{icon__list_8c_a19}
+
+
+find out whether icon is in rubber-band selection. 
+
+\begin{Desc}
+\item[Returns:]TRUE if icon is at least partially in the rectangular rubber-band selection. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]-the icon-list \item[{\em i}]- the icon\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a16}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_icon_insert@{icon\_\-list\_\-icon\_\-insert}}
+\index{icon_list_icon_insert@{icon\_\-list\_\-icon\_\-insert}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-icon\_\-insert]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ icon\_\-list\_\-icon\_\-insert (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em index}, const char $\ast$ {\em name}, const char $\ast$ {\em file}, const char $\ast$ {\em label}, const char $\ast$ {\em thumb}, void $\ast$ {\em user1}, void $\ast$ {\em user2}, int {\em redraw})}}
+\label{icon__list_8c_a16}
+
+
+insert icon into icon-list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- icon-list \item[{\em index}]- insert after index'th icon (0 for \char`\"{}make first icon in list\char`\"{}) \item[{\em name}]- the name of the icon-image (\char`\"{}/foo/bar/binary.png\char`\"{}) \item[{\em file}]- the file represented by the icon (\char`\"{}/bin/ls\char`\"{}) \item[{\em label}]- the text-label to go underneath the icon-image (\char`\"{}ls\char`\"{}) \item[{\em thumb}]- the \char`\"{}thumbnail\char`\"{} for the file, or NULL (\char`\"{}/home/azundris/.thumbnails/large/ffa4b11d64a9d082c4b8d4e795d9b3e8.png\char`\"{}) \item[{\em user1}]- user-data. in evidence, the stat-info for the icon. \item[{\em user2}]- user-data. in evidence, the file-info for the icon. \item[{\em redraw}]- redraw icon-list after icon is inserted?\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a17}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_icon_insert_sorted@{icon\_\-list\_\-icon\_\-insert\_\-sorted}}
+\index{icon_list_icon_insert_sorted@{icon\_\-list\_\-icon\_\-insert\_\-sorted}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-icon\_\-insert\_\-sorted]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ icon\_\-list\_\-icon\_\-insert\_\-sorted (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, const char $\ast$ {\em name}, const char $\ast$ {\em file}, const char $\ast$ {\em label}, const char $\ast$ {\em thumb}, void $\ast$ {\em user1}, void $\ast$ {\em user2}, int {\em redraw})}}
+\label{icon__list_8c_a17}
+
+
+determine index, insert icon into icon-list. 
+
+see \hyperlink{icon__list_8c_a16}{icon\_\-list\_\-icon\_\-insert()} re the parameters.\hypertarget{icon__list_8c_a18}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_icon_remove@{icon\_\-list\_\-icon\_\-remove}}
+\index{icon_list_icon_remove@{icon\_\-list\_\-icon\_\-remove}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-icon\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-icon\_\-remove (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em redraw})}}
+\label{icon__list_8c_a18}
+
+
+remove an icon from the icon-list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em i}]- the icon to remove \item[{\em redraw}]- redraw the icon-list after removing the icon?\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a20}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_icon_visible@{icon\_\-list\_\-icon\_\-visible}}
+\index{icon_list_icon_visible@{icon\_\-list\_\-icon\_\-visible}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-icon\_\-visible]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-icon\_\-visible (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})\hspace{0.3cm}{\tt  \mbox{[}inline\mbox{]}}}}
+\label{icon__list_8c_a20}
+
+
+find out whether icon is exposed. 
+
+\begin{Desc}
+\item[Returns:]TRUE if icon is at least partially in the exposed part of the scroll-area. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]-the icon-list \item[{\em i}]- the icon\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a12}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_layout_all@{icon\_\-list\_\-layout\_\-all}}
+\index{icon_list_layout_all@{icon\_\-list\_\-layout\_\-all}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-layout\_\-all]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-layout\_\-all (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{icon__list_8c_a12}
+
+
+recalc layout of all icons in list. 
+
+unless the FR\_\-NOSCROLL-bit is set on the frozen-property, a redraw will be effected calling the efun \hyperlink{icon__list_8h_a104}{sb\_\-update()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a31}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_new@{icon\_\-list\_\-new}}
+\index{icon_list_new@{icon\_\-list\_\-new}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-new]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__list}{icon\_\-list}$\ast$ icon\_\-list\_\-new (const char $\ast$ {\em name}, void $\ast$ {\em theme}, void $\ast$ {\em canvas}, int {\em wpad}, int {\em hpad}, int {\em flags})}}
+\label{icon__list_8c_a31}
+
+
+create new icon-list 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em name}]- name for the icon-list (evidence: \char`\"{}iconview\char`\"{} or \char`\"{}shelf\char`\"{}) \item[{\em theme}]- the theme for this icon-list \item[{\em canvas}]- the canvas for this icon-list (Gtk\-GEvas, Evas, ...) \item[{\em wpad}]- horizontal padding between icons \item[{\em hpad}]- vertical padding between icons \item[{\em flags}]- reserved\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a32}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_resized@{icon\_\-list\_\-resized}}
+\index{icon_list_resized@{icon\_\-list\_\-resized}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-resized]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-list\_\-resized (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, long {\em w}, long {\em h})}}
+\label{icon__list_8c_a32}
+
+
+adjust size of icon-list. 
+
+the GUI-part of the icon-list will likely have a callback for when the window's size changes. that callback should in turn call icon\_\-list\_\-resized to let the internal representation know about the change as well. \hyperlink{icon__list_8c_a32}{icon\_\-list\_\-resized()} will also re-layout the window's contents. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em w}]- the new width of the icon-list \item[{\em h}]- the new height of the icon-list\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a14}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_resort@{icon\_\-list\_\-resort}}
+\index{icon_list_resort@{icon\_\-list\_\-resort}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-resort]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-resort (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{icon__list_8c_a14}
+
+
+sort icons in icon-list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a30}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_rst@{icon\_\-list\_\-rst}}
+\index{icon_list_rst@{icon\_\-list\_\-rst}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-rst]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__list}{icon\_\-list}$\ast$ icon\_\-list\_\-rst (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{icon__list_8c_a30}
+
+
+reset icon-list. 
+
+this throws out all icons and resets settings to \char`\"{}factory defaults.\char`\"{} in other words, it should be similar to destructing an icon-list and making a new one. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a27}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_scroll_abs@{icon\_\-list\_\-scroll\_\-abs}}
+\index{icon_list_scroll_abs@{icon\_\-list\_\-scroll\_\-abs}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-scroll\_\-abs]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-scroll\_\-abs (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em sx}, int {\em sy})}}
+\label{icon__list_8c_a27}
+
+
+scroll icon-list to absolute position. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em sx}]- the desired horizontal position (0..) \item[{\em sy}]- the desired vertical position (0..)\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a26}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_scroll_do@{icon\_\-list\_\-scroll\_\-do}}
+\index{icon_list_scroll_do@{icon\_\-list\_\-scroll\_\-do}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-scroll\_\-do]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-list\_\-scroll\_\-do (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__list_8c_a26}
+
+
+do the actual footwork for the scrolling routines. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a29}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_scroll_pg@{icon\_\-list\_\-scroll\_\-pg}}
+\index{icon_list_scroll_pg@{icon\_\-list\_\-scroll\_\-pg}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-scroll\_\-pg]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-scroll\_\-pg (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em sx}, int {\em sy})}}
+\label{icon__list_8c_a29}
+
+
+scroll icon-list page-wise. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em sx}]- scroll horizontally: $<$0, page left; 0, don't scroll; $>$0, page right \item[{\em sy}]- scroll vertically: $<$0, page up; 0, don't scroll; $>$0, page down\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a28}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_scroll_rel@{icon\_\-list\_\-scroll\_\-rel}}
+\index{icon_list_scroll_rel@{icon\_\-list\_\-scroll\_\-rel}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-scroll\_\-rel]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-scroll\_\-rel (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em sx}, int {\em sy})}}
+\label{icon__list_8c_a28}
+
+
+scroll relative to current position. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em sx}]- the horizontal offset \item[{\em sy}]- the vertical offset\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a25}{
+\index{icon_list.c@{icon\_\-list.c}!icon_list_set_separators@{icon\_\-list\_\-set\_\-separators}}
+\index{icon_list_set_separators@{icon\_\-list\_\-set\_\-separators}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[icon\_\-list\_\-set\_\-separators]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-set\_\-separators (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, const char $\ast$ {\em sep})}}
+\label{icon__list_8c_a25}
+
+
+set separators for word-wrap. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list to change the separators on \item[{\em sep}]- a C-string containing the desired separators\end{description}
+\end{Desc}
+\hypertarget{icon__list_8c_a15}{
+\index{icon_list.c@{icon\_\-list.c}!make_label@{make\_\-label}}
+\index{make_label@{make\_\-label}!icon_list.c@{icon\_\-list.c}}
+\subsubsection[make\_\-label]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ make\_\-label (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, const char $\ast$ {\em in})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{icon__list_8c_a15}
+
+
+make icon-label with suggested wrap-points. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list (containing a list of separator characters) \item[{\em in}]- the text for the label\end{description}
+\end{Desc}

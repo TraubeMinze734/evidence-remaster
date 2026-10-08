@@ -1,0 +1,68 @@
+.TH "file_posix.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+file_posix.c \- provides services for \fBfile_direct.c\fP 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBposix_files_identical\fP (const char *file1, const char *file2)"
+.br
+.RI "\fIchecks if file paths are identical after making them canonic \fP"
+.ti -1c
+.RI "static int \fBposix_copy_data\fP (\fBnoir_job\fP *job, const char *src_path, struct stat *src_st, const char *dst_path)"
+.br
+.RI "\fIcopy the actual contents of a file \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+provides services for \fBfile_direct.c\fP 
+
+by Azundris, based on code from efsd by Christian Kreibich
+.SH "Function Documentation"
+.PP 
+.SS "static int posix_copy_data (\fBnoir_job\fP * job, const char * src_path, struct stat * src_st, const char * dst_path)\fC [inline, static]\fP"
+.PP
+copy the actual contents of a file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjob\fP the job or NULL (for \fBfile_job_stats()\fP) 
+.br
+\fIsrc_path\fP the source-file 
+.br
+\fIsrc_st\fP stat() info of source-object 
+.br
+\fIdst_path\fP the destination-file
+.RE
+.PP
+
+.SS "static int posix_files_identical (const char * file1, const char * file2)\fC [static]\fP"
+.PP
+checks if file paths are identical after making them canonic 
+.PP
+\fBReturns:\fP
+.RS 4
+-2 on error, FALSE if files differ, TRUE otherwise. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile1\fP first file 
+.br
+\fIfile2\fP second file
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

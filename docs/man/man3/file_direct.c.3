@@ -1,0 +1,1043 @@
+.TH "file_direct.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+file_direct.c \- direct access to file-system, no abstraction layer. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBgroups_init\fP (void)"
+.br
+.RI "\fIget all supplementary groups of this process sets 'groups' (number of groups) and 'gids' (array of group-IDs) \fP"
+.ti -1c
+.RI "static int \fBin_group\fP (gid_t gid)"
+.br
+.RI "\fIcheck whether we have access to group 'gid' this is used from \fBget_xs()\fP -- if 'gid' is this process' group (or one of its supplementary groups), we benefit from the owning/named group ACE in question \fP"
+.ti -1c
+.RI "static \fBitem_flags\fP \fBcalc_mode\fP (mode_t mode, \fBitem_flags\fP *ret)"
+.br
+.RI "\fIdetermine access-info (deny all, grant some) \fP"
+.ti -1c
+.RI "static \fBitem_flags\fP \fBget_xs\fP (const char *file, uid_t fuid, gid_t fgid, mode_t mode)"
+.br
+.RI "\fIdetermine access-info from ACLs and/or POSIX permissions \fP"
+.ti -1c
+.RI "char * \fBbackend_tag2name\fP (const char *path)"
+.br
+.RI "\fIget item's name (UTF8) from its tag (path, UUID, . \fP"
+.ti -1c
+.RI "int \fBbackend_exists\fP (const char *myfile)"
+.br
+.RI "\fIcheck whether an item exists in the file-system \fP"
+.ti -1c
+.RI "int \fBbackend_mv\fP (\fBnoir_job\fP *job)"
+.br
+.RI "\fImove item to folder, or rename item \fP"
+.ti -1c
+.RI "int \fBbackend_cp\fP (\fBnoir_job\fP *job)"
+.br
+.RI "\fIcopy item to folder, or copy item renaming the copy \fP"
+.ti -1c
+.RI "int \fBbackend_rm\fP (\fBnoir_job\fP *job)"
+.br
+.RI "\fIremove an item from the file-system (including any items it may contain) \fP"
+.ti -1c
+.RI "int \fBbackend_mkdir\fP (char *dir, int perms, int hier)"
+.br
+.RI "\fImake directory \fP"
+.ti -1c
+.RI "int \fBbackend_rmdir\fP (char *dir)"
+.br
+.RI "\fIremove an empty directory \fP"
+.ti -1c
+.RI "int \fBbackend_symlink\fP (char *xfm, char *xto)"
+.br
+.RI "\fIsymlink \fP"
+.ti -1c
+.RI "int \fBbackend_hardlink\fP (char *xfm, char *xto)"
+.br
+.RI "\fIhardlink \fP"
+.ti -1c
+.RI "const char * \fBbackend_readlink\fP (const char *myfile)"
+.br
+.RI "\fIwhere does this symlink point to? \fP"
+.ti -1c
+.RI "static void * \fBbackend_job_do\fP (void *data)"
+.br
+.RI "\fIworker thread -- async copy, move, delete. \fP"
+.ti -1c
+.RI "int \fBbackend_job_collect\fP (\fBnoir_job\fP *job)"
+.br
+.RI "\fIthe job is done, clean-up (join thread or whatever) optional function, may not exist in all backends. \fP"
+.ti -1c
+.RI "int \fBbackend_job_start\fP (\fBnoir_job\fP *job)"
+.br
+.RI "\fIstart a new async job \fP"
+.ti -1c
+.RI "int \fBbackend_mime_handler_set\fP (char *mime, char *handler)"
+.br
+.RI "\fIset default (double-click) action for files of a given MIME-type \fP"
+.ti -1c
+.RI "char * \fBbackend_mime_handler_get\fP (const char *mime, char **match)"
+.br
+.RI "\fIget default (double-click) action for files of a given MIME-type \fP"
+.ti -1c
+.RI "static int \fBmime_add\fP (char *ext, char *mime)"
+.br
+.RI "\fIadd element to MIME-hash (ext -> mime-type lookup) \fP"
+.ti -1c
+.RI "static int \fBmime_exit\fP (void)"
+.br
+.RI "\fIdeinitialize ext->mime_type hash \fP"
+.ti -1c
+.RI "static char * \fBstr1st\fP (char *a, char *b)"
+.br
+.RI "\fIhelper for \fBmime_init()\fP \fP"
+.ti -1c
+.RI "static int \fBmime_init\fP (void)"
+.br
+.RI "\fIinitialize ext->mime_type hash from MIME_FILE and load libmagic try to open libmagic (the 'file' command) and resolve the symbols we'll need on success, libmagic will point to a filled-in struct _libmagic \fP"
+.ti -1c
+.RI "static char * \fBmime_chk_backup\fP (const char *file)"
+.br
+.RI "\fIcheck whether a file-name reeks of backup \fP"
+.ti -1c
+.RI "static const char * \fBlibmagic_get_mime\fP (const char *file)"
+.br
+.RI "\fIfigure out a file's MIME-type using libmagic (the 'file' command) libmagic support needs to be compiled in, libmagic needs to be present at run-time, its database must have been opened successfully, and the lookup must succeed. \fP"
+.ti -1c
+.RI "static const char * \fBmime_get_by_magic\fP (const char *file)"
+.br
+.RI "\fIlookup MIME-type by magic, using whatever lib we can get our hands on \fP"
+.ti -1c
+.RI "static const char * \fBmime_get_by_ext\fP (const char *file)"
+.br
+.RI "\fIlookup MIME-type for this extension (ext -> MIME-type) \fP"
+.ti -1c
+.RI "static int \fBmime_chk_exec\fP (const char *file, const char **m)"
+.br
+.RI "\fIcheck whether a file is a binary, a shell-script, or something other \fP"
+.ti -1c
+.RI "const char * \fBbackend_get_mime\fP (const char *myfile)"
+.br
+.RI "\fIfigure out a file's MIME-type \fP"
+.ti -1c
+.RI "static int \fBfam_connect\fP (void)"
+.br
+.RI "\fIconnect to File Alteration Monitor daemon \fP"
+.ti -1c
+.RI "static int \fBlibfam_init\fP (void)"
+.br
+.RI "\fItry to open libfam (File Alteration Monitor) and resolve the symbols we'll need on success, libfam will point to a filled-in struct _libfam \fP"
+.ti -1c
+.RI "static int \fBlibfam_exit\fP (void)"
+.br
+.RI "\fIdeinitialize libfam \fP"
+.ti -1c
+.RI "static int \fBfam_listen\fP (void)"
+.br
+.RI "\fIpoll File Alteration Monitor daemon \fP"
+.ti -1c
+.RI "static void \fBbackend_monitor_poll\fP (void)"
+.br
+.RI "\fIpoll directory -- last resort when neither FAM nor FNotify are available. \fP"
+.ti -1c
+.RI "static int \fBbackend_monitor_check\fP (void *data)"
+.br
+.RI "\fIcheck monitors (using FNotify, FAM, or, if all else fails, polling) \fP"
+.ti -1c
+.RI "int \fBbackend_monitor_add\fP (\fBnoir_monitor\fP *m)"
+.br
+.RI "\fIadd a monitor -- tell us if the file/directory changes \fP"
+.ti -1c
+.RI "int \fBbackend_monitor_remove\fP (\fBnoir_monitor\fP *m)"
+.br
+.RI "\fIremove a monitor -- we're no long interested in that file/directory \fP"
+.ti -1c
+.RI "int \fBbackend_activate\fP (char *myfile, const char *mime)"
+.br
+.RI "\fIstart a file (double-click etc. \fP"
+.ti -1c
+.RI "int \fBbackend_set_acl\fP (char *filename, noir_md *md, noir_meta *r)"
+.br
+.RI "\fIset ACL or default-ACL on file from meta-data using libACL \fP"
+.ti -1c
+.RI "int \fBbackend_set_meta\fP (void *ns, char *filename, noir_md *md, noir_meta *r)"
+.br
+.RI "\fIset group of meta-data on file \fP"
+.ti -1c
+.RI "static int \fBacl_walk_list\fP (noir_md *md, const struct stat *st, acl_t acl, int dflt)"
+.br
+.RI "\fIcreate meta-data from an ACL \fP"
+.ti -1c
+.RI "int \fBbackend_get_meta\fP (void *ns, char *myfile, noir_md *md)"
+.br
+.RI "\fIget backend-specific meta-data (ACL, EA) \fP"
+.ti -1c
+.RI "int \fBbackend_get_info\fP (void *ns, const char *myfile, \fBfile_info\fP **info)"
+.br
+.RI "\fIget stat-info and put into posixmd struct ('intrinsic' of file_info) \fP"
+.ti -1c
+.RI "void * \fBbackend_opendir\fP (char *path)"
+.br
+.RI "\fIopen a directory (for use in directory scanner only) \fP"
+.ti -1c
+.RI "int \fBbackend_readdir\fP (void **data, char *dir_path, char *fp)"
+.br
+.RI "\fIread an entry from a directory (for use in directory scanner only) \fP"
+.ti -1c
+.RI "int \fBbackend_closedir\fP (void **data)"
+.br
+.RI "\fIclose a directory (for use in directory scanner only) \fP"
+.ti -1c
+.RI "\fBdir_entry\fP * \fBbackend_getdir\fP (char *path, fgd_flags flags, void(*show)(\fBdir_entry\fP *, void *), void *data)"
+.br
+.RI "\fIread an entire directory (ftw(), basically) used in \fBfile_monitor_reload_maybe()\fP \fP"
+.ti -1c
+.RI "static void * \fBbackend_scanner\fP (void *data)"
+.br
+.RI "\fIdirectory-scanner thread \fP"
+.ti -1c
+.RI "int \fBbackend_scanner_activate\fP (\fBq_head\fP *qh)"
+.br
+.RI "\fIcreate and start a directory-scanner. \fP"
+.ti -1c
+.RI "static int \fBlibcurl_init\fP (void)"
+.br
+.RI "\fItry to open libcurl (read non-local URLs) and resolve the symbols we'll need on success, libcurl will point to a filled-in struct _libcurl \fP"
+.ti -1c
+.RI "static int \fBlibattr_init\fP (void)"
+.br
+.RI "\fItry to open libattr (Extended Attributes) and resolve the symbols we'll need on success, libattr will point to a filled-in struct _libattr \fP"
+.ti -1c
+.RI "static int \fBlibacl_init\fP (void)"
+.br
+.RI "\fItry to open libacl (Access Control Lists) and resolve the symbols we'll need on success, libacl will point to a filled-in struct _libacl \fP"
+.ti -1c
+.RI "int \fBbackend_init\fP (\fBq_head\fP *qh)"
+.br
+.RI "\fIinitialize this backend load libraries etc. \fP"
+.ti -1c
+.RI "int \fBbackend_exit\fP (void)"
+.br
+.RI "\fIdeinitialize this backend free resources, unload libraries, stop threads \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+direct access to file-system, no abstraction layer. 
+
+may be compiled with support for libmagic (the 'file' command). if this support was compiled in but the library is not present at run-time, this backend will fall back on a simple filename-extension ('.mp3') to MIME-type ('audio/mp3') mapping instead.
+.PP
+may be compiled with support for libacl (for Access Control Lists -- the file-system you use must support these; if they are optional, a mount- option ('acl') may also be necessary). if this support was compiled in and the library is present at run-time, ACLs and default-ACLs can be viewed and modified in evidence.
+.PP
+may be compiled with support for libattr (for Extended Attributes -- the file-system you use must support these; if they are optional, a mount- option ('user_xattr') may also be necessary). if this support was compiled in and the library is present at run-time, EAs can be viewed in evidence.
+.PP
+may be compiled with support for F_NOTIFY (on Linux >=2.4) and/or libfam (for FAM, the File Alteration Monitor). if F_NOTIFY was compiled in and a suitable kernel is deteced at run-time, F_NOTIFY will be used to learn about changes in the file-system. otherwise, if support for FAM was compiled in and the library is present at run-time and the FAM-daemon speaks with us, FAM will be used. otherwise, this backend will fall back on polling directories as a last resort.
+.PP
+by Azundris
+.SH "Function Documentation"
+.PP 
+.SS "static int acl_walk_list (noir_md * md, const struct stat * st, acl_t acl, int dflt)\fC [static]\fP"
+.PP
+create meta-data from an ACL 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImd\fP list of meta-data to add to 
+.br
+\fIst\fP stat()-info (for owner-UID and owning GID) 
+.br
+\fIacl\fP the ACL to create meta-data for 
+.br
+\fIdflt\fP TRUE for default-ACL, ACL otherwise
+.RE
+.PP
+
+.SS "int backend_activate (char * myfile, const char * mime)"
+.PP
+start a file (double-click etc. 
+.PP
+) if there is a default action for files of this MIME-type, use that. otherwise, if file is executable, start the file itself. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImyfile\fP a local file 
+.br
+\fImime\fP the file's MIME-type, or NULL for auto-determine
+.RE
+.PP
+
+.SS "int backend_closedir (void ** data)"
+.PP
+close a directory (for use in directory scanner only) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP a handle for this directory
+.RE
+.PP
+
+.SS "int backend_cp (\fBnoir_job\fP * job)"
+.PP
+copy item to folder, or copy item renaming the copy 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjob\fP the job
+.RE
+.PP
+
+.SS "int backend_exists (const char * myfile)"
+.PP
+check whether an item exists in the file-system 
+.PP
+\fBReturns:\fP
+.RS 4
+0 for not found, the file's mode as per stat() otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImyfile\fP the item to check for
+.RE
+.PP
+
+.SS "int backend_exit (void)"
+.PP
+deinitialize this backend free resources, unload libraries, stop threads 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "int backend_get_info (void * ns, const char * myfile, \fBfile_info\fP ** info)"
+.PP
+get stat-info and put into posixmd struct ('intrinsic' of file_info) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fImyfile\fP the file 
+.br
+\fIinfo\fP where the pointer to a file_info is store (*info may be NULL, but info mustn't be). allocate file-info and/or posixmd as applicable.
+.RE
+.PP
+
+.SS "int backend_get_meta (void * ns, char * myfile, noir_md * md)"
+.PP
+get backend-specific meta-data (ACL, EA) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fImyfile\fP the file 
+.br
+\fImd\fP the meta-data list to add to
+.RE
+.PP
+
+.SS "const char* backend_get_mime (const char * myfile)"
+.PP
+figure out a file's MIME-type 
+.PP
+\fBReturns:\fP
+.RS 4
+a MIME-type that must not be free()d 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImyfile\fP the file to analyze
+.RE
+.PP
+
+.SS "\fBdir_entry\fP* backend_getdir (char * path, fgd_flags flags, void(*)(\fBdir_entry\fP *, void *) show, void * data)"
+.PP
+read an entire directory (ftw(), basically) used in \fBfile_monitor_reload_maybe()\fP 
+.PP
+\fBReturns:\fP
+.RS 4
+a linked list of dir_entry structs, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP the directory to read 
+.br
+\fIflags\fP flags (recursive, with stat(), ...) 
+.br
+\fIshow\fP callback (whenever a directory is entered or left) 
+.br
+\fIdata\fP any data to hand to the callback
+.RE
+.PP
+
+.SS "int backend_hardlink (char * xfm, char * xto)"
+.PP
+hardlink 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxfm\fP from item... 
+.br
+\fIxto\fP ...to item
+.RE
+.PP
+
+.SS "int backend_init (\fBq_head\fP * qh)"
+.PP
+initialize this backend load libraries etc. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIqh\fP the queue to use to speak with the model
+.RE
+.PP
+
+.SS "int backend_job_collect (\fBnoir_job\fP * job)"
+.PP
+the job is done, clean-up (join thread or whatever) optional function, may not exist in all backends. 
+.PP
+if it exists, it must check whether the job was actually created by the backend (might be a synch job of the front-end's). 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjob\fP 
+.RE
+.PP
+
+.SS "static void* backend_job_do (void * data)\fC [static]\fP"
+.PP
+worker thread -- async copy, move, delete. 
+.PP
+.. 
+.PP
+\fBReturns:\fP
+.RS 4
+NULL (reserved) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the job-struct
+.RE
+.PP
+
+.SS "int backend_job_start (\fBnoir_job\fP * job)"
+.PP
+start a new async job 
+.PP
+\fBReturns:\fP
+.RS 4
+a negative error-code, or a positive job-ID 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjob\fP the job to start
+.RE
+.PP
+
+.SS "char* backend_mime_handler_get (const char * mime, char ** match)"
+.PP
+get default (double-click) action for files of a given MIME-type 
+.PP
+\fBReturns:\fP
+.RS 4
+the handler (app-name or template, cf \fBfile_run()\fP), or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImime\fP the MIME-type 
+.br
+\fImatch\fP where to store the MIME-type that was matched (or NULL)
+.RE
+.PP
+
+.SS "int backend_mime_handler_set (char * mime, char * handler)"
+.PP
+set default (double-click) action for files of a given MIME-type 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImime\fP the MIME-type we want to register a handler for (may contain *) 
+.br
+\fIhandler\fP the handler to register (app-name or template, cf \fBfile_run()\fP)
+.RE
+.PP
+
+.SS "int backend_mkdir (char * dir, int perms, int hier)"
+.PP
+make directory 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdir\fP the path to create 
+.br
+\fIperms\fP the permissions for the path to be created 
+.br
+\fIhier\fP FALSE: try to create last element in path only; TRUE: try to create any missing items along the path
+.RE
+.PP
+
+.SS "int backend_monitor_add (\fBnoir_monitor\fP * m)"
+.PP
+add a monitor -- tell us if the file/directory changes 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIm\fP the monitor to add (prepared in \fBfile_monitor_add()\fP)
+.RE
+.PP
+
+.SS "static int backend_monitor_check (void * data)\fC [static]\fP"
+.PP
+check monitors (using FNotify, FAM, or, if all else fails, polling) 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for go on checking 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP reserved
+.RE
+.PP
+
+.SS "int backend_monitor_remove (\fBnoir_monitor\fP * m)"
+.PP
+remove a monitor -- we're no long interested in that file/directory 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIm\fP the monitor to add (prepared in \fBfile_monitor_add()\fP)
+.RE
+.PP
+
+.SS "int backend_mv (\fBnoir_job\fP * job)"
+.PP
+move item to folder, or rename item 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjob\fP the job
+.RE
+.PP
+
+.SS "void* backend_opendir (char * path)"
+.PP
+open a directory (for use in directory scanner only) 
+.PP
+\fBReturns:\fP
+.RS 4
+a handle for this directory 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP the directory to open
+.RE
+.PP
+
+.SS "int backend_readdir (void ** data, char * dir_path, char * fp)"
+.PP
+read an entry from a directory (for use in directory scanner only) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP a handle for this directory (from \fBbackend_opendir()\fP) 
+.br
+\fIdir_path\fP path to the directory 
+.br
+\fIfp\fP a buffer (char[PATH_MAX+1]) to return the entry's full path/tag in
+.RE
+.PP
+
+.SS "const char* backend_readlink (const char * myfile)"
+.PP
+where does this symlink point to? 
+.PP
+\fBReturns:\fP
+.RS 4
+a newly-allocated tag describing the target of the symlink, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImyfile\fP where to find the symlink in the file-system
+.RE
+.PP
+
+.SS "int backend_rm (\fBnoir_job\fP * job)"
+.PP
+remove an item from the file-system (including any items it may contain) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjob\fP the job
+.RE
+.PP
+
+.SS "int backend_rmdir (char * dir)"
+.PP
+remove an empty directory 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdir\fP the directory to remove
+.RE
+.PP
+
+.SS "static void* backend_scanner (void * data)\fC [static]\fP"
+.PP
+directory-scanner thread 
+.PP
+\fBReturns:\fP
+.RS 4
+NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the queue to the model this scanner is associated with
+.RE
+.PP
+
+.SS "int backend_scanner_activate (\fBq_head\fP * qh)"
+.PP
+create and start a directory-scanner. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIqh\fP the queue to the model this scanner is associated with
+.RE
+.PP
+
+.SS "int backend_set_acl (char * filename, noir_md * md, noir_meta * r)"
+.PP
+set ACL or default-ACL on file from meta-data using libACL 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfilename\fP the file 
+.br
+\fImd\fP the list of meta-data 
+.br
+\fIr\fP first meta-data item in ACL to set (ACL or default-ACL)
+.RE
+.PP
+
+.SS "int backend_set_meta (void * ns, char * filename, noir_md * md, noir_meta * r)"
+.PP
+set group of meta-data on file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIfilename\fP the file 
+.br
+\fImd\fP the list of meta-data 
+.br
+\fIr\fP first meta-data item in group to set
+.RE
+.PP
+
+.SS "int backend_symlink (char * xfm, char * xto)"
+.PP
+symlink 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIxfm\fP from item... 
+.br
+\fIxto\fP ...to item
+.RE
+.PP
+
+.SS "char* backend_tag2name (const char * path)"
+.PP
+get item's name (UTF8) from its tag (path, UUID, . 
+.PP
+..) 
+.PP
+\fBReturns:\fP
+.RS 4
+a newly-allocated UTF8-string containing the item's name 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP the tag/URL/UUID denoting the item
+.RE
+.PP
+
+.SS "static \fBitem_flags\fP calc_mode (mode_t mode, \fBitem_flags\fP * ret)\fC [inline, static]\fP"
+.PP
+determine access-info (deny all, grant some) 
+.PP
+\fBReturns:\fP
+.RS 4
+the updated access-info 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImode\fP POSIX permissions as per stat() 
+.br
+\fIret\fP access-info (must be set to deny-all before first call to \fBcalc_mode()\fP)
+.RE
+.PP
+
+.SS "static int fam_connect (void)\fC [inline, static]\fP"
+.PP
+connect to File Alteration Monitor daemon 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int fam_listen (void)\fC [static]\fP"
+.PP
+poll File Alteration Monitor daemon 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static \fBitem_flags\fP get_xs (const char * file, uid_t fuid, gid_t fgid, mode_t mode)\fC [static]\fP"
+.PP
+determine access-info from ACLs and/or POSIX permissions 
+.PP
+\fBReturns:\fP
+.RS 4
+access-info (read-only, no-access, ...) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the file we're interested in (path, not URL) 
+.br
+\fIfuid\fP the file's owner 
+.br
+\fIfgid\fP the file's owning group 
+.br
+\fImode\fP the file's mode (as per stat())
+.RE
+.PP
+
+.SS "static int in_group (gid_t gid)\fC [inline, static]\fP"
+.PP
+check whether we have access to group 'gid' this is used from \fBget_xs()\fP -- if 'gid' is this process' group (or one of its supplementary groups), we benefit from the owning/named group ACE in question 
+.PP
+\fBReturns:\fP
+.RS 4
+the group's index in the list of supplementary groups, or -1 for not found 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIgid\fP the ID of the group to look for
+.RE
+.PP
+
+.SS "static int libacl_init (void)\fC [static]\fP"
+.PP
+try to open libacl (Access Control Lists) and resolve the symbols we'll need on success, libacl will point to a filled-in struct _libacl 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int libattr_init (void)\fC [static]\fP"
+.PP
+try to open libattr (Extended Attributes) and resolve the symbols we'll need on success, libattr will point to a filled-in struct _libattr 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int libcurl_init (void)\fC [static]\fP"
+.PP
+try to open libcurl (read non-local URLs) and resolve the symbols we'll need on success, libcurl will point to a filled-in struct _libcurl 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int libfam_exit (void)\fC [static]\fP"
+.PP
+deinitialize libfam 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int libfam_init (void)\fC [static]\fP"
+.PP
+try to open libfam (File Alteration Monitor) and resolve the symbols we'll need on success, libfam will point to a filled-in struct _libfam 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static const char* libmagic_get_mime (const char * file)\fC [inline, static]\fP"
+.PP
+figure out a file's MIME-type using libmagic (the 'file' command) libmagic support needs to be compiled in, libmagic needs to be present at run-time, its database must have been opened successfully, and the lookup must succeed. 
+.PP
+otherwise, MIME_DK_TYPE is returned. 
+.PP
+\fBReturns:\fP
+.RS 4
+a MIME-type that must not be free()d 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the file to analyze
+.RE
+.PP
+
+.SS "static int mime_add (char * ext, char * mime)\fC [static]\fP"
+.PP
+add element to MIME-hash (ext -> mime-type lookup) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIext\fP a filename extension ('.mp3') 
+.br
+\fImime\fP the MIME-type it is usually associated with
+.RE
+.PP
+
+.SS "static char* mime_chk_backup (const char * file)\fC [inline, static]\fP"
+.PP
+check whether a file-name reeks of backup 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP a file-name
+.RE
+.PP
+
+.SS "static int mime_chk_exec (const char * file, const char ** m)\fC [inline, static]\fP"
+.PP
+check whether a file is a binary, a shell-script, or something other 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the file to look at 
+.br
+\fIm\fP where to store the MIME-type we worked out
+.RE
+.PP
+
+.SS "static int mime_exit (void)\fC [static]\fP"
+.PP
+deinitialize ext->mime_type hash 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static const char* mime_get_by_ext (const char * file)\fC [static]\fP"
+.PP
+lookup MIME-type for this extension (ext -> MIME-type) 
+.PP
+\fBReturns:\fP
+.RS 4
+a MIME-type that must not be free()d 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP a file-name
+.RE
+.PP
+
+.SS "static const char* mime_get_by_magic (const char * file)\fC [static]\fP"
+.PP
+lookup MIME-type by magic, using whatever lib we can get our hands on 
+.PP
+\fBReturns:\fP
+.RS 4
+a MIME-type that must not be free()d 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP a file-name
+.RE
+.PP
+
+.SS "static int mime_init (void)\fC [static]\fP"
+.PP
+initialize ext->mime_type hash from MIME_FILE and load libmagic try to open libmagic (the 'file' command) and resolve the symbols we'll need on success, libmagic will point to a filled-in struct _libmagic 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static char* str1st (char * a, char * b)\fC [inline, static]\fP"
+.PP
+helper for \fBmime_init()\fP 
+.PP
+\fBReturns:\fP
+.RS 4
+the smaller non-NULL pointer, or NULL if both pointers are NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIa\fP the first pointer 
+.br
+\fIb\fP the second pointer
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

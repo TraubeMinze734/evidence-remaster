@@ -1,0 +1,1901 @@
+dnl Process this file with autoconf to produce a configure script.
+
+rm -f config.cache
+
+# AC_INIT(acinclude.m4)
+AC_INIT(configure.in)
+
+AC_DEFINE_UNQUOTED([CONFIGURED_WITH], "$*", [what options were given to configure])
+
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+# AC_INIT_PACKAGE(evidence, 0.9.8, evidence@azundris.com)
+AM_INIT_AUTOMAKE(evidence, 0.9.8)
+AC_CONFIG_HEADER(config.h)
+
+AC_PREREQ(2.52)
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+AC_PROG_INSTALL
+AC_PROG_CXX
+AC_LANG(C)
+
+
+AM_ENABLE_SHARED
+dnl AM_DISABLE_STATIC
+AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
+# AM_WITH_DMALLOC
+
+if test X"$enable_shared" = Xyes; then
+ DLLDFLAGS=-export-dynamic
+ AC_SUBST(DLLDFLAGS)
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # functions
+dnl ###################
+
+AC_C_CONST
+AC_C_INLINE
+AC_C_VOLATILE
+AC_C_BIGENDIAN
+
+AC_STRUCT_TM
+AC_STRUCT_ST_BLKSIZE
+AC_STRUCT_ST_BLOCKS
+
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_UID_T
+AC_TYPE_SIGNAL
+AC_TYPE_OFF_T
+AC_TYPE_MODE_T
+
+AC_CHECK_TYPE(ulong, ,[AC_DEFINE(ulong, u_long,[FreeBSD compat])])
+
+AC_CHECK_HEADERS([limits.h])
+
+AC_HEADER_TIME
+
+AC_CHECK_FUNCS([localtime_r])
+AC_CHECK_FUNCS([nl_langinfo])
+AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([memmove])
+AC_CHECK_FUNCS([strcasecmp])
+AC_CHECK_FUNCS([strncasecmp])
+AC_CHECK_FUNCS([strtol])
+AC_CHECK_FUNCS([strstr])
+AC_CHECK_FUNCS([strrchr])
+AC_CHECK_FUNCS([strchr])
+AC_CHECK_FUNCS([strdup])
+AC_CHECK_FUNCS([select])
+
+AC_CHECK_FUNCS([ftello])
+AC_CHECK_FUNCS([fseeko])
+AC_CHECK_FUNCS([strtoul])
+AC_CHECK_FUNCS([strtoull])
+
+AC_CHECK_FUNCS([statfs])
+AC_CHECK_FUNCS([statvfs])
+
+AC_SYS_LARGEFILE
+# AC_SYS_LONG_FILE_NAMES
+
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_STAT
+AC_FUNC_MALLOC
+AC_FUNC_FORK
+AC_FUNC_MKTIME
+AC_FUNC_LSTAT
+AC_FUNC_CLOSEDIR_VOID
+
+ACX_PTHREAD()
+
+# inspired by Bruno Haible
+langinfo=no
+AC_TRY_LINK([#include <langinfo.h>],
+      [char *cs=nl_langinfo(CODESET);],
+      [AC_DEFINE(HAVE_LANGINFO_CODESET,1,[Have <langinfo.h> and nl_langinfo(CODESET).])
+      langinfo=yes])
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # pkg-config / GTK2
+dnl ###################
+
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test x$PKG_CONFIG = xno ; then
+   AC_MSG_ERROR([*** pkg-config not found. See
+   http://pkgconfig.sourceforge.net])
+fi
+
+if ! pkg-config --atleast-pkgconfig-version 0.5 ; then
+   AC_MSG_ERROR([*** pkg-config too old; version 0.5 or better required.])
+fi
+
+dnl If you compile against GTK2.0.x, some of the selection stuff migh
+dnl act up -- the functions are present in GTK2.0.x, but they don't do
+dnl anything yet... : (
+
+# PKG_CHECK_MODULES(GTHREAD, gthread-2.0 >= 2.0, [AC_DEFINE(HAVE_GTHREAD, 1, use GThread)])
+# AC_SUBST(GTHREAD_CFLAGS)
+# AC_SUBST(GTHREAD_LIBS)
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.0, [AC_DEFINE(HAVE_GTK2, 1, use GTK2 GUI toolkit)])
+# GTK_CFLAGS="$GTK_CFLAGS $GTHREAD_CFLAGS"
+# GTK_LIBS="$GTK_LIB $GTHREAD_LIBS"
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # checking for utils
+dnl ###################
+
+hashes="none";
+AC_MSG_CHECKING(whether to use glib)
+AC_ARG_ENABLE(glib, AC_HELP_STRING([--enable-glib],[use glib]),
+                [ ac_use_glib="$enableval" ],
+                [ ac_use_glib="yes" ]
+                )
+if test X"$ac_use_glib" = Xyes; then
+        AC_MSG_RESULT(yes)
+        PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0 )
+        AC_DEFINE(HAVE_GLIB2, 1, use glib2 mainloop)
+        hashes="glib";
+        glib="yes";
+        loop="glib"
+else
+        AC_MSG_RESULT(no)
+fi
+
+#AC_MSG_CHECKING(whether to use judy)
+#AC_ARG_ENABLE(judy, AC_HELP_STRING([--disable-judy],[do not use judy hashes]),[
+#               AC_MSG_RESULT(no)
+#               ], [
+#               AC_MSG_RESULT(yes)
+#               AC_ARG_WITH(attr,
+#                  AC_HELP_STRING([--with-judy=DIR],[use Judy hashes in <DIR>]),
+#                  [judy_cflags="-I$withval/include"
+#                  judy_libs="-L$withval/lib -lJudy"
+#                  hashes="judy";
+#                  AC_DEFINE(HAVE_JUDY, 1, use Judy hashes)],
+#                  [AC_CHECK_HEADER(Judy.h,
+#                     [AC_CHECK_LIB(Judy, JudySLIns, [
+#                      hashes="judy";
+#                      AC_DEFINE(HAVE_JUDY, 1, use Judy hashes)],
+#                      AC_MSG_NOTICE([Optional library Judy hashes not found. This is not serious at all; we'll look for hashes elsewhere.])
+#                      )],)])])
+#AC_SUBST(judy_cflags)
+#AC_SUBST(judy_libs)
+
+
+
+valgrind="no"
+PKG_CHECK_MODULES(VALGRIND,valgrind,[AC_DEFINE(HAVE_VALGRIND, 1, build with valgrind detection)],
+                                    [AC_MSG_NOTICE([Building without valgrind detection -- if you don't know what this means, you don't need this])])
+AC_SUBST(VALGRIND_CFLAGS)
+AC_SUBST(VALGRIND_LIBS)
+
+
+
+btrace=no
+AC_MSG_CHECKING(whether to link in libbtrace)
+AC_ARG_ENABLE(btrace, AC_HELP_STRING([--enable-btrace],[build with extra debugging using libbtrace]),
+        [ ac_btrace="$enableval" ],
+        [ ac_btrace="no" ]
+        )
+if test X"$ac_btrace" = Xyes; then
+  AC_CHECK_HEADER(btrace.h,
+                  [AC_CHECK_LIB(btrace, btrace_print,
+                                [btrace_libs="-lbtrace"
+                                 btrace=yes
+                                 AC_DEFINE(HAVE_BTRACE, 1, add support for libbtrace)])])
+fi
+AC_SUBST(btrace_cflags)
+AC_SUBST(btrace_libs)
+
+
+
+doodle=no
+AC_MSG_CHECKING(whether searching using libdoodle is explicitly disabled)
+AC_ARG_ENABLE(doodle, AC_HELP_STRING([--enable-doodle],[build with libdoodle searches]),
+        [ ac_doodle="$enableval" ],
+        [ ac_doodle="yes" ]
+        )
+if test X"$ac_doodle" = Xyes; then
+  AC_CHECK_HEADER(/usr/local/include/doodle.h,
+                  [doodle_cflags=" "
+                   doodle_libdir="/usr/local/lib"],
+                  [AC_CHECK_HEADER(/usr/include/doodle.h,
+                                   [doodle_cflags=" "
+                                    doodle_libdir="/usr/lib"],
+                                   [AC_CHECK_HEADER(/usr/include/doodle/doodle.h,
+                                                    [doodle_libdir="/usr/lib/doodle"
+                                                     doodle_libs="-L$doodle_libdir"
+                                                     doodle_cflags=" -I/usr/include/doodle "],
+                                                    [doodle_cflags=""])])])
+  if test X"$doodle_cflags" != X; then
+    save_LIBS="$LIBS"
+    LIBS="$doodle_libs $LIBS"
+    AC_CHECK_LIB(doodle, DOODLE_tree_search,
+                 [doodle=yes
+                  AC_DEFINE_UNQUOTED([DOODLE_LIBDIR], "$doodle_libdir", [where the doodle lib lives])
+                  AC_DEFINE(HAVE_DOODLE, 1, add support for libdoodle searches)],
+                 [doodle="no"])
+    LIBS="$save_LIBS"
+  fi
+  if test X"$doodle" != Xyes; then
+    AC_MSG_WARN([building without libdoodle, no searching!  (http://www.ovmj.org/doodle/)])
+  fi
+fi
+
+AC_SUBST(doodle_cflags)
+AC_SUBST(doodle_libs)
+
+
+
+AC_CHECK_HEADER(wordexp.h,AC_DEFINE(HAVE_WORDEXP, 1, [whether wordexp is present; otherwise glob will be used]))
+
+
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # checking for Qt
+dnl ###################
+
+if test "$QTDIR" = ""
+then
+  QTDIR=/usr/lib/qt3
+  export QTDIR
+fi
+
+if test -d $QTDIR
+then
+  qt_dir=$QTDIR
+fi
+if test "$qt_dir" != ""
+then
+  qt_cxxflags="-I$qt_dir/include"
+  qt_libadd="-L$qt_dir/lib -lqt"
+  MOC="$qt_dir/bin/moc"
+fi
+AC_SUBST(qt_dir)
+AC_SUBST(qt_cxxflags)
+AC_SUBST(qt_libadd)
+AC_SUBST(MOC)
+
+
+
+AC_ARG_WITH(kde,
+            AC_HELP_STRING([--with-kde=DIR],[use KDE in <DIR>]),
+            [kde_cxxflags="-I$withval/include"
+             kde_dir="$withval"
+             kde_libs="-L$withval/lib"
+             kde="yes"],
+            [AC_CHECK_PROG([kde_config], [kde-config], yes)
+             if test "$kde_config" = "yes"; then
+               kde_dir=`kde-config --prefix`;
+               kde_cxxflags="-I$kde_dir/include";
+               kde_libs="-L$kde_dir/lib";
+               kde="yes"
+             fi])
+AC_SUBST(kde_dir)
+AC_SUBST(kde_cxxflags)
+AC_SUBST(kde_libadd)
+if test "$kde_dir" != ""
+then
+  kde_rpath="-R$kde_dir/lib"
+  DCOPIDL="$kde_dir/bin/dcopidl"
+  DCOPIDL2CPP="$kde_dir/bin/dcopidl2cpp"
+fi
+AC_SUBST(kde_rpath)
+AC_SUBST(DCOPIDL)
+AC_SUBST(DCOPIDL2CPP)
+
+if test "$kde" = "yes"; then
+  AC_CHECK_PROG([moc], [moc], yes)
+  AC_CHECK_PROG([dcopidl], [dcopidl], yes)
+  if test "$moc" = "yes" -a "$dcopidl" = "yes"; then
+    AC_DEFINE(HAVE_KDE, 1, use KDE)
+  fi
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # checking for IPC
+dnl ###################
+
+dbus="";
+AC_MSG_CHECKING(whether to support DBus IPC)
+AC_ARG_ENABLE(dbus, AC_HELP_STRING([--enable-dbus],[support DBus IPC]),
+                [ ac_use_dbus="$enableval" ],
+                [ ac_use_dbus="no" ]
+                )
+if test X"$ac_use_dbus" = Xyes; then
+  AC_ARG_WITH(dbus,
+            AC_HELP_STRING([--with-dbus=DIR],[use DBus in <DIR>]),
+            [dbus="DBus "
+             dbus_cflags="-I$withval/include"
+             dbus_libs="-L$withval/lib"
+             AC_DEFINE(HAVE_DBUS, 1, use DBus)],
+            [PKG_CHECK_MODULES(DBUS, dbus-1 >= 0.12,
+                               [dbus="DBus "
+                                dbus_cflags=`pkg-config --cflags dbus-1`
+                                dbus_libs=`pkg-config --libs dbus-1`
+                                AC_DEFINE(HAVE_DBUS, 1, use DBus)],
+                                AC_MSG_NOTICE("Building without highly experimental DBUS support..."))])
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST(dbus_cflags)
+AC_SUBST(dbus_libs)
+
+
+
+dcop=""
+AC_MSG_CHECKING(whether to support KDE DCOP IPC)
+AC_ARG_ENABLE(dcop, AC_HELP_STRING([--enable-dcop],[support KDE DCOP IPC]),
+                [ ac_use_dcop="$enableval" ],
+                [ ac_use_dcop="no" ]
+                )
+if test X"$ac_use_dcop" = Xyes; then
+  AC_ARG_WITH(dcop,
+            AC_HELP_STRING([--with-dcop=DIR],[use DCOP in <DIR>]),
+            [dcop_cxxflags="-I$withval/include"
+             dcop_libs="-L$withval/lib -lDCOP"
+             dcop="DCOP "
+             AC_DEFINE(HAVE_DCOP, 1, use DCOP)],
+            [if test "$kde_dir" != ""; then
+               AC_MSG_CHECKING(for DCOP in $kde_dir)
+               if test -f "$kde_dir/include/dcopobject.h" -a -f "$kde_dir/lib/libDCOP.so"; then
+                 AC_MSG_RESULT(yes)
+                 dcop_cxxflags="-I$kde_dir/include";
+                 dcop_libs="-L$kde_dir/lib -lDCOP";
+                 dcop="DCOP "
+                 AC_DEFINE(HAVE_DCOP, 1, use DCOP)
+               else
+                 AC_MSG_RESULT(no)
+               fi
+             fi])
+else
+  AC_MSG_RESULT(no)
+fi
+AC_SUBST(dcop_cxxflags)
+AC_SUBST(dcop_libs)
+
+
+
+ecoreipc=""
+AC_ARG_ENABLE(ecore-ipc, AC_HELP_STRING([--enable-ecore-ipc],[support eCore IPC (required for evsh and examine)]),
+                [ ac_use_ecoreipc="$enableval" ],
+                [ ac_use_ecoreipc="yes" ]
+                )
+
+ecore=""
+AC_MSG_CHECKING(whether to use eCore as main-loop)
+AC_ARG_ENABLE(ecore, AC_HELP_STRING([--enable-ecore],[use eCore as main-loop]),
+                [ ac_use_ecore="$enableval" ],
+                [ ac_use_ecore="yes" ]
+                )
+
+if test X"$ac_use_ecore" = Xno; then
+#  if test X"$ac_use_ecoreipc" = Xyes; then
+#    AC_MSG_RESULT([forced by inclusion of eCore-IPC])
+#    ac_use_ecore="forced"
+#  else
+    AC_MSG_RESULT([no])
+#  fi
+else
+  AC_MSG_RESULT([no])
+fi
+
+if test X"$ac_use_ecore" != Xno; then
+  AC_PATH_GENERIC(ecore, 1.0.0, [
+                AC_CHECK_LIB(ecore,ecore_main_loop_iterate,[
+                  ecore_cflags=`ecore-config --cflags`
+                  ecore_libs=`ecore-config --libs`
+                  ecore=yes
+                  if test X"$ac_use_ecore" = Xyes; then
+                    loop=eCore
+                    AC_DEFINE(HAVE_ECORE, 1, have enlightened main loop)
+                    AC_MSG_NOTICE([Building with eCore mainloop. This is an important change; let the developers now if you notice something strange. If it does, you can get back the old glib-build by selecting it in the configure-run.])
+                  fi
+                ],[
+                  AC_MSG_NOTICE([ecore too old! no enlightened main-loop for you! you come back -- one year!])])],[
+                AC_MSG_NOTICE([ecore-config not found. no enlightened IPC.])])
+fi
+
+AC_MSG_CHECKING(whether to support eCore IPC)
+if test X"$ac_use_ecoreipc" = Xyes; then
+                  AC_MSG_CHECKING(for eCore-IPC in eCore)
+                  if test `ecore-config --libs|sed -e 's/.* -lecore_ipc.*/X/g'` = "X"; then
+                    ecore_ipc_libs=`ecore-config --libs`
+                    ecore_ipc_cflags=`ecore-config --cflags`
+                    AC_DEFINE(HAVE_ECORE_IPC, 1, have enlightened IPC)
+                    ecoreipc="eCore-IPC "
+                    AC_MSG_RESULT(yes)
+                  else
+                    AC_MSG_RESULT(no)
+                  fi
+fi
+
+AC_SUBST(ecore_libs)
+AC_SUBST(ecore_cflags)
+
+AC_SUBST(ecore_ipc_libs)
+AC_SUBST(ecore_ipc_cflags)
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # Canvas selection
+dnl ###################
+
+iconview=none;
+libpng="";
+imlib2="";
+
+AC_MSG_CHECKING(whether support for evas2 is to be built)
+AC_ARG_ENABLE(canvas-evas2, AC_HELP_STRING([--enable-canvas-evas2],[use evas2 as canvas (enables theming)]),
+        [ ac_use_canvas_evas2="$enableval" ],
+        [ ac_use_canvas_evas2="yes" ]
+        )
+if test X"$ac_use_canvas_evas2" = Xyes; then
+        AC_MSG_RESULT(yes)
+                AC_ARG_WITH(evas,
+                   AC_HELP_STRING([--with-evas2=DIR],[use evas2 in <DIR>]),
+                   [evas_cflags="-I$withval/include"
+                   evas_libs="-L$withval/lib"],[
+                   AC_PATH_GENERIC(evas, 1.0.0, [
+                                   evas_cflags=`evas-config --cflags`
+                                   evas_libs=`evas-config --libs`
+                                   evas=yes;],[
+                                   AC_MSG_WARN(Without evas there will be no theming.)
+                                   evas=no; ])])
+                AC_SUBST(evas_libs)
+                AC_SUBST(evas_cflags)
+                if test "$evas" = "yes"; then
+                  AC_DEFINE(HAVE_EVAS2, 1, Use evas2 for a canvas (enables theming))
+                fi
+
+                if test "$hashes" = "none"; then
+                  hashes=evas;
+                fi
+                iconview=evas;
+
+                # check for edb
+                AC_PATH_GENERIC(edb, 1.0.2, [
+                  edb_cflags=`edb-config --cflags`
+                  edb_libs=`edb-config --libs`
+                  AC_DEFINE(HAVE_EDB, 1, have enlightened database library)
+                  edb=yes;
+                ],[
+                  AC_MSG_WARN([Without the enlightened database library some legacy plugins may be unable to load their data.])
+                  edb=no;
+                ])
+                AC_SUBST(edb_libs)
+                AC_SUBST(edb_cflags)
+        
+                # check for eet
+                AC_PATH_GENERIC(eet, 0.0.0, [
+                  eet_cflags=`eet-config --cflags`
+                  eet_libs=`eet-config --libs`
+                  eet=yes
+                  AC_DEFINE(HAVE_EET, 1, have enlightened compression library)
+                ],[
+                  AC_MSG_WARN([Without the enlightened compression library some plugins may be unable to load their data.])
+                  eet=no;
+                ])
+                AC_SUBST(eet_libs)
+                AC_SUBST(eet_cflags)
+
+                # check for edje
+                edje="no"
+                AC_MSG_CHECKING(whether to support edje themes)
+                AC_ARG_ENABLE(ecore, AC_HELP_STRING([--enable-edje],[support edje themes]),
+                              [ ac_use_edje="$enableval" ],
+                              [ if test X"$ac_use_ecore" = Xno; then
+                                  ac_use_edje="no"
+                                else
+                                  ac_use_edje="yes"
+                                fi ])
+                AC_MSG_RESULT([$ac_use_edje])
+
+                if test X"$ac_use_edje" = Xyes; then
+                  if test X"$ac_use_ecore" = Xno; then
+                    AC_MSG_WARN([edje requested -- this will pull in eCore via the backdoor...])
+                  fi
+
+                  AC_PATH_GENERIC(edje, 0.5.0, [
+                    edje_cflags=`edje-config --cflags`
+                    edje_libs=`edje-config --libs`
+                    edje="yes";
+                    AC_DEFINE(HAVE_EDJE, 1, have enlightened skinning)
+                  ],[
+                    AC_MSG_WARN([Without enlightened skinning support, some background-plugins may be unable to build.])
+                  ])
+                fi
+
+                AC_SUBST(edje_libs)
+                AC_SUBST(edje_cflags)
+
+                # check for ebg
+#               AC_PATH_GENERIC(ebg, 1.0.0, [
+#                 ebg_cflags=`ebg-config --cflags`
+#                 ebg_libs=`ebg-config --libs`
+#                 ebg=yes;
+#                 AC_DEFINE(HAVE_EBG, 1, have enlightened background database library)
+#               ],[
+#                 AC_MSG_WARN([Without the enlightened background handler some background-plugins may be unable to build.])
+#                 ebg=no;
+#               ])
+#               AC_SUBST(ebg_libs)
+#               AC_SUBST(ebg_cflags)
+
+                # check for ebits
+#               AC_PATH_GENERIC(ebits, 1.0.1, [
+#                 ebits_cflags=`ebits-config --cflags`
+#                 ebits_libs=`ebits-config --libs`
+#                 ebits=yes;
+#                 AC_DEFINE(HAVE_EBITS, 1, have enlightened micro-widget library)
+#               ],[
+#                 AC_MSG_WARN([Without the ebits library some legacy plugins may be unable to load their data.])
+                  ebits=no;
+#               ])
+#               AC_SUBST(ebits_libs)
+#               AC_SUBST(ebits_cflags)
+
+                # check for evas-gl
+                evas_gl="no";
+                AC_CHECK_HEADER(Evas_Engine_GL_X11.h,[
+                        AC_DEFINE(HAVE_EVAS_GL, 1,[evas was built with the GL_X11 rendering method])
+                        evas_gl="yes"],
+                        ,[#include <Evas.h>])
+
+#               if test "$evas_buffer" = "no"; then
+#                 AC_MSG_NOTICE([Provided evas-library does not support the buffer engine.])
+#               fi
+
+                # check for evas-buffer
+#               evas_buffer="no";
+#               save_CFLAGS="$CFLAGS"
+#               save_LIBS="$LIBS"
+#               CFLAGS="$save_CFLAGS $evas_cflags"
+#               LIBS="$save_LIBS $evas_libs"
+#               AC_CHECK_LIB(evas, evas_buffer_outbuf_buf_init,[
+#                   AC_CHECK_HEADER(Evas_Engine_Buffer.h,[
+#                       AC_MSG_RESULT(yes)
+#                       AC_DEFINE(HAVE_EVAS_BUFFER, 1,[evas was built with the buffer rendering method -- we can use that in thumbnailing if imlib2 leaks])
+#                       evas_buffer="yes"],
+#                       AC_MSG_RESULT(no),[#include <Evas.h>])],,)
+#               LIBS="$save_LIBS"
+#               CFLAGS="$save_CFLAGS"
+
+#               if test "$evas_buffer" = "no"; then
+#                 AC_MSG_NOTICE([Provided evas-library does not support the buffer engine.])
+#               fi
+
+else
+        AC_MSG_RESULT(no)
+        evas=no;
+        all_themes=no;
+fi
+
+
+
+
+
+
+AC_MSG_CHECKING(whether support for gnomecanvas is to be built)
+AC_ARG_ENABLE(canvas-gnomecanvas, AC_HELP_STRING([--enable-canvas-gnomecanvas],[use gnomecanvas as canvas]),
+        [ ac_use_canvas_gnomecanvas="$enableval" ],
+        [ ac_use_canvas_gnomecanvas="no" ]
+        )
+if test X"$ac_use_canvas_gnomecanvas" = Xyes; then
+        AC_MSG_RESULT(yes)
+                AC_ARG_WITH(gnomecanvas,
+                   AC_HELP_STRING([--with-gnomecanvas=DIR],[use gnomecanvas in <DIR>]),
+                   [gnomecanvas_cflags="-I$withval/include"
+                   gnomecanvas_libs="-L$withval/lib"],
+                   [PKG_CHECK_MODULES(EVIDENCE,
+                                       libart-2.0
+                                       libgnomecanvas-2.0
+                                     )
+                    gnomecanvas_libs=`pkg-config --libs libgnomecanvas-2.0`
+                    gnomecanvas_cflags=`pkg-config --cflags libgnomecanvas-2.0`])
+                AC_DEFINE(HAVE_GNOMECANVAS, 1, Use gnomecanvas for canvas (no theming))
+                gnomecanvas=yes;
+                iconview="GNOME-canvas";
+                AC_MSG_WARN([Building with gnome-canvas is a legacy feature that isn't test very frequently, so your build may break, or shelf and icon-view may not work 100 %. Even if they do, there will be no theming except for iconsets.])
+else
+        AC_MSG_RESULT(no)
+                gnomecanvas=no;
+                if test "$evas" = "no"; then
+                  AC_MSG_WARN([Neither evas nor GNOME-canvas selected, building without icon-view and shelf!])
+                fi
+fi
+AC_SUBST(gnomecanvas_libs)
+AC_SUBST(gnomecanvas_cflags)
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # thumbnailer
+dnl ############
+
+
+
+# check for Imlib2
+AC_PATH_GENERIC(imlib2,,[imlib2_libs=`imlib2-config --libs`
+                         imlib2_cflags=`imlib2-config --cflags`
+                         AC_DEFINE(HAVE_IMLIB2, 1, have Imlib2)
+                         imlib2="Imlib2 "; ],[
+                         AC_MSG_WARN([Without Imlib2 the number of image formats we can create thumbnails for will be greatly reduced. Getting Imlib2 is recommended.])
+                        ])
+AC_SUBST(imlib2_libs)
+AC_SUBST(imlib2_cflags)
+
+
+
+# check for libpng
+AC_ARG_WITH(libpng,
+            AC_HELP_STRING([--with-libpng=DIR],[use libPNG in <DIR>]),
+                           [libpng="PNG "
+                            libpng_cflags="-I$withval/include"
+                            libpng_libs="-L$withval/lib"
+                            AC_DEFINE(HAVE_LIBPNG,1,[have libpng for thumbnailing])],
+                           [AC_PATH_GENERIC(libpng,,[libpng_libs=`libpng-config --libs`
+                                                     libpng_cflags=`libpng-config --cflags`
+                                                     libpng="PNG "
+                                                     AC_DEFINE(HAVE_LIBPNG, 1,[have libpng for thumbnailing])],
+                                                    [PKG_CHECK_MODULES(PNG,libpng12,
+                                                      [libpng="PNG "
+                                                       libpng_cflags=`pkg-config --cflags libpng12`
+                                                       libpng_libs=`pkg-config --libs libpng12`
+                                                       libpng="PNG "
+                                                       AC_DEFINE(HAVE_LIBPNG, 1,[have libpng for thumbnailing])],
+                                                      [AC_MSG_WARN([blubbadupbleepblopbleet])])])])
+
+if test "$libpng_libs" != ""; then
+  libpng_libs="$libpng_libs -lz -lm"
+fi
+AC_SUBST(libpng_cflags)
+AC_SUBST(libpng_libs)
+if test "$libpng" = ""; then
+  AC_MSG_WARN([Building without PNG image library libpng -- disabling thumbnail image previews!!])
+fi
+
+
+
+# check for epeg
+epeg="ePEG "
+# AC_PATH_GENERIC(epeg, 0.0.1, [
+#                 epeg_cflags=`epeg-config --cflags`
+#                 epeg_libs=`epeg-config --libs`
+#                 epeg="ePEG "
+                  AC_DEFINE(HAVE_EPEG, 1, have enlightened ultra-fast JPEG thumbnailer)
+#                 ],[
+#                 AC_MSG_WARN([Without the enlightened JPEG thumbnailer creating previews for large JPEG images will be significantly slower. Nevermind if you don't have a lot of large JPEGs (from your digital camera or somesuch).])
+#                 epeg="";
+#                 ])
+# AC_SUBST(epeg_libs)
+# AC_SUBST(epeg_cflags)
+# Test for libjpeg
+AC_CHECK_LIB(jpeg,jpeg_destroy_decompress,
+  AC_TRY_CPP(
+  [#include <stdio.h>
+   #undef PACKAGE
+   #undef VERSION
+   #include <jpeglib.h>],
+  jpeg=yes,
+  jpeg=no))
+if test "$jpeg" = yes; then
+  libjpeg_libs="-ljpeg"
+else
+  AC_MSG_WARN(*** JPEG support will not be built ***)
+  epeg=""
+fi
+AC_SUBST(libjpeg_cflags)
+AC_SUBST(libjpeg_libs)
+
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # Checks for the extra fu
+dnl ############
+
+AC_MSG_CHECKING(whether all themes are to be built)
+AC_ARG_ENABLE(extra-themes, AC_HELP_STRING([--enable-extra-themes],[build ugly debug-themes as well]),
+        [ ac_use_all_themes="$enableval" ],
+        [ ac_use_all_themes="no" ]
+        )
+if test X"$ac_use_all_themes" = Xyes -a X"$ac_use_canvas_evas2" = Xyes; then
+        AC_MSG_RESULT(yes)
+                all_themes=yes;
+else
+        AC_MSG_RESULT(no)
+                all_themes=no;
+                AC_MSG_NOTICE(Not installing experimental and legacy themes -- it's probably better that way.)
+fi
+
+AC_MSG_CHECKING(whether all iconsets are to be install)
+AC_ARG_ENABLE(extra-iconsets, AC_HELP_STRING([--enable-extra-iconsets],[install all icon-sets]),
+        [ ac_use_all_iconsets="$enableval" ],
+        [ ac_use_all_iconsets="no" ]
+        )
+if test X"$ac_use_all_iconsets" = Xyes -a X"$ac_use_canvas_evas2" = Xyes; then
+        AC_MSG_RESULT(yes)
+                all_iconsets=yes;
+else
+                if test X"$all_themes" = Xyes; then
+                  AC_MSG_RESULT(yes -- implied by --enable-extra-themes)
+                  all_iconsets=yes;
+                else
+                  AC_MSG_RESULT(no)
+                  AC_MSG_NOTICE(Not installing legacy icon-sets -- just as well.)
+                  all_iconsets=no;
+                fi
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # Checks for the individual views
+dnl ############
+
+AC_MSG_CHECKING(whether the tree-view is to be built)
+AC_ARG_ENABLE(tree-view, AC_HELP_STRING([--enable-tree-view],[build with experimental tree-view]),
+        [ ac_use_tree_view="$enableval" ],
+        [ ac_use_tree_view="yes" ]
+        )
+if test X"$ac_use_tree_view" = Xyes; then
+        AC_MSG_RESULT(yes -- good luck)
+                AC_DEFINE(WITH_TREEVIEW, 1, build with tree-view)
+                treeview=gtk2;
+else
+        AC_MSG_RESULT(no -- good call)
+                treeview=none;
+fi
+
+AC_MSG_CHECKING(whether the icon-view is to be built)
+AC_ARG_ENABLE(icon-view, AC_HELP_STRING([--enable-icon-view],[build with icon-view]),
+        [ ac_use_icon_view="$enableval" ],
+        [ ac_use_icon_view="yes" ]
+        )
+if test X"$ac_use_icon_view" = Xyes; then
+        if test X"$iconview" = Xnone; then
+          AC_MSG_RESULT(no -- no canvas)
+        else
+          AC_MSG_RESULT(yes)
+          AC_DEFINE(WITH_ICONVIEW, 1, build with icon-view)
+        fi
+else
+        AC_MSG_RESULT(no)
+fi
+
+AC_MSG_CHECKING(whether the browser-view is to be built)
+AC_ARG_ENABLE(browserview-view, AC_HELP_STRING([--enable-browser-view],[build with browser-view]),
+        [ ac_use_browserview_view="$enableval" ],
+        [ ac_use_browserview_view="yes" ]
+        )
+if test X"$ac_use_browserview_view" = Xyes; then
+        AC_MSG_RESULT(yes)
+        AC_DEFINE(WITH_BROWSERVIEW, 1, build with browser-view)
+        browserview=gtk2;
+else
+        AC_MSG_RESULT(no)
+        browserview=none;
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # checking for optional libs
+dnl ###################
+
+
+
+# iconv
+iconv_cflags=""
+iconv_libs=""
+AC_CHECK_LIB(c,iconv_open,
+  [AC_DEFINE(ICONV,"libC",[Where is iconv?])],
+  [AC_CHECK_LIB(iconv,iconv_open,
+    [AC_DEFINE(ICONV,"iconv",[Where is iconv?])
+     iconv_libs="-liconv"])])
+AC_SUBST(iconv_cflags)
+AC_SUBST(iconv_libs)
+
+
+
+# readline and clones. by Ville Laurikari.
+save_CFLAGS="$CFLAGS"
+save_LIBS="$LIBS"
+VL_LIB_READLINE
+libreadline_cflags="$CFLAGS"
+libreadline_libs="$LIBS"
+AC_SUBST(libreadline_cflags)
+AC_SUBST(libreadline_libs)
+CFLAGS="$save_CFLAGS"
+LIBS="$save_LIBS"
+
+
+
+#AC_MSG_CHECKING(whether pcre is disabled by the user)
+#AC_ARG_ENABLE(pcre,
+#  AC_HELP_STRING([--disable-pcre],[disable use of perl compatible regular expressions]),
+#  [
+#    AC_MSG_RESULT(yes)
+#    AC_MSG_WARN([There will be no regular expressions in the typebuffer micro-shell. If you don't know what that means, you probably won't miss anything.])
+#    pcre=no;                 
+#  ],[
+#    AC_MSG_RESULT(no)
+    AC_PATH_GENERIC(pcre,,
+      [
+        pcre_libs=`pcre-config --libs`
+        pcre_cflags=`pcre-config --cflags`
+        AC_DEFINE(HAVE_PCRE, 1, Enable perl compatible regular expressions)
+        pcre=yes;],
+    AC_MSG_WARNING("Cannot find PCRE regex library -- is pcre-config in path? Without this, there will be no support for regular expressions in the typebuffer/micro-shell. If you like wildcards at all, you probably want to fix this.")
+#  ],
+)
+AC_SUBST(pcre_libs)
+AC_SUBST(pcre_cflags)
+
+
+
+AC_MSG_CHECKING(whether to support XDS)
+AC_ARG_ENABLE(xds,
+  AC_HELP_STRING([--enable-xds],[build support for XDS]),
+  [ ac_use_xds="$enableval" ],
+  [ ac_use_xds="yes" ]
+  )
+if test X"$ac_use_xds" = Xyes; then
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(WITH_XDS, 1, support XDS protocol)
+    xds=yes;
+else
+    AC_MSG_RESULT(no)
+    xds=no;                 
+fi
+
+
+
+AC_PATH_X
+AC_MSG_CHECKING(whether to use X directly or always go through GDK)
+AC_ARG_ENABLE(x,
+  AC_HELP_STRING([--enable-x],[allow direct use of X (or alway go through GDK?)]),
+  [ ac_use_x="$enableval" ],
+  [ ac_use_x="yes" ]
+  )
+if test X"$ac_use_x" = Xno; then
+    AC_MSG_RESULT(yes)
+    AC_MSG_WARN([No plugins for making the window pseudo-transparent will be built. If you are on a non-X platform, you probably have real transparency, anyway.])
+    xwindow=no;                 
+else
+    AC_MSG_RESULT(no)
+    AC_DEFINE(HAVE_X, 1, allow direct use of X (if undefined always go through evas/GDK))
+    xwindow=yes;
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # Checks for the individual backends
+dnl ############
+
+# AC_MSG_CHECKING(whether posix backend is to be built)
+# AC_ARG_ENABLE(backend-posix, AC_HELP_STRING([--disable-backend-posix],[disable the posix file backend]), [
+#                 AC_MSG_RESULT(no)
+#                 AC_MSG_WARN([We recommend to *always* build the default (POSIX) file-system backend, if only as a fallback. But hey, you're the boss.])
+#                 posix=no;
+#               ], [
+#                 AC_MSG_RESULT(yes)
+#                 posix=yes;
+#               ]
+#               )
+posix=yes;
+
+
+
+gnomevfs2=no;
+AC_MSG_CHECKING(whether GNOME-VFS2 backend is to be built)
+AC_ARG_ENABLE(backend-gnomevfs2, AC_HELP_STRING([--enable-backend-gnomevfs2],[enable the GNOME-VFS2 file backend]),
+        [ ac_use_backend_gnomevfs2="$enableval" ],
+        [ ac_use_backend_gnomevfs2="no" ]
+        )
+if test X"$ac_use_backend_gnomevfs2" = Xyes; then
+        AC_MSG_RESULT(yes)
+                gnomevfs2=yes;
+                AC_MSG_CHECKING(whether GNOME-VFS2 backend can built)
+                if pkg-config --exists gnome-vfs-2.0 ; then
+                        AC_MSG_RESULT(yes)
+                        PKG_CHECK_MODULES(BACKEND_GNOMEVFS2, gnome-vfs-2.0)
+                else
+                        AC_MSG_RESULT(no)
+                        echo -e "\n"
+                        AC_MSG_RESULT([I didn't find the GNOME-VFS2 library, so the GNOME-VFS backend will not be built. If you're not using GNOME2 a lot, you can safely ignore this message.])
+                        gnomevfs2=no;
+                fi
+else
+        AC_MSG_RESULT(no)
+fi
+AC_SUBST(BACKEND_GNOMEVFS2_CFLAGS)
+AC_SUBST(BACKEND_GNOMEVFS2_LIBS)
+
+
+
+#AC_MSG_CHECKING(whether script backend is to be built)
+#AC_ARG_ENABLE(backend-script, AC_HELP_STRING([--enable-backend-script],[enable the scriptfile backend]), [
+#                AC_MSG_RESULT(yes)
+#               script=yes;
+#               ], [
+#                AC_MSG_RESULT(no)
+#               script=no;
+#               ]
+#               )
+
+
+efsd=no;
+#AC_MSG_CHECKING(whether efsd backend is to be built)
+#AC_ARG_ENABLE(backend-efsd, AC_HELP_STRING([--enable-backend-efsd],[enable the esfd backend]),
+#       [ ac_use_backend_efsd="$enableval" ],
+#       [ ac_use_backend_efsd="no" ]
+#       )
+#if test X"$ac_use_backend_efsd" = Xyes; then
+#       AC_MSG_RESULT(yes)
+#               dnl Check for Efsd.
+#               AC_ARG_WITH(efsd,
+#                  AC_HELP_STRING([--with-efsd=DIR],[use efsd in <DIR>]),
+#                  [efsd_cflags="-I$withval/include"
+#                  efsd_libs="-L$withval/lib"
+#                  efsd=yes],
+#                  [AC_PATH_GENERIC(efsd,, [
+#                    efsd_libs=`efsd-config --libs`
+#                    efsd_cflags=`efsd-config --cflags`
+#                    efsd=yes],
+#                    AC_MSG_WARN([I couldn't find efsd (is efsd-config in path?).  The efsd backend will not be built; this isn't much of a problem.])
+#                    )]
+#               )
+#               if test "$efsd" = "yes"; then
+#                 AC_DEFINE(HAVE_EFSD, 1, Enable the efsd backend)
+#               fi
+#else
+#       AC_MSG_RESULT(no)
+#fi
+AC_SUBST(efsd_libs)
+AC_SUBST(efsd_cflags)
+
+
+
+kio=no;
+AC_MSG_CHECKING(whether kio backend is to be built)
+AC_ARG_ENABLE(backend-kio, AC_HELP_STRING([--enable-backend-kio],[enable the kio (KDE) backend]),
+        [ ac_enable_backend_kio="$enableval" ],
+        [ ac_enable_backend_kio="no" ]
+        )
+if test X"$ac_enable_backend_kio" = Xyes; then
+        AC_MSG_RESULT(yes)
+                if test "$kde_dir" != ""
+                then
+                  kio=yes;
+                  AC_DEFINE(HAVE_KIO, 1, Enable the kio (KDE) backend)
+                else
+                  AC_MSG_WARN([I couldn't find KDE's libraries and includes, please use --with-kde=DIR!])
+                fi
+else
+        AC_MSG_RESULT(no)
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # Checking for additional libs for POSIX-backend
+dnl ###################
+
+AC_CHECK_LIB(c,readdir_r,[threading="with threads";
+                          AC_DEFINE(HAVE_READDIR_R,1,have readdir_r)],
+                         [threading="without threads"])
+
+
+
+if test "$posix" = "yes"; then
+
+
+
+dnl Check for curl.
+curl="without libcurl"
+AC_PATH_GENERIC(curl,7.0.0,
+                [curl="with libcurl"
+                 AC_DEFINE(HAVE_LIBCURL, 1, have curl downloader)
+                 curl_cflags=`curl-config --cflags`
+                 curl_libs=`curl-config --libs`])
+AC_SUBST(curl_cflags)
+AC_SUBST(curl_libs)
+
+
+
+dnl Check for libattr.
+libattr="without EAs";
+AC_MSG_CHECKING(whether to use Extended Attributes (EAs) in POSIX backend)
+AC_ARG_ENABLE(attrs, AC_HELP_STRING([--enable-attrs],[support Extended Attributes in POSIX backend if library present at run-time]),
+        [ ac_use_attrs="$enableval" ],
+        [ ac_use_attrs="yes" ]
+        )
+if test X"$ac_use_attrs" = Xyes; then
+        AC_MSG_RESULT(yes)
+                AC_ARG_WITH(attr,
+                   AC_HELP_STRING([--with-attr=DIR],[use libattr (Extended Attributes) in <DIR>]),
+                   [attr_cflags="-I$withval/include"
+                   attr_libs="-L$withval/lib -lattr"
+                   libattr="with EAs";
+                   AC_DEFINE(HAVE_LIBATTR, 1, Use Extended Attributes in POSIX backend)],
+                   [AC_CHECK_HEADER(attr/xattr.h,
+                      [libattr="with EAs";
+                      attr_libs="-lattr";
+                      AC_DEFINE(HAVE_LIBATTR, 1, Use Extended Attributes in POSIX backend)],,)])
+                if test "$libattr" != "without EAs"; then
+                  AC_CHECK_LIB(attr, attr_copy_file,
+                    AC_DEFINE(HAVE_ATTR_COPY_FILE, 1, have convenience function to copy EAs),,)
+                fi
+else
+        AC_MSG_RESULT(no)
+fi
+AC_SUBST(attr_libs)
+AC_SUBST(attr_cflags)
+
+
+
+dnl Check for libacl.
+libacl="without ACLs";
+AC_MSG_CHECKING(whether to use Access Control Lists (ACLs) in POSIX backend)
+AC_ARG_ENABLE(acls, AC_HELP_STRING([--enable-acls],[use Access Control Lists in POSIX backend if library present at run-time]),
+        [ ac_use_acls="$enableval" ],
+        [ ac_use_acls="yes" ]
+        )
+if test X"$ac_use_acls" = Xyes; then
+                AC_MSG_RESULT(yes)
+                AC_ARG_WITH(acls,
+                   AC_HELP_STRING([--with-acls=DIR],[use acls in <DIR>]),
+                   [acl_cflags="-I$withval/include"
+                   acl_libs="-L$withval/lib -lacl"
+                   libacl="with ACLs";
+                   AC_DEFINE(HAVE_LIBACL, 1, Use Access Control Lists in POSIX backend)],
+                   [AC_CHECK_HEADER(sys/acl.h,
+                      [AC_CHECK_HEADER(acl/libacl.h,
+                        [libacl="with ACLs";
+                        acl_libs="-lacl";
+                        AC_DEFINE(HAVE_LIBACL, 1, Use Access Control Lists in POSIX backend)],,)],,)])
+                AC_CHECK_LIB(acl, perm_copy_file,
+                  AC_DEFINE(HAVE_PERM_COPY_FILE, 1, have convenience function to copy ACLs),,)
+else
+        AC_MSG_RESULT(no)
+fi
+AC_SUBST(acl_libs)
+AC_SUBST(acl_cflags)
+
+
+
+dnl Check for libmagic.
+libmagic="without libmagic MIME-determination";
+AC_MSG_CHECKING(whether to use the MIME-determination functions of the "file"-command (libmagic) in POSIX backend)
+AC_ARG_ENABLE(magic,AC_HELP_STRING([--enable-libmagic],[use libmagic MIME-determination in POSIX backend if library present at run-time]),
+        [ ac_use_magic="$enableval" ],
+        [ ac_use_magic="yes" ]
+        )
+if test X"$ac_use_magic" = Xyes; then
+        AC_MSG_RESULT(yes)
+                AC_ARG_WITH(libmagic,
+                   AC_HELP_STRING([--with-libmagic=DIR],[use libmagic in <DIR>]),
+                   [libmagic_cflags="-I$withval/include"
+                   libmagic_libs="-L$withval/lib -lmagic"
+                   libmagic="with libmagic MIME-determination";
+                   AC_DEFINE(HAVE_LIBMAGIC, 1, Use MIME-determination of the file-command (libmagic) in POSIX backend)],
+                   [AC_CHECK_HEADER(magic.h,
+                      [AC_CHECK_LIB(magic, magic_file,
+                        [libmagic="with libmagic MIME-determination";
+                        libmagic_libs="-lmagic";
+                        AC_DEFINE(HAVE_LIBMAGIC, 1, Use MIME-determination of the file-command (libmagic) in POSIX backend)],,)],,)])
+else
+        AC_MSG_RESULT(no)
+fi
+AC_SUBST(libmagic_libs)
+AC_SUBST(libmagic_cflags)
+
+
+
+dnl Check for gnome-mime-data.
+gmd2=`pkg-config --variable=prefix gnome-mime-data-2.0`
+if test -d "$gmd2"
+then
+  gmd2_apps="$gmd2/share/application-registry/gnome-vfs.applications"
+fi
+
+
+
+#dnl Check for libshared-mime.
+libsharedmime="without freedesktop.org MIME-determination";
+AC_MSG_CHECKING(whether to use the freedesktop.org MIME-determination functions (libshared-mime) in POSIX backend)
+AC_ARG_ENABLE(sharedmime, AC_HELP_STRING([--enable-sharedmime],[use freedesktop.org MIME-determination (libsharedmime) in POSIX backend]),
+                [ ac_use_libsharedmime="$enableval" ],
+                [ ac_use_libsharedmime="yes" ]
+                )
+save_CFLAGS="$CFLAGS"
+save_LIBS="$LIBS"
+if test X"$ac_use_libsharedmime" = Xyes; then
+               AC_MSG_RESULT(yes)
+               AC_ARG_WITH(libsharedmime,
+                  AC_HELP_STRING([--with-libsharedmime=DIR],[use libsharedmime in <DIR>]),
+                  [libsharedmime_CFLAGS="-I$withval/include"
+                  libsharedmime_LIBS="-L$withval/lib -lsharedmime1d"
+                  libsharedmime="with freedesktop.org MIME-determination"],
+
+                  [CFLAGS=`pkg-config --cflags libshared-mime1`
+
+                   AC_LANG_PUSH(C++)
+                   AC_CHECK_LIB(sharedmime1d, mimetypes_get_file_type,[
+                     AC_CHECK_HEADER(mime-types.h,
+                       [libsharedmime="with freedesktop.org MIME-determination (LGPL)"])])
+                   AC_LANG_POP(C++)
+
+                   AC_CHECK_LIB(sharedmime1, mimetypes_get_file_type,[
+                       libsharedmime_CFLAGS=$CFLAGS
+                       PKG_CHECK_MODULES(libsharedmime, libshared-mime1 >= 0.1.1)
+                       libsharedmime="with freedesktop.org MIME-determination (GPL)"])])
+else
+               AC_MSG_RESULT(no)
+fi
+LIBS="$save_LIBS"
+CFLAGS="$save_CFLAGS"
+AC_SUBST(libsharedmime_LIBS)
+AC_SUBST(libsharedmime_CFLAGS)
+if test "$libsharedmime" = "without freedesktop.org MIME-determination"; then
+  if test "$libmagic" = "without libmagic MIME-determination"; then
+    AC_MSG_WARN([Optional library libshared-mime not found -- if you aren't using the default (POSIX) file-system backend, this doesn't matter. If you are, this still isn't serious, but MIME-type determination might be slightly less precise in the POSIX backend this way. If you wish, install either of the following packages to amend this: http://www.freedesktop.org/software/shared-mime-info/ http://freshmeat.net/releases/117640/])
+  fi
+else
+  AC_DEFINE(HAVE_LIBSHAREDMIME, 1, Use freedesktop.org MIME-determination (libsharedmime) in POSIX backend)
+fi
+
+
+
+dnl Check for fam.
+save_LIBS="$LIBS"
+save_CFLAGS="$CFLAGS"
+AC_ARG_WITH(fam,
+       AC_HELP_STRING([--with-fam=DIR],[use DIR where fam is installed.]),
+       [fam_cflags="-I$withval/include"; fam_libs="-L$withval/lib -lfam";
+        CFLAGS="$CFLAGS -I$withval/include"; LIBS="$LIBS -L$withval/lib -lfam"; ],
+       [fam_cflags=""; fam_libs="-lfam"])
+AC_CHECK_HEADER(fam.h, , fam_header_ok="no")
+AC_CHECK_LIB(fam, main, , fam_lib_ok="no")
+if test "$fam_header_ok" = "no" -o "$fam_lib_ok" = "no"; then
+  fam="without FAM (file-alteration monitor) support";
+  AC_MSG_WARN(Optional library FAM not found -- this is not a problem.)
+else
+  fam="with FAM (file-alteration monitor) support";
+  AC_DEFINE(HAVE_FAM, 1, try to use File-alteration monitor)
+fi;
+LIBS="$save_LIBS"
+CFLAGS="$save_CFLAGS"
+AC_SUBST(fam_cflags)
+AC_SUBST(fam_libs)
+
+
+
+dnl Check for F_NOTIFY.
+dnl We don't really have to, but it's nice to let the user know in the summary.
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#define _GNU_SOURCE
+#include <fcntl.h>
+]],[[int x=F_NOTIFY;]])],[fnotify="with F_NOTIFY support"],
+                         [fnotify="without F_NOTIFY support"])
+
+fi   # test "posix"
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # checking for providers
+dnl ###################
+
+save_LIBS="$LIBS"
+
+
+
+dnl ###################
+dnl # checking for extractor (provider)
+dnl ###################
+
+extractor=no;
+AC_MSG_CHECKING(whether the extractor plugin is explicitly disabled)
+AC_ARG_ENABLE(plugin-extractor, AC_HELP_STRING([--enable-plugin-extractor],[build the file keywords plugin]),
+        [ ac_use_plugin_extractor="$enableval" ],
+        [ ac_use_plugin_extractor="yes" ]
+        )
+if test X"$ac_use_plugin_extractor" = Xyes; then
+        AC_MSG_RESULT(no)
+     AC_CHECK_LIB(extractor, EXTRACTOR_getKeywords,[
+       extractor=yes
+       extractor_libs="-lextractor"
+       extractor_cflags=""
+       AC_DEFINE(HAVE_EXTRACTOR, 1, libextractor keyword-library found)],[
+       extractor=no
+       AC_MSG_WARN([Could not find all headers and libraries for extractor support: there will be fewer metadata in tooltips. cf. http://www.ovmj.org/samanta/libextractor/ ])])
+else
+        AC_MSG_RESULT(yes)
+     extractor=no
+fi
+AC_SUBST(extractor_libs)
+AC_SUBST(extractor_cflags)
+
+
+
+dnl ###################
+dnl # checking for taglib (provider)
+dnl ###################
+
+taglib=no;
+AC_MSG_CHECKING(whether the taglib plugin is explicitly disabled)
+AC_ARG_ENABLE(plugin-taglib, AC_HELP_STRING([--enable-plugin-taglib],[build the taglib plugin for tagged MP3, Ogg-Vorbis, FLAC, ... files]),
+              [ ac_use_plugin_taglib="$enableval" ],
+              [ ac_use_plugin_taglib="yes" ]
+             )
+if test X"$ac_use_plugin_taglib" = Xyes; then
+        AC_MSG_RESULT(no -- good)
+        AC_ARG_WITH(taglib,
+           AC_HELP_STRING([--with-taglib=DIR],[use taglib in <DIR>]),
+           [TAGLIB_CFLAGS="-I$withval/include"
+            TAGLIB_LIBS="-L$withval/lib -ltag"
+            taglib=yes],
+           [AC_PATH_GENERIC(taglib, 1.3,
+                            [TAGLIB_CFLAGS=`taglib-config --cflags`
+                             TAGLIB_LIBS=`taglib-config --libs`
+                             taglib=yes;],
+                            [taglib=no; ])])
+
+        if test "$taglib" = "no"; then
+          AC_MSG_WARN([Could not find all headers and libraries for taglib.])
+        else
+          AC_DEFINE(HAVE_TAGLIB, 1, "taglib found")
+        fi
+else
+        AC_MSG_RESULT(yes)
+fi
+AC_SUBST(TAGLIB_LIBS)
+AC_SUBST(TAGLIB_CFLAGS)
+
+
+
+dnl ###################
+dnl # checking for vorbis (provider)
+dnl ###################
+
+vorbisfile=no;
+AC_MSG_CHECKING(whether the vorbis plugin is explicitly disabled)
+AC_ARG_ENABLE(plugin-vorbis, AC_HELP_STRING([--enable-plugin-vorbis],[buid the file info plugin for vorbis (ogg) files]),
+        [ ac_use_plugin_vorbis="$enableval" ],
+        [ if test "$taglib" = "no"; then
+            ac_use_plugin_vorbis="yes"
+          else
+            # change to "no" once taglib is fully supported
+            ac_use_plugin_vorbis="yes"
+          fi ])
+if test X"$ac_use_plugin_vorbis" = Xyes; then
+        AC_MSG_RESULT(no -- good)
+        AC_ARG_WITH(libvorbis,
+           AC_HELP_STRING([--with-libvorbis=DIR],[use libvorbis in <DIR>]),
+           [vorbis_cflags="-I$withval/include"
+            vorbis_libs="-L$withval/lib -lvorbis -logg -vorbisfile"
+            vorbisfile=yes],
+           [AC_CHECK_LIB(vorbis, vorbis_comment_clear,[
+            AC_CHECK_HEADER(vorbis/vorbisfile.h,[
+              AC_CHECK_LIB(ogg, ogg_sync_wrote,[
+                vorbisfile=yes
+                vorbis_libs='-lvorbis -logg -lvorbisfile'],)],)],)])
+
+        if test "$vorbisfile" = "no"; then
+          AC_MSG_WARN([Could not find all headers and libraries for ogg/vorbis, a free alternative to MP3: there will be no editing of vorbis-comments and no Ogg-Vorbis info in tooltips.])
+        else
+          AC_DEFINE(HAVE_VORBIS, 1, "libvorbis, libvorbisfile and libogg found")
+        fi
+else
+        AC_MSG_RESULT(yes)
+fi
+AC_SUBST(vorbis_libs)
+AC_SUBST(vorbis_cflags)
+
+
+
+dnl ###################
+dnl # checking for mp3/id3 (provider)
+dnl ###################
+
+id3=no;
+save_CFLAGS="$CFLAGS"
+save_LIBS="$LIBS"
+AC_MSG_CHECKING(whether the id3 plugin is explicitly disabled)
+AC_ARG_ENABLE(plugin-id3, AC_HELP_STRING([--enable-plugin-id3],[build the file info plugin for mp3 files]),
+        [ ac_use_plugin_id3="$enableval" ],
+        [ if test "$taglib" = "no"; then
+            ac_use_plugin_id3="yes"
+          else
+            # change to "no" once taglib is fully supported
+            ac_use_plugin_id3="yes"
+          fi ])
+if test X"$ac_use_plugin_id3" = Xyes; then
+        AC_MSG_RESULT(no)
+        AC_SEARCH_LIBS(ID3Tag_CreateIterator, "id3 -lz -lstdc++",[
+          id3=yes
+          id3_libs="-lz -lid3 -lstdc++"
+          AC_DEFINE(HAVE_ID3, 1, libid3 found)],[
+            id3=no
+            AC_MSG_WARN([Could not find all headers and libraries for MP3/ID3 song support: there will be no editing of MP3-tags and no MP3 info in tooltips.])])
+else
+        AC_MSG_RESULT(yes)
+        id3=no
+fi
+AC_SUBST(id3_libs)
+AC_SUBST(id3_cflags)
+LIBS="$save_LIBS"
+CFLAGS="$save_CFLAGS"
+
+
+
+dnl ###################
+dnl # checking for xine/emotion (thumbnailer)
+dnl ###################
+
+xine=""
+AC_MSG_CHECKING(whether the xine thumbnailer was explicitly disabled)
+AC_ARG_ENABLE(thumbnailer-xine, AC_HELP_STRING([--enable-thumbnailer-xine],[build the thumbnailer for videos]),
+        [ ac_use_plugin_xine="$enableval" ],
+        [ ac_use_plugin_xine="yes" ]
+        )
+if test X"$ac_use_plugin_xine" = Xyes; then
+        AC_MSG_RESULT(no)
+        AC_ARG_WITH(libxine,
+           AC_HELP_STRING([--with-libxine=DIR],[use libxine in <DIR>]),
+           [xine_CFLAGS="-I$withval/include"
+            xine_LIBS="-L$withval/lib -lxine"
+            AC_DEFINE(HAVE_LIBXINE, 1, libxine thumbnailer)
+            xine="xine "],
+           [AC_PATH_GENERIC(xine, 1.0.0, [
+              xine_cflags=`xine-config --cflags`
+              xine_libs=`xine-config --libs`
+              xine_plugins=`xine-config --plugindir`
+              AC_DEFINE(HAVE_LIBXINE, 1, build xinefile thumbnailer)
+              xine="xine "],[
+              AC_MSG_WARN([libxine too old; no thumbnails for videos unless libmpeg3 and avifile are supplied...])])])
+else
+        AC_MSG_RESULT(yes)
+        xine=""
+fi
+AC_SUBST(xine_LIBS)
+AC_SUBST(xine_CFLAGS)
+AC_SUBST(xine_PLUGINS)
+
+
+
+EMOTION_LIBDIR=`pkg-config --variable=libdir emotion`
+if test X"$EMOTION_LIBDIR" != "X"; then
+  AC_DEFINE(HAVE_EMOTION, 1, emotion live video framework)
+  AC_DEFINE_UNQUOTED([EMOTION_LIBDIR], "$EMOTION_LIBDIR", [where emotion's plugins live])
+fi
+
+# if test X"$xine" = "Xxine "; then
+#   PKG_CHECK_MODULES(EMOTION, emotion >= 0.0.1,
+#     [EMOTION_LIBDIR=`pkg-config --variable=libdir emotion`
+#      AC_DEFINE(HAVE_EMOTION, 1, emotion live video framework)
+#      AC_DEFINE_UNQUOTED([EMOTION_LIBDIR], "$EMOTION_LIBDIR", [where emotion's plugins live])],
+#     [AC_MSG_WARN([emotion not found; no live thumbnails for videos...])])
+# fi
+# AC_SUBST(EMOTION_LIBS)
+# AC_SUBST(EMOTION_CFLAGS)
+
+
+
+
+
+
+dnl ###################
+dnl # checking for avifile (thumbnailer)
+dnl ###################
+
+avi=""
+AC_MSG_CHECKING(whether the avi thumbnailer was explicitly enabled)
+AC_ARG_ENABLE(thumbnailer-avi, AC_HELP_STRING([--enable-thumbnailer-avi],[build the thumbnailer for AVI videos]),
+        [ ac_use_plugin_avi="$enableval" ],
+        [ ac_use_plugin_avi="no" ]
+        )
+if test X"$ac_use_plugin_avi" = Xyes; then
+        AC_MSG_RESULT(no)
+        AC_ARG_WITH(libavi,
+           AC_HELP_STRING([--with-libavi=DIR],[use libavi in <DIR>]),
+           [avi_CFLAGS="-I$withval/include"
+            avi_LIBS="-L$withval/lib -lavi"
+            AC_DEFINE(HAVE_AVIFILE, 1, libavi thumbnailer)
+            avi="avi "],
+           [PKG_CHECK_MODULES(avi, avifile >= 0.7.38,[
+             AC_DEFINE(HAVE_AVIFILE, 1, build avifile thumbnailer)
+             avi="avi "],[
+             AC_MSG_WARN([libavi too old; no thumbnails for avi videos])])])
+else
+        AC_MSG_RESULT(yes)
+        avi=""
+fi
+AC_SUBST(avi_LIBS)
+AC_SUBST(avi_CFLAGS)
+
+
+
+dnl ###################
+dnl # checking for mpeg3 (thumbnailer)
+dnl ###################
+
+mpeg3=""
+mpeg3_cflags=""
+mpeg3_libs=""
+save_CFLAGS="$CFLAGS"
+save_LIBS="$LIBS"
+
+AC_MSG_CHECKING(whether the mpeg thumbnailer was explicitly enabled)
+AC_ARG_ENABLE(thumbnailer-mpeg3, AC_HELP_STRING([--enable-thumbnailer-mpeg3],[build the thumbnailer for mpeg videos]),
+        [ ac_use_plugin_mpeg3="$enableval" ],
+        [ ac_use_plugin_mpeg3="no" ]
+        )
+if test X"$ac_use_plugin_mpeg3" = Xyes; then
+        AC_MSG_RESULT(no)
+        AC_ARG_WITH(libmpeg3,
+           AC_HELP_STRING([--with-libmpeg3=DIR],[use libmpeg3 in <DIR>]),
+           [mpeg3_cflags="-I$withval/include -I$withval/include/libmpeg3"
+            mpeg3_libs="-L$withval/lib -lmpeg3"
+            AC_DEFINE(HAVE_MPEG3, 1, libmpeg3 thumbnailer)
+            mpeg3="mpeg3 "],
+           [AC_SEARCH_LIBS(mpeg3_read_frame, "mpeg3 -lm -lpthread",[
+            mpeg3="mpeg3 "
+            mpeg3_cflags="-I/usr/include/libmpeg3"
+            mpeg3_libs="-lmpeg3"
+            AC_DEFINE(HAVE_MPEG3, 1, libmpeg3 thumbnailer)],[
+              mpeg3=""
+              AC_MSG_WARN([Could not find all headers and libraries for MPEG3 video support: there will be no MPEG3 thumbnails.])],
+           [-lm -lpthread])])
+else
+        AC_MSG_RESULT(yes)
+        mpeg3=""
+fi
+AC_SUBST(mpeg3_libs)
+AC_SUBST(mpeg3_cflags)
+
+if test "X$mpeg3" != "X"; then
+  CFLAGS="$mpeg3_cflags $CFLAGS"
+  LIBS="$mpeg3_libs $LIBS"
+  AC_CHECK_LIB(mpeg3, mpeg3_seek_percentage,
+    [AC_DEFINE(HAVE_MPEG3_SEEK_PERCENTAGE, 1, old libmpeg3)])
+fi
+
+LIBS="$save_LIBS"
+CFLAGS="$save_CFLAGS"
+
+
+
+dnl ###################
+dnl # checking for freetype2 (provider)
+dnl ###################
+
+ttf=no;
+AC_MSG_CHECKING(whether the truetype font (ttf) plugin is explicitly disabled)
+AC_ARG_ENABLE(plugin-ttf, AC_HELP_STRING([--enable-plugin-ttf],[build the file info plugin for true-type font files]),
+        [ ac_use_plugin_ttf="$enableval" ],
+        [ ac_use_plugin_ttf="yes" ]
+        )
+if test X"$ac_use_plugin_ttf" = Xyes; then
+        AC_MSG_RESULT(no)
+     AC_PATH_GENERIC(freetype, 9.0.0, [
+                  ttf_cflags=`freetype-config --cflags`
+                  ttf_libs=`freetype-config --libs`
+                  AC_DEFINE(HAVE_FT2, 1, have freetype2)
+                  ttf=yes;
+                ],[
+                  ttf=no
+                  AC_MSG_WARN([Could not find all headers and libraries for freetype2: there will be no extra true-type info in tooltips.])])
+else
+        AC_MSG_RESULT(yes)
+     ttf=no
+fi
+AC_SUBST(ttf_libs)
+AC_SUBST(ttf_cflags)
+
+
+
+LIBS="$save_LIBS"
+
+
+
+
+
+
+dnl ###########################################################################
+dnl # debugging
+dnl ###################
+
+AC_MSG_CHECKING(whether debugging is to be enabled)
+AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug],[enable debugging]),
+        [ ac_use_debug="$enableval" ],
+        [ ac_use_debug="yes" ]
+        )
+if test X"$ac_use_debug" = Xyes; then
+        AC_MSG_RESULT(yes)
+        AC_DEFINE(NOIR_DEBUG, 1, Enable debugging)
+
+        changequote(,)dnl
+        if test "x$GCC" = "xyes"; then
+          case " $CFLAGS " in
+            *[\ \	]-g[\ \	]*) CFLAGS=`echo "$CFLAGS"|sed -e "s/[ \t]*-g[ \t]*/ /"`; CFLAGS="$CFLAGS -g3";;
+#           *[\ \	]-g[\ \	]*) CFLAGS="${CFLAGS/[\ \	]-g[\ \	]/}"; CFLAGS="$CFLAGS -g3";;
+            *[\ \	]-g[0-9][\ \	]*) ;;
+            *) CFLAGS="$CFLAGS -g3" ;;
+          esac
+        else
+          case " $CFLAGS " in
+            *[\ \	]-g[\ \	]*)         echo "-g already present; using that (use CFLAGS to override)";;
+            *[\ \	]-g[0-9][\ \	]*) echo "-g<n> already present; using that (use CFLAGS to override)";;
+            *[\ \	]-O[\ \	]*)         echo "won't force -g together with -O on unknown compiler, resorting to plain -g (use CFLAGS to override)";    CFLAGS="-G";;
+            *[\ \	]-O[0-9][\ \	]*) echo "won't force -g together with -O<n> on unknown compiler, resorting to plain -g (use CFLAGS to override)"; CFLAGS="-G";;
+            *) CFLAGS="$CFLAGS -g" ;;
+          esac
+        fi
+        changequote([,])dnl
+        AC_MSG_NOTICE([debug-info enabled; CFLAGS="$CFLAGS"...])
+        debug=yes;
+else
+        AC_MSG_RESULT(no)
+        debug=no;
+fi
+
+
+
+
+
+
+dnl ###########################################################################
+dnl ###########################################################################
+dnl ###########################################################################
+
+
+
+
+
+
+dnl prefix
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_PREFIX,
+  "${ac_default_prefix}", Prefix)
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_PREFIX, "${prefix}", Prefix)
+fi
+
+dnl Set PACKAGE_LOCALE_DIR in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR,
+  "${ac_default_prefix}/${DATADIRNAME}/locale", locale)
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, "${prefix}/${DATADIRNAME}/locale", locale)
+fi
+
+dnl Set PACKAGE_DATA_DIR in config.h.
+if test "x${datadir}" = 'x${prefix}/share'; then
+  if test "x${prefix}" = "xNONE"; then
+    AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR,
+    "${ac_default_prefix}/share/${PACKAGE}", "")
+  else
+    AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${prefix}/share/${PACKAGE}", data)
+  fi
+else
+  AC_DEFINE_UNQUOTED(PACKAGE_DATA_DIR, "${datadir}/${PACKAGE}", data)
+fi
+
+dnl Set PACKAGE_SOURCE_DIR in config.h.
+packagesrcdir=`cd $srcdir && pwd`
+AC_DEFINE_UNQUOTED(PACKAGE_SOURCE_DIR, "${packagesrcdir}", src)
+
+dnl Use -Wall if we have gcc.
+changequote(,)dnl
+if test "x$GCC" = "xyes"; then
+  case " $CFLAGS " in
+  *[\ \	]-Wall[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wall" ;;
+  esac
+fi
+changequote([,])dnl
+
+
+
+dnl pthread.
+AC_SUBST(PTHREAD_LIBS)
+AC_SUBST(PTHREAD_CFLAGS)
+AC_SUBST(PTHREAD_CC)
+
+
+
+dnl
+dnl Adjust the Makefile.am conditionals accordingly
+dnl
+
+AM_CONDITIONAL(BUILD_ECORE_MAINLOOP,       test "$loop" = "eCore")
+AM_CONDITIONAL(BUILD_ECORE_DEPENDENT,      test "$ecore" != "no")
+
+
+
+dnl canvas
+AM_CONDITIONAL(BUILD_WITH_GNOMECANVAS,     test "$gnomecanvas" = "yes")
+AM_CONDITIONAL(BUILD_WITH_EVAS2,           test "$evas" = "yes")
+AM_CONDITIONAL(BUILD_WITH_ICONLIST,        test "$evas" = "yes" -o "$gnomecanvas" = "yes")
+
+AM_CONDITIONAL(BUILD_WITH_EDB,             test "$edb" = "yes")
+AM_CONDITIONAL(BUILD_WITH_EET,             test "$eet" = "yes")
+AM_CONDITIONAL(BUILD_WITH_EDJE,            test "$edje" = "yes")
+AM_CONDITIONAL(BUILD_WITH_X,               test "$xwindow" = "yes")
+
+
+
+dnl providers
+AM_CONDITIONAL(BUILD_PLUGIN_IMAGE,         test "$imlib2" != "")
+AM_CONDITIONAL(BUILD_PLUGIN_TAGLIB,        test "$taglib" = "yes")
+AM_CONDITIONAL(BUILD_PLUGIN_LIBVORBIS,     test "$vorbisfile" = "yes")
+AM_CONDITIONAL(BUILD_PLUGIN_MP3,           test "$id3" = "yes")
+AM_CONDITIONAL(BUILD_PLUGIN_TTF,           test "$ttf" = "yes")
+AM_CONDITIONAL(BUILD_PLUGIN_EXTRACTOR,     test "$extractor" = "yes")
+
+dnl backends
+AM_CONDITIONAL(BUILD_BACKEND_POSIX,        test "$posix" = "yes")
+AM_CONDITIONAL(BUILD_BACKEND_GNOMEVFS2,    test "$gnomevfs2" = "yes")
+AM_CONDITIONAL(BUILD_BACKEND_KIO,          test "$kio" = "yes")
+AM_CONDITIONAL(BUILD_BACKEND_EFSD,         test "$efsd" = "yes")
+
+dnl thumbnailers
+if test "x$imlib2" = "x"; then
+  epeg=""
+fi
+AM_CONDITIONAL(BUILD_THUMBNAILER_IMLIB2,   test "$imlib2" != "")
+AM_CONDITIONAL(BUILD_THUMBNAILER_EPEG,     test "$epeg" != "")
+AM_CONDITIONAL(BUILD_THUMBNAILER_AVIFILE,  test "$avi" != "")
+AM_CONDITIONAL(BUILD_THUMBNAILER_MPEG3,    test "$mpeg3" != "")
+AM_CONDITIONAL(BUILD_THUMBNAILER_XINE,     test "$xine" != "")
+AM_CONDITIONAL(BUILD_THUMBNAILER_ID3,      test "$id3" = "yes")
+
+dnl IPC
+AM_CONDITIONAL(BUILD_IPC_ECORE,            test "$ecoreipc" != "")
+AM_CONDITIONAL(BUILD_IPC_DCOP,             test "$dcop" != "")
+AM_CONDITIONAL(BUILD_IPC_DCOPC,            test "$dcopc" != "")
+AM_CONDITIONAL(BUILD_IPC_DBUS,             test "$dbus" != "")
+
+dnl artwork (themes/iconsets)
+AM_CONDITIONAL(INSTALL_ALL_THEMES,         test "$all_themes" = "yes")
+AM_CONDITIONAL(INSTALL_ALL_ICONSETS,       test "$all_iconsets" = "yes")
+
+
+
+AC_OUTPUT([
+Makefile
+evidence.lsm
+evidence.spec
+src/Makefile
+src/thumbnailer/Makefile
+src/thumbnailer/epeg/Makefile
+src/thumbnailer/imlib_loaders/Makefile
+src/thumbnailer/ttf/Makefile
+src/thumbnailer/id3/Makefile
+src/thumbnailer/avifile/Makefile
+src/thumbnailer/mpeg3/Makefile
+src/thumbnailer/xine/Makefile
+src/ipc/Makefile
+src/providers/Makefile
+src/providers/backends/Makefile
+src/providers/taglib/Makefile
+src/providers/vorbis/Makefile
+src/providers/mp3/Makefile
+src/providers/ape/Makefile
+src/providers/folder/Makefile
+src/providers/exif/Makefile
+src/providers/image/Makefile
+src/providers/ttf/Makefile
+src/providers/extractor/Makefile
+src/actions/Makefile
+src/actions/null/Makefile
+src/actions/thumbnail/Makefile
+src/actions/playlist/Makefile
+src/actions/name2tag/Makefile
+src/actions/tag2name/Makefile
+src/actions/sortkey2name/Makefile
+src/actions/newwindow/Makefile
+src/actions/properties/Makefile
+src/actions/delete/Makefile
+src/actions/rename/Makefile
+src/actions/mkdir/Makefile
+src/actions/backdrop/Makefile
+src/actions/tile/Makefile
+src/actions/searchable/Makefile
+src/actions/searchable_r/Makefile
+src/gui/Makefile
+src/gui/efl/Makefile
+src/gui/efl/engines/Makefile
+src/gui/efl/common/Makefile
+src/gui/efl/icon_view/Makefile
+src/gui/gtk2/Makefile
+src/gui/gtk2/about/Makefile
+src/gui/gtk2/common/Makefile
+src/gui/gtk2/common/tree/Makefile
+src/gui/gtk2/tree_view/Makefile
+src/gui/gtk2/icon_view/Makefile
+src/gui/gtk2/browser_view/Makefile
+src/gui/common/Makefile
+evidence.themes/Makefile
+icons/Makefile
+])
+# evidence.themes/engines/Makefile
+
+
+
+if test "X$loop" = "X"; then
+  AC_ERROR([Cannot compile with no main-loop, please select one!]);
+fi
+
+providers=""
+if test "$taglib"     = "yes"; then providers="$providers TagLib";        fi
+if test "$vorbisfile" = "yes"; then providers="$providers OggVorbis";     fi
+if test "$id3"        = "yes"; then providers="$providers MP3/ID3";       fi
+if test "$ttf"        = "yes"; then providers="$providers TrueTypeFonts"; fi
+if test "$imlib2"    != "";    then providers="$providers pictures";      fi
+if test "$extractor"  = "yes"; then providers="$providers misc";          fi
+
+if test "$gnomecanvas" = "yes"; then
+  canvas="GNOME-canvas";
+else
+  if test "$evas" = "yes"; then
+    canvas="evas"
+    evas_xtra=" X11";
+    if test "$evas_gl" = "yes"; then
+      evas_xtra="$evas_xtra GL";
+    fi
+    if test "$eet" = "yes"; then
+      evas_xtra="$evas_xtra EET";
+    fi
+    if test "$edb" = "yes"; then
+      evas_xtra="$evas_xtra EDB";
+    fi
+    if test "$edje" = "yes"; then
+      evas_xtra="$evas_xtra edje";
+    fi
+#    if test "x$evas_xtra" != "x"; then
+    canvas="$canvas {$evas_xtra }";
+#    fi
+  fi
+fi
+
+
+if test "x$id3" = "xyes"; then
+  id3="ID3 "
+else
+  id3=""
+fi
+
+if test "x$ttf" = "xyes"; then
+  ttf="TTF "
+else
+  ttf=""
+fi
+
+
+
+echo -e "\nBuild summary:"
+echo    "------------------------"
+
+AC_MSG_RESULT([
+Install in:                   $prefix
+
+Views:
+  Icon-view:                  $iconview
+  Browser:                    $browserview
+  Tree-view:                  $treeview
+
+Canvas:                       $canvas
+
+File-system backends:
+  POSIX:                      $posix
+                              - $libattr
+                              - $libacl
+                              - $libmagic
+                              - $libsharedmime
+                              - $threading
+                              - $curl
+                              - $fam
+                              - $fnotify
+
+File-info plugins:           $providers
+
+IPC plugins:                  $dbus$dcop$dcopc$ecoreipc
+
+
+Optional libs:
+  PCRE       (regex):         $pcre
+  doodle     (searches)       $doodle
+  btrace     (debugging):     $btrace
+  Thumbnails (reading):       $imlib2$epeg$id3$ttf$mpeg3$avi$xine
+  Thumbnails (writing):       $libpng$epeg
+  XWindow    (direct use):    $xwindow
+
+Miscellaneous:
+  extra themes:               $all_themes
+  extra icon-sets:            $all_iconsets
+  hashes from:                $hashes
+  main-loop:                  $loop
+  XDS:                        $xds
+  debug-info:                 $debug (CFLAGS="$CFLAGS")
+  ])
+
+
+
+# Taglib  (Ogg, MP3, ...): $taglib
+# Vorbis  (Ogg):           $vorbisfile
+# ID3     (MP3):           $id3
+# Fonts   (TTF):           $ttf
+# Images:                  $imlib2
+# Misc:                    $extractor
+
+#  GnomeVFS:                $gnomevfs
+#  KIO:                     $kio
+#  Efsd:                    $efsd

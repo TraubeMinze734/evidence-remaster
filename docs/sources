@@ -1,0 +1,111 @@
+DEVELOPER DOCS
+
+
+
+about.c              Credits-tab ("About...")
+browser_view.c       Browser-view
+cr_arrow.c           cell-renderer "arrow": draws a little arrow after
+                       directory-names in      browser-view
+cr_basic.c           cell-renderer helpers     for tree-view
+cr_date.c            cell-renderer "date"      for tree-view
+cr_size.c            cell-renderer "file-size" for tree-view
+evas2.c              display an icon-list using a themable evas2-canvas
+evidence.c           main program, setup
+file.c               file-operations (wrappers for the various backends)
+focus.c              main "chdir" routine for all views
+gnome-icon-item.c    icon-view using gnome-canvas -- this should go away in
+gnome-icon-list.c      favour of handling both evas- and gnome-canvas-based
+gnome-marshal.c        icon-lists in icon_list.c
+icon.c               getting and caching icons
+icon_list.c          implements the model for a generic icon-list
+icon_view.c          icon-view, using a view from evas2.c or from gnome-icon-l
+info.c               meta-data related: tooltips, context-menus, plugins
+meta.c               meta-data low-level
+model.c              internal representation of the file-system
+notebook.c           notebook ("tabs")
+options.c            command-line options
+setup.c              retrieving evidence's various components
+shelf.c              shelf, using a view from evas2.c or from gnome-icon-list.c
+theme.c              theme-loading and setup
+tree_model.c         tree-model (the actual store for the tree-view)
+tree_view.c          tree-view
+typebuffer.c         type-buffer ("mini-shell")
+gevas_light.c        use evas2 as GTK-widget (adapted from a src by Ben Martin)
+                       used when using evas as in shelf/icon-view
+gevas_bind.c         glue between evas2.c and gevas_light.c (evidence-specific
+                       gEvas foo on top of the all-purpose gevas_light.c)
+
+
+
+   view <=> model <=> meta-data providers
+
+   evidence
+   +- [initialization]
+   |  +- setup
+   |  +- notebook
+   |  +- about
+   |  +- options
+   |
+   +- [views/controllers]
+   |  +- focus
+   |  |
+   |  +- tree_view
+   |  |  +- cr_basic
+   |  |  +- cr_date
+   |  |  +- cr_size
+   |  |
+   |  +- browser_view
+   |  |  +- cr_arrow
+   |  |
+   |  +- icon_view
+   |  |  +- icon
+   |  |  |  +- setup
+   |  |  |
+   |  |  +---------------------+  OR
+   |  |  +- icon_list          +- gnome-icon-list
+   |  |  +- uGTK2_Evas2        +- gnome-icon-item
+   |  |  +- evas2              +- gnome-marshal
+   |  |  +- theme
+   |  |     +- theme engines
+   |  |
+   |  +- shelf
+   |  |  +- icon
+   |  |  |  +- setup
+   |  |  |
+   |  |  +---------------------+  OR
+   |  |  +- icon_list          +- gnome-icon-list
+   |  |  +- uGTK2_Evas2        +- gnome-icon-item
+   |  |  +- evas2              +- gnome-marshal
+   |  |  +- theme
+   |  |     +- theme engines
+   |  |
+   |  +- type_buffer [mini-shell]
+   |  |
+   |  +- info [context-menu]
+   |     +- meta-data low-level
+   |     +- effigy (property-editor/file-info dialog)
+   |     |  +- icon
+   |     |     +- setup
+   |     ...
+   |
+   +- [model]
+   |  +- model
+   |  +- tree_model (for tree-view)
+   |
+   +- [meta-data providers "file-system"]
+      +- file (file-system backends)
+      |  +- direct
+      |  |  +- POSIX  (cp and mv adapted from efsd)
+      |  +- GNOME-VFS
+      |  ...
+      |
+      +- [meta-data providers "file"]
+         +- vorbis
+         +- mp3
+         +- image
+         ...
+
+
+
+NB  The gnome-... files should go at some point as they duplicate a lot of
+    what is in the general (toolkit-agnostic) abstraction "icon-list."

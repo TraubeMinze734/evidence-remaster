@@ -1,0 +1,16 @@
+audio/ogg $PREFIX/lib/evidence/metadata/vorbis.so
+audio/mp3 $PREFIX/lib/evidence/metadata/mp3.so
+audio/mpeg $PREFIX/lib/evidence/metadata/mp3.so
+audio/x-musepack $PREFIX/lib/evidence/metadata/ape.so
+audio/x-mac $PREFIX/lib/evidence/metadata/ape.so
+image/jpg $PREFIX/lib/evidence/metadata/exif.so
+image/jpg $PREFIX/lib/evidence/metadata/image.so
+image/gif $PREFIX/lib/evidence/metadata/image.so
+image/xcf $PREFIX/lib/evidence/metadata/image.so
+image/png $PREFIX/lib/evidence/metadata/image.so
+image/tiff $PREFIX/lib/evidence/metadata/image.so
+application/x-font-ttf $PREFIX/lib/evidence/metadata/ttf.so
+application/x-bzip2 $PREFIX/lib/evidence/metadata/image.so
+application/x-gzip $PREFIX/lib/evidence/metadata/image.so
+folder $PREFIX/lib/evidence/metadata/folder.so
+* $PREFIX/lib/evidence/metadata/extractor.so

@@ -1,0 +1,70 @@
+\hypertarget{struct__client__funs}{
+\section{\_\-client\_\-funs Struct Reference}
+\label{struct__client__funs}\index{_client_funs@{\_\-client\_\-funs}}
+}
+a client/view object  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__client__funs_o0}{
+const char $\ast$ \hyperlink{struct__client__funs_o0}{name}}
+\label{struct__client__funs_o0}
+
+\begin{CompactList}\small\item\em the view's name (usually type) \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o1}{
+void $\ast$ \hyperlink{struct__client__funs_o1}{data}}
+\label{struct__client__funs_o1}
+
+\begin{CompactList}\small\item\em view's data (struct \_\-myview $\ast$) \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o2}{
+\hyperlink{model_8h_a153}{client\_\-flags} \hyperlink{struct__client__funs_o2}{flags}}
+\label{struct__client__funs_o2}
+
+\begin{CompactList}\small\item\em flags: paused etc. \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o3}{
+int($\ast$ \hyperlink{struct__client__funs_o3}{evt\_\-view} )(\hyperlink{struct__file__info}{file\_\-info} $\ast$, \hyperlink{model_8h_a154}{model\_\-event} type, \hyperlink{model_8h_a151}{file\_\-flags} changed, void $\ast$)}
+\label{struct__client__funs_o3}
+
+\begin{CompactList}\small\item\em event callback \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o4}{
+int($\ast$ \hyperlink{struct__client__funs_o4}{dst\_\-data} )(void $\ast$$\ast$)}
+\label{struct__client__funs_o4}
+
+\begin{CompactList}\small\item\em destructor for private 'data' \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o5}{
+int($\ast$ \hyperlink{struct__client__funs_o5}{set\_\-selection} )(void $\ast$)}
+\label{struct__client__funs_o5}
+
+\begin{CompactList}\small\item\em method to highlight session's selection in this view \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o6}{
+void $\ast$($\ast$ \hyperlink{struct__client__funs_o6}{dcd\_\-set\_\-data} )(void $\ast$)}
+\label{struct__client__funs_o6}
+
+\begin{CompactList}\small\item\em DCD setter. \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o7}{
+int($\ast$ \hyperlink{struct__client__funs_o7}{dcd\_\-dst\_\-data} )(void $\ast$$\ast$)}
+\label{struct__client__funs_o7}
+
+\begin{CompactList}\small\item\em DCD destructor. \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o8}{
+pthread\_\-mutex\_\-t \hyperlink{struct__client__funs_o8}{viewlock}}
+\label{struct__client__funs_o8}
+
+\begin{CompactList}\small\item\em view mutex \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o9}{
+void $\ast$ \hyperlink{struct__client__funs_o9}{user1}}
+\label{struct__client__funs_o9}
+
+\begin{CompactList}\small\item\em next view in per-session chain \item\end{CompactList}\item 
+\hypertarget{struct__client__funs_o10}{
+void $\ast$ \hyperlink{struct__client__funs_o10}{user2}}
+\label{struct__client__funs_o10}
+
+\begin{CompactList}\small\item\em session this view belongs to \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+a client/view object 
+

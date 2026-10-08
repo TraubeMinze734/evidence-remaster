@@ -1,0 +1,101 @@
+.TH "focus.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+focus.c \- load (where necessary) and display a directory and all directories leading up to it. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBfocus_is_path_valid\fP (\fBnoir_sess\fP *ns, const char *olddir, char *newdir)"
+.br
+.RI "\fIcheck whether the new path exists and consists of directories only. \fP"
+.ti -1c
+.RI "static int \fBdo_cwd\fP (\fBnoir_sess\fP *ns, char *tag)"
+.br
+.RI "\fIchange the current working-directory of a session. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_focus_verify\fP (\fBnoir_sess\fP *ns, const char *reqdir, char **rd)"
+.br
+.RI "\fIcheck whether change the current working-directory of a session to the given path would succeed. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_focus\fP (\fBnoir_sess\fP *ns, const char *reqdir)"
+.br
+.RI "\fIchange the current working-directory of a session. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+load (where necessary) and display a directory and all directories leading up to it. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static int do_cwd (\fBnoir_sess\fP * ns, char * tag)\fC [inline, static]\fP"
+.PP
+change the current working-directory of a session. 
+.PP
+called by focus() to do the actual work. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session 
+.br
+\fItag\fP - the desired new working-directory
+.RE
+.PP
+
+.SS "static int focus_is_path_valid (\fBnoir_sess\fP * ns, const char * olddir, char * newdir)\fC [inline, static]\fP"
+.PP
+check whether the new path exists and consists of directories only. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC if we don't object to newdir becoming ns->cwd. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session we want to change the CWD for 
+.br
+\fIolddir\fP - the CWD for that session 
+.br
+\fInewdir\fP - the directory we want to become the new CWD
+.RE
+.PP
+
+.SS "int noir_sess_focus (\fBnoir_sess\fP * ns, const char * reqdir)"
+.PP
+change the current working-directory of a session. 
+.PP
+provides the supporting structure to the actual work done in \fBdo_cwd()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIreqdir\fP the desired new working-directory
+.RE
+.PP
+
+.SS "int noir_sess_focus_verify (\fBnoir_sess\fP * ns, const char * reqdir, char ** rd)"
+.PP
+check whether change the current working-directory of a session to the given path would succeed. 
+.PP
+provides the supporting structure to the actual work done in \fBdo_cwd()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIreqdir\fP the desired new working-directory 
+.br
+\fIrd\fP what the new dir would be
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

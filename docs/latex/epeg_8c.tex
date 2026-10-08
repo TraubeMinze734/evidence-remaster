@@ -1,0 +1,89 @@
+\hypertarget{epeg_8c}{
+\section{epeg.c File Reference}
+\label{epeg_8c}\index{epeg.c@{epeg.c}}
+}
+epeg JPEG thumbnailer 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{epeg_8c_a0}{evidence\_\-thumb\_\-epeg\_\-image\_\-preview} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em thumbnail a JPEG (using e\-PEG). \item\end{CompactList}\item 
+int \hyperlink{epeg_8c_a1}{thumbnail\_\-plugin\_\-init} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em initialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. \item\end{CompactList}\item 
+int \hyperlink{epeg_8c_a2}{thumbnail\_\-plugin\_\-exit} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em deinitialize the thumbnailer-plugin and free any resources it may hold \item\end{CompactList}\item 
+int \hyperlink{epeg_8c_a3}{thumbnail\_\-plugin\_\-make} (thumbnail\_\-plugin $\ast$tp, Evidence\_\-Thumb $\ast$e, void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em create a thumbnail \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+epeg JPEG thumbnailer 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{epeg_8c_a0}{
+\index{epeg.c@{epeg.c}!evidence_thumb_epeg_image_preview@{evidence\_\-thumb\_\-epeg\_\-image\_\-preview}}
+\index{evidence_thumb_epeg_image_preview@{evidence\_\-thumb\_\-epeg\_\-image\_\-preview}!epeg.c@{epeg.c}}
+\subsubsection[evidence\_\-thumb\_\-epeg\_\-image\_\-preview]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-epeg\_\-image\_\-preview (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{epeg_8c_a0}
+
+
+thumbnail a JPEG (using e\-PEG). 
+
+called from thumbnail\_\-generate() only. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the thumbnail struct\end{description}
+\end{Desc}
+\hypertarget{epeg_8c_a2}{
+\index{epeg.c@{epeg.c}!thumbnail_plugin_exit@{thumbnail\_\-plugin\_\-exit}}
+\index{thumbnail_plugin_exit@{thumbnail\_\-plugin\_\-exit}!epeg.c@{epeg.c}}
+\subsubsection[thumbnail\_\-plugin\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-exit (thumbnail\_\-plugin $\ast$ {\em tp})}}
+\label{epeg_8c_a2}
+
+
+deinitialize the thumbnailer-plugin and free any resources it may hold 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct\end{description}
+\end{Desc}
+\hypertarget{epeg_8c_a1}{
+\index{epeg.c@{epeg.c}!thumbnail_plugin_init@{thumbnail\_\-plugin\_\-init}}
+\index{thumbnail_plugin_init@{thumbnail\_\-plugin\_\-init}!epeg.c@{epeg.c}}
+\subsubsection[thumbnail\_\-plugin\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-init (thumbnail\_\-plugin $\ast$ {\em tp})}}
+\label{epeg_8c_a1}
+
+
+initialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. 
+
+\begin{Desc}
+\item[Returns:]an error-code $<$0, or a set of features supported by the plugin \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct\end{description}
+\end{Desc}
+\hypertarget{epeg_8c_a3}{
+\index{epeg.c@{epeg.c}!thumbnail_plugin_make@{thumbnail\_\-plugin\_\-make}}
+\index{thumbnail_plugin_make@{thumbnail\_\-plugin\_\-make}!epeg.c@{epeg.c}}
+\subsubsection[thumbnail\_\-plugin\_\-make]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-make (thumbnail\_\-plugin $\ast$ {\em tp}, Evidence\_\-Thumb $\ast$ {\em e}, void $\ast$$\ast$ {\em data})}}
+\label{epeg_8c_a3}
+
+
+create a thumbnail 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct \item[{\em e}]the struct describing the thumbnail \item[{\em data}]the imlib-image (if TP\_\-IMLIB)\end{description}
+\end{Desc}

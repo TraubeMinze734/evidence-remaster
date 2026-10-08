@@ -1,0 +1,20 @@
+Checks in order:
+
+* first character comma? => first word is theme property name, rest value
+  (open type-buffer with Esc, type ",typebufferfontsize 16" without the
+  quotes, confirm.  see theme-files ("evidence.theme") for some example
+  properties.  engine ("factory") names are not properties; they cannot
+  be changed at run-time.)
+  (",save" dumps the current properties to your evidence setup directory.)
+
+* URL? => URL-handler from evidence.handlers (http://* goes to mozilla etc.)
+
+* Dir? => evidence will show it.
+  /foo/bar/baz works, /foo/bar/*.[ch] don't *yet*
+
+* executable? => will execute it
+
+* find a handler for the mime-type and start that with the file
+
+* if all that fails, start as an executable with the parameters given,
+  so "ls -Fls *.c" goes to the shell, and will output there as always.

@@ -1,0 +1,82 @@
+evidence themes go in a directory below $PREFIX/share/evidence/themes;
+if the default prefix /usr/local is used, the fishtank theme would
+hence be expected in a folder /usr/local/share/evidence/themes/fishtank
+If the --T (or --theme) switch is not used to select a theme, evidence
+will try to load a theme called "default" -- usually a symlink to one
+of the provided themes.  Failing that, shelf and icon-view will be
+disabled.
+For information on how to create your own themes, see docs/themes.
+
+engines
+
+  This directory holds program data (shared objects).
+  A theme usually defines varies properties (rubber-bands, icons,
+  background, and others).  These properties come in all shapes
+  (a background for instance might be a PNG- or JPG-graphic or a
+  .BG.DB background-database).  The code for loading and handling
+  these is not part of evidence proper; these building blocks are
+  instead kept in the engines folder.  The reason for this is two-
+  fold.  For one thing, engines for file-formats we didn't think of
+  can easily be distributed without having to distribute the whole
+  program with it.  For another, this way evidence can only load
+  what is actually needed at run-time -- if all your backgrounds
+  are PNG-graphics, there is little point in having the .BG.DB-
+  handler present, and consequently, evidence will not load this
+  handler, thereby conserving memory.
+
+fonts
+
+  Some fonts for the sample themes provided.  These fonts were
+  acquired on the WWW, where they were portrayed as being
+  available for download and use free of charge.  If a font was
+  included as a result of misrepresentation, kindly let us know
+  so we can remove it from the samples.
+
+icons
+
+  See there.
+
+
+
+efm
+
+  A vintage efm look-alike theme.
+
+essence
+
+  An essence look-alike theme.
+
+fishtank
+
+  A light-hearted demo for use with the fishtank_128 icon-set.
+  Not necessarily intended for daily use.  : )
+
+green
+
+  An early theme.
+
+metallo
+
+  An experimental theme to go with the ento_64 icon-set.
+
+nautilus
+
+  A simple theme based on some designs used in the Nautilus
+  file-manager.  Suggested icon-set: gorilla_48 or tosh_128
+
+scorpio
+
+  An early theme.
+
+tosh
+
+  Evidence's default theme.
+
+transwarp
+
+  A sample transparent theme.  Note that other graphical elements
+  (such as the bar-code) can be composed on top of the transparent
+  background.  Also note that the tinting (and the opaqueness)
+  may differ in different areas of the background -- this is
+  achieved by placing a (colour and/or alpha) gradient on top
+  of the transparent background.

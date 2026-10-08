@@ -1,0 +1,110 @@
+\hypertarget{ipc__dcop_8cpp}{
+\section{ipc\_\-dcop.cpp File Reference}
+\label{ipc__dcop_8cpp}\index{ipc_dcop.cpp@{ipc\_\-dcop.cpp}}
+}
+DCOP IPC module for evidence. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+QCString\-List \hyperlink{ipc__dcop_8cpp_a0}{c2QCString\-List} (char $\ast$i)
+\begin{CompactList}\small\item\em convert \par
+ separated lines into a QCString\-List \item\end{CompactList}\item 
+QString \hyperlink{ipc__dcop_8cpp_a1}{c2QString} (char $\ast$i)
+\begin{CompactList}\small\item\em wrap a C-string in a QString \item\end{CompactList}\item 
+int \hyperlink{ipc__dcop_8cpp_a3}{ipc\_\-module\_\-init} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em initialize DCOP IPC module \item\end{CompactList}\item 
+int \hyperlink{ipc__dcop_8cpp_a4}{ipc\_\-module\_\-exit} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em deinitialize DBUS IPC (destall handlers, drop connection, release resources) \item\end{CompactList}\item 
+int \hyperlink{ipc__dcop_8cpp_a5}{ipc\_\-module\_\-poll} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em check for messages from DCOP \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+DCOP IPC module for evidence. 
+
+by Azundris
+
+\subsection{Function Documentation}
+\hypertarget{ipc__dcop_8cpp_a0}{
+\index{ipc_dcop.cpp@{ipc\_\-dcop.cpp}!c2QCStringList@{c2QCStringList}}
+\index{c2QCStringList@{c2QCStringList}!ipc_dcop.cpp@{ipc\_\-dcop.cpp}}
+\subsubsection[c2QCStringList]{\setlength{\rightskip}{0pt plus 5cm}QCString\-List c2QCString\-List (char $\ast$ {\em i})}}
+\label{ipc__dcop_8cpp_a0}
+
+
+convert \par
+ separated lines into a QCString\-List 
+
+\begin{Desc}
+\item[Returns:]a QCString\-List \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]\par
+ separated lines\end{description}
+\end{Desc}
+\hypertarget{ipc__dcop_8cpp_a1}{
+\index{ipc_dcop.cpp@{ipc\_\-dcop.cpp}!c2QString@{c2QString}}
+\index{c2QString@{c2QString}!ipc_dcop.cpp@{ipc\_\-dcop.cpp}}
+\subsubsection[c2QString]{\setlength{\rightskip}{0pt plus 5cm}QString c2QString (char $\ast$ {\em i})}}
+\label{ipc__dcop_8cpp_a1}
+
+
+wrap a C-string in a QString 
+
+\begin{Desc}
+\item[Returns:]a QString \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]a C-string to wrap and free()\end{description}
+\end{Desc}
+\hypertarget{ipc__dcop_8cpp_a4}{
+\index{ipc_dcop.cpp@{ipc\_\-dcop.cpp}!ipc_module_exit@{ipc\_\-module\_\-exit}}
+\index{ipc_module_exit@{ipc\_\-module\_\-exit}!ipc_dcop.cpp@{ipc\_\-dcop.cpp}}
+\subsubsection[ipc\_\-module\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-exit (void $\ast$$\ast$ {\em data})}}
+\label{ipc__dcop_8cpp_a4}
+
+
+deinitialize DBUS IPC (destall handlers, drop connection, release resources) 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the connection to throw out\end{description}
+\end{Desc}
+\hypertarget{ipc__dcop_8cpp_a3}{
+\index{ipc_dcop.cpp@{ipc\_\-dcop.cpp}!ipc_module_init@{ipc\_\-module\_\-init}}
+\index{ipc_module_init@{ipc\_\-module\_\-init}!ipc_dcop.cpp@{ipc\_\-dcop.cpp}}
+\subsubsection[ipc\_\-module\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-init (void $\ast$$\ast$ {\em data})}}
+\label{ipc__dcop_8cpp_a3}
+
+
+initialize DCOP IPC module 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]where to store our connection handle\end{description}
+\end{Desc}
+\hypertarget{ipc__dcop_8cpp_a5}{
+\index{ipc_dcop.cpp@{ipc\_\-dcop.cpp}!ipc_module_poll@{ipc\_\-module\_\-poll}}
+\index{ipc_module_poll@{ipc\_\-module\_\-poll}!ipc_dcop.cpp@{ipc\_\-dcop.cpp}}
+\subsubsection[ipc\_\-module\_\-poll]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-poll (void $\ast$$\ast$ {\em data})}}
+\label{ipc__dcop_8cpp_a5}
+
+
+check for messages from DCOP 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the connection\end{description}
+\end{Desc}

@@ -1,0 +1,125 @@
+.TH "icon.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+icon.c \- load/resize icon-image data; convert to GtkWidget or GdkPixbuf. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "GtkWidget * \fBicon_get_by_path_no_resize\fP (const char *ip)"
+.br
+.RI "\fIcreate a GTK-'icon' from an image. \fP"
+.ti -1c
+.RI "GdkPixbuf * \fBpixbuf_get_by_path_no_resize\fP (const char *ip)"
+.br
+.RI "\fIcreate a GDK pixbuf from an image. \fP"
+.ti -1c
+.RI "GdkPixbuf * \fBpixbuf_get_by_path_and_resize\fP (const char *ip, int size, int interpolate)"
+.br
+.RI "\fIcreate a GDK pixbuf from an image and resize it if necessary. \fP"
+.ti -1c
+.RI "static GtkWidget * \fBicon_get_by_path\fP (const char *text, const char *ip)"
+.br
+.RI "\fIcreate a GTK-'icon' for a file. \fP"
+.ti -1c
+.RI "GtkWidget * \fBicon_get_by_file\fP (const char *text, const char *file, const char *mime)"
+.br
+.RI "\fIcreate a GTK-'icon' for a file, by thumbnailing it, or by finding an image for its MIME-type. \fP"
+.ti -1c
+.RI "int \fBicon_exit\fP (void)"
+.br
+.RI "\fIdeinitialize icon sub-system. \fP"
+.ti -1c
+.RI "int \fBicon_init\fP (void)"
+.br
+.RI "\fIinitialize icon sub-system. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+load/resize icon-image data; convert to GtkWidget or GdkPixbuf. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "GtkWidget* icon_get_by_file (const char * text, const char * file, const char * mime)"
+.PP
+create a GTK-'icon' for a file, by thumbnailing it, or by finding an image for its MIME-type. 
+.PP
+called from \fBbrowser_view::browser_view_dir()\fP to create column-icons. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItext\fP - the text for the icon's label 
+.br
+\fIfile\fP - the file the icon stands for 
+.br
+\fImime\fP - the file's MIME-type
+.RE
+.PP
+
+.SS "static GtkWidget* icon_get_by_path (const char * text, const char * ip)\fC [static]\fP"
+.PP
+create a GTK-'icon' for a file. 
+.PP
+called from \fBbrowser_view::browser_view_dir()\fP to create column-icons. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItext\fP - the text for the icon's label 
+.br
+\fIip\fP - the file containing the image-data for the icon
+.RE
+.PP
+
+.SS "GtkWidget* icon_get_by_path_no_resize (const char * ip)"
+.PP
+create a GTK-'icon' from an image. 
+.PP
+most basic procedure -- no labels, conversions, searching, or resizing. called from \fBabout::about_init()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIip\fP - icon-path
+.RE
+.PP
+
+.SS "int icon_init (void)"
+.PP
+initialize icon sub-system. 
+.PP
+tries to find a picture of the user for her home-directory.
+.SS "GdkPixbuf* pixbuf_get_by_path_and_resize (const char * ip, int size, int interpolate)"
+.PP
+create a GDK pixbuf from an image and resize it if necessary. 
+.PP
+called by various in icon-view, tooltip, shelf, actions. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIip\fP - icon-path 
+.br
+\fIsize\fP - if image exceeds box of size*size, scale it to fit (retain aspect) 
+.br
+\fIinterpolate\fP - quality: GDK_INTERP_BILINEAR or GDK_INTERP_HYPER
+.RE
+.PP
+
+.SS "GdkPixbuf* pixbuf_get_by_path_no_resize (const char * ip)"
+.PP
+create a GDK pixbuf from an image. 
+.PP
+most basic procedure -- no labels, conversions, searching, or resizing. called by various in icon-view. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIip\fP - icon-path
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

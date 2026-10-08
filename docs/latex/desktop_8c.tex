@@ -1,0 +1,65 @@
+\hypertarget{desktop_8c}{
+\section{desktop.c File Reference}
+\label{desktop_8c}\index{desktop.c@{desktop.c}}
+}
+desktop-related functions 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{desktop_8c_a0}{window\_\-prop\_\-set} (Display $\ast$disp, Window win, Atom prop, Atom type, int bits, void $\ast$data, int elements)
+\begin{CompactList}\small\item\em set an X property on a window. \item\end{CompactList}\item 
+void \hyperlink{desktop_8c_a1}{window\_\-as\_\-desk} (Display $\ast$disp, Window win, int w, int h)
+\begin{CompactList}\small\item\em set all the necessary X props to mark the specified window as the desktop, according to the Net\-WM specs. \item\end{CompactList}\item 
+void \hyperlink{desktop_8c_a2}{desktop\_\-click} (int mx, int my, int button, int pressed, int state, unsigned long serial, unsigned long timestamp)
+\begin{CompactList}\small\item\em forward mouse-click to desktop when evidence handles a desktop, it can forward clicks to the \char`\"{}original\char`\"{} background (to call up window-manager menus etc. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+desktop-related functions 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{desktop_8c_a2}{
+\index{desktop.c@{desktop.c}!desktop_click@{desktop\_\-click}}
+\index{desktop_click@{desktop\_\-click}!desktop.c@{desktop.c}}
+\subsubsection[desktop\_\-click]{\setlength{\rightskip}{0pt plus 5cm}void desktop\_\-click (int {\em mx}, int {\em my}, int {\em button}, int {\em pressed}, int {\em state}, unsigned long {\em serial}, unsigned long {\em timestamp})}}
+\label{desktop_8c_a2}
+
+
+forward mouse-click to desktop when evidence handles a desktop, it can forward clicks to the \char`\"{}original\char`\"{} background (to call up window-manager menus etc. 
+
+) \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mx}]mouse x \item[{\em my}]mouse y \item[{\em button}]mouse buttons (X format) \item[{\em pressed}]pressed (1) or released (0)? \item[{\em state}]modifiers (shift etc., X format) \item[{\em serial}]last X event seen \item[{\em timestamp}]when did the event happen?\end{description}
+\end{Desc}
+\hypertarget{desktop_8c_a1}{
+\index{desktop.c@{desktop.c}!window_as_desk@{window\_\-as\_\-desk}}
+\index{window_as_desk@{window\_\-as\_\-desk}!desktop.c@{desktop.c}}
+\subsubsection[window\_\-as\_\-desk]{\setlength{\rightskip}{0pt plus 5cm}void window\_\-as\_\-desk (Display $\ast$ {\em disp}, Window {\em win}, int {\em w}, int {\em h})}}
+\label{desktop_8c_a1}
+
+
+set all the necessary X props to mark the specified window as the desktop, according to the Net\-WM specs. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em disp}]the X-display \item[{\em win}]the X-window \item[{\em w}]width \item[{\em h}]height\end{description}
+\end{Desc}
+\hypertarget{desktop_8c_a0}{
+\index{desktop.c@{desktop.c}!window_prop_set@{window\_\-prop\_\-set}}
+\index{window_prop_set@{window\_\-prop\_\-set}!desktop.c@{desktop.c}}
+\subsubsection[window\_\-prop\_\-set]{\setlength{\rightskip}{0pt plus 5cm}static int window\_\-prop\_\-set (Display $\ast$ {\em disp}, Window {\em win}, Atom {\em prop}, Atom {\em type}, int {\em bits}, void $\ast$ {\em data}, int {\em elements})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{desktop_8c_a0}
+
+
+set an X property on a window. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em disp}]- X display \item[{\em win}]- X window \item[{\em prop}]- the property \item[{\em type}]- the type of the property (ignored by server, application-layer only) \item[{\em bits}]- number of bits in one element (8/16/32) \item[{\em data}]- the actual data to set \item[{\em elements}]- number of elements in data\end{description}
+\end{Desc}

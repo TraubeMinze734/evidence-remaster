@@ -1,0 +1,228 @@
+\hypertarget{mp3_8cpp}{
+\section{mp3.cpp File Reference}
+\label{mp3_8cpp}\index{mp3.cpp@{mp3.cpp}}
+}
+meta-data provider plug-in \char`\"{}MP3/ID3\char`\"{} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+noir\_\-meta $\ast$ \hyperlink{mp3_8cpp_a6}{meta\_\-init\_\-mp3} (noir\_\-md $\ast$a, meta\_\-flags flags, meta\_\-type type, const char $\ast$k, const char $\ast$d, const char $\ast$g, const char $\ast$v, noir\_\-provider $\ast$p, long u2)
+\begin{CompactList}\small\item\em convenience function for setting meta-data defaults \item\end{CompactList}\item 
+static int \hyperlink{mp3_8cpp_a7}{meta\_\-make\_\-sortkey} (noir\_\-md $\ast$ret, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em make sort-key from artist and title \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{mp3_8cpp_a8}{genre\_\-name\_\-normalize} (char $\ast$c)
+\begin{CompactList}\small\item\em remove all non-alpha characters from genre-name and convert to lowercase called from \hyperlink{mp3_8cpp_a9}{genre\_\-name\_\-cmp()}, \hyperlink{mp3_8cpp_a10}{genre\_\-name\_\-to\_\-index()} \item\end{CompactList}\item 
+static int \hyperlink{mp3_8cpp_a9}{genre\_\-name\_\-cmp} (char $\ast$pre, char $\ast$now)
+\begin{CompactList}\small\item\em compare two genre-names called by \hyperlink{mp3_8cpp_a10}{genre\_\-name\_\-to\_\-index()} \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{mp3_8cpp_a10}{genre\_\-name\_\-to\_\-index} (char $\ast$i)
+\begin{CompactList}\small\item\em have genre-name, want index if there is any text after the genre-name, it will be preserved \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{mp3_8cpp_a11}{genre\_\-index\_\-to\_\-name} (char $\ast$t)
+\begin{CompactList}\small\item\em have genre index, want name. \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{mp3_8cpp_a12}{key\_\-xlate} (int id)
+\begin{CompactList}\small\item\em translate ID3v2 field-name into something human readable \item\end{CompactList}\item 
+int \hyperlink{mp3_8cpp_a13}{cpp\_\-meta\_\-set\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em write meta-data for this file extractor framework cannot write meta-data, only read it \item\end{CompactList}\item 
+int \hyperlink{mp3_8cpp_a14}{cpp\_\-meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\item 
+int \hyperlink{mp3_8cpp_a15}{layoutp} (void)
+\begin{CompactList}\small\item\em let info-dialog do the layout for us \item\end{CompactList}\item 
+int \hyperlink{mp3_8cpp_a16}{meta\_\-set\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em write meta-data for this file extractor framework cannot write meta-data, only read it \item\end{CompactList}\item 
+int \hyperlink{mp3_8cpp_a17}{meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+meta-data provider plug-in \char`\"{}MP3/ID3\char`\"{} 
+
+get/set MP3 ID3 tags using id3lib
+
+\subsection{Function Documentation}
+\hypertarget{mp3_8cpp_a14}{
+\index{mp3.cpp@{mp3.cpp}!cpp_meta_get_for_file@{cpp\_\-meta\_\-get\_\-for\_\-file}}
+\index{cpp_meta_get_for_file@{cpp\_\-meta\_\-get\_\-for\_\-file}!mp3.cpp@{mp3.cpp}}
+\subsubsection[cpp\_\-meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int cpp\_\-meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{mp3_8cpp_a14}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a13}{
+\index{mp3.cpp@{mp3.cpp}!cpp_meta_set_for_file@{cpp\_\-meta\_\-set\_\-for\_\-file}}
+\index{cpp_meta_set_for_file@{cpp\_\-meta\_\-set\_\-for\_\-file}!mp3.cpp@{mp3.cpp}}
+\subsubsection[cpp\_\-meta\_\-set\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int cpp\_\-meta\_\-set\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{mp3_8cpp_a13}
+
+
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a11}{
+\index{mp3.cpp@{mp3.cpp}!genre_index_to_name@{genre\_\-index\_\-to\_\-name}}
+\index{genre_index_to_name@{genre\_\-index\_\-to\_\-name}!mp3.cpp@{mp3.cpp}}
+\subsubsection[genre\_\-index\_\-to\_\-name]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ genre\_\-index\_\-to\_\-name (char $\ast$ {\em t})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{mp3_8cpp_a11}
+
+
+have genre index, want name. 
+
+if there is any text after the index, it will be preserved \begin{Desc}
+\item[Returns:]the textual description of the genre. caller must free() \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the index, as a C-string\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a9}{
+\index{mp3.cpp@{mp3.cpp}!genre_name_cmp@{genre\_\-name\_\-cmp}}
+\index{genre_name_cmp@{genre\_\-name\_\-cmp}!mp3.cpp@{mp3.cpp}}
+\subsubsection[genre\_\-name\_\-cmp]{\setlength{\rightskip}{0pt plus 5cm}static int genre\_\-name\_\-cmp (char $\ast$ {\em pre}, char $\ast$ {\em now})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{mp3_8cpp_a9}
+
+
+compare two genre-names called by \hyperlink{mp3_8cpp_a10}{genre\_\-name\_\-to\_\-index()} 
+
+\begin{Desc}
+\item[Returns:]-1,0,1 \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pre}]pre-normalized 1st name \item[{\em now}]not normalized 2nd name (not modified)\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a8}{
+\index{mp3.cpp@{mp3.cpp}!genre_name_normalize@{genre\_\-name\_\-normalize}}
+\index{genre_name_normalize@{genre\_\-name\_\-normalize}!mp3.cpp@{mp3.cpp}}
+\subsubsection[genre\_\-name\_\-normalize]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ genre\_\-name\_\-normalize (char $\ast$ {\em c})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{mp3_8cpp_a8}
+
+
+remove all non-alpha characters from genre-name and convert to lowercase called from \hyperlink{mp3_8cpp_a9}{genre\_\-name\_\-cmp()}, \hyperlink{mp3_8cpp_a10}{genre\_\-name\_\-to\_\-index()} 
+
+\begin{Desc}
+\item[Returns:]the cleaned-up genre-name \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em c}]the potentially non-normal genre-name. modified.\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a10}{
+\index{mp3.cpp@{mp3.cpp}!genre_name_to_index@{genre\_\-name\_\-to\_\-index}}
+\index{genre_name_to_index@{genre\_\-name\_\-to\_\-index}!mp3.cpp@{mp3.cpp}}
+\subsubsection[genre\_\-name\_\-to\_\-index]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ genre\_\-name\_\-to\_\-index (char $\ast$ {\em i})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{mp3_8cpp_a10}
+
+
+have genre-name, want index if there is any text after the genre-name, it will be preserved 
+
+\begin{Desc}
+\item[Returns:]the textual description of the genre. caller must free() \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]the genre-name, as a C-string\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a12}{
+\index{mp3.cpp@{mp3.cpp}!key_xlate@{key\_\-xlate}}
+\index{key_xlate@{key\_\-xlate}!mp3.cpp@{mp3.cpp}}
+\subsubsection[key\_\-xlate]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ key\_\-xlate (int {\em id})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{mp3_8cpp_a12}
+
+
+translate ID3v2 field-name into something human readable 
+
+\begin{Desc}
+\item[Returns:]the \char`\"{}better\char`\"{} name \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em id}]the ID of the field\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a15}{
+\index{mp3.cpp@{mp3.cpp}!layoutp@{layoutp}}
+\index{layoutp@{layoutp}!mp3.cpp@{mp3.cpp}}
+\subsubsection[layoutp]{\setlength{\rightskip}{0pt plus 5cm}int layoutp (void)}}
+\label{mp3_8cpp_a15}
+
+
+let info-dialog do the layout for us 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC to do our own layout, NOIR\_\-FAIL to have the caller do it\end{Desc}
+\hypertarget{mp3_8cpp_a17}{
+\index{mp3.cpp@{mp3.cpp}!meta_get_for_file@{meta\_\-get\_\-for\_\-file}}
+\index{meta_get_for_file@{meta\_\-get\_\-for\_\-file}!mp3.cpp@{mp3.cpp}}
+\subsubsection[meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{mp3_8cpp_a17}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a6}{
+\index{mp3.cpp@{mp3.cpp}!meta_init_mp3@{meta\_\-init\_\-mp3}}
+\index{meta_init_mp3@{meta\_\-init\_\-mp3}!mp3.cpp@{mp3.cpp}}
+\subsubsection[meta\_\-init\_\-mp3]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-meta$\ast$ meta\_\-init\_\-mp3 (noir\_\-md $\ast$ {\em a}, meta\_\-flags {\em flags}, meta\_\-type {\em type}, const char $\ast$ {\em k}, const char $\ast$ {\em d}, const char $\ast$ {\em g}, const char $\ast$ {\em v}, noir\_\-provider $\ast$ {\em p}, long {\em u2})}}
+\label{mp3_8cpp_a6}
+
+
+convenience function for setting meta-data defaults 
+
+\begin{Desc}
+\item[Returns:]a meta-data entry \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]the list of meta-data \item[{\em flags}]flags (META\_\-RW) \item[{\em type}]type (META\_\-STR) \item[{\em k}]name \item[{\em d}]description \item[{\em g}]group (MY\_\-NAME) \item[{\em v}]default-value \item[{\em p}]provider (caller's 'prov') \item[{\em u2}]ID3lib field-ID\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a7}{
+\index{mp3.cpp@{mp3.cpp}!meta_make_sortkey@{meta\_\-make\_\-sortkey}}
+\index{meta_make_sortkey@{meta\_\-make\_\-sortkey}!mp3.cpp@{mp3.cpp}}
+\subsubsection[meta\_\-make\_\-sortkey]{\setlength{\rightskip}{0pt plus 5cm}static int meta\_\-make\_\-sortkey (noir\_\-md $\ast$ {\em ret}, noir\_\-provider $\ast$ {\em prov})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{mp3_8cpp_a7}
+
+
+make sort-key from artist and title 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the meta-data list \item[{\em prov}]the provider (us)\end{description}
+\end{Desc}
+\hypertarget{mp3_8cpp_a16}{
+\index{mp3.cpp@{mp3.cpp}!meta_set_for_file@{meta\_\-set\_\-for\_\-file}}
+\index{meta_set_for_file@{meta\_\-set\_\-for\_\-file}!mp3.cpp@{mp3.cpp}}
+\subsubsection[meta\_\-set\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-set\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{mp3_8cpp_a16}
+
+
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}

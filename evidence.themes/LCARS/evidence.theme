@@ -1,0 +1,74 @@
+logo:				jpg
+author:				creepy
+
+typebuffer_factory:		default
+scrollbar_factory:		default
+icon_factory:			nautilus
+background_factory:		scale
+tooltip_factory:		diagram
+rubberband_factory:		gradient2
+
+idle_fun_icon_view:		flutterby
+
+extensions:			LCARS
+
+open_folder_animation:		none
+open_app_animation:		grey
+open_file_animation:		throb
+
+shelf:				background
+icon_view:			background
+
+# typebuffer_font:		Federation_classic_movie
+typebuffer_font:		vera
+typebuffer_font_size:		60
+typebuffer_text_colour:		#cccccc
+typebuffer_shadow_colour:	#555555
+typebuffer_text_alpha:		240
+typebuffer_shadow_alpha:	232
+
+icon_font:			verabd
+icon_font_size:			20
+icon_meta_label_x_offset:	17
+icon_meta_label_y_offset:	1
+icon_meta_label_width:		92
+
+tooltip_font:			Federation_classic_movie
+tooltip_font_size:		23
+
+# textpath_corner_factor:	1.5
+textpath_corner_w:		42
+textpath_corner_h:		42
+
+textpath_font:			verabd
+textpath_font_size:		31
+textpath_dropshadow:    	2
+textpath_alpha:			255
+
+textpath_active_colour		#ce9ccf
+textpath_inactive_colour		#ff9c00
+
+textpath_x:			8
+textpath_y:			8
+
+# force height if it needs to fit some other element's. otherwise, leave at
+# 0 so it will accomodate the font.
+textpath_h:			36
+
+# padding between elements (0 for none, d'oh : )
+textpath_padding:		4
+
+# lowlight icons under (z-order) the text-path? (0 no, 128 some, 255 hide)
+textpath_hide:			255
+
+icon_set:			LCARS
+icon_mode:			auto
+icon_view_pad_x:			54
+icon_view_pad_y:			48
+icon_shadow_colour		#777777
+icon_text_colour			#bbbbbb
+trough_alpha:                   0
+bar_alpha:                      190
+trough_line_alpha:              0
+bar_line_alpha:                 47
+trough_width:                   7

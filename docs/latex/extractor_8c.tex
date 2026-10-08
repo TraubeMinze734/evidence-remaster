@@ -1,0 +1,97 @@
+\hypertarget{extractor_8c}{
+\section{extractor.c File Reference}
+\label{extractor_8c}\index{extractor.c@{extractor.c}}
+}
+meta-data provider plug-in \char`\"{}extractor\char`\"{} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{extractor_8c_a2}{meta\_\-plugin\_\-exit} (void $\ast$data)
+\begin{CompactList}\small\item\em module requires special deinitialization before it can be unloaded \item\end{CompactList}\item 
+void $\ast$ \hyperlink{extractor_8c_a3}{meta\_\-plugin\_\-init} (void)
+\begin{CompactList}\small\item\em module needs special initialization before it can be used \item\end{CompactList}\item 
+int \hyperlink{extractor_8c_a4}{meta\_\-set\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em write meta-data for this file extractor framework cannot write meta-data, only read it \item\end{CompactList}\item 
+int \hyperlink{extractor_8c_a5}{meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\item 
+int \hyperlink{extractor_8c_a6}{layoutp} (void)
+\begin{CompactList}\small\item\em let info-dialog do the layout for us \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+meta-data provider plug-in \char`\"{}extractor\char`\"{} 
+
+get meta-data for various file-types using the \char`\"{}extractor\char`\"{} framework. note that extractor can only determine but not set such meta-data.
+
+\subsection{Function Documentation}
+\hypertarget{extractor_8c_a6}{
+\index{extractor.c@{extractor.c}!layoutp@{layoutp}}
+\index{layoutp@{layoutp}!extractor.c@{extractor.c}}
+\subsubsection[layoutp]{\setlength{\rightskip}{0pt plus 5cm}int layoutp (void)}}
+\label{extractor_8c_a6}
+
+
+let info-dialog do the layout for us 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC to do our own layout, NOIR\_\-FAIL to have the caller do it\end{Desc}
+\hypertarget{extractor_8c_a5}{
+\index{extractor.c@{extractor.c}!meta_get_for_file@{meta\_\-get\_\-for\_\-file}}
+\index{meta_get_for_file@{meta\_\-get\_\-for\_\-file}!extractor.c@{extractor.c}}
+\subsubsection[meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{extractor_8c_a5}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{extractor_8c_a2}{
+\index{extractor.c@{extractor.c}!meta_plugin_exit@{meta\_\-plugin\_\-exit}}
+\index{meta_plugin_exit@{meta\_\-plugin\_\-exit}!extractor.c@{extractor.c}}
+\subsubsection[meta\_\-plugin\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-plugin\_\-exit (void $\ast$ {\em data})}}
+\label{extractor_8c_a2}
+
+
+module requires special deinitialization before it can be unloaded 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]a handle created by \hyperlink{extractor_8c_a3}{meta\_\-plugin\_\-init()}\end{description}
+\end{Desc}
+\hypertarget{extractor_8c_a3}{
+\index{extractor.c@{extractor.c}!meta_plugin_init@{meta\_\-plugin\_\-init}}
+\index{meta_plugin_init@{meta\_\-plugin\_\-init}!extractor.c@{extractor.c}}
+\subsubsection[meta\_\-plugin\_\-init]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ meta\_\-plugin\_\-init (void)}}
+\label{extractor_8c_a3}
+
+
+module needs special initialization before it can be used 
+
+\begin{Desc}
+\item[Returns:]a handle that will be handed to \hyperlink{extractor_8c_a2}{meta\_\-plugin\_\-exit()} before the module is unloaded\end{Desc}
+\hypertarget{extractor_8c_a4}{
+\index{extractor.c@{extractor.c}!meta_set_for_file@{meta\_\-set\_\-for\_\-file}}
+\index{meta_set_for_file@{meta\_\-set\_\-for\_\-file}!extractor.c@{extractor.c}}
+\subsubsection[meta\_\-set\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-set\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{extractor_8c_a4}
+
+
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}

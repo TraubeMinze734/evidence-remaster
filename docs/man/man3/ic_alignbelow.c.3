@@ -1,0 +1,118 @@
+.TH "ic_alignbelow.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ic_alignbelow.c \- plugin that creates an icon. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBicon_die\fP (noir_theme *theme)"
+.br
+.RI "\fIdestall factory -- unregister listeners, free any resources etc. \fP"
+.ti -1c
+.RI "static int \fBic_num_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our numeric properties. \fP"
+.ti -1c
+.RI "static int \fBic_str_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our string-properties. \fP"
+.ti -1c
+.RI "\fBicon_el\fP * \fBicon_els_create\fP (\fBicon_list\fP *il, \fBicon\fP *\fBicon\fP, char *thumb)"
+.br
+.RI "\fIcreate elements of an icon. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+plugin that creates an icon. 
+
+text-labels appear below the icon's image. long text-labels are cut off; an ellipsis ('...') will be appended to the label to indicate this.
+.PP
+items that evidence's thumbnailer was able to generate previews for will be show a preview in lieu of a datafile-icon.
+.PP
+the factory installs a variety of properties; see below. these properties can be set in themes, or from the typebuffer, e.g. 'icontextcolour ff00ff
+.SH "Function Documentation"
+.PP 
+.SS "static int ic_num_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our numeric properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SS "static int ic_str_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our string-properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SS "int icon_die (noir_theme * theme)"
+.PP
+destall factory -- unregister listeners, free any resources etc. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItheme\fP the theme
+.RE
+.PP
+
+.SS "\fBicon_el\fP* icon_els_create (\fBicon_list\fP * il, \fBicon\fP * icon, char * thumb)"
+.PP
+create elements of an icon. 
+.PP
+\fBReturns:\fP
+.RS 4
+the first element of a linked list of icon-elements. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list to create the icon in 
+.br
+\fIicon\fP - the icon the elements are intended for 
+.br
+\fIthumb\fP - the path to a thumb-nailed image of the portrayed file's contents, or NULL
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

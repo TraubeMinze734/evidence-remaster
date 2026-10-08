@@ -1,0 +1,190 @@
+.TH "theme.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+theme.c \- theme/preferences handlers. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBfonts\fP { \fBFNT_NONE\fP =  0, \fBFNT_TB\fP =  1, \fBFNT_TT\fP =  2, \fBFNT_ICN\fP =  4, \fBFNT_TP\fP =  8, \fBFNT_ALL\fP =  15 }"
+.br
+.ti -1c
+.RI "enum \fBparse_theme\fP { \fBPT_SB\fP =  1, \fBPT_TT\fP =  2, \fBPT_TB\fP =  4, \fBPT_RB\fP =  8, \fBPT_BG\fP =  0x10, \fBPT_IC\fP =  0x20, \fBPT_SH\fP =  0x40, \fBPT_IV\fP =  0x80, \fBPT_ID\fP =  0x100, \fBPT_IX\fP =  0x200, \fBPT_ALL\fP =  0xff }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "noir_theme * \fBtheme_new\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fItheme_new - create a new theme struct. \fP"
+.ti -1c
+.RI "static int \fBtheme_ani_get\fP (noir_theme *t, const char *name, void **l, void(**f)(\fBicon_list\fP *, \fBicon\fP *), int(**d)(noir_theme *))"
+.br
+.RI "\fIbroken out of the listener. \fP"
+.ti -1c
+.RI "static int \fBtheme_string_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlistener for string properties \fP"
+.ti -1c
+.RI "int \fBtheme_init\fP (\fBnoir_sess\fP *ns, char *cwd)"
+.br
+.RI "\fItheme_init - initialize theme sub-system for a session \fP"
+.ti -1c
+.RI "int \fBtheme_canvas_destall\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIde-initialize theme sub-system for a single canvas \fP"
+.ti -1c
+.RI "int \fBtheme_exit\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIde-initialize theme sub-system for a session \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+theme/preferences handlers. 
+
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBfonts\fP"
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIFNT_NONE \fP\fP
+no fonts 
+.TP
+\fB\fIFNT_TB \fP\fP
+typebuffer-font 
+.TP
+\fB\fIFNT_TT \fP\fP
+tooltip-font 
+.TP
+\fB\fIFNT_ICN \fP\fP
+icon-label font 
+.TP
+\fB\fIFNT_TP \fP\fP
+text-path font 
+.TP
+\fB\fIFNT_ALL \fP\fP
+all fonts 
+.SS "enum \fBparse_theme\fP"
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIPT_SB \fP\fP
+scrollbar factory 
+.TP
+\fB\fIPT_TT \fP\fP
+tooltip factory 
+.TP
+\fB\fIPT_TB \fP\fP
+typebuffer engine 
+.TP
+\fB\fIPT_RB \fP\fP
+rubber-band factory 
+.TP
+\fB\fIPT_BG \fP\fP
+background engine 
+.TP
+\fB\fIPT_IC \fP\fP
+icon-factory 
+.TP
+\fB\fIPT_SH \fP\fP
+icon-view (background data) 
+.TP
+\fB\fIPT_IV \fP\fP
+shelf (background data) 
+.TP
+\fB\fIPT_ID \fP\fP
+idle-handler (optional, hence not part of PT_ALL) 
+.TP
+\fB\fIPT_IX \fP\fP
+extension 
+.TP
+\fB\fIPT_ALL \fP\fP
+'all of the above' 
+.SH "Function Documentation"
+.PP 
+.SS "static int theme_ani_get (noir_theme * t, const char * name, void ** l, void(**)(\fBicon_list\fP *, \fBicon\fP *) f, int(**)(noir_theme *) d)\fC [inline, static]\fP"
+.PP
+broken out of the listener. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "int theme_canvas_destall (\fBicon_list\fP * il)"
+.PP
+de-initialize theme sub-system for a single canvas 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list
+.RE
+.PP
+
+.SS "int theme_exit (\fBnoir_sess\fP * ns)"
+.PP
+de-initialize theme sub-system for a session 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session
+.RE
+.PP
+
+.SS "int theme_init (\fBnoir_sess\fP * ns, char * cwd)"
+.PP
+theme_init - initialize theme sub-system for a session 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session 
+.br
+\fIcwd\fP - current working-directory
+.RE
+.PP
+
+.SS "noir_theme* theme_new (\fBnoir_sess\fP * ns)"
+.PP
+theme_new - create a new theme struct. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session to create the theme for
+.RE
+.PP
+
+.SS "static int theme_string_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listener for string properties 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIe\fP the property 
+.br
+\fItag\fP the numeric tag of the property 
+.br
+\fIdata\fP the icon-list
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

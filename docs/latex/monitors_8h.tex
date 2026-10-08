@@ -1,0 +1,243 @@
+\hypertarget{monitors_8h}{
+\section{monitors.h File Reference}
+\label{monitors_8h}\index{monitors.h@{monitors.h}}
+}
+file-monitors (notice new/changed/deleted items in file-system) 
+
+\subsection*{Data Structures}
+\begin{CompactItemize}
+\item 
+struct \hyperlink{struct__noir__monitor}{\_\-noir\_\-monitor}
+\begin{CompactList}\small\item\em a monitor (abstract) \item\end{CompactList}\end{CompactItemize}
+\subsection*{Typedefs}
+\begin{CompactItemize}
+\item 
+\hypertarget{monitors_8h_a0}{
+typedef \hyperlink{struct__noir__monitor}{\_\-noir\_\-monitor} \hyperlink{monitors_8h_a0}{noir\_\-monitor}}
+\label{monitors_8h_a0}
+
+\begin{CompactList}\small\item\em a monitor (abstract) \item\end{CompactList}\end{CompactItemize}
+\subsection*{Enumerations}
+\begin{CompactItemize}
+\item 
+enum \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event} \{ \par
+\hyperlink{monitors_8h_a20a1}{NOIR\_\-MONITOR\_\-DK}, 
+\par
+\hyperlink{monitors_8h_a20a2}{NOIR\_\-MONITOR\_\-CHG}, 
+\par
+\hyperlink{monitors_8h_a20a3}{NOIR\_\-MONITOR\_\-DEL}, 
+\par
+\hyperlink{monitors_8h_a20a4}{NOIR\_\-MONITOR\_\-EXECSTART}, 
+\par
+\hyperlink{monitors_8h_a20a5}{NOIR\_\-MONITOR\_\-EXECSTOP}, 
+\par
+\hyperlink{monitors_8h_a20a6}{NOIR\_\-MONITOR\_\-NEW}, 
+\par
+\hyperlink{monitors_8h_a20a7}{NOIR\_\-MONITOR\_\-META}, 
+\par
+\hyperlink{monitors_8h_a20a8}{NOIR\_\-MONITOR\_\-RLD}
+ \}
+\begin{CompactList}\small\item\em monitor-events \item\end{CompactList}\item 
+enum \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} \{ \par
+\hyperlink{monitors_8h_a21a10}{NOIR\_\-MONITOR\_\-DIR}, 
+\par
+\hyperlink{monitors_8h_a21a11}{NOIR\_\-MONITOR\_\-FILE}
+ \}
+\begin{CompactList}\small\item\em monitor-types \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{monitors_8h_a13}{
+\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ \hyperlink{monitors_8h_a13}{file\_\-monitor\_\-get\_\-1st} (void)}
+\label{monitors_8h_a13}
+
+\begin{CompactList}\small\item\em get anchor of monitor-chain \item\end{CompactList}\item 
+int \hyperlink{monitors_8h_a14}{file\_\-monitor\_\-event} (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$, \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event}, char $\ast$)
+\begin{CompactList}\small\item\em the backend detected a change on an item we were monitoring. \item\end{CompactList}\item 
+\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ \hyperlink{monitors_8h_a15}{file\_\-monitor\_\-exists} (void $\ast$session, char $\ast$, \hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$$\ast$)
+\begin{CompactList}\small\item\em check whether a monitor for this file already exists in list \item\end{CompactList}\item 
+int \hyperlink{monitors_8h_a16}{file\_\-monitor\_\-add\_\-with\_\-handler} (void $\ast$session, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor}, char $\ast$, int($\ast$file\_\-event\_\-handler)(void $\ast$session, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} ev, \hyperlink{model_8h_a151}{file\_\-flags} fc, void $\ast$data), void $\ast$data)
+\begin{CompactList}\small\item\em add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. \item\end{CompactList}\item 
+int \hyperlink{monitors_8h_a17}{file\_\-monitor\_\-add} (void $\ast$session, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor}, char $\ast$)
+\begin{CompactList}\small\item\em add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. \item\end{CompactList}\item 
+int \hyperlink{monitors_8h_a18}{file\_\-monitor\_\-remove} (void $\ast$session, char $\ast$)
+\begin{CompactList}\small\item\em remove all monitors for a given file in a given session, or in all sessions \item\end{CompactList}\item 
+int \hyperlink{monitors_8h_a19}{file\_\-monitor\_\-remove\_\-all} (void $\ast$session)
+\begin{CompactList}\small\item\em remove all monitors (for a given session, or all sessions). \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+file-monitors (notice new/changed/deleted items in file-system) 
+
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{monitors_8h_a20}{
+\index{monitors.h@{monitors.h}!noir_file_event@{noir\_\-file\_\-event}}
+\index{noir_file_event@{noir\_\-file\_\-event}!monitors.h@{monitors.h}}
+\subsubsection[noir\_\-file\_\-event]{\setlength{\rightskip}{0pt plus 5cm}enum \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event}}}
+\label{monitors_8h_a20}
+
+
+monitor-events 
+
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{NOIR_MONITOR_DK@{NOIR\_\-MONITOR\_\-DK}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_DK@{NOIR\_\-MONITOR\_\-DK}}\item[{\em 
+\hypertarget{monitors_8h_a20a1}{
+NOIR\_\-MONITOR\_\-DK}
+\label{monitors_8h_a20a1}
+}]unspecified type \index{NOIR_MONITOR_CHG@{NOIR\_\-MONITOR\_\-CHG}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_CHG@{NOIR\_\-MONITOR\_\-CHG}}\item[{\em 
+\hypertarget{monitors_8h_a20a2}{
+NOIR\_\-MONITOR\_\-CHG}
+\label{monitors_8h_a20a2}
+}]object has changed \index{NOIR_MONITOR_DEL@{NOIR\_\-MONITOR\_\-DEL}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_DEL@{NOIR\_\-MONITOR\_\-DEL}}\item[{\em 
+\hypertarget{monitors_8h_a20a3}{
+NOIR\_\-MONITOR\_\-DEL}
+\label{monitors_8h_a20a3}
+}]object was deleted \index{NOIR_MONITOR_EXECSTART@{NOIR\_\-MONITOR\_\-EXECSTART}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_EXECSTART@{NOIR\_\-MONITOR\_\-EXECSTART}}\item[{\em 
+\hypertarget{monitors_8h_a20a4}{
+NOIR\_\-MONITOR\_\-EXECSTART}
+\label{monitors_8h_a20a4}
+}]item was opened \index{NOIR_MONITOR_EXECSTOP@{NOIR\_\-MONITOR\_\-EXECSTOP}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_EXECSTOP@{NOIR\_\-MONITOR\_\-EXECSTOP}}\item[{\em 
+\hypertarget{monitors_8h_a20a5}{
+NOIR\_\-MONITOR\_\-EXECSTOP}
+\label{monitors_8h_a20a5}
+}]item was closed \index{NOIR_MONITOR_NEW@{NOIR\_\-MONITOR\_\-NEW}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_NEW@{NOIR\_\-MONITOR\_\-NEW}}\item[{\em 
+\hypertarget{monitors_8h_a20a6}{
+NOIR\_\-MONITOR\_\-NEW}
+\label{monitors_8h_a20a6}
+}]object was created \index{NOIR_MONITOR_META@{NOIR\_\-MONITOR\_\-META}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_META@{NOIR\_\-MONITOR\_\-META}}\item[{\em 
+\hypertarget{monitors_8h_a20a7}{
+NOIR\_\-MONITOR\_\-META}
+\label{monitors_8h_a20a7}
+}]meta-data of object have changed \index{NOIR_MONITOR_RLD@{NOIR\_\-MONITOR\_\-RLD}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_RLD@{NOIR\_\-MONITOR\_\-RLD}}\item[{\em 
+\hypertarget{monitors_8h_a20a8}{
+NOIR\_\-MONITOR\_\-RLD}
+\label{monitors_8h_a20a8}
+}]directory-contents have changed in unspecified way (backend's monitors are kinda dumb), rescan all items in directory and issue per-item events to model as needed \end{description}
+\end{Desc}
+
+\hypertarget{monitors_8h_a21}{
+\index{monitors.h@{monitors.h}!noir_file_monitor@{noir\_\-file\_\-monitor}}
+\index{noir_file_monitor@{noir\_\-file\_\-monitor}!monitors.h@{monitors.h}}
+\subsubsection[noir\_\-file\_\-monitor]{\setlength{\rightskip}{0pt plus 5cm}enum \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor}}}
+\label{monitors_8h_a21}
+
+
+monitor-types 
+
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{NOIR_MONITOR_DIR@{NOIR\_\-MONITOR\_\-DIR}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_DIR@{NOIR\_\-MONITOR\_\-DIR}}\item[{\em 
+\hypertarget{monitors_8h_a21a10}{
+NOIR\_\-MONITOR\_\-DIR}
+\label{monitors_8h_a21a10}
+}]a monitor for a directory \index{NOIR_MONITOR_FILE@{NOIR\_\-MONITOR\_\-FILE}!monitors.h@{monitors.h}}\index{monitors.h@{monitors.h}!NOIR_MONITOR_FILE@{NOIR\_\-MONITOR\_\-FILE}}\item[{\em 
+\hypertarget{monitors_8h_a21a11}{
+NOIR\_\-MONITOR\_\-FILE}
+\label{monitors_8h_a21a11}
+}]a monitor for a file \end{description}
+\end{Desc}
+
+
+
+\subsection{Function Documentation}
+\hypertarget{monitors_8h_a17}{
+\index{monitors.h@{monitors.h}!file_monitor_add@{file\_\-monitor\_\-add}}
+\index{file_monitor_add@{file\_\-monitor\_\-add}!monitors.h@{monitors.h}}
+\subsubsection[file\_\-monitor\_\-add]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-add (void $\ast$ {\em ns}, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} {\em type}, char $\ast$ {\em file})}}
+\label{monitors_8h_a17}
+
+
+add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session that wants to register this monitor \item[{\em type}]the type of the monitor (file, dir, ...) \item[{\em file}]the tag of the item to monitor\end{description}
+\end{Desc}
+\hypertarget{monitors_8h_a16}{
+\index{monitors.h@{monitors.h}!file_monitor_add_with_handler@{file\_\-monitor\_\-add\_\-with\_\-handler}}
+\index{file_monitor_add_with_handler@{file\_\-monitor\_\-add\_\-with\_\-handler}!monitors.h@{monitors.h}}
+\subsubsection[file\_\-monitor\_\-add\_\-with\_\-handler]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-add\_\-with\_\-handler (void $\ast$ {\em ns}, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} {\em type}, char $\ast$ {\em file}, int($\ast$)(void $\ast$session, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} ev, \hyperlink{model_8h_a151}{file\_\-flags} fc, void $\ast$data) {\em file\_\-event\_\-handler}, void $\ast$ {\em data})}}
+\label{monitors_8h_a16}
+
+
+add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session that wants to register this monitor \item[{\em type}]the type of the monitor (file, dir, ...) \item[{\em file}]the tag of the item to monitor \item[{\em file\_\-event\_\-handler}]a callback, or NULL for model only \item[{\em data}]additional data to hand to the callback\end{description}
+\end{Desc}
+\hypertarget{monitors_8h_a14}{
+\index{monitors.h@{monitors.h}!file_monitor_event@{file\_\-monitor\_\-event}}
+\index{file_monitor_event@{file\_\-monitor\_\-event}!monitors.h@{monitors.h}}
+\subsubsection[file\_\-monitor\_\-event]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-event (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ {\em m}, \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event} {\em type}, char $\ast$ {\em tag})}}
+\label{monitors_8h_a14}
+
+
+the backend detected a change on an item we were monitoring. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the monitor the event is for \item[{\em type}]the type of the event (item deleted, added, modified...) \item[{\em tag}]the tag of the file we got an event for\end{description}
+\end{Desc}
+\hypertarget{monitors_8h_a15}{
+\index{monitors.h@{monitors.h}!file_monitor_exists@{file\_\-monitor\_\-exists}}
+\index{file_monitor_exists@{file\_\-monitor\_\-exists}!monitors.h@{monitors.h}}
+\subsubsection[file\_\-monitor\_\-exists]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__noir__monitor}{noir\_\-monitor}$\ast$ file\_\-monitor\_\-exists (void $\ast$ {\em ns}, char $\ast$ {\em file}, \hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$$\ast$ {\em prv})}}
+\label{monitors_8h_a15}
+
+
+check whether a monitor for this file already exists in list 
+
+\begin{Desc}
+\item[Returns:]monitor-struct if it already exists, or NULL otherwise \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session the monitor should be part of, or NULL for any \item[{\em file}]the file the monitor is for \item[{\em prv}]location where a pointer to the preceeding list-element will be stored, or NULL (so caller can remove found element)\end{description}
+\end{Desc}
+\hypertarget{monitors_8h_a18}{
+\index{monitors.h@{monitors.h}!file_monitor_remove@{file\_\-monitor\_\-remove}}
+\index{file_monitor_remove@{file\_\-monitor\_\-remove}!monitors.h@{monitors.h}}
+\subsubsection[file\_\-monitor\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-remove (void $\ast$ {\em ns}, char $\ast$ {\em file})}}
+\label{monitors_8h_a18}
+
+
+remove all monitors for a given file in a given session, or in all sessions 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session to remove the monitors in, or NULL for all sessions \item[{\em file}]the file the monitors are for\end{description}
+\end{Desc}
+\hypertarget{monitors_8h_a19}{
+\index{monitors.h@{monitors.h}!file_monitor_remove_all@{file\_\-monitor\_\-remove\_\-all}}
+\index{file_monitor_remove_all@{file\_\-monitor\_\-remove\_\-all}!monitors.h@{monitors.h}}
+\subsubsection[file\_\-monitor\_\-remove\_\-all]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-remove\_\-all (void $\ast$ {\em ns})}}
+\label{monitors_8h_a19}
+
+
+remove all monitors (for a given session, or all sessions). 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session whose monitors to remove, or NULL for all sessions\end{description}
+\end{Desc}

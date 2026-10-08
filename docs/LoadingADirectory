@@ -1,0 +1,106 @@
+
+LOADING A DIRECTORY
+
+  (A "store" (evidence's idea of the file-system) is created with "/"
+  as its only item when evidence starts.)
+
+  A view with a given directory "/foo/bar/baz" is opened.
+
+  Evidence assumes that the last directory in that path, "baz", is
+  the important one, the one the user actually wants to look at.
+  It creates "foo" in "/", and "bar" in "foo", and finally "baz"
+  in "bar".  There are now four items in our model of the File-system.
+
+  Q  Why do we even create "/", "foo" and "bar" if the user wants "baz"?
+
+  A  We could indeed treat the directories as unrelated items, but now
+     if we later want to implement a tree-store, where several directories
+     and several levels of directories can be seen at once.  For this to
+     work, we need to have a tree-structure in our model, and a correctly
+     nested one at that.  We do not however have to have a complete
+     representation of the file-system (so if "/" contains "foo" and
+     "bazong", we won't load "bazong" until the user goes there).
+
+
+  Now that we have /foo/bar/baz in the store, we start load the *contents*
+  of baz. When we have those, we get the contents of bar, then those of
+  foo, and eventually those of /.  Contents means:
+
+  1  name + stat() + MIME
+
+  2  thumbnail
+
+  3  meta-data (this step is new)
+
+  This is done in a seperate thread from the GUI to keep things
+  responsive.
+
+  ad 1) MIME is determined in a multi-layer way.  If stat() gives
+        a non-regular file (link, FIFO, ...), that is used.
+        If the file-name or extension is recognized, that is used.
+        If the file is executable, and it contains an #! magic,
+        it is flagged a shell-script.  Otherwise, libmagic (the
+        library of the 'file' command) is used, which may result
+        in the file being scanned for "magics".  This doesn't happen
+        all that often and is rather fast when it does.
+
+  ad 1) I tried making name, stat() and MIME separate passes, but
+        that doesn't make things faster; in fact, in many cases it's
+        slower because we get more redraws (each time information is
+        updated).
+
+  ad 2) To further complicate matters, "thumbnail" tries to load a
+        thumbnail, but if there isn't one yet, it puts the file's
+        name in a "thumbnail all these items please" queue. The
+        actual thumbnailer is in a 3rd thread and processes this
+        queue. Every time a new thumbnail is created, it sends the
+        GUI an event so the icon may be updated. It also stores the
+        thumbnail in the freedesktop.org thumbnails dir so we don't
+        have to create the thumbnail all over again the next time
+        around. The thumbnailer uses ePEG for JPEG files and should
+        be lightning fast on digital photography and many wallpapers;
+        for everything else, it uses imlib2.
+
+  ad 3) The (new) meta-data run uses whatever plugins you have built
+        (MP3/ID3, Ogg-Vorbis, TrueType, Imlib2, extractor, ...)
+        to find out more about the files.  This usually includes
+        reading headers/parts of the file (ID3-tags, HTML <title>, ...).
+        This can take arbitrarily long.  If you let imlib2 unpack
+        large .gz or .bz2 files to look for images inside, it can
+        be outright suicidal.  Most of these plugins run in a separate
+        thread, so while you will definitely see disk-activity and
+        processor load, the GUI should not block.  (Unfortunately,
+        imlib2 is not thread-safe, so the imlib2 meta-data provider
+        has to acquire the global imlib2 lock, hence pathological cases
+        where imlib2 needlessly unpacks really huge archives while
+        locking the GUI can be constructed if you go out of your way
+        to do this.)  This run is new, and puts some load on the CPU.
+        It should not normally block the GUI, but it may take some
+        time to complete, depending on the number, size, and type of
+        files to scan.  To make the load managable, the following
+        steps have been taken:
+
+        a) In contrast to the other steps, meta-data are only collected
+           for the directory actually shown, but not for all directories
+           along the path to this dir.
+
+        b) To avoid the massive (and usually unnecessary) load of
+           unpacking .gz and .bz2, only a handful of MIME-types are
+           eligible for meta-data scanning (MP3, Ogg-Vorbis, and
+           TrueType Fonts, I think).
+           This list will become user-settable eventually, enabling
+           users to turn the feature on for all, none, or some data-
+           types so they may choose their own speed-vs-info tradeoff.
+
+  ad 1-3)  This is slightly simplified; in reality, these steps are
+           interleaved:
+
+           baz  name,stat,MIME
+           bar  name,stat,MIME
+           foo  name,stat,MIME
+           /    name,stat,MIME
+           baz  thumbnails
+           bar  thumbnails
+           foo  thumbnails
+           /    thumbnails
+           baz  meta-data

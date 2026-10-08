@@ -1,0 +1,101 @@
+\hypertarget{md5c_8c}{
+\section{md5c.c File Reference}
+\label{md5c_8c}\index{md5c.c@{md5c.c}}
+}
+MD5 hashes. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static void \hyperlink{md5c_8c_a5}{byte\-Reverse} (unsigned char $\ast$buf, unsigned longs)
+\begin{CompactList}\small\item\em reverse byte-sex. \item\end{CompactList}\item 
+void \hyperlink{md5c_8c_a6}{MD5Init} (MD5\_\-CTX $\ast$ctx)
+\begin{CompactList}\small\item\em start MD5 accumulation. \item\end{CompactList}\item 
+void \hyperlink{md5c_8c_a7}{MD5Update} (MD5\_\-CTX $\ast$ctx, unsigned char const $\ast$buf, unsigned len)
+\begin{CompactList}\small\item\em update context to reflect the concatenation of another buffer. \item\end{CompactList}\item 
+void \hyperlink{md5c_8c_a8}{MD5Final} (unsigned char digest\mbox{[}16\mbox{]}, MD5\_\-CTX $\ast$ctx)
+\begin{CompactList}\small\item\em wrapup: pad to 64-byte boundary with the bit pattern 1 0$\ast$ (64-bit count of bits processed,MSB-first) \item\end{CompactList}\item 
+void \hyperlink{md5c_8c_a9}{MD5Transform} (u\_\-int32\_\-t buf\mbox{[}4\mbox{]}, u\_\-int32\_\-t const in\mbox{[}16\mbox{]})
+\begin{CompactList}\small\item\em the core of the MD5 algorithm. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+MD5 hashes. 
+
+This code implements the MD5 message-digest algorithm. The algorithm is due to Ron Rivest. This code was written by Colin Plumb in 1993, no copyright is claimed. This code is in the public domain; do with it what you wish.
+
+Equivalent code is available from RSA Data Security, Inc. This code has been tested against that, and is equivalent, except that you don't need to include two pages of legalese with every copy.
+
+To compute the message digest of a chunk of bytes, declare an MD5Context structure, pass it to MD5Init, call MD5Update as needed on buffers full of bytes, and then call MD5Final, which will fill a supplied 16-byte array with the digest.
+
+\subsection{Function Documentation}
+\hypertarget{md5c_8c_a5}{
+\index{md5c.c@{md5c.c}!byteReverse@{byteReverse}}
+\index{byteReverse@{byteReverse}!md5c.c@{md5c.c}}
+\subsubsection[byteReverse]{\setlength{\rightskip}{0pt plus 5cm}static void byte\-Reverse (unsigned char $\ast$ {\em buf}, unsigned {\em longs})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{md5c_8c_a5}
+
+
+reverse byte-sex. 
+
+this code is harmless on little-endian machines. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em buf}]- where the data to transform lives \item[{\em longs}]- the number of longs to transform\end{description}
+\end{Desc}
+\hypertarget{md5c_8c_a8}{
+\index{md5c.c@{md5c.c}!MD5Final@{MD5Final}}
+\index{MD5Final@{MD5Final}!md5c.c@{md5c.c}}
+\subsubsection[MD5Final]{\setlength{\rightskip}{0pt plus 5cm}void MD5Final (unsigned char {\em digest}\mbox{[}16\mbox{]}, MD5\_\-CTX $\ast$ {\em ctx})}}
+\label{md5c_8c_a8}
+
+
+wrapup: pad to 64-byte boundary with the bit pattern 1 0$\ast$ (64-bit count of bits processed,MSB-first) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em digest}]- buffer to write the MD5-digest to \item[{\em ctx}]- the context\end{description}
+\end{Desc}
+\hypertarget{md5c_8c_a6}{
+\index{md5c.c@{md5c.c}!MD5Init@{MD5Init}}
+\index{MD5Init@{MD5Init}!md5c.c@{md5c.c}}
+\subsubsection[MD5Init]{\setlength{\rightskip}{0pt plus 5cm}void MD5Init (MD5\_\-CTX $\ast$ {\em ctx})}}
+\label{md5c_8c_a6}
+
+
+start MD5 accumulation. 
+
+Set bit count to 0 and buffer to mysterious initialization constants. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ctx}]- MD5-context\end{description}
+\end{Desc}
+\hypertarget{md5c_8c_a9}{
+\index{md5c.c@{md5c.c}!MD5Transform@{MD5Transform}}
+\index{MD5Transform@{MD5Transform}!md5c.c@{md5c.c}}
+\subsubsection[MD5Transform]{\setlength{\rightskip}{0pt plus 5cm}void MD5Transform (u\_\-int32\_\-t {\em buf}\mbox{[}4\mbox{]}, u\_\-int32\_\-t const  {\em in}\mbox{[}16\mbox{]})}}
+\label{md5c_8c_a9}
+
+
+the core of the MD5 algorithm. 
+
+This alters an existing MD5 hash to reflect the addition of 16 longwords of new data. MD5Update blocks the data and converts bytes into longwords for this routine. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em buf}]- the buffer \item[{\em in}]- the new longs\end{description}
+\end{Desc}
+\hypertarget{md5c_8c_a7}{
+\index{md5c.c@{md5c.c}!MD5Update@{MD5Update}}
+\index{MD5Update@{MD5Update}!md5c.c@{md5c.c}}
+\subsubsection[MD5Update]{\setlength{\rightskip}{0pt plus 5cm}void MD5Update (MD5\_\-CTX $\ast$ {\em ctx}, unsigned char const $\ast$ {\em buf}, unsigned {\em len})}}
+\label{md5c_8c_a7}
+
+
+update context to reflect the concatenation of another buffer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ctx}]- the context \item[{\em buf}]- the buffer \item[{\em len}]- length of the buffer\end{description}
+\end{Desc}

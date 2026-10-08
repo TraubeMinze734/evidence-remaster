@@ -1,0 +1,503 @@
+\hypertarget{meta_8c}{
+\section{meta.c File Reference}
+\label{meta_8c}\index{meta.c@{meta.c}}
+}
+handling of meta-data lists. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{meta_8c_a10}{meta\_\-walk} (noir\_\-md $\ast$a, meta\_\-walker fun, void $\ast$data)
+\begin{CompactList}\small\item\em iterate over each element in a meta-data set \item\end{CompactList}\item 
+noir\_\-meta $\ast$ \hyperlink{meta_8c_a11}{meta\_\-get\_\-1st} (noir\_\-md $\ast$a)
+\begin{CompactList}\small\item\em get 1st meta-data element in chain \item\end{CompactList}\item 
+noir\_\-meta $\ast$ \hyperlink{meta_8c_a12}{meta\_\-get\_\-next} (noir\_\-meta $\ast$m)
+\begin{CompactList}\small\item\em get 1st meta-data element in chain \item\end{CompactList}\item 
+noir\_\-meta $\ast$ \hyperlink{meta_8c_a30}{meta\_\-in\_\-group} (noir\_\-md $\ast$a, const char $\ast$k, const char $\ast$g)
+\begin{CompactList}\small\item\em find an entry in a given group, or in all groups. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a31}{meta\_\-dst\_\-one} (noir\_\-meta $\ast$m)
+\begin{CompactList}\small\item\em dst a single meta-data element (this does not remove it from any lists) \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a32}{meta\_\-del\_\-all} (noir\_\-md $\ast$a)
+\begin{CompactList}\small\item\em delete all meta-data entries in a list \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a33}{meta\_\-dst} (noir\_\-md $\ast$$\ast$a)
+\begin{CompactList}\small\item\em dst header and all meta-data entries in a list \item\end{CompactList}\item 
+static int \hyperlink{meta_8c_a34}{meta\_\-del\_\-one} (noir\_\-md $\ast$a, noir\_\-meta $\ast$del)
+\begin{CompactList}\small\item\em remove a single entry from list and destruct it \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a35}{meta\_\-del\_\-by\_\-group} (noir\_\-md $\ast$a, const char $\ast$grp)
+\begin{CompactList}\small\item\em delete a group of meta-data \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a36}{meta\_\-del\_\-by\_\-provider} (noir\_\-md $\ast$a, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em delete all meta-data from a given provider. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a37}{meta\_\-del} (noir\_\-md $\ast$a, char $\ast$k, char $\ast$g)
+\begin{CompactList}\small\item\em delete a single meta-data entry. \item\end{CompactList}\item 
+static int \hyperlink{meta_8c_a38}{meta\_\-new\_\-one} (noir\_\-meta $\ast$$\ast$mp, meta\_\-flags flags, meta\_\-type type, const char $\ast$k, const char $\ast$d, const char $\ast$g, const char $\ast$v, noir\_\-provider $\ast$p)
+\begin{CompactList}\small\item\em create a meta-data entry. \item\end{CompactList}\item 
+static noir\_\-meta $\ast$ \hyperlink{meta_8c_a39}{meta\_\-clone\_\-one} (noir\_\-meta $\ast$src)
+\begin{CompactList}\small\item\em copy a meta-data entry \item\end{CompactList}\item 
+noir\_\-md $\ast$ \hyperlink{meta_8c_a40}{meta\_\-new} (void)
+\begin{CompactList}\small\item\em allocate a new meta-data set \item\end{CompactList}\item 
+noir\_\-md $\ast$ \hyperlink{meta_8c_a41}{meta\_\-clone} (noir\_\-md $\ast$src)
+\begin{CompactList}\small\item\em clone a set of meta-data \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a42}{meta\_\-add} (noir\_\-md $\ast$a, meta\_\-flags flags, meta\_\-type type, const char $\ast$k, const char $\ast$d, const char $\ast$g, const char $\ast$v, noir\_\-provider $\ast$p)
+\begin{CompactList}\small\item\em add a meta-data entry to the list for a file. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a43}{meta\_\-set\_\-string} (noir\_\-meta $\ast$m, const char $\ast$s, meta\_\-type t)
+\begin{CompactList}\small\item\em set meta-data entry to a string \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a44}{meta\_\-set} (noir\_\-md $\ast$a, meta\_\-flags flags, meta\_\-type type, const char $\ast$k, const char $\ast$d, const char $\ast$g, const char $\ast$v, noir\_\-provider $\ast$p)
+\begin{CompactList}\small\item\em set a meta-data entry in the list for a file. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a45}{meta\_\-chg} (noir\_\-meta $\ast$m, meta\_\-flags flags, meta\_\-type type, const char $\ast$k, const char $\ast$v)
+\begin{CompactList}\small\item\em change a meta-data entry in the list for a file. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a46}{meta\_\-dflt} (noir\_\-md $\ast$a, meta\_\-flags flags, meta\_\-type type, const char $\ast$k, const char $\ast$d, const char $\ast$g, const char $\ast$v, noir\_\-provider $\ast$p)
+\begin{CompactList}\small\item\em set a default for a meta-data entry: \hyperlink{meta_8c_a42}{meta\_\-add()} only if value does not already exist. \item\end{CompactList}\item 
+static int \hyperlink{meta_8c_a47}{meta\_\-lib\_\-close} (noir\_\-provider $\ast$p)
+\begin{CompactList}\small\item\em release a meta-data provider \item\end{CompactList}\item 
+\hypertarget{meta_8c_a48}{
+int \hyperlink{meta_8c_a48}{meta\_\-lib\_\-gc} (void)}
+\label{meta_8c_a48}
+
+\begin{CompactList}\small\item\em garbage collect meta-data providers: if a provider isn't used for a long time, it is unloaded. \item\end{CompactList}\item 
+void $\ast$ \hyperlink{meta_8c_a49}{meta\_\-lib\_\-get} (noir\_\-provider $\ast$p)
+\begin{CompactList}\small\item\em get the shared object for a provider record. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{meta_8c_a50}{meta\_\-to\_\-string} (noir\_\-md $\ast$md)
+\begin{CompactList}\small\item\em convenience: concatenate meta-data. \item\end{CompactList}\item 
+static noir\_\-provider $\ast$ \hyperlink{meta_8c_a51}{meta\_\-provider\_\-get} (char $\ast$mime, int fallback)
+\begin{CompactList}\small\item\em get (first) provider for given MIME-type. \item\end{CompactList}\item 
+static void \hyperlink{meta_8c_a52}{meta\_\-provider\_\-free} (void $\ast$mp)
+\begin{CompactList}\small\item\em release a meta-data provider. \item\end{CompactList}\item 
+static int \hyperlink{meta_8c_a53}{meta\_\-provider\_\-add} (char $\ast$key, char $\ast$prov)
+\begin{CompactList}\small\item\em add a meta-data provider to the internal list. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a54}{meta\_\-handle\_\-file} (noir\_\-provider $\ast$p, char $\ast$file, noir\_\-md $\ast$r)
+\begin{CompactList}\small\item\em get meta-data for a given file. \item\end{CompactList}\item 
+int \hyperlink{meta_8c_a55}{meta\_\-update} (noir\_\-md $\ast$a, char $\ast$file)
+\begin{CompactList}\small\item\em write meta-data back to the file they describe. \item\end{CompactList}\item 
+\hypertarget{meta_8c_a56}{
+int \hyperlink{meta_8c_a56}{meta\_\-init} (void)}
+\label{meta_8c_a56}
+
+\begin{CompactList}\small\item\em initialize meta-data sub-system. \item\end{CompactList}\item 
+\hypertarget{meta_8c_a57}{
+int \hyperlink{meta_8c_a57}{meta\_\-exit} (void)}
+\label{meta_8c_a57}
+
+\begin{CompactList}\small\item\em deinitialize meta-data sub-system. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+handling of meta-data lists. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{meta_8c_a42}{
+\index{meta.c@{meta.c}!meta_add@{meta\_\-add}}
+\index{meta_add@{meta\_\-add}!meta.c@{meta.c}}
+\subsubsection[meta\_\-add]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-add (noir\_\-md $\ast$ {\em a}, meta\_\-flags {\em flags}, meta\_\-type {\em type}, const char $\ast$ {\em k}, const char $\ast$ {\em d}, const char $\ast$ {\em g}, const char $\ast$ {\em v}, noir\_\-provider $\ast$ {\em p})}}
+\label{meta_8c_a42}
+
+
+add a meta-data entry to the list for a file. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list \item[{\em flags}]- the flags for the entry (read-only etc.) \item[{\em type}]- the type of the entry (integer, UTF8, ...) \item[{\em k}]- the name of the entry \item[{\em d}]- the description for the entry, or NULL \item[{\em g}]- the group the entry should appear in \item[{\em v}]- the value for the entry, or NULL \item[{\em p}]- the provider that created the entry\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a45}{
+\index{meta.c@{meta.c}!meta_chg@{meta\_\-chg}}
+\index{meta_chg@{meta\_\-chg}!meta.c@{meta.c}}
+\subsubsection[meta\_\-chg]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-chg (noir\_\-meta $\ast$ {\em m}, meta\_\-flags {\em flags}, meta\_\-type {\em type}, const char $\ast$ {\em k}, const char $\ast$ {\em v})}}
+\label{meta_8c_a45}
+
+
+change a meta-data entry in the list for a file. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]- entry to change \item[{\em flags}]- the flags for the entry (read-only etc.) \item[{\em type}]- the type of the entry (integer, UTF8, ...) \item[{\em k}]- the name of the entry \item[{\em v}]- the value for the entry, or NULL\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a41}{
+\index{meta.c@{meta.c}!meta_clone@{meta\_\-clone}}
+\index{meta_clone@{meta\_\-clone}!meta.c@{meta.c}}
+\subsubsection[meta\_\-clone]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-md$\ast$ meta\_\-clone (noir\_\-md $\ast$ {\em src})}}
+\label{meta_8c_a41}
+
+
+clone a set of meta-data 
+
+\begin{Desc}
+\item[Returns:]a (possibly empty) set of meta-data, or NULL for OOM \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em src}]the source chain, or NULL\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a39}{
+\index{meta.c@{meta.c}!meta_clone_one@{meta\_\-clone\_\-one}}
+\index{meta_clone_one@{meta\_\-clone\_\-one}!meta.c@{meta.c}}
+\subsubsection[meta\_\-clone\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static noir\_\-meta$\ast$ meta\_\-clone\_\-one (noir\_\-meta $\ast$ {\em src})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a39}
+
+
+copy a meta-data entry 
+
+\begin{Desc}
+\item[Returns:]the new entry \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em src}]the entry to copy\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a37}{
+\index{meta.c@{meta.c}!meta_del@{meta\_\-del}}
+\index{meta_del@{meta\_\-del}!meta.c@{meta.c}}
+\subsubsection[meta\_\-del]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-del (noir\_\-md $\ast$ {\em a}, char $\ast$ {\em k}, char $\ast$ {\em g})}}
+\label{meta_8c_a37}
+
+
+delete a single meta-data entry. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list of meta-data \item[{\em k}]- the name of the entry to delete \item[{\em g}]- the group the entry is in\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a32}{
+\index{meta.c@{meta.c}!meta_del_all@{meta\_\-del\_\-all}}
+\index{meta_del_all@{meta\_\-del\_\-all}!meta.c@{meta.c}}
+\subsubsection[meta\_\-del\_\-all]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-del\_\-all (noir\_\-md $\ast$ {\em a})}}
+\label{meta_8c_a32}
+
+
+delete all meta-data entries in a list 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list of meta-data\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a35}{
+\index{meta.c@{meta.c}!meta_del_by_group@{meta\_\-del\_\-by\_\-group}}
+\index{meta_del_by_group@{meta\_\-del\_\-by\_\-group}!meta.c@{meta.c}}
+\subsubsection[meta\_\-del\_\-by\_\-group]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-del\_\-by\_\-group (noir\_\-md $\ast$ {\em a}, const char $\ast$ {\em grp})}}
+\label{meta_8c_a35}
+
+
+delete a group of meta-data 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list of meta-data \item[{\em grp}]- the group\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a36}{
+\index{meta.c@{meta.c}!meta_del_by_provider@{meta\_\-del\_\-by\_\-provider}}
+\index{meta_del_by_provider@{meta\_\-del\_\-by\_\-provider}!meta.c@{meta.c}}
+\subsubsection[meta\_\-del\_\-by\_\-provider]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-del\_\-by\_\-provider (noir\_\-md $\ast$ {\em a}, noir\_\-provider $\ast$ {\em prov})}}
+\label{meta_8c_a36}
+
+
+delete all meta-data from a given provider. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list of meta-data \item[{\em prov}]- the provider that created the meta-data we want to delete now\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a34}{
+\index{meta.c@{meta.c}!meta_del_one@{meta\_\-del\_\-one}}
+\index{meta_del_one@{meta\_\-del\_\-one}!meta.c@{meta.c}}
+\subsubsection[meta\_\-del\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static int meta\_\-del\_\-one (noir\_\-md $\ast$ {\em a}, noir\_\-meta $\ast$ {\em del})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a34}
+
+
+remove a single entry from list and destruct it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]the list \item[{\em del}]the entry to remove\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a46}{
+\index{meta.c@{meta.c}!meta_dflt@{meta\_\-dflt}}
+\index{meta_dflt@{meta\_\-dflt}!meta.c@{meta.c}}
+\subsubsection[meta\_\-dflt]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-dflt (noir\_\-md $\ast$ {\em a}, meta\_\-flags {\em flags}, meta\_\-type {\em type}, const char $\ast$ {\em k}, const char $\ast$ {\em d}, const char $\ast$ {\em g}, const char $\ast$ {\em v}, noir\_\-provider $\ast$ {\em p})}}
+\label{meta_8c_a46}
+
+
+set a default for a meta-data entry: \hyperlink{meta_8c_a42}{meta\_\-add()} only if value does not already exist. 
+
+sometimes, a meta-data entry must be created even if it is not warranted by the file we wish to describe. for instance, if no \char`\"{}genre\char`\"{} information is set on a MP3 song, we will still want to create a \char`\"{}genre\char`\"{}-entry in the meta-data so the info-dialog will create a \char`\"{}genre\char`\"{} edit-field. to do this, the provider's \hyperlink{ape_8c_a6}{meta\_\-get\_\-for\_\-file()} function should first create entries for all meta-data it can get from the file, and then call \hyperlink{meta_8c_a46}{meta\_\-dflt()} for all items that an entry must exist for \char`\"{}no matter what.\char`\"{}
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list \item[{\em flags}]- the flags for the entry (read-only etc.) \item[{\em type}]- the type of the entry (integer, UTF8, ...) \item[{\em k}]- the name of the entry \item[{\em d}]- the description for the entry, or NULL \item[{\em g}]- the group the entry should appear in \item[{\em v}]- the value for the entry, or NULL \item[{\em p}]- the provider that created the entry\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a33}{
+\index{meta.c@{meta.c}!meta_dst@{meta\_\-dst}}
+\index{meta_dst@{meta\_\-dst}!meta.c@{meta.c}}
+\subsubsection[meta\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-dst (noir\_\-md $\ast$$\ast$ {\em a})}}
+\label{meta_8c_a33}
+
+
+dst header and all meta-data entries in a list 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list of meta-data\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a31}{
+\index{meta.c@{meta.c}!meta_dst_one@{meta\_\-dst\_\-one}}
+\index{meta_dst_one@{meta\_\-dst\_\-one}!meta.c@{meta.c}}
+\subsubsection[meta\_\-dst\_\-one]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-dst\_\-one (noir\_\-meta $\ast$ {\em m})}}
+\label{meta_8c_a31}
+
+
+dst a single meta-data element (this does not remove it from any lists) 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]- the element to dst\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a11}{
+\index{meta.c@{meta.c}!meta_get_1st@{meta\_\-get\_\-1st}}
+\index{meta_get_1st@{meta\_\-get\_\-1st}!meta.c@{meta.c}}
+\subsubsection[meta\_\-get\_\-1st]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-meta$\ast$ meta\_\-get\_\-1st (noir\_\-md $\ast$ {\em a})}}
+\label{meta_8c_a11}
+
+
+get 1st meta-data element in chain 
+
+\begin{Desc}
+\item[Returns:]the element, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]the chain\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a12}{
+\index{meta.c@{meta.c}!meta_get_next@{meta\_\-get\_\-next}}
+\index{meta_get_next@{meta\_\-get\_\-next}!meta.c@{meta.c}}
+\subsubsection[meta\_\-get\_\-next]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-meta$\ast$ meta\_\-get\_\-next (noir\_\-meta $\ast$ {\em m})}}
+\label{meta_8c_a12}
+
+
+get 1st meta-data element in chain 
+
+\begin{Desc}
+\item[Returns:]the element, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the current element\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a54}{
+\index{meta.c@{meta.c}!meta_handle_file@{meta\_\-handle\_\-file}}
+\index{meta_handle_file@{meta\_\-handle\_\-file}!meta.c@{meta.c}}
+\subsubsection[meta\_\-handle\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-handle\_\-file (noir\_\-provider $\ast$ {\em p}, char $\ast$ {\em file}, noir\_\-md $\ast$ {\em r})}}
+\label{meta_8c_a54}
+
+
+get meta-data for a given file. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]- provider to use, or NULL to auto-determine \item[{\em file}]- file to get meta-data for \item[{\em r}]- where to append the results\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a30}{
+\index{meta.c@{meta.c}!meta_in_group@{meta\_\-in\_\-group}}
+\index{meta_in_group@{meta\_\-in\_\-group}!meta.c@{meta.c}}
+\subsubsection[meta\_\-in\_\-group]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-meta$\ast$ meta\_\-in\_\-group (noir\_\-md $\ast$ {\em a}, const char $\ast$ {\em k}, const char $\ast$ {\em g})}}
+\label{meta_8c_a30}
+
+
+find an entry in a given group, or in all groups. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]the list of meta-data \item[{\em k}]the name of the entry to find \item[{\em g}]the group to search in, or NULL for \char`\"{}all groups, r/w preferred\char`\"{}\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a47}{
+\index{meta.c@{meta.c}!meta_lib_close@{meta\_\-lib\_\-close}}
+\index{meta_lib_close@{meta\_\-lib\_\-close}!meta.c@{meta.c}}
+\subsubsection[meta\_\-lib\_\-close]{\setlength{\rightskip}{0pt plus 5cm}static int meta\_\-lib\_\-close (noir\_\-provider $\ast$ {\em p})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a47}
+
+
+release a meta-data provider 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]the provider to be released\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a49}{
+\index{meta.c@{meta.c}!meta_lib_get@{meta\_\-lib\_\-get}}
+\index{meta_lib_get@{meta\_\-lib\_\-get}!meta.c@{meta.c}}
+\subsubsection[meta\_\-lib\_\-get]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ meta\_\-lib\_\-get (noir\_\-provider $\ast$ {\em p})}}
+\label{meta_8c_a49}
+
+
+get the shared object for a provider record. 
+
+open as needed. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]- the provider we're interested in.\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a40}{
+\index{meta.c@{meta.c}!meta_new@{meta\_\-new}}
+\index{meta_new@{meta\_\-new}!meta.c@{meta.c}}
+\subsubsection[meta\_\-new]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-md$\ast$ meta\_\-new (void)}}
+\label{meta_8c_a40}
+
+
+allocate a new meta-data set 
+
+\begin{Desc}
+\item[Returns:]a new set, or NULL for OOM\end{Desc}
+\hypertarget{meta_8c_a38}{
+\index{meta.c@{meta.c}!meta_new_one@{meta\_\-new\_\-one}}
+\index{meta_new_one@{meta\_\-new\_\-one}!meta.c@{meta.c}}
+\subsubsection[meta\_\-new\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static int meta\_\-new\_\-one (noir\_\-meta $\ast$$\ast$ {\em mp}, meta\_\-flags {\em flags}, meta\_\-type {\em type}, const char $\ast$ {\em k}, const char $\ast$ {\em d}, const char $\ast$ {\em g}, const char $\ast$ {\em v}, noir\_\-provider $\ast$ {\em p})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a38}
+
+
+create a meta-data entry. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mp}]- where to return the new entry, or NULL for failure \item[{\em flags}]- the flags for the entry (read-only etc.) \item[{\em type}]- the type of the entry (integer, UTF8, ...) \item[{\em k}]- the name of the entry \item[{\em d}]- the description for the entry, or NULL \item[{\em g}]- the group the entry should appear in \item[{\em v}]- the value for the entry, or NULL \item[{\em p}]- the provider that created the entry\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a53}{
+\index{meta.c@{meta.c}!meta_provider_add@{meta\_\-provider\_\-add}}
+\index{meta_provider_add@{meta\_\-provider\_\-add}!meta.c@{meta.c}}
+\subsubsection[meta\_\-provider\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static int meta\_\-provider\_\-add (char $\ast$ {\em key}, char $\ast$ {\em prov})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a53}
+
+
+add a meta-data provider to the internal list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em key}]- the MIME-type this provider handles \item[{\em prov}]- the path to the shared object\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a52}{
+\index{meta.c@{meta.c}!meta_provider_free@{meta\_\-provider\_\-free}}
+\index{meta_provider_free@{meta\_\-provider\_\-free}!meta.c@{meta.c}}
+\subsubsection[meta\_\-provider\_\-free]{\setlength{\rightskip}{0pt plus 5cm}static void meta\_\-provider\_\-free (void $\ast$ {\em mp})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a52}
+
+
+release a meta-data provider. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mp}]- the provider to release\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a51}{
+\index{meta.c@{meta.c}!meta_provider_get@{meta\_\-provider\_\-get}}
+\index{meta_provider_get@{meta\_\-provider\_\-get}!meta.c@{meta.c}}
+\subsubsection[meta\_\-provider\_\-get]{\setlength{\rightskip}{0pt plus 5cm}static noir\_\-provider$\ast$ meta\_\-provider\_\-get (char $\ast$ {\em mime}, int {\em fallback})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{meta_8c_a51}
+
+
+get (first) provider for given MIME-type. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mime}]- the MIME-type we need a provider for \item[{\em fallback}]- if FALSE, will only return exact matches. otherwise, will fall back on first provider for \char`\"{}foo/\char`\"{} or even \char`\"{}\char`\"{} if \char`\"{}foo/bar\char`\"{} cannot be found\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a44}{
+\index{meta.c@{meta.c}!meta_set@{meta\_\-set}}
+\index{meta_set@{meta\_\-set}!meta.c@{meta.c}}
+\subsubsection[meta\_\-set]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-set (noir\_\-md $\ast$ {\em a}, meta\_\-flags {\em flags}, meta\_\-type {\em type}, const char $\ast$ {\em k}, const char $\ast$ {\em d}, const char $\ast$ {\em g}, const char $\ast$ {\em v}, noir\_\-provider $\ast$ {\em p})}}
+\label{meta_8c_a44}
+
+
+set a meta-data entry in the list for a file. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list \item[{\em flags}]- the flags for the entry (read-only etc.) \item[{\em type}]- the type of the entry (integer, UTF8, ...) \item[{\em k}]- the name of the entry \item[{\em d}]- the description for the entry, or NULL \item[{\em g}]- the group the entry should appear in \item[{\em v}]- the value for the entry, or NULL \item[{\em p}]- the provider that created the entry\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a43}{
+\index{meta.c@{meta.c}!meta_set_string@{meta\_\-set\_\-string}}
+\index{meta_set_string@{meta\_\-set\_\-string}!meta.c@{meta.c}}
+\subsubsection[meta\_\-set\_\-string]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-set\_\-string (noir\_\-meta $\ast$ {\em m}, const char $\ast$ {\em s}, meta\_\-type {\em t})}}
+\label{meta_8c_a43}
+
+
+set meta-data entry to a string 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the entry to modify \item[{\em s}]the string to set \item[{\em t}]META\_\-UTF8: string is UTF8-encoded; META\_\-STR: string is locale-encoded; META\_\-OLD: keep old encoding (caller must ensure 's' is correct type!)\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a50}{
+\index{meta.c@{meta.c}!meta_to_string@{meta\_\-to\_\-string}}
+\index{meta_to_string@{meta\_\-to\_\-string}!meta.c@{meta.c}}
+\subsubsection[meta\_\-to\_\-string]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ meta\_\-to\_\-string (noir\_\-md $\ast$ {\em md})}}
+\label{meta_8c_a50}
+
+
+convenience: concatenate meta-data. 
+
+\begin{Desc}
+\item[Returns:]a single C-string in locale-dependent encoding, with the individual items separated by '$\backslash$n'. this string must later be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the bag of meta-data\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a55}{
+\index{meta.c@{meta.c}!meta_update@{meta\_\-update}}
+\index{meta_update@{meta\_\-update}!meta.c@{meta.c}}
+\subsubsection[meta\_\-update]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-update (noir\_\-md $\ast$ {\em a}, char $\ast$ {\em file})}}
+\label{meta_8c_a55}
+
+
+write meta-data back to the file they describe. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- the list of meta-data \item[{\em file}]- the file\end{description}
+\end{Desc}
+\hypertarget{meta_8c_a10}{
+\index{meta.c@{meta.c}!meta_walk@{meta\_\-walk}}
+\index{meta_walk@{meta\_\-walk}!meta.c@{meta.c}}
+\subsubsection[meta\_\-walk]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-walk (noir\_\-md $\ast$ {\em a}, meta\_\-walker {\em fun}, void $\ast$ {\em data})}}
+\label{meta_8c_a10}
+
+
+iterate over each element in a meta-data set 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]the set \item[{\em fun}]the function to apply to each entry \item[{\em data}]user-supplied data for the function\end{description}
+\end{Desc}

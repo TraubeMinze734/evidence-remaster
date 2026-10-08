@@ -1,0 +1,259 @@
+<html>
+<head>
+  <title>Evidence -- enlightened file-manager</title>
+<style type="text/css">
+<!--
+A:link { text-decoration:none }
+A:visited { text-decoration:none }
+A:active { text-decoration:none }
+A_:hover { text-decoration:underline; color:#0066FF; }
+-->
+</style>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" link="#003399" vlink="#003399" alink="#003399">
+  <font face="Helvetica,Arial,Sans serif">
+    <small><p align="right"><a href="index.html">Homepage</a> <a href="features.html">Features</a></p></small>
+    <h1>Evidence</h1>
+    <h4>What you'll want to download</h4>
+  </font>
+
+  You may...
+  <ul>
+    <li>Get the latest developers' version from <a href="#cvs">CVS</a>,</li>
+    <li>get a <a href="#source">source</a> distribution,</li>
+    <li>or get ready-to-go <a href="#binaries">binaries</a> as RPMs or Debs.</li>
+  </ul>
+
+  For now, evidence needs GTK2.  We intend to have evidence build against
+  EWL (enlightenment widget library) alternatively as becomes available.
+
+  <hr />
+
+
+
+  <a name="cvs">
+    <h2>Getting evidence from CVS</h2>
+
+    <p>
+      The CVS stores the version the developers work on.
+      The version in CVS will contain the latest and greatest features, but
+      also the latest mistakes.  Use at your discretion.
+    </p>
+
+    <p>
+      To get the latest version, first log into CVS using
+      <tt style="white-space:nowrap">cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/evidence login</tt> -- just press
+      Enter or Return when it asks for a password. Then enter
+      <tt style="white-space:nowrap">cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/evidence co evidence</tt>
+      to download ("check out" in CVS-speak) the actual files. This will take a while, but the cvs program should
+      keep you updated on its progress.
+    </p>
+
+    <p>
+      <a href="#build">Build the binaries</a>.
+    </p>
+  </a>
+
+  <hr />
+
+
+
+  <a name="source">
+    <h2>Getting a source distribution</h2>
+    <ul>
+      <li>
+        <a href="http://sourceforge.net/project/showfiles.php?group_id=58061">Download a source distribution</a>.
+        These sources come as a files ending in <tt>.tar.gz</tt> or <tt>.tar.bz2</tt> --
+        use <tt>tar -zxvf evidence.tar.gz</tt> or <tt>tar -jxvf evidence.tar.bz2</tt>
+        respectively to unpack the individual files from the "archive" you downloaded.
+      </li>
+      <li>
+        <a href="#build">Build the binaries</a>.
+      </li>
+    </ul>
+  </a>
+
+  <hr />
+
+
+
+  <a name="build">
+    <h2>Building evidence</h2>
+
+    <ol>
+      <li>If you got evidence from CVS, run <tt>./autogen.sh --help</tt>.<br />
+          If you got a source-archive of evidence, run <tt>./configure --help</tt>.<br />
+          In either case, a plethora of options should be listed.</li>
+      <li>Decide on a <a href="#backend">backend</a> to use.</li>
+      <li>Decide whether you want an icon-view or a shelf.
+          If you do, decide which <a href="#canvas">canvas</a> to use.</li>
+      <li>Decide on whether you want <a href="#providers">meta-data providers</a>.</li>
+      <li>Run <tt>./configure</tt> with the options of your choice.
+          Then, run <tt>make</tt> and one of <tt>make install</tt> or
+          <tt>checkinstall</tt> -- the latter is preferable, but not all
+          people have it.  (evidence will not work until installed; trying
+          <tt>src/evidence</tt> will not render the desired results.)</li>
+      <li>Run <tt>evidence</tt>. Type <tt>rehash</tt> first to tell your
+          shell that there is a new kid on the block.  If your shell does
+          not understand the <tt>rehash</tt> command, open a new one.</li>
+      <li><a href="#customize">Customize</a>, if you wish.</li>
+    </ol>
+  </a>
+
+  <hr />
+
+
+
+  <a name="binaries">
+    <h2>Getting a binary distribution</h2>
+    <ol>
+      <li>
+        <a href="http://sourceforge.net/project/showfiles.php?group_id=58061">Get a binary package (RPM, Deb, ...)</a>.
+      </li>
+      <li>
+        Install the package (<tt>dpkg -i evidence.deb</tt>, <tt>rpm -i evidence.deb</tt>, ...).
+      </li>
+      <li>
+        Run <tt>evidence</tt>. Type <tt>rehash</tt> first to tell your
+        shell that there is a new kid on the block.  If your shell does
+        not understand the <tt>rehash</tt> command, open a new one.
+      </li>
+      <li>
+        Decide on whether you want <a href="#providers">meta-data providers</a>.
+      </li>
+      <li>
+        <a href="#customize">Customize</a> evidence, if you wish.
+      </li>
+    </ol>
+  </a>
+
+  <hr />
+
+
+  <a name="providers">
+    <h2>Meta-data providers</h2>
+    <p>
+      Providers a small plugins that are specialists for a certain type of file.
+      The MP3/ID3 provider for instance knows how to read MP3 tags.
+      It enables evidence to show information such as song title, artist's
+      name, release-date and more even if they are not part of the file's name.
+      This information will be displayed in tooltips and in the file-info
+      dialog together with the usual data (file's size, its owner, date of last
+      modification, ...).<br />
+      Most plugins also allow some of the data to be edited; in the case of the
+      MP3/ID3 plugin, you may edit your MP3 tags in the file-info dialog!<br />
+      Plugins are not part of the main program; this way, you may easily add
+      plugins without having to rebuild the whole program. evidence will only
+      load the plugins as it needs them; if you have no MP3s for instance, the
+      MP3/ID3 plugin will not be loaded.<br />
+      Most plugins rely on other code ("libraries") that need to install before
+      you can build that plugin:
+      <table border="1">
+        <tr><th align="left">Plugin</th><th align="left">Needs</th></tr>
+        <tr><td>Ogg Vorbis-tag</td><td>libvorbis, libvorbisfile, libogg</td></tr>
+        <tr><td>MP3-tag (ID3)</td> <td>libid3 (3.8+)</td></tr>
+        <tr><td>image</td>         <td>imlib2 (highly recommended for thumbnailer anyway)</td></tr>
+      </table>
+    </p>
+  </a>
+
+  <hr />
+
+
+
+  <a name="backend">
+    <h2>Evidence backends</h2>
+    <p>
+      The backend tells evidence about the files
+      on your system. There are a several backends to choose from; for
+      instance, if you are using KDE, the KDE-backend will let evidence
+      use the awesome power of kioslaves.  The GNOME-VFS backend does
+      similar things for GNOME-users, the efsd-backend for enlightenment 17
+      users.  If in doubt, use the default "file" backend which does not
+      rely on a specific Desktop Environment and will run anywhere.
+    </p>
+  </a>
+
+  <hr />
+
+
+
+  <a name="canvas">
+    <h2>Canvas</h2>
+    <p>
+      The canvas is what evidence puts the icons of the icon-view and the
+      shelf on. You may use GNOME-canvas, or the enlightenment canvas, evas.
+      GNOME-canvas should part of your distribution of GNU/Linux and may well
+      be on your system already. evas means more stuff to download, but it
+      also means having a much fancier icon-view in the end.
+    </p>
+
+    <table border="1">
+      <tr><th align="left">Library</th> <th align="left">Used for...</th></tr>
+      <tr><td>freetype</td> <td>needed by evas. <em>required.</em></td>
+      <tr><td>imlib2</td> <td>fancy thumbnails. without imlib2, you will only get
+                           thumbnails (image previews) for PNG and JPG format images;
+                           with it, for about a dozen others, as well as previews
+                           for TrueType fonts. some theme-plugins such as the
+                           text-path also use imlib2 for fancier looks (but
+                           may usually be built to less effect without imlib2).
+                           <em>highly recommened.</em></td>
+      <tr><td>ebg</td> <td>enlightened background. ebony-created enlightenment 17
+                           backgrounds use this. backgrounds are store in edb-files,
+                           so if want ebg, you'll edb as well.
+                           <em>recommended.</em></td>
+      <tr><td>edb</td> <td>enlightened data-base. ebony-created enlightenment 17
+                           backgrounds and legacy e17 scrollbars come in this
+                           format.
+                           <em>recommended; required when using edb.</em></td>
+      <tr><td>eet</td> <td>enlightened compressed archive.
+                           now, one more format to thumbnail.
+                           will become more important in the future.
+                           <em>optional.</em></td></tr>
+    </table>
+  </a>
+
+  <hr />
+
+
+  <a name="customize">
+    <h2>Customizing evidence</h2>
+    <ul>
+      <li>
+        If you built evidence with shelf and icon-view (or download evidence),
+        you may use a ready-made icon-set of your choice.  To build your own
+        iconset, make new folder under <tt>/usr/local/share/evidence/icons</tt>,
+        copy the desired icons into that folder, and create a file <tt>mime.icons</tt>
+        telling evidence which of the icons to use for which MIME-type.  See
+        other iconsets for examples for the <tt>mime.icons</tt> map.
+      </li>
+
+      <li>
+        If you built evidence with the evas-canvas, you may use a ready-made
+        theme of your choice, or make your own using one of the shipped ones
+        as example.<br />
+        Themes tell evidence what fonts, pictures and theme-plugins to use.<br />
+        Theme-plugins are responsible for loading or creating icons,
+        rubber-bands, scrollbars, and background pictures.<br />
+        They can do this in any way they like -- but whether you like your
+        icon-view minimalistic or convoluted, you'll only load the plugins
+        you actually use!<br />
+        If you know the C programming language, you may write your own
+        theme-plugins.
+      </li>
+
+      <li>
+        To run evidence with a <a href="#backend">backend</a> other than
+        the one-size-fits-all default, pass the backend's name on the
+        command-line (see manual). To make it the default backend, simply
+        <tt>ln -s /usr/local/lib/evidence/backend/MyFunkyNewBackend.so /usr/local/lib/evidence/backend/fsxs.so</tt> --
+        I'll auto that in the future.
+      </li>
+    </ul>
+  </a>
+
+  <hr />
+
+  <a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=58061&amp;type=5" width="210" height="62" border="0" alt="Logo: SourceForge"></a>
+</body>

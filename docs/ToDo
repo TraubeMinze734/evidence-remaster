@@ -1,0 +1,48 @@
+0.9.8
+
+* shelf: - fix thumbnails
+         - clearer heuristics, what does "delete" delete?
+         - menus should not feature "folder"
+
+* searches: - action: "make this dir searchable"
+            - action: "make this subtree searchable"
+            - rescan dirs in which hits occurred
+            - handle duplicate file-names
+
+* actions: cvs commit/update this item (alongside CVS)
+* actions: cvs commit this folder (contains CVS)
+* actions: - "set this image as background (tiled)"
+
+
+
+0.9.9
+
+* TTF big preview
+* mailcap?
+* make plugins' property-listeners set defaults
+* properties-dial: edit primary action
+
+
+
+1.0.0
+
+* unified message-model (Fletch needs this, as well)
+* unified event-model (make API eCore-compatible so switch will be easy later)
+* additional fs-backends
+  GNOME-VFS
+  efsd
+  kio?
+
+- bugfix period -
+
+
+
+1.0.x
+
+* icon-view: do not cache all icons for large folders? (conserve memory)
+
+* in mime.icons, wildcards work for MIME-types, not for paths, maybe add?
+
+* mount-matic
+
+* spring-loaded folders, maybe?

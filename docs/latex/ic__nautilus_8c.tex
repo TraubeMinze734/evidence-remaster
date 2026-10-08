@@ -1,0 +1,121 @@
+\hypertarget{ic__nautilus_8c}{
+\section{ic\_\-nautilus.c File Reference}
+\label{ic__nautilus_8c}\index{ic_nautilus.c@{ic\_\-nautilus.c}}
+}
+plugin that creates an icon. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{ic__nautilus_8c_a19}{icon\_\-die} (noir\_\-theme $\ast$theme)
+\begin{CompactList}\small\item\em destall factory -- unregister listeners, free any resources etc. \item\end{CompactList}\item 
+static int \hyperlink{ic__nautilus_8c_a20}{ic\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our numeric properties. \item\end{CompactList}\item 
+static int \hyperlink{ic__nautilus_8c_a21}{ic\_\-str\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our string-properties. \item\end{CompactList}\item 
+int \hyperlink{ic__nautilus_8c_a22}{icon\_\-set\_\-state} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$\hyperlink{struct__icon}{icon}, icon\_\-state s)
+\begin{CompactList}\small\item\em change an icon's state. \item\end{CompactList}\item 
+\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{ic__nautilus_8c_a23}{icon\_\-els\_\-create} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$\hyperlink{struct__icon}{icon}, char $\ast$thumb)
+\begin{CompactList}\small\item\em create elements of an icon. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that creates an icon. 
+
+this is an \char`\"{}advanced\char`\"{} icon-factory that uses the \hyperlink{ic__nautilus_8c_a22}{icon\_\-set\_\-state()} method to modify icons dynamically rather than to precompute the states. this is the suggested procedure.
+
+visually, this will create icons that look a bit like those used by the nautilus file-manager: text-labels appear below the icon-image; when selected, the text-label is underlaid with a grey box with filed off corners.
+
+long text-labels are wrapped; for each wrap, the text-size is decreased by one.
+
+icons may be overlaid with automatic \char`\"{}emblems\char`\"{} indicating that an item might not be accessible or writable by the current user. in the default theme, this is indicated by the stop-sign and eye of horus, respectively.
+
+icons may be overlaid with additional textual information; at this time, the number of items contained in a folder is superimposed over the folder's icon. if the exact number of items is not known, an estimate is made (\char`\"{}123+\char`\"{} rather than \char`\"{}4711\char`\"{}). this estimate coincides with the number of folders contained in the folder (normally the number of hardlinks-2).
+
+items that are symlinks are \char`\"{}ghosted\char`\"{}; they appear translucent.
+
+items that evidence's thumbnailer was able to generate previews for will be show a preview in lieu of a datafile-icon.
+
+the factory installs a variety of properties; see below. these properties can be set in themes, or from the typebuffer, e.g. 'icontextcolour ff00ff
+
+\subsection{Function Documentation}
+\hypertarget{ic__nautilus_8c_a20}{
+\index{ic_nautilus.c@{ic\_\-nautilus.c}!ic_num_listener@{ic\_\-num\_\-listener}}
+\index{ic_num_listener@{ic\_\-num\_\-listener}!ic_nautilus.c@{ic\_\-nautilus.c}}
+\subsubsection[ic\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int ic\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ic__nautilus_8c_a20}
+
+
+listen for changes in our numeric properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{ic__nautilus_8c_a21}{
+\index{ic_nautilus.c@{ic\_\-nautilus.c}!ic_str_listener@{ic\_\-str\_\-listener}}
+\index{ic_str_listener@{ic\_\-str\_\-listener}!ic_nautilus.c@{ic\_\-nautilus.c}}
+\subsubsection[ic\_\-str\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int ic\_\-str\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ic__nautilus_8c_a21}
+
+
+listen for changes in our string-properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{ic__nautilus_8c_a19}{
+\index{ic_nautilus.c@{ic\_\-nautilus.c}!icon_die@{icon\_\-die}}
+\index{icon_die@{icon\_\-die}!ic_nautilus.c@{ic\_\-nautilus.c}}
+\subsubsection[icon\_\-die]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-die (noir\_\-theme $\ast$ {\em theme})}}
+\label{ic__nautilus_8c_a19}
+
+
+destall factory -- unregister listeners, free any resources etc. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em theme}]the theme\end{description}
+\end{Desc}
+\hypertarget{ic__nautilus_8c_a23}{
+\index{ic_nautilus.c@{ic\_\-nautilus.c}!icon_els_create@{icon\_\-els\_\-create}}
+\index{icon_els_create@{icon\_\-els\_\-create}!ic_nautilus.c@{ic\_\-nautilus.c}}
+\subsubsection[icon\_\-els\_\-create]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__el}{icon\_\-el}$\ast$ icon\_\-els\_\-create (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em icon}, char $\ast$ {\em thumb})}}
+\label{ic__nautilus_8c_a23}
+
+
+create elements of an icon. 
+
+\begin{Desc}
+\item[Returns:]the first element of a linked list of icon-elements. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list to create the icon in \item[{\em icon}]- the icon the elements are intended for \item[{\em thumb}]- the path to a thumb-nailed image of the portrayed file's contents, or NULL\end{description}
+\end{Desc}
+\hypertarget{ic__nautilus_8c_a22}{
+\index{ic_nautilus.c@{ic\_\-nautilus.c}!icon_set_state@{icon\_\-set\_\-state}}
+\index{icon_set_state@{icon\_\-set\_\-state}!ic_nautilus.c@{ic\_\-nautilus.c}}
+\subsubsection[icon\_\-set\_\-state]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-set\_\-state (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em icon}, icon\_\-state {\em s})}}
+\label{ic__nautilus_8c_a22}
+
+
+change an icon's state. 
+
+an icon-factory may create elements for all states when the icon is first created; in this case, \hyperlink{ic__nautilus_8c_a22}{icon\_\-set\_\-state()} needs not be provided. using \hyperlink{ic__nautilus_8c_a22}{icon\_\-set\_\-state()} does however allow for more flexibility (and reduced use of memory) by creating the desired elements \char`\"{}on the fly.\char`\"{} \begin{Desc}
+\item[Returns:]TRUE if \hyperlink{evas__bind_8c_a13}{evas\_\-icon\_\-set\_\-state()} wrapper show show/hide icon-elements based on their states after calling this, FALSE otherwise. (usually FALSE) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em icon}]- the icon in question \item[{\em s}]- the desired state\end{description}
+\end{Desc}

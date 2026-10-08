@@ -1,0 +1,212 @@
+.TH "bg_trans.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+bg_trans.c \- background-handler providing pseudo-transparency 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "Window \fBget_desk\fP (Window app)"
+.br
+.RI "\fIfind root-window our application window lives in \fP"
+.ti -1c
+.RI "static Evas_Object * \fBtransparency_get_pixmap\fP (\fBicon_list\fP *il, Evas_Object *old, int x, int y, int w, int h)"
+.br
+.RI "\fIget pixmap for pseudo-transparency \fP"
+.ti -1c
+.RI "static int \fBbg_num_listener\fP (noir_prop_bag *bag, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our numeric properties. \fP"
+.ti -1c
+.RI "void \fBbg_scroll\fP (void *i)"
+.br
+.RI "\fIcallback: view was scrolled, update background \fP"
+.ti -1c
+.RI "static void \fBbg_upd_el\fP (\fBicon_list\fP *il, Evas_Object *bg)"
+.br
+.RI "\fIupdate a single element of the (composed) background \fP"
+.ti -1c
+.RI "void \fBbg_upd\fP (void *i, int x, int y, int w, int h)"
+.br
+.RI "\fIcallback: update background (window resized or moved, backdrop changed, . \fP"
+.ti -1c
+.RI "static void \fBbg_new_el\fP (\fBicon_list\fP *il, Evas_Object *o, int layer)"
+.br
+.RI "\fIset up a single element of the (composed) background \fP"
+.ti -1c
+.RI "void * \fBbg_new\fP (noir_theme *t, \fBicon_list\fP *il, char *bg_pic)"
+.br
+.RI "\fIset a background on a view \fP"
+.ti -1c
+.RI "void \fBbg_dst\fP (void **data)"
+.br
+.RI "\fIdestruct background \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+background-handler providing pseudo-transparency 
+
+this plugin provides pseudo-transparency, so you will see the 'root-window' -- the desktop -- shining through, but not other windows.
+.PP
+properties:
+.IP "\(bu" 2
+backgroundtintalpha
+.IP "\(bu" 2
+backgroundtintcolour
+.PP
+
+.SH "Function Documentation"
+.PP 
+.SS "void bg_dst (void ** data)"
+.PP
+destruct background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the background to dest
+.RE
+.PP
+
+.SS "void* bg_new (noir_theme * t, \fBicon_list\fP * il, char * bg_pic)"
+.PP
+set a background on a view 
+.PP
+\fBReturns:\fP
+.RS 4
+the newly set background object (il->bg) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the current theme in this session 
+.br
+\fIil\fP the icon-list 
+.br
+\fIbg_pic\fP the name of the image for the background (any format evas loads)
+.RE
+.PP
+
+.SS "static void bg_new_el (\fBicon_list\fP * il, Evas_Object * o, int layer)\fC [inline, static]\fP"
+.PP
+set up a single element of the (composed) background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list 
+.br
+\fIo\fP the background-element (evas-object) 
+.br
+\fIlayer\fP the layer the object should live in
+.RE
+.PP
+
+.SS "static int bg_num_listener (noir_prop_bag * bag, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our numeric properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbag\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SS "void bg_scroll (void * i)"
+.PP
+callback: view was scrolled, update background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP the icon-list (contains coordinates and pointer to background)
+.RE
+.PP
+
+.SS "void bg_upd (void * i, int x, int y, int w, int h)"
+.PP
+callback: update background (window resized or moved, backdrop changed, . 
+.PP
+..) moving is relevant since the plugin uses pseudo-transparency! 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP the icon-list (contains pointer to background) 
+.br
+\fIx\fP horizontal position 
+.br
+\fIy\fP vertical position 
+.br
+\fIw\fP width 
+.br
+\fIh\fP height
+.RE
+.PP
+
+.SS "static void bg_upd_el (\fBicon_list\fP * il, Evas_Object * bg)\fC [inline, static]\fP"
+.PP
+update a single element of the (composed) background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list 
+.br
+\fIbg\fP the background-element (evas-object)
+.RE
+.PP
+
+.SS "Window get_desk (Window app)"
+.PP
+find root-window our application window lives in 
+.PP
+\fBReturns:\fP
+.RS 4
+the 'desktop' 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIapp\fP our application-window
+.RE
+.PP
+
+.SS "static Evas_Object* transparency_get_pixmap (\fBicon_list\fP * il, Evas_Object * old, int x, int y, int w, int h)\fC [static]\fP"
+.PP
+get pixmap for pseudo-transparency 
+.PP
+\fBReturns:\fP
+.RS 4
+an evas image-object 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list 
+.br
+\fIold\fP the previous PT pixmap 
+.br
+\fIx\fP position of the application-window 
+.br
+\fIy\fP position of the application-window 
+.br
+\fIw\fP width of the application-window 
+.br
+\fIh\fP height of the application-window
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

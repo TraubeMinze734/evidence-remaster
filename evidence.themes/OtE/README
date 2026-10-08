@@ -1,0 +1,15 @@
+
+Example edje.
+
+Comment in the #includes in "programs" to get the expedition clock.
+
+With edjes that send a lot of (timer-/animation-) signals, you will notice
+a certain (CPU-) load.  This is believed to decrease noticably once we drop
+GTK2.  The edje plugin is provided "early" in the hopes that it may facilitate
+theming; load created by themes can only get lighter in future versions.
+
+
+
+Background: http://phusion9.edesigns.nl/plus/walls1.html (version)
+
+- Used with permission -

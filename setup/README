@@ -1,0 +1,8 @@
+These go in $PREFIX/share/evidence and can be copied to ~/.evidence to change
+settings for a single user.
+
+evidence.handlers is always used,
+evidence.menu and evidence providers are used by the (default) POSIX
+file-system backend.
+
+see the docs dir for information.

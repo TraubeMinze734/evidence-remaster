@@ -1,0 +1,93 @@
+\hypertarget{ic__alignbelow_8c}{
+\section{ic\_\-alignbelow.c File Reference}
+\label{ic__alignbelow_8c}\index{ic_alignbelow.c@{ic\_\-alignbelow.c}}
+}
+plugin that creates an icon. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{ic__alignbelow_8c_a13}{icon\_\-die} (noir\_\-theme $\ast$theme)
+\begin{CompactList}\small\item\em destall factory -- unregister listeners, free any resources etc. \item\end{CompactList}\item 
+static int \hyperlink{ic__alignbelow_8c_a14}{ic\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our numeric properties. \item\end{CompactList}\item 
+static int \hyperlink{ic__alignbelow_8c_a15}{ic\_\-str\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our string-properties. \item\end{CompactList}\item 
+\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{ic__alignbelow_8c_a16}{icon\_\-els\_\-create} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$\hyperlink{struct__icon}{icon}, char $\ast$thumb)
+\begin{CompactList}\small\item\em create elements of an icon. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that creates an icon. 
+
+text-labels appear below the icon's image. long text-labels are cut off; an ellipsis (\char`\"{}...\char`\"{}) will be appended to the label to indicate this.
+
+items that evidence's thumbnailer was able to generate previews for will be show a preview in lieu of a datafile-icon.
+
+the factory installs a variety of properties; see below. these properties can be set in themes, or from the typebuffer, e.g. 'icontextcolour ff00ff
+
+\subsection{Function Documentation}
+\hypertarget{ic__alignbelow_8c_a14}{
+\index{ic_alignbelow.c@{ic\_\-alignbelow.c}!ic_num_listener@{ic\_\-num\_\-listener}}
+\index{ic_num_listener@{ic\_\-num\_\-listener}!ic_alignbelow.c@{ic\_\-alignbelow.c}}
+\subsubsection[ic\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int ic\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ic__alignbelow_8c_a14}
+
+
+listen for changes in our numeric properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{ic__alignbelow_8c_a15}{
+\index{ic_alignbelow.c@{ic\_\-alignbelow.c}!ic_str_listener@{ic\_\-str\_\-listener}}
+\index{ic_str_listener@{ic\_\-str\_\-listener}!ic_alignbelow.c@{ic\_\-alignbelow.c}}
+\subsubsection[ic\_\-str\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int ic\_\-str\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ic__alignbelow_8c_a15}
+
+
+listen for changes in our string-properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{ic__alignbelow_8c_a13}{
+\index{ic_alignbelow.c@{ic\_\-alignbelow.c}!icon_die@{icon\_\-die}}
+\index{icon_die@{icon\_\-die}!ic_alignbelow.c@{ic\_\-alignbelow.c}}
+\subsubsection[icon\_\-die]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-die (noir\_\-theme $\ast$ {\em theme})}}
+\label{ic__alignbelow_8c_a13}
+
+
+destall factory -- unregister listeners, free any resources etc. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em theme}]the theme\end{description}
+\end{Desc}
+\hypertarget{ic__alignbelow_8c_a16}{
+\index{ic_alignbelow.c@{ic\_\-alignbelow.c}!icon_els_create@{icon\_\-els\_\-create}}
+\index{icon_els_create@{icon\_\-els\_\-create}!ic_alignbelow.c@{ic\_\-alignbelow.c}}
+\subsubsection[icon\_\-els\_\-create]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__el}{icon\_\-el}$\ast$ icon\_\-els\_\-create (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em icon}, char $\ast$ {\em thumb})}}
+\label{ic__alignbelow_8c_a16}
+
+
+create elements of an icon. 
+
+\begin{Desc}
+\item[Returns:]the first element of a linked list of icon-elements. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list to create the icon in \item[{\em icon}]- the icon the elements are intended for \item[{\em thumb}]- the path to a thumb-nailed image of the portrayed file's contents, or NULL\end{description}
+\end{Desc}

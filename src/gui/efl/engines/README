@@ -1,0 +1,109 @@
+ic_*	icon-factories
+rb_*	rubber-band factories
+sb_*	scrollbar factories
+id_*	idle-handlers
+bg_*	background-handlers
+tt_*	tool-tip factories
+ia_*    icon-animations (for "open
+        folder/application/file")
+
+
+
+EXAMPLES
+
+
+
+ic_alignbelow
+
+  Text alignment - below icon
+  Long labels - ellipsis
+
+ic_alignright
+
+  Text alignment - right of icon
+  Long labels - display in full length
+  Miscellaneous - text height == icon height
+
+ic_nautilus
+
+  Text alignment - below icon
+  Long labels - word-wrap, text height decreased with each wrap
+  Miscellanous - only label inverted on select
+
+  Where the other icon-factories use the simpler "precompute all elements"
+  technique, this factory adjusts icons on-the-fly as their state changes.
+  This is done by providing the icon_set_state() method.
+
+
+
+id_bubbles
+
+  Bubbles drift surface-wards.  For use with fishtank-icons/-theme.
+  Extra sporadic fish by tillsan.
+  Example of idle actions independent of actual icon-view.
+
+id_flutterby
+
+  Butterflies slowly change colour.  For use with ento-icons.
+  Example of idle actions modifying the actual icons in the view.
+
+
+
+bg_tile
+
+  Use a JPG or PNG as background image ("wallpaper"), tile as needed.
+
+bg_scale
+
+  Use a JPG or PNG as backdrop, resize to fit icon-view.
+
+bg_ebg
+
+  Use an e17 background data-base (created with ebony).
+
+bg_ebg
+
+  Compose objects in e17 background data-base on a pseudo-transparent
+  background.  (To tint/shade, simply put a suitable colour object in
+  the bg db -- or use a gradient to create non eqi-transparent/tinted
+  backgrounds!)
+
+
+
+tt_traditional
+
+  Open tool-tip at mouse-position (or near the icon in question if
+  opened using the keyboard).
+
+tt_centre
+
+  Open tool-tip in the middle of the icon-list.
+
+tt_wholewindow
+
+  Use entire icon-list for tool-tip rather than a dedicated box.
+
+
+
+sb_edb
+
+  Read image-objects from an e17 database (created with etcher).
+
+sb_example
+
+  Create a scroll-bar using simple gradients.
+
+
+
+rb_gradient
+
+  Rubber-band is a simple gradient.
+
+rb_gradient2
+
+  Rubber-band is milky rectangle getting lighter towards the edge,
+  with black frame.  (Frame + gradients)
+
+rb_nautilus
+
+  Rubber-band is tinted rectangle with frame.

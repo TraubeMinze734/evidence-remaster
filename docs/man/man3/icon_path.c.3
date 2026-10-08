@@ -1,0 +1,186 @@
+.TH "icon_path.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+icon_path.c \- find individual icons of a given icon-set 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBicon_path_dst\fP (void *data)"
+.br
+.RI "\fIdestruct a string (in ht_icon_path hashtable) \fP"
+.ti -1c
+.RI "int \fBicon_path_del\fP (char *key)"
+.br
+.RI "\fIremove path for icon 'key' from hashtable \fP"
+.ti -1c
+.RI "int \fBicon_path_add\fP (const char *key, const char *icon_path)"
+.br
+.RI "\fIadd icon to hash \fP"
+.ti -1c
+.RI "char * \fBicon_path_find_file\fP (const char *file)"
+.br
+.RI "\fIfind 'file' in one of the setup-dirs. \fP"
+.ti -1c
+.RI "char * \fBicon_path_get\fP (const char *file, const char *mime)"
+.br
+.RI "\fIget the name and path of an icon. \fP"
+.ti -1c
+.RI "char * \fBicon_path_get_always\fP (const char *file, const char *mime)"
+.br
+.RI "\fIget the name and path of an icon. \fP"
+.ti -1c
+.RI "static void \fBicon_path_save_entry\fP (char *key, void *value, void *data)"
+.br
+.RI "\fIsave a single icon<->MIME-type mapping \fP"
+.ti -1c
+.RI "int \fBicon_path_save\fP (void)"
+.br
+.RI "\fIsave icon<->MIME-type mappings in user-dir \fP"
+.ti -1c
+.RI "static void \fBicon_path_unload\fP (void)"
+.br
+.RI "\fIdestruct icon-path hashtable \fP"
+.ti -1c
+.RI "int \fBicon_path_load\fP (void)"
+.br
+.RI "\fIcreate icon-path hashtable from file \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+find individual icons of a given icon-set 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int icon_path_add (const char * key, const char * icon_path)"
+.PP
+add icon to hash 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey\fP the icon's symbolic name 
+.br
+\fIicon_path\fP where the image-data for the icon is in the file-system
+.RE
+.PP
+
+.SS "int icon_path_del (char * key)"
+.PP
+remove path for icon 'key' from hashtable 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey\fP the icon's symbolic name
+.RE
+.PP
+
+.SS "static void icon_path_dst (void * data)\fC [static]\fP"
+.PP
+destruct a string (in ht_icon_path hashtable) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP a string
+.RE
+.PP
+
+.SS "char* icon_path_find_file (const char * file)"
+.PP
+find 'file' in one of the setup-dirs. 
+.PP
+\fBReturns:\fP
+.RS 4
+a buffer that must be free()d, or NULL for failure. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP - name of file to find
+.RE
+.PP
+
+.SS "char* icon_path_get (const char * file, const char * mime)"
+.PP
+get the name and path of an icon. 
+.PP
+if the hash returns a relative file-name, qualify it and update the hash 
+.PP
+\fBReturns:\fP
+.RS 4
+name and path of an icon (image), or NULL for failure (no hash, not found in hash, not found on disk) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the name and path of the file we want to represent, or NULL 
+.br
+\fImime\fP the file's MIME-type, or NULL
+.RE
+.PP
+
+.SS "char* icon_path_get_always (const char * file, const char * mime)"
+.PP
+get the name and path of an icon. 
+.PP
+if the hash returns a relative file-name, qualify it and update the hash. if no icon is found for file/MIME, return path to a default icon. 
+.PP
+\fBReturns:\fP
+.RS 4
+name and path of an icon (image), or NULL for failure (no hash, default-icon not found in hash, default-icon not found on disk) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the name and path of the file we want to represent, or NULL 
+.br
+\fImime\fP the file's MIME-type, or NULL
+.RE
+.PP
+
+.SS "int icon_path_load (void)"
+.PP
+create icon-path hashtable from file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "int icon_path_save (void)"
+.PP
+save icon<->MIME-type mappings in user-dir 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static void icon_path_save_entry (char * key, void * value, void * data)\fC [static]\fP"
+.PP
+save a single icon<->MIME-type mapping 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey\fP the icon's symbolic name 
+.br
+\fIvalue\fP where the image-data for the icon is in the file-system 
+.br
+\fIdata\fP the FILE to save to
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

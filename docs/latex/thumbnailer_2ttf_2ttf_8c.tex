@@ -1,0 +1,152 @@
+\hypertarget{thumbnailer_2ttf_2ttf_8c}{
+\section{ttf.c File Reference}
+\label{thumbnailer_2ttf_2ttf_8c}\index{ttf.c@{ttf.c}}
+}
+truetype font thumbnailer 
+
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define \hyperlink{thumbnailer_2ttf_2ttf_8c_a0}{TB}~2
+\begin{CompactList}\small\item\em thumbnail a truetype font (using Imlib2) \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a4}{
+static void \hyperlink{thumbnailer_2ttf_2ttf_8c_a4}{imlib\_\-font\_\-gc} (void)}
+\label{thumbnailer_2ttf_2ttf_8c_a4}
+
+\begin{CompactList}\small\item\em throw out old fonts \item\end{CompactList}\item 
+static Imlib\_\-Image \hyperlink{thumbnailer_2ttf_2ttf_8c_a5}{make} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em thumbnail a true-type font (using Imlib2). \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{thumbnailer_2ttf_2ttf_8c_a6}{live} (Evidence\_\-Thumb $\ast$e, thumbnail\_\-plugin\_\-capabilities what)
+\begin{CompactList}\small\item\em preview a true-type font (using Imlib2). \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2ttf_2ttf_8c_a7}{thumbnail\_\-plugin\_\-init} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em initialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2ttf_2ttf_8c_a8}{thumbnail\_\-plugin\_\-exit} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em deinitialize the thumbnailer-plugin and free any resources it may hold \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2ttf_2ttf_8c_a9}{thumbnail\_\-plugin\_\-make} (thumbnail\_\-plugin $\ast$tp, Evidence\_\-Thumb $\ast$e, void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em create a thumbnail \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2ttf_2ttf_8c_a10}{thumbnail\_\-plugin\_\-live} (thumbnail\_\-plugin $\ast$tp, Evidence\_\-Thumb $\ast$e, thumbnail\_\-plugin\_\-capabilities what)
+\begin{CompactList}\small\item\em create a big preview \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+truetype font thumbnailer 
+
+
+
+\subsection{Define Documentation}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a0}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!TB@{TB}}
+\index{TB@{TB}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[TB]{\setlength{\rightskip}{0pt plus 5cm}\#define TB~2}}
+\label{thumbnailer_2ttf_2ttf_8c_a0}
+
+
+thumbnail a truetype font (using Imlib2) 
+
+called from thumbnail\_\-generate() only. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the thumbnail struct\end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a6}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!live@{live}}
+\index{live@{live}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[live]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ live (Evidence\_\-Thumb $\ast$ {\em e}, thumbnail\_\-plugin\_\-capabilities {\em what})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2ttf_2ttf_8c_a6}
+
+
+preview a true-type font (using Imlib2). 
+
+\begin{Desc}
+\item[Returns:]an evas-object containing the preview \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the struct describing the thumbnail \item[{\em what}]what is to be created (if the thumbnailer has more than one capability)\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a5}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!make@{make}}
+\index{make@{make}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[make]{\setlength{\rightskip}{0pt plus 5cm}static Imlib\_\-Image make (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2ttf_2ttf_8c_a5}
+
+
+thumbnail a true-type font (using Imlib2). 
+
+adapted from efm. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the thumbnail descriptor\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a8}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!thumbnail_plugin_exit@{thumbnail\_\-plugin\_\-exit}}
+\index{thumbnail_plugin_exit@{thumbnail\_\-plugin\_\-exit}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[thumbnail\_\-plugin\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-exit (thumbnail\_\-plugin $\ast$ {\em tp})}}
+\label{thumbnailer_2ttf_2ttf_8c_a8}
+
+
+deinitialize the thumbnailer-plugin and free any resources it may hold 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a7}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!thumbnail_plugin_init@{thumbnail\_\-plugin\_\-init}}
+\index{thumbnail_plugin_init@{thumbnail\_\-plugin\_\-init}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[thumbnail\_\-plugin\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-init (thumbnail\_\-plugin $\ast$ {\em tp})}}
+\label{thumbnailer_2ttf_2ttf_8c_a7}
+
+
+initialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. 
+
+\begin{Desc}
+\item[Returns:]an error-code $<$0, or a set of features supported by the plugin \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a10}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!thumbnail_plugin_live@{thumbnail\_\-plugin\_\-live}}
+\index{thumbnail_plugin_live@{thumbnail\_\-plugin\_\-live}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[thumbnail\_\-plugin\_\-live]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-live (thumbnail\_\-plugin $\ast$ {\em tp}, Evidence\_\-Thumb $\ast$ {\em e}, thumbnail\_\-plugin\_\-capabilities {\em what})}}
+\label{thumbnailer_2ttf_2ttf_8c_a10}
+
+
+create a big preview 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct \item[{\em e}]the struct describing the thumbnail \item[{\em what}]what is to be created (if the thumbnailer has more than one capability)\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2ttf_2ttf_8c_a9}{
+\index{thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}!thumbnail_plugin_make@{thumbnail\_\-plugin\_\-make}}
+\index{thumbnail_plugin_make@{thumbnail\_\-plugin\_\-make}!thumbnailer/ttf/ttf.c@{thumbnailer/ttf/ttf.c}}
+\subsubsection[thumbnail\_\-plugin\_\-make]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-make (thumbnail\_\-plugin $\ast$ {\em tp}, Evidence\_\-Thumb $\ast$ {\em e}, void $\ast$$\ast$ {\em data})}}
+\label{thumbnailer_2ttf_2ttf_8c_a9}
+
+
+create a thumbnail 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]an opaque thumbnailer-plugin struct \item[{\em e}]the struct describing the thumbnail \item[{\em data}]the imlib-image (if TP\_\-IMLIB)\end{description}
+\end{Desc}

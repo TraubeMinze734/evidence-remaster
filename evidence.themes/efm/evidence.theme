@@ -1,0 +1,37 @@
+logo:			png
+author:			rasterman
+
+typebuffer_factory:	default
+scrollbar_factory:	default
+icon_factory:		alignbelow
+background_factory:	tile
+tooltip_factory:	traditional
+rubberband_factory:	gradient2
+
+open_folder_animation:	growfade
+open_app_animation:	grey
+open_file_animation:	basic
+
+shelf:			efm
+icon_view:		efm
+
+typebuffer_font:	xfiles
+typebuffer_font_size:	61
+icon_font:		vera
+icon_font_size:		15
+tooltip_font:		verase
+tooltip_font_size:	155555
+textpath_font:          vera
+textpath_font_size:	15
+
+icon_set:		efm
+icon_mode:		auto
+
+icon_text_colour:	#ffffff
+icon_text_alpha:	179
+icon_selection_colour:	#00677f
+icon_selection_alpha:	127
+icon_shadow_colour:	#000000
+icon_shadow_alpha:	255
+icon_shadow_x_offset:	2
+icon_shadow_y_offset:	2

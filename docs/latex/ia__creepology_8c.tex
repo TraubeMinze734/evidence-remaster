@@ -1,0 +1,34 @@
+\hypertarget{ia__creepology_8c}{
+\section{ia\_\-creepology.c File Reference}
+\label{ia__creepology_8c}\index{ia_creepology.c@{ia\_\-creepology.c}}
+}
+plugin that animates an icon (when starting a program, opening a folder, or somesuch). 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{ia__creepology_8c_a4}{animation} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that animates an icon (when starting a program, opening a folder, or somesuch). 
+
+which action is assigned which animation is decided in the theme.
+
+idea and original code by creepy, streamlined (using secret evidence hacks : ) by Azundris
+
+\subsection{Function Documentation}
+\hypertarget{ia__creepology_8c_a4}{
+\index{ia_creepology.c@{ia\_\-creepology.c}!animation@{animation}}
+\index{animation@{animation}!ia_creepology.c@{ia\_\-creepology.c}}
+\subsubsection[animation]{\setlength{\rightskip}{0pt plus 5cm}void animation (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{ia__creepology_8c_a4}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the list that's affected \item[{\em i}]- the icon we have to highlight\end{description}
+\end{Desc}
+we can get the evas in question from the icon\_\-list; also, this allows us to mess with icons other than the one selected (fade them out, or somesuch).

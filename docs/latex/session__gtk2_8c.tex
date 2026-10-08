@@ -1,0 +1,97 @@
+\hypertarget{session__gtk2_8c}{
+\section{session\_\-gtk2.c File Reference}
+\label{session__gtk2_8c}\index{session_gtk2.c@{session\_\-gtk2.c}}
+}
+getters/setters for the parts of the session specific to the GTK2 UI 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{session__gtk2_8c_a3}{noir\_\-sess\_\-present} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em raise window belonging to this session \item\end{CompactList}\item 
+int \hyperlink{session__gtk2_8c_a4}{noir\_\-sess\_\-set\_\-window\_\-title} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, char $\ast$utf8)
+\begin{CompactList}\small\item\em set window-title for this session \item\end{CompactList}\item 
+int \hyperlink{session__gtk2_8c_a5}{noir\_\-sess\_\-redraw\_\-window} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em redraw window belonging to this session \item\end{CompactList}\item 
+int \hyperlink{session__gtk2_8c_a6}{noir\_\-sess\_\-redraw\_\-files} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em redraw window belonging to this session \item\end{CompactList}\item 
+\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ \hyperlink{session__gtk2_8c_a7}{noir\_\-sess\_\-close} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em destroy a session by destroying its window. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+getters/setters for the parts of the session specific to the GTK2 UI 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{session__gtk2_8c_a7}{
+\index{session_gtk2.c@{session\_\-gtk2.c}!noir_sess_close@{noir\_\-sess\_\-close}}
+\index{noir_sess_close@{noir\_\-sess\_\-close}!session_gtk2.c@{session\_\-gtk2.c}}
+\subsubsection[noir\_\-sess\_\-close]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__noir__sess}{noir\_\-sess}$\ast$ noir\_\-sess\_\-close (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{session__gtk2_8c_a7}
+
+
+destroy a session by destroying its window. 
+
+use this to close a session. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session to destroy\end{description}
+\end{Desc}
+\hypertarget{session__gtk2_8c_a3}{
+\index{session_gtk2.c@{session\_\-gtk2.c}!noir_sess_present@{noir\_\-sess\_\-present}}
+\index{noir_sess_present@{noir\_\-sess\_\-present}!session_gtk2.c@{session\_\-gtk2.c}}
+\subsubsection[noir\_\-sess\_\-present]{\setlength{\rightskip}{0pt plus 5cm}int noir\_\-sess\_\-present (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{session__gtk2_8c_a3}
+
+
+raise window belonging to this session 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session the window of which to raise\end{description}
+\end{Desc}
+\hypertarget{session__gtk2_8c_a6}{
+\index{session_gtk2.c@{session\_\-gtk2.c}!noir_sess_redraw_files@{noir\_\-sess\_\-redraw\_\-files}}
+\index{noir_sess_redraw_files@{noir\_\-sess\_\-redraw\_\-files}!session_gtk2.c@{session\_\-gtk2.c}}
+\subsubsection[noir\_\-sess\_\-redraw\_\-files]{\setlength{\rightskip}{0pt plus 5cm}int noir\_\-sess\_\-redraw\_\-files (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{session__gtk2_8c_a6}
+
+
+redraw window belonging to this session 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session the window of which to raise\end{description}
+\end{Desc}
+\hypertarget{session__gtk2_8c_a5}{
+\index{session_gtk2.c@{session\_\-gtk2.c}!noir_sess_redraw_window@{noir\_\-sess\_\-redraw\_\-window}}
+\index{noir_sess_redraw_window@{noir\_\-sess\_\-redraw\_\-window}!session_gtk2.c@{session\_\-gtk2.c}}
+\subsubsection[noir\_\-sess\_\-redraw\_\-window]{\setlength{\rightskip}{0pt plus 5cm}int noir\_\-sess\_\-redraw\_\-window (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{session__gtk2_8c_a5}
+
+
+redraw window belonging to this session 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session the window of which to raise\end{description}
+\end{Desc}
+\hypertarget{session__gtk2_8c_a4}{
+\index{session_gtk2.c@{session\_\-gtk2.c}!noir_sess_set_window_title@{noir\_\-sess\_\-set\_\-window\_\-title}}
+\index{noir_sess_set_window_title@{noir\_\-sess\_\-set\_\-window\_\-title}!session_gtk2.c@{session\_\-gtk2.c}}
+\subsubsection[noir\_\-sess\_\-set\_\-window\_\-title]{\setlength{\rightskip}{0pt plus 5cm}int noir\_\-sess\_\-set\_\-window\_\-title (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, char $\ast$ {\em utf8})}}
+\label{session__gtk2_8c_a4}
+
+
+set window-title for this session 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session \item[{\em utf8}]the new title for the window (UTF-8 string)\end{description}
+\end{Desc}

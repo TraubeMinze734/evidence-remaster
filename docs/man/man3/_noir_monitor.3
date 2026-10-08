@@ -1,0 +1,63 @@
+.TH "_noir_monitor" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+_noir_monitor \- a monitor (abstract)  
+
+.PP
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char * \fBwant\fP"
+.br
+.RI "\fIthe object we're interested in \fP"
+.ti -1c
+.RI "char * \fBhave\fP"
+.br
+.RI "\fIthe deepest item in 'want' that actually exists in the file-system (if want==/someuser/some.cfg and some.cfg doesn't exist, have==/someuser until some.cfg becomes availabe, at which point have==/someuser/some.cfg) \fP"
+.ti -1c
+.RI "\fBnoir_file_monitor\fP \fBtype\fP"
+.br
+.RI "\fIwhat sort of object to check on \fP"
+.ti -1c
+.RI "void * \fBsession\fP"
+.br
+.RI "\fIsome tag for the front-end to recognize the owner of this monitor by \fP"
+.ti -1c
+.RI "void * \fBhandle\fP"
+.br
+.RI "\fIsome tag for the back-end to recgonize this monitor by \fP"
+.ti -1c
+.RI "const char * \fBsystem\fP"
+.br
+.RI "\fIif a backend supports different ways to monitor an object (FAM, F_NOTIFY, poll), it may note the mon-system here \fP"
+.ti -1c
+.RI "void * \fBdata\fP"
+.br
+.RI "\fIthe backend can store something here \fP"
+.ti -1c
+.RI "void * \fBcb_data\fP"
+.br
+.RI "\fIthe frontend can store something here \fP"
+.ti -1c
+.RI "time_t \fBts\fP"
+.br
+.RI "\fItime-stamp (when the object last changed) \fP"
+.ti -1c
+.RI "time_t \fBts2\fP"
+.br
+.RI "\fItime-stamp (when the object last updated in front-end) \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+a monitor (abstract) 
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

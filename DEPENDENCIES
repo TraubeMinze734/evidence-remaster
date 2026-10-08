@@ -1,0 +1,194 @@
+There aren't a lot of *required* libraries aside from GTK2 and evas.
+Just about everything else is purely *optional*, and in most
+cases you already have the libraries if you are interested in
+the respective functionality.  For instance, there's little point
+in building the vorbis-provider if you're not using vorbis; on the
+other hand if you *are* using vorbis, you in all likelihood already
+have the required libraries on your system.
+
+Also, most optional functions are not compiled into the main program,
+but into separate modules.  You can build these at a later date without
+having to rebuild the whole program.  You can also delete plugins as a
+hotfix if they act up.
+
+Here's what uses what.
+
+
+
+
+
+
+
+   PROVIDERS
+
+     Providers are modules that can read special meta-data from a file,
+     e.g. the genre or or sampling-rate from a MP3 file.  This information
+     will be displayed in file-tooltips, and some of it can be edited in
+     the properties editor that you call up with the right mouse-button;
+     a song's name or genre would be editable, its sampling frequency in
+     all likelihood would not be.
+     In other words, evidence is also a tag-editor.
+
+     All meta-data providers are optional and may be build at a later date
+     without having to rebuild evidence.
+
+     vorbis            View and edit the tags of Ogg Vorbis sound-files (.ogg)
+     |libogg
+     |libvorbis
+     |libvorbisfile
+
+     mp3               View and edit the tags of MP3 sound-files (.mp3)
+     |libid3-3.8
+
+     images            View info about images, change their format or size
+     |Imlib2
+
+     fonts             View info about TrueType Fonts (.ttf)
+     |libfreetype
+
+     misc              View info about all files the "extractor" library
+     |libextractor     supports (.html, .pdf, .qt, .rpm, ELF, ...)
+
+     exif              View info in JPEG images from digital cameras
+
+     ape               View info in tags of APE audio files
+
+     ttf               View info about TrueType Fonts (.ttf)
+     |freetype2
+
+
+
+   THUMBNAILERS
+
+     Thumbnailers create tiny previews of image files, "movies" and the like.
+
+     ttf               Previews for TrueType Fonts (.ttf)
+     |Imlib2
+
+     id3               Previews for MP3 songs with images in their ID3 tags(!)
+     |id3lib
+
+     xine              Previews for "all kinds of movies."  This includes
+     |libxine          animated previews in tooltips.
+
+     mpeg3             Previews for mpeg-movies (.mpg/.mpeg).
+     |libmpeg3         This is a fallback in case you don't have/like xine.
+                       If in doubt, the xine thumbnailer is preferable.
+
+     avifile           Previews for avi-movies (.avi)
+     |libavifile       This is a fallback in case you don't have/like xine.
+                       If in doubt, the xine thumbnailer is preferable.
+
+     epeg              Ultra-fast previews for JPEG images (.jpg/.jpeg)
+     |libjpeg
+
+     imlib2            Previews for "all kinds of images" (whatever Imlib2-
+     |Imlib2           loaders you have installed).
+
+
+
+   BACKENDS
+
+     Backends are providers that can read directories and "standard" meta-data
+     (like a file's size and name). Exactly one backend is used at a time (for
+     now), but several can be built.
+
+     file_direct       "direct" access to file-system, no "virtual file-system"
+                       (VFS) to handle remote files (ftp://, http://, ...) etc.
+                       This backend is special as it can be built with support
+                       for various libaries that will offer additional features
+                       when present at run-time. The backend will still work if
+                       these libraries are present at build-time, but not at
+                       run-time ("build once, run manywhere").
+     .libacl           support Access Control Lists (more granular permissions
+                       than "rwx"; modern file-systems support these)
+     .libattr          support Extended Attributes (extend stock meta-data like
+                       file-size and data with custom ones, modern file-systems
+                       support these)
+     .libmagic         work out a file's MIME-type with code from the "file"
+                       command.  (you may use one, none, or many of the
+                       optional MIME-detection libraries)
+     .sharedmime       work out a file's MIME-type with code from
+                       freedesktop.org.  (you may use one, none, or many of the
+                       optional MIME-detection libraries)
+
+     gnomevfs          access the file-system using GNOME-VFS2.
+     |gnomevfs2        under construction.
+
+     kio               access the file-system using KDE's kioslaves.
+                       forthcoming. maybe.
+
+     ferris            access the file-system using libferris.
+                       forthcoming. maybe.
+
+
+
+   CANVAS
+
+     A canvas is needed if you want icon-views and/or a "shelf."
+     evidence must be built against evas (the enlightenment 17 canvas).
+
+       It could also be built against gnome-canvas, but this is
+       deprecated and quite possible won't work anymore.  In either case,
+       you can use an icon-set of your choice, and theme the rest of
+       evidence using the themes of the widget library (GTK2 or EWL themes).
+       To be able to theme the icon-view itself (using background pictures
+       and fancy scroll-bars and rubber-bands etc.), you need to build
+       against evas.
+       The canvas needs to be chosen at build-time and can't be replaced
+       without rebuilding evidence. It is the only component that imposes
+       this restriction.
+
+     evas              required for icon-view and/or shelf
+     |edb
+     |eet
+
+     gnome-canvas      deprecated
+     |libart-lgpl
+
+
+
+   THEME ENGINES
+
+     Evidence can be customized using themes.  These themes use different
+     plugins, or "engines" to draw tooltips, icons, backgrounds etc.
+     Imlib2 is required for some of these.  edje is required for the edje
+     plugin.
+
+
+
+   SEARCHES
+
+     libdoodle is required for searches.  libdoodle in turn requires
+     the aforementioned libextractor.
+
+
+
+   WIDGET LIBRARY
+
+     For now, evidence uses GTK2 for dialog boxes.  EWL, the enlightened
+     widget library, will become available at a later date.
+
+
+
+   IPC
+
+     Inter-process communication plugins let other applications talk to
+     evidence.  This can be used to script evidence, or to configure/theme
+     it.
+
+     ecore             Lets evidence speak to other enlightened applications.
+     |ecore_ipc        If you want to use the evidence-shell ("evsh") or the
+                       "examine" configurator ("examine evidence") to setup,
+                       modify or theme evidence, you'll want to build this.
+
+     DCOP              Lets evidence speak to KDE3 applications.
+     |libDCOP          (Use "dcop" or "kdcop" to test.)
+                       This is a hack as it makes evidence a GTK2, a EFL and
+                       a KDE application at the same time.  Don't use this if
+                       you don't need it.
+
+     DBUS              The up-and-coming standard created by freedesktop.org.
+     |?                DBUS is a bit of a moving target for now, so building
+                       this plugin quite possible won't work at all times.
+

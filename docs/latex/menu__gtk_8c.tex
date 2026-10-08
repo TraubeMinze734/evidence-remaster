@@ -1,0 +1,370 @@
+\hypertarget{menu__gtk_8c}{
+\section{menu\_\-gtk.c File Reference}
+\label{menu__gtk_8c}\index{menu_gtk.c@{menu\_\-gtk.c}}
+}
+implements the GTK2 specific part of the context-menus. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static void \hyperlink{menu__gtk_8c_a1}{menu\_\-done} (Gtk\-Menu\-Shell $\ast$menushell, gpointer data)
+\begin{CompactList}\small\item\em closing menu. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a2}{menu\_\-selection\_\-apply\_\-one} (const char $\ast$file, Gtk\-Widget $\ast$item, menu\_\-action $\ast$menu, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em apply action from context-menu to a single file. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a3}{menu\_\-selection\_\-apply\_\-many} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em apply action from context-menu (to one or many). \item\end{CompactList}\item 
+static Gtk\-Widget $\ast$ \hyperlink{menu__gtk_8c_a4}{menu\_\-selection\_\-add} (action\_\-context $\ast$ac, Gtk\-Widget $\ast$menu, char $\ast$title, gpointer data)
+\begin{CompactList}\small\item\em add action 'title' to context-menu 'menu' for current selection. \item\end{CompactList}\item 
+static Gtk\-Widget $\ast$ \hyperlink{menu__gtk_8c_a5}{menu\_\-selection\_\-insensitive} (Gtk\-Widget $\ast$item)
+\begin{CompactList}\small\item\em set menu item insensitve (disabled) \item\end{CompactList}\item 
+static Gtk\-Widget $\ast$ \hyperlink{menu__gtk_8c_a6}{menu\_\-submenu\_\-new} (Gtk\-Widget $\ast$menu, char $\ast$mime)
+\begin{CompactList}\small\item\em create a sub-menu \item\end{CompactList}\item 
+void $\ast$ \hyperlink{menu__gtk_8c_a7}{menu\_\-selection\_\-create} (action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em create context-menu for current selection. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a8}{menu\_\-single\_\-apply} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em wrapper for menu\_\-selection\_\-apply\_\-one so it can be called by GTK. \item\end{CompactList}\item 
+static void \hyperlink{menu__gtk_8c_a9}{menu\_\-add} (Gtk\-Widget $\ast$menu, menu\_\-action $\ast$m, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em add action to context-menu. \item\end{CompactList}\item 
+static void \hyperlink{menu__gtk_8c_a10}{menu\_\-count\_\-items} (Gtk\-Widget $\ast$widget, gpointer data)
+\begin{CompactList}\small\item\em count items in context-menu. \item\end{CompactList}\item 
+static int \hyperlink{menu__gtk_8c_a11}{menu\_\-create} (action\_\-context $\ast$ac, Gtk\-Widget $\ast$menu)
+\begin{CompactList}\small\item\em create and display context-menu (according to item this menu is for). \item\end{CompactList}\item 
+int \hyperlink{menu__gtk_8c_a12}{menu\_\-run} (action\_\-context $\ast$ac, void $\ast$menu)
+\begin{CompactList}\small\item\em handle a menu. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a13}{root\_\-menu\_\-sort} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em switch sort-order for icon-view. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a14}{root\_\-menu\_\-switch2} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em switch views from \char`\"{}root-menu\char`\"{}. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a15}{root\_\-menu\_\-preferences} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em edit preferences (call examine) \item\end{CompactList}\item 
+static Gtk\-Menu\-Item $\ast$ \hyperlink{menu__gtk_8c_a16}{root\_\-menu\_\-add} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$$\ast$sess, Gtk\-Widget $\ast$menu, char $\ast$title, gpointer data, gint($\ast$handler)(Gtk\-Widget $\ast$, gpointer))
+\begin{CompactList}\small\item\em add an item to a \char`\"{}root-menu\char`\"{}. \item\end{CompactList}\item 
+static Gtk\-Menu\-Item $\ast$ \hyperlink{menu__gtk_8c_a17}{root\_\-sort\_\-add} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$$\ast$sess, Gtk\-Widget $\ast$menu, char $\ast$title, gpointer data, gint($\ast$handler)(Gtk\-Widget $\ast$, gpointer))
+\begin{CompactList}\small\item\em add an check-item to a \char`\"{}root-menu\char`\"{}. \item\end{CompactList}\item 
+int \hyperlink{menu__gtk_8c_a18}{menu\_\-root\_\-context} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, const char $\ast$cwd, int mb)
+\begin{CompactList}\small\item\em create and show \char`\"{}root-menu\char`\"{}. \item\end{CompactList}\item 
+static gint \hyperlink{menu__gtk_8c_a19}{path\_\-menu\_\-selected} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em a path was selected from path-menu, cd to it. \item\end{CompactList}\item 
+static void \hyperlink{menu__gtk_8c_a20}{path\_\-menu\_\-add\_\-path} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, Gtk\-Widget $\ast$menu, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em add a path to the path-menu. \item\end{CompactList}\item 
+int \hyperlink{menu__gtk_8c_a21}{menu\_\-path} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, int button, long when)
+\begin{CompactList}\small\item\em show menu containing all paths leading up to cwd. \item\end{CompactList}\item 
+int \hyperlink{menu__gtk_8c_a22}{menu\_\-subdirs} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, \hyperlink{struct__file__info}{file\_\-info} $\ast$pa, int button)
+\begin{CompactList}\small\item\em show menu containing all paths leading up to cwd. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+implements the GTK2 specific part of the context-menus. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{menu__gtk_8c_a9}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_add@{menu\_\-add}}
+\index{menu_add@{menu\_\-add}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static void menu\_\-add (Gtk\-Widget $\ast$ {\em menu}, menu\_\-action $\ast$ {\em m}, action\_\-context $\ast$ {\em ac})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a9}
+
+
+add action to context-menu. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em menu}]the GTK menu \item[{\em m}]the menu-action \item[{\em ac}]the action-context\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a10}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_count_items@{menu\_\-count\_\-items}}
+\index{menu_count_items@{menu\_\-count\_\-items}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-count\_\-items]{\setlength{\rightskip}{0pt plus 5cm}static void menu\_\-count\_\-items (Gtk\-Widget $\ast$ {\em widget}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a10}
+
+
+count items in context-menu. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]an item in the menu (ignored) \item[{\em data}]a pointer to the counter-variable\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a11}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_create@{menu\_\-create}}
+\index{menu_create@{menu\_\-create}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-create]{\setlength{\rightskip}{0pt plus 5cm}static int menu\_\-create (action\_\-context $\ast$ {\em ac}, Gtk\-Widget $\ast$ {\em menu})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a11}
+
+
+create and display context-menu (according to item this menu is for). 
+
+\begin{Desc}
+\item[Returns:]$<$0 (error-code) or $>$=0 (\# of items in menu; 0==none, meaning that no menu is shown) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context \item[{\em menu}]menu-object (may hand-in previously made menu with extra items; created inside if NULL)\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a1}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_done@{menu\_\-done}}
+\index{menu_done@{menu\_\-done}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-done]{\setlength{\rightskip}{0pt plus 5cm}static void menu\_\-done (Gtk\-Menu\-Shell $\ast$ {\em menushell}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a1}
+
+
+closing menu. 
+
+release all admin data.\hypertarget{menu__gtk_8c_a21}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_path@{menu\_\-path}}
+\index{menu_path@{menu\_\-path}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-path]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-path (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, int {\em button}, long {\em when})}}
+\label{menu__gtk_8c_a21}
+
+
+show menu containing all paths leading up to cwd. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- session \item[{\em button}]- what mouse-button caused the menu to open? \item[{\em when}]- when did the click occur?\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a18}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_root_context@{menu\_\-root\_\-context}}
+\index{menu_root_context@{menu\_\-root\_\-context}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-root\_\-context]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-root\_\-context (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, const char $\ast$ {\em cwd}, int {\em mb})}}
+\label{menu__gtk_8c_a18}
+
+
+create and show \char`\"{}root-menu\char`\"{}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]session \item[{\em cwd}]current work-dir (may differ from session's if view can show more than one directory at a time) \item[{\em mb}]the mouse-button that was pressed to open the menu\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a12}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_run@{menu\_\-run}}
+\index{menu_run@{menu\_\-run}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-run]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-run (action\_\-context $\ast$ {\em ac}, void $\ast$ {\em menu})}}
+\label{menu__gtk_8c_a12}
+
+
+handle a menu. 
+
+(called from \hyperlink{menu__common_8c_a12}{menu\_\-file\_\-context()} for context-menus and from root\_\-menu() for \char`\"{}root\char`\"{}-menus.) \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context \item[{\em menu}]a pre-made GTK-menu to append entries to, or NULL to create a new menu\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a4}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_selection_add@{menu\_\-selection\_\-add}}
+\index{menu_selection_add@{menu\_\-selection\_\-add}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-selection\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Widget$\ast$ menu\_\-selection\_\-add (action\_\-context $\ast$ {\em ac}, Gtk\-Widget $\ast$ {\em menu}, char $\ast$ {\em title}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a4}
+
+
+add action 'title' to context-menu 'menu' for current selection. 
+
+called from \hyperlink{menu__gtk_8c_a7}{menu\_\-selection\_\-create()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context \item[{\em menu}]the GTK menu to add to \item[{\em title}]the title for the menu entry \item[{\em data}]the data to set on the entry (an action (menu\_\-action $\ast$), or NULL)\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a3}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_selection_apply_many@{menu\_\-selection\_\-apply\_\-many}}
+\index{menu_selection_apply_many@{menu\_\-selection\_\-apply\_\-many}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-selection\_\-apply\_\-many]{\setlength{\rightskip}{0pt plus 5cm}static gint menu\_\-selection\_\-apply\_\-many (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a3}
+
+
+apply action from context-menu (to one or many). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]- the GTK menu-item \item[{\em data}]- the action-context\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a2}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_selection_apply_one@{menu\_\-selection\_\-apply\_\-one}}
+\index{menu_selection_apply_one@{menu\_\-selection\_\-apply\_\-one}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-selection\_\-apply\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static gint menu\_\-selection\_\-apply\_\-one (const char $\ast$ {\em file}, Gtk\-Widget $\ast$ {\em item}, menu\_\-action $\ast$ {\em menu}, action\_\-context $\ast$ {\em ac})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{menu__gtk_8c_a2}
+
+
+apply action from context-menu to a single file. 
+
+called from menu\_\-selection\_\-apply(). \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file}]the file to apply the action to \item[{\em item}]the GTK menu item \item[{\em menu}]the action to be applied to the file \item[{\em ac}]the action context\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a7}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_selection_create@{menu\_\-selection\_\-create}}
+\index{menu_selection_create@{menu\_\-selection\_\-create}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-selection\_\-create]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ menu\_\-selection\_\-create (action\_\-context $\ast$ {\em ac})}}
+\label{menu__gtk_8c_a7}
+
+
+create context-menu for current selection. 
+
+\begin{Desc}
+\item[Returns:]a GTK menu-item \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a5}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_selection_insensitive@{menu\_\-selection\_\-insensitive}}
+\index{menu_selection_insensitive@{menu\_\-selection\_\-insensitive}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-selection\_\-insensitive]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Widget$\ast$ menu\_\-selection\_\-insensitive (Gtk\-Widget $\ast$ {\em item})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a5}
+
+
+set menu item insensitve (disabled) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]the GTK menu-item to disable\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a8}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_single_apply@{menu\_\-single\_\-apply}}
+\index{menu_single_apply@{menu\_\-single\_\-apply}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-single\_\-apply]{\setlength{\rightskip}{0pt plus 5cm}static gint menu\_\-single\_\-apply (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a8}
+
+
+wrapper for menu\_\-selection\_\-apply\_\-one so it can be called by GTK. 
+
+this is called when a menu-entry pertaining to a single file (rather than a selection of files) is activated; see menu\_\-add. in this case, NULL will be passed to menu\_\-selected\_\-do in lieu of an action\_\-context. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]the menu-item that was selected. its \char`\"{}data\char`\"{} property will contain the anchor of the file's meta-data. \item[{\em data}]the menu-action.\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a22}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_subdirs@{menu\_\-subdirs}}
+\index{menu_subdirs@{menu\_\-subdirs}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-subdirs]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-subdirs (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em pa}, int {\em button})}}
+\label{menu__gtk_8c_a22}
+
+
+show menu containing all paths leading up to cwd. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- session \item[{\em pa}]- the directory the sub-folders of which to offer \item[{\em button}]- what mouse-button caused the menu to open?\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a6}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!menu_submenu_new@{menu\_\-submenu\_\-new}}
+\index{menu_submenu_new@{menu\_\-submenu\_\-new}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[menu\_\-submenu\_\-new]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Widget$\ast$ menu\_\-submenu\_\-new (Gtk\-Widget $\ast$ {\em menu}, char $\ast$ {\em mime})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a6}
+
+
+create a sub-menu 
+
+\begin{Desc}
+\item[Returns:]the sub-menu, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em menu}]the menu to add the sub-menu to \item[{\em mime}]the MIME-type the sub-menu is for\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a20}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!path_menu_add_path@{path\_\-menu\_\-add\_\-path}}
+\index{path_menu_add_path@{path\_\-menu\_\-add\_\-path}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[path\_\-menu\_\-add\_\-path]{\setlength{\rightskip}{0pt plus 5cm}static void path\_\-menu\_\-add\_\-path (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, Gtk\-Widget $\ast$ {\em menu}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a20}
+
+
+add a path to the path-menu. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- session \item[{\em menu}]- the GTK menu \item[{\em fi}]- the file to make an entry for\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a19}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!path_menu_selected@{path\_\-menu\_\-selected}}
+\index{path_menu_selected@{path\_\-menu\_\-selected}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[path\_\-menu\_\-selected]{\setlength{\rightskip}{0pt plus 5cm}static gint path\_\-menu\_\-selected (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a19}
+
+
+a path was selected from path-menu, cd to it. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]- the selected entry, \char`\"{}data\char`\"{} prop holds index into session-$>$cwd \item[{\em data}]- the session\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a16}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!root_menu_add@{root\_\-menu\_\-add}}
+\index{root_menu_add@{root\_\-menu\_\-add}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[root\_\-menu\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Menu\-Item$\ast$ root\_\-menu\_\-add (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$$\ast$ {\em sess}, Gtk\-Widget $\ast$ {\em menu}, char $\ast$ {\em title}, gpointer {\em data}, gint($\ast$)(Gtk\-Widget $\ast$, gpointer) {\em handler})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a16}
+
+
+add an item to a \char`\"{}root-menu\char`\"{}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sess}]the session \item[{\em menu}]the GTK menu \item[{\em title}]the label for the new entry \item[{\em data}]the value for the \char`\"{}data\char`\"{} prop (normally index of view to activate) \item[{\em handler}]the function to call when this item is activated\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a15}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!root_menu_preferences@{root\_\-menu\_\-preferences}}
+\index{root_menu_preferences@{root\_\-menu\_\-preferences}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[root\_\-menu\_\-preferences]{\setlength{\rightskip}{0pt plus 5cm}static gint root\_\-menu\_\-preferences (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a15}
+
+
+edit preferences (call examine) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]the GTK menu-item that was activated. \char`\"{}data\char`\"{} prop holds index of view to activate. \item[{\em data}]the session.\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a13}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!root_menu_sort@{root\_\-menu\_\-sort}}
+\index{root_menu_sort@{root\_\-menu\_\-sort}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[root\_\-menu\_\-sort]{\setlength{\rightskip}{0pt plus 5cm}static gint root\_\-menu\_\-sort (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a13}
+
+
+switch sort-order for icon-view. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]the GTK menu-item that was activated. \char`\"{}data\char`\"{} prop holds sort-flags to set. \item[{\em data}]the session.\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a14}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!root_menu_switch2@{root\_\-menu\_\-switch2}}
+\index{root_menu_switch2@{root\_\-menu\_\-switch2}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[root\_\-menu\_\-switch2]{\setlength{\rightskip}{0pt plus 5cm}static gint root\_\-menu\_\-switch2 (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a14}
+
+
+switch views from \char`\"{}root-menu\char`\"{}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]the GTK menu-item that was activated. \char`\"{}data\char`\"{} prop holds index of view to activate. \item[{\em data}]the session.\end{description}
+\end{Desc}
+\hypertarget{menu__gtk_8c_a17}{
+\index{menu_gtk.c@{menu\_\-gtk.c}!root_sort_add@{root\_\-sort\_\-add}}
+\index{root_sort_add@{root\_\-sort\_\-add}!menu_gtk.c@{menu\_\-gtk.c}}
+\subsubsection[root\_\-sort\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Menu\-Item$\ast$ root\_\-sort\_\-add (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$$\ast$ {\em sess}, Gtk\-Widget $\ast$ {\em menu}, char $\ast$ {\em title}, gpointer {\em data}, gint($\ast$)(Gtk\-Widget $\ast$, gpointer) {\em handler})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__gtk_8c_a17}
+
+
+add an check-item to a \char`\"{}root-menu\char`\"{}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sess}]the session \item[{\em menu}]the GTK menu \item[{\em title}]the label for the new entry \item[{\em data}]the value for the \char`\"{}data\char`\"{} prop (normally index of view to activate) \item[{\em handler}]the function to call when this item is activated\end{description}
+\end{Desc}

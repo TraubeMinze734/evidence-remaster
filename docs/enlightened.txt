@@ -1,0 +1,35 @@
+ENLIGHTENED FILE-MANAGERS, blah on #edevelop
+
+Azundris evidence links against GTK, not ewl, for the time 
+         being. They may be an ewl-version once ewl has the widgets we need.  
+Azundris What I'd like is GTK using evas stuff rather than GDK.  
+         You know, GDK-wrappers for evas.
+Azundris It'd have to have magic properties for alpha and stuff, 
+         of course.
+Azundris As evidence uses GTK already, I feel it should use all 
+         the fancy E stuff if it's there, but should also compile without it 
+         (internal file-ops if no efsd, plain files or GConf if no edb)
+chaos    argh, another abstraction layer :)
+Azundris I might do both, selectable at compile-time.  I need to 
+         work with both, anyway, and it's not like they are overly
+         complicated. Won't bloat neither, because you don't *compile in* both.
+Azundris grins.  "I'm a sucker for abstraction layers.  Those that don't slow
+         down or bloat stuff, anyways."
+Azundris chaos_: It's not like I were a major GConf fan.  GConf1 
+         blew up in my face too often for that.
+...
+Azundris grins.  "That's not even my major prob with nautilus.  It's a)
+         nautilus does really offer a lot of options for its size, and
+         b) I can't turn off all the (tool/status) bars I want to turn off. I 
+         like my windows uncluttered.
+Azundris basically, the e stuff with be all front-end.  you need 
+         files, you ask efsd.  you need a file-op (mv,unlink,mkdir,...), you
+         ask efsd.  you want to view/edit a specific file's info, there's a
+         helper app for that.  the front-ends do their nice displaying, their
+         D&D, and their IPC.  Everything else, they're not responsible for.
+Azundris Upshot: the view apps stay lean and mean.  no 
+         news-browsing bullshit.  no duplication of code.
+chaos    nice plan.
+Azundris even if you open, say, both evidence and essence, the 
+         memory hit will be minor, as they both use the same efsd backend for 
+         file-ops, and the same helpers for file-info.

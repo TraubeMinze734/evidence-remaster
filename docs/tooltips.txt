@@ -1,0 +1,15 @@
+
+evidence supports plugins for metadata.  As an example, the vorbis.so
+provider is included.  Each provider must at least feature the following
+two functions:
+
+  int meta_set_for_file(meta **,char *)
+
+  int meta_get_for_file(meta **,char *)
+
+If your provider does not support editing meta-data, just return NOIR_FAIL
+in the first function, and tag all meta-data you return in the second
+read-only.
+
+For a provider to be used, it must be listed for at least one mime-type
+in evidence.providers.

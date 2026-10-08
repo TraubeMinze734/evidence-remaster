@@ -1,0 +1,416 @@
+.TH "menu_gtk.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+menu_gtk.c \- implements the GTK2 specific part of the context-menus. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBmenu_done\fP (GtkMenuShell *menushell, gpointer data)"
+.br
+.RI "\fIclosing menu. \fP"
+.ti -1c
+.RI "static gint \fBmenu_selection_apply_one\fP (const char *file, GtkWidget *item, menu_action *menu, action_context *ac)"
+.br
+.RI "\fIapply action from context-menu to a single file. \fP"
+.ti -1c
+.RI "static gint \fBmenu_selection_apply_many\fP (GtkWidget *item, gpointer data)"
+.br
+.RI "\fIapply action from context-menu (to one or many). \fP"
+.ti -1c
+.RI "static GtkWidget * \fBmenu_selection_add\fP (action_context *ac, GtkWidget *menu, char *title, gpointer data)"
+.br
+.RI "\fIadd action 'title' to context-menu 'menu' for current selection. \fP"
+.ti -1c
+.RI "static GtkWidget * \fBmenu_selection_insensitive\fP (GtkWidget *item)"
+.br
+.RI "\fIset menu item insensitve (disabled) \fP"
+.ti -1c
+.RI "static GtkWidget * \fBmenu_submenu_new\fP (GtkWidget *menu, char *mime)"
+.br
+.RI "\fIcreate a sub-menu \fP"
+.ti -1c
+.RI "void * \fBmenu_selection_create\fP (action_context *ac)"
+.br
+.RI "\fIcreate context-menu for current selection. \fP"
+.ti -1c
+.RI "static gint \fBmenu_single_apply\fP (GtkWidget *item, gpointer data)"
+.br
+.RI "\fIwrapper for menu_selection_apply_one so it can be called by GTK. \fP"
+.ti -1c
+.RI "static void \fBmenu_add\fP (GtkWidget *menu, menu_action *m, action_context *ac)"
+.br
+.RI "\fIadd action to context-menu. \fP"
+.ti -1c
+.RI "static void \fBmenu_count_items\fP (GtkWidget *widget, gpointer data)"
+.br
+.RI "\fIcount items in context-menu. \fP"
+.ti -1c
+.RI "static int \fBmenu_create\fP (action_context *ac, GtkWidget *menu)"
+.br
+.RI "\fIcreate and display context-menu (according to item this menu is for). \fP"
+.ti -1c
+.RI "int \fBmenu_run\fP (action_context *ac, void *menu)"
+.br
+.RI "\fIhandle a menu. \fP"
+.ti -1c
+.RI "static gint \fBroot_menu_sort\fP (GtkWidget *item, gpointer data)"
+.br
+.RI "\fIswitch sort-order for icon-view. \fP"
+.ti -1c
+.RI "static gint \fBroot_menu_switch2\fP (GtkWidget *item, gpointer data)"
+.br
+.RI "\fIswitch views from 'root-menu'. \fP"
+.ti -1c
+.RI "static gint \fBroot_menu_preferences\fP (GtkWidget *item, gpointer data)"
+.br
+.RI "\fIedit preferences (call examine) \fP"
+.ti -1c
+.RI "static GtkMenuItem * \fBroot_menu_add\fP (\fBnoir_sess\fP **sess, GtkWidget *menu, char *title, gpointer data, gint(*handler)(GtkWidget *, gpointer))"
+.br
+.RI "\fIadd an item to a 'root-menu'. \fP"
+.ti -1c
+.RI "static GtkMenuItem * \fBroot_sort_add\fP (\fBnoir_sess\fP **sess, GtkWidget *menu, char *title, gpointer data, gint(*handler)(GtkWidget *, gpointer))"
+.br
+.RI "\fIadd an check-item to a 'root-menu'. \fP"
+.ti -1c
+.RI "int \fBmenu_root_context\fP (\fBnoir_sess\fP *ns, const char *cwd, int mb)"
+.br
+.RI "\fIcreate and show 'root-menu'. \fP"
+.ti -1c
+.RI "static gint \fBpath_menu_selected\fP (GtkWidget *item, gpointer data)"
+.br
+.RI "\fIa path was selected from path-menu, cd to it. \fP"
+.ti -1c
+.RI "static void \fBpath_menu_add_path\fP (\fBnoir_sess\fP *ns, GtkWidget *menu, \fBfile_info\fP *fi)"
+.br
+.RI "\fIadd a path to the path-menu. \fP"
+.ti -1c
+.RI "int \fBmenu_path\fP (\fBnoir_sess\fP *ns, int button, long when)"
+.br
+.RI "\fIshow menu containing all paths leading up to cwd. \fP"
+.ti -1c
+.RI "int \fBmenu_subdirs\fP (\fBnoir_sess\fP *ns, \fBfile_info\fP *pa, int button)"
+.br
+.RI "\fIshow menu containing all paths leading up to cwd. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+implements the GTK2 specific part of the context-menus. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static void menu_add (GtkWidget * menu, menu_action * m, action_context * ac)\fC [static]\fP"
+.PP
+add action to context-menu. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImenu\fP the GTK menu 
+.br
+\fIm\fP the menu-action 
+.br
+\fIac\fP the action-context
+.RE
+.PP
+
+.SS "static void menu_count_items (GtkWidget * widget, gpointer data)\fC [static]\fP"
+.PP
+count items in context-menu. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP an item in the menu (ignored) 
+.br
+\fIdata\fP a pointer to the counter-variable
+.RE
+.PP
+
+.SS "static int menu_create (action_context * ac, GtkWidget * menu)\fC [static]\fP"
+.PP
+create and display context-menu (according to item this menu is for). 
+.PP
+\fBReturns:\fP
+.RS 4
+<0 (error-code) or >=0 (# of items in menu; 0==none, meaning that no menu is shown) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context 
+.br
+\fImenu\fP menu-object (may hand-in previously made menu with extra items; created inside if NULL)
+.RE
+.PP
+
+.SS "static void menu_done (GtkMenuShell * menushell, gpointer data)\fC [static]\fP"
+.PP
+closing menu. 
+.PP
+release all admin data.
+.SS "int menu_path (\fBnoir_sess\fP * ns, int button, long when)"
+.PP
+show menu containing all paths leading up to cwd. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - session 
+.br
+\fIbutton\fP - what mouse-button caused the menu to open? 
+.br
+\fIwhen\fP - when did the click occur?
+.RE
+.PP
+
+.SS "int menu_root_context (\fBnoir_sess\fP * ns, const char * cwd, int mb)"
+.PP
+create and show 'root-menu'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP session 
+.br
+\fIcwd\fP current work-dir (may differ from session's if view can show more than one directory at a time) 
+.br
+\fImb\fP the mouse-button that was pressed to open the menu
+.RE
+.PP
+
+.SS "int menu_run (action_context * ac, void * menu)"
+.PP
+handle a menu. 
+.PP
+(called from \fBmenu_file_context()\fP for context-menus and from root_menu() for 'root'-menus.) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context 
+.br
+\fImenu\fP a pre-made GTK-menu to append entries to, or NULL to create a new menu
+.RE
+.PP
+
+.SS "static GtkWidget* menu_selection_add (action_context * ac, GtkWidget * menu, char * title, gpointer data)\fC [static]\fP"
+.PP
+add action 'title' to context-menu 'menu' for current selection. 
+.PP
+called from \fBmenu_selection_create()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context 
+.br
+\fImenu\fP the GTK menu to add to 
+.br
+\fItitle\fP the title for the menu entry 
+.br
+\fIdata\fP the data to set on the entry (an action (menu_action *), or NULL)
+.RE
+.PP
+
+.SS "static gint menu_selection_apply_many (GtkWidget * item, gpointer data)\fC [static]\fP"
+.PP
+apply action from context-menu (to one or many). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP - the GTK menu-item 
+.br
+\fIdata\fP - the action-context
+.RE
+.PP
+
+.SS "static gint menu_selection_apply_one (const char * file, GtkWidget * item, menu_action * menu, action_context * ac)\fC [inline, static]\fP"
+.PP
+apply action from context-menu to a single file. 
+.PP
+called from menu_selection_apply(). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the file to apply the action to 
+.br
+\fIitem\fP the GTK menu item 
+.br
+\fImenu\fP the action to be applied to the file 
+.br
+\fIac\fP the action context
+.RE
+.PP
+
+.SS "void* menu_selection_create (action_context * ac)"
+.PP
+create context-menu for current selection. 
+.PP
+\fBReturns:\fP
+.RS 4
+a GTK menu-item 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context
+.RE
+.PP
+
+.SS "static GtkWidget* menu_selection_insensitive (GtkWidget * item)\fC [static]\fP"
+.PP
+set menu item insensitve (disabled) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP the GTK menu-item to disable
+.RE
+.PP
+
+.SS "static gint menu_single_apply (GtkWidget * item, gpointer data)\fC [static]\fP"
+.PP
+wrapper for menu_selection_apply_one so it can be called by GTK. 
+.PP
+this is called when a menu-entry pertaining to a single file (rather than a selection of files) is activated; see menu_add. in this case, NULL will be passed to menu_selected_do in lieu of an action_context. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP the menu-item that was selected. its 'data' property will contain the anchor of the file's meta-data. 
+.br
+\fIdata\fP the menu-action.
+.RE
+.PP
+
+.SS "int menu_subdirs (\fBnoir_sess\fP * ns, \fBfile_info\fP * pa, int button)"
+.PP
+show menu containing all paths leading up to cwd. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - session 
+.br
+\fIpa\fP - the directory the sub-folders of which to offer 
+.br
+\fIbutton\fP - what mouse-button caused the menu to open?
+.RE
+.PP
+
+.SS "static GtkWidget* menu_submenu_new (GtkWidget * menu, char * mime)\fC [static]\fP"
+.PP
+create a sub-menu 
+.PP
+\fBReturns:\fP
+.RS 4
+the sub-menu, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImenu\fP the menu to add the sub-menu to 
+.br
+\fImime\fP the MIME-type the sub-menu is for
+.RE
+.PP
+
+.SS "static void path_menu_add_path (\fBnoir_sess\fP * ns, GtkWidget * menu, \fBfile_info\fP * fi)\fC [static]\fP"
+.PP
+add a path to the path-menu. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - session 
+.br
+\fImenu\fP - the GTK menu 
+.br
+\fIfi\fP - the file to make an entry for
+.RE
+.PP
+
+.SS "static gint path_menu_selected (GtkWidget * item, gpointer data)\fC [static]\fP"
+.PP
+a path was selected from path-menu, cd to it. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP - the selected entry, 'data' prop holds index into session->cwd 
+.br
+\fIdata\fP - the session
+.RE
+.PP
+
+.SS "static GtkMenuItem* root_menu_add (\fBnoir_sess\fP ** sess, GtkWidget * menu, char * title, gpointer data, gint(*)(GtkWidget *, gpointer) handler)\fC [static]\fP"
+.PP
+add an item to a 'root-menu'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsess\fP the session 
+.br
+\fImenu\fP the GTK menu 
+.br
+\fItitle\fP the label for the new entry 
+.br
+\fIdata\fP the value for the 'data' prop (normally index of view to activate) 
+.br
+\fIhandler\fP the function to call when this item is activated
+.RE
+.PP
+
+.SS "static gint root_menu_preferences (GtkWidget * item, gpointer data)\fC [static]\fP"
+.PP
+edit preferences (call examine) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP the GTK menu-item that was activated. 'data' prop holds index of view to activate. 
+.br
+\fIdata\fP the session.
+.RE
+.PP
+
+.SS "static gint root_menu_sort (GtkWidget * item, gpointer data)\fC [static]\fP"
+.PP
+switch sort-order for icon-view. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP the GTK menu-item that was activated. 'data' prop holds sort-flags to set. 
+.br
+\fIdata\fP the session.
+.RE
+.PP
+
+.SS "static gint root_menu_switch2 (GtkWidget * item, gpointer data)\fC [static]\fP"
+.PP
+switch views from 'root-menu'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIitem\fP the GTK menu-item that was activated. 'data' prop holds index of view to activate. 
+.br
+\fIdata\fP the session.
+.RE
+.PP
+
+.SS "static GtkMenuItem* root_sort_add (\fBnoir_sess\fP ** sess, GtkWidget * menu, char * title, gpointer data, gint(*)(GtkWidget *, gpointer) handler)\fC [static]\fP"
+.PP
+add an check-item to a 'root-menu'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsess\fP the session 
+.br
+\fImenu\fP the GTK menu 
+.br
+\fItitle\fP the label for the new entry 
+.br
+\fIdata\fP the value for the 'data' prop (normally index of view to activate) 
+.br
+\fIhandler\fP the function to call when this item is activated
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

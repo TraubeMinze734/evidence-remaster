@@ -1,0 +1,102 @@
+\hypertarget{taglib_8cpp}{
+\section{taglib.cpp File Reference}
+\label{taglib_8cpp}\index{taglib.cpp@{taglib.cpp}}
+}
+meta-data provider plug-in for taglib 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{taglib_8cpp_a1}{meta\_\-make\_\-sortkey} (noir\_\-md $\ast$ret, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em make sort-key from artist and title \item\end{CompactList}\item 
+int \hyperlink{taglib_8cpp_a5}{cpp\_\-meta\_\-set\_\-for\_\-file} (noir\_\-md $\ast$md, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em write meta-data for this file extractor framework cannot write meta-data, only read it \item\end{CompactList}\item 
+int \hyperlink{taglib_8cpp_a6}{meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$md, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\item 
+int \hyperlink{taglib_8cpp_a7}{meta\_\-set\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em write meta-data for this file extractor framework cannot write meta-data, only read it \item\end{CompactList}\item 
+int \hyperlink{taglib_8cpp_a8}{layoutp} (void)
+\begin{CompactList}\small\item\em let info-dialog do the layout for us \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+meta-data provider plug-in for taglib 
+
+get/edit tags for ogg/vorbis, MP3/ID3, FLAC, and possibly others -- fast!
+
+\subsection{Function Documentation}
+\hypertarget{taglib_8cpp_a5}{
+\index{taglib.cpp@{taglib.cpp}!cpp_meta_set_for_file@{cpp\_\-meta\_\-set\_\-for\_\-file}}
+\index{cpp_meta_set_for_file@{cpp\_\-meta\_\-set\_\-for\_\-file}!taglib.cpp@{taglib.cpp}}
+\subsubsection[cpp\_\-meta\_\-set\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int cpp\_\-meta\_\-set\_\-for\_\-file (noir\_\-md $\ast$ {\em md}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{taglib_8cpp_a5}
+
+
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{taglib_8cpp_a8}{
+\index{taglib.cpp@{taglib.cpp}!layoutp@{layoutp}}
+\index{layoutp@{layoutp}!taglib.cpp@{taglib.cpp}}
+\subsubsection[layoutp]{\setlength{\rightskip}{0pt plus 5cm}int layoutp (void)}}
+\label{taglib_8cpp_a8}
+
+
+let info-dialog do the layout for us 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC to do our own layout, NOIR\_\-FAIL to have the caller do it\end{Desc}
+\hypertarget{taglib_8cpp_a6}{
+\index{taglib.cpp@{taglib.cpp}!meta_get_for_file@{meta\_\-get\_\-for\_\-file}}
+\index{meta_get_for_file@{meta\_\-get\_\-for\_\-file}!taglib.cpp@{taglib.cpp}}
+\subsubsection[meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em md}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{taglib_8cpp_a6}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{taglib_8cpp_a1}{
+\index{taglib.cpp@{taglib.cpp}!meta_make_sortkey@{meta\_\-make\_\-sortkey}}
+\index{meta_make_sortkey@{meta\_\-make\_\-sortkey}!taglib.cpp@{taglib.cpp}}
+\subsubsection[meta\_\-make\_\-sortkey]{\setlength{\rightskip}{0pt plus 5cm}static int meta\_\-make\_\-sortkey (noir\_\-md $\ast$ {\em ret}, noir\_\-provider $\ast$ {\em prov})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{taglib_8cpp_a1}
+
+
+make sort-key from artist and title 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the meta-data list \item[{\em prov}]the provider (us)\end{description}
+\end{Desc}
+\hypertarget{taglib_8cpp_a7}{
+\index{taglib.cpp@{taglib.cpp}!meta_set_for_file@{meta\_\-set\_\-for\_\-file}}
+\index{meta_set_for_file@{meta\_\-set\_\-for\_\-file}!taglib.cpp@{taglib.cpp}}
+\subsubsection[meta\_\-set\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-set\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{taglib_8cpp_a7}
+
+
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}

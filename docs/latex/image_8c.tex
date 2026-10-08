@@ -1,0 +1,66 @@
+\hypertarget{image_8c}{
+\section{image.c File Reference}
+\label{image_8c}\index{image.c@{image.c}}
+}
+meta-data provider plug-in \char`\"{}image\char`\"{} (imlib2) 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{image_8c_a2}{meta\_\-set\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$filename, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em write meta-data for this file extractor framework cannot write meta-data, only read it \item\end{CompactList}\item 
+int \hyperlink{image_8c_a3}{meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$ret, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\item 
+int \hyperlink{image_8c_a4}{layoutp} (void)
+\begin{CompactList}\small\item\em let info-dialog do the layout for us \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+meta-data provider plug-in \char`\"{}image\char`\"{} (imlib2) 
+
+get and set image dimensions and format
+
+\subsection{Function Documentation}
+\hypertarget{image_8c_a4}{
+\index{image.c@{image.c}!layoutp@{layoutp}}
+\index{layoutp@{layoutp}!image.c@{image.c}}
+\subsubsection[layoutp]{\setlength{\rightskip}{0pt plus 5cm}int layoutp (void)}}
+\label{image_8c_a4}
+
+
+let info-dialog do the layout for us 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC to do our own layout, NOIR\_\-FAIL to have the caller do it\end{Desc}
+\hypertarget{image_8c_a3}{
+\index{image.c@{image.c}!meta_get_for_file@{meta\_\-get\_\-for\_\-file}}
+\index{meta_get_for_file@{meta\_\-get\_\-for\_\-file}!image.c@{image.c}}
+\subsubsection[meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{image_8c_a3}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{image_8c_a2}{
+\index{image.c@{image.c}!meta_set_for_file@{meta\_\-set\_\-for\_\-file}}
+\index{meta_set_for_file@{meta\_\-set\_\-for\_\-file}!image.c@{image.c}}
+\subsubsection[meta\_\-set\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-set\_\-for\_\-file (noir\_\-md $\ast$ {\em ret}, char $\ast$ {\em filename}, noir\_\-provider $\ast$ {\em prov})}}
+\label{image_8c_a2}
+
+
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ret}]the list of (all) meta-data \item[{\em filename}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}

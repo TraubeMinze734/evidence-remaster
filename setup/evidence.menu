@@ -1,0 +1,194 @@
+# whatever you'd like in evidence's context (right-click) menu;
+# "the text that will be show"     mime-type/its-for        open_it_with
+#
+# open_it_with may denote an application in $PATH, an evidence shared object
+# (e.g. /usr/local/lib/evidence/action/info_dial.so), or a command-line
+# enclosed in quotation marks ("xmms -e %s"), with (or %u) to pass the
+# data-file's complete URL to the applications, or %f if the application
+# understands only file-names.  In this case, evidence will try to download
+# the file if it is a remote one, and pass the name of the temporary local
+# copy to the application.  For this to work, the backend used must support
+# downloading (copying using URLs).  If the file is local anyway, everything
+# will work as expected in either case.
+
+
+
+# menu you get when right-clicking on a file
+
+"View in Gnome GhostView..."       application/postscript   ggv
+"View in GhostView..."             application/postscript   gv
+"View in KGhostView..."            application/postscript   kghostview
+"View in acroread"                 application/pdf          acroread
+"View in gpdf"                     application/pdf          gpdf
+"View in xpdf"                     application/pdf          xpdf
+
+"View in OpenOffice.org"           application/msword       soffice
+"View in OpenOffice.org"           application/vnd.sun.xml.writer           soffice
+"View in OpenOffice.org"           application/vnd.sun.xml.writer.template  soffice
+"View in OpenOffice.org"           application/vnd.sun.xml.writer.math      soffice
+"View in OpenOffice.org"           application/wordperfect5.1               soffice
+"View in OpenOffice.org"           application/x-openoffice soffice
+"View in OpenOffice.org"           application/x-starmath   soffice
+"View in OpenOffice.org"           text/rtf                 soffice
+
+"View in GNOME-KISS"               application/x-lha        gnomekiss
+
+"Indent"                           application/x-c-source   indent
+"Indent"                           application/x-c-header   indent
+
+"Edit with vi..."                  application/x-c-source   gvim
+"Edit with vi..."                  application/x-c-header   gvim
+"Edit with vi..."                  text/*                   gvim
+"Edit with vi..."                  application/x-script     gvim
+
+"Edit with xemacs..."              *                        gnuclient
+"Edit properties..."               *                        $PREFIX/lib/evidence/action/info_dial.so
+"Edit ACL"                         *                        gtk_acl
+"Rename from sortkey"              *                        $PREFIX/lib/evidence/action/sortkey2name.so
+
+"Send to cell phone"               *                        gnome-obex-send
+
+"BitTorrent (GUI)"                 application/x-torrent    btdownloadgui.py
+"BitTorrent (headless)"            application/x-torrent    btdownloadheadless.py
+
+"Read in comical..."               application/x-comic-rar  comical
+"Read in comical..."               application/x-rar        comical
+"Read in comical..."               application/x-comic-zip  comical
+"Read in comical..."               application/zip          comical
+
+"Read in qComicBook..."            application/x-comic-rar  qcomicbook
+"Read in qComicBook..."            application/x-rar        qcomicbook
+"Read in qComicBook..."            application/x-comic-zip  qcomicbook
+"Read in qComicBook..."            application/zip          qcomicbook
+
+"Unpack"                           application/x-rar        "unrar x %f"
+"Unpack"                           application/x-ace        "unace x %f"
+"Unpack"                           application/zip          unzip
+
+"Make playlist"                    audio/*                  $PREFIX/lib/evidence/action/playlist.so
+
+"Add to playlist"                  audio/*                  "xmms -e %s"
+
+"Add to playlist"                  audio/*                  "xmms2 add %s"
+
+"Edit ID3-tags in folder"          folder                   "easytag %f"
+"Edit ID3-tags"                    audio/mp3                "easytag %s"
+"Edit ID3-tags in folder"          folder                   "kid3 %f"
+"Edit ID3-tags"                    audio/mp3                "kid3 %s"
+
+"Play using eplay"                 audio/wave               eplay
+"Play using eplay"                 audio/ogg                eplay
+"Play using eplay"                 audio/mpeg               eplay
+"Play using eplay"                 audio/mp3                eplay
+
+"Rename from Ogg-tag"              audio/ogg                $PREFIX/lib/evidence/action/tag2name.so
+"Rename from ID3-tag"              audio/mpeg               $PREFIX/lib/evidence/action/tag2name.so
+"Rename from ID3-tag"              audio/mp3                $PREFIX/lib/evidence/action/tag2name.so
+"Rename from APE-tag"              audio/x-musepack         $PREFIX/lib/evidence/action/tag2name.so
+
+"Ogg-tag from file-name"           audio/ogg                $PREFIX/lib/evidence/action/name2tag.so
+"ID3-tag from file-name"           audio/mpeg               $PREFIX/lib/evidence/action/name2tag.so
+"ID3-tag from file-name"           audio/mp3                $PREFIX/lib/evidence/action/name2tag.so
+
+"Play using aplay"                 audio/wave               aplay
+"Edit in sweep"                    audio/*                  sweep
+"Edit in reZound"                  audio/*                  rezound
+"Edit in GLAME"                    audio/wave               glame
+"Edit in audacity"                 audio/*                  audacity
+
+"Play using pmidi"                 audio/midi               "pmidi -p 65:0 %f"
+
+"View in Galeon"                   text/html                "galeon -n %u"
+"View in Konqueror"                text/html                konqueror
+"View in Firebird"                 text/html                firebird
+"View in w3m"                      text/html                "xterm -e w3m %u"
+
+"Edit with the GIMP..."            image/*                  gimp-remote
+"Vectorize with FrontLine..."      image/*                  frontline
+"View in entice"                   image/*                  entice
+
+"Set as backdrop (resize)"         image/jpg                $PREFIX/lib/evidence/action/backdrop.so
+"Set as backdrop (resize)"         image/png                $PREFIX/lib/evidence/action/backdrop.so
+
+"Set as backdrop (tile)"           image/jpg                $PREFIX/lib/evidence/action/tile.so
+"Set as backdrop (tile)"           image/png                $PREFIX/lib/evidence/action/tile.so
+
+"View in xv..."                    image/jpg                xv
+"View in xv..."                    image/png                xv
+"View in xv..."                    image/gif                xv
+"View in xv..."                    image/bmp                xv
+
+"Watch using MPlayer"              video/*                  "mplayer %f"
+"Watch using Ogle"                 video/x-msvideo          ogle
+"Watch using Ogle"                 video/mpeg               ogle
+"Watch using Xine"                 video/x-msvideo          xine
+"Watch using Xine"                 video/mpeg               xine
+"Watch using VideoLAN Client"      video/x-msvideo          vlc
+"Watch using VideoLAN Client"      video/mpeg               vlc
+"Edit using avidemux"              video/*                  avidemux
+
+"View in DJView"                   image/x-dejavu           djview
+"View in DJView"                   image/x-iw44             djview
+
+"View in pfaEdit"                  font/*                   pfaedit
+"View in pfaEdit"                  application/x-font-ttf   pfaedit
+
+"Open in GnoRPM"                   application/x-rpm        gnorpm
+"Open in KRPMBuilder"              application/x-rpm        krpmbuilder
+
+"Delete..."                        *                        $PREFIX/lib/evidence/action/delete.so
+"Rename..."                        *                        $PREFIX/lib/evidence/action/rename.so
+"Re-thumbnail"                     *                        $PREFIX/lib/evidence/action/thumbnail.so
+
+"configure & build"                application/x-gzip       "gconfigure %f"
+"configure & build"                application/x-gunzip     "gconfigure %f"
+"configure & build"                application/x-gtar       "gconfigure %f"
+"configure & build"                application/x-bzip2      "gconfigure %f"
+
+
+
+# menu you get when right-clicking on a folder
+"Open images using entice"         folder                   "entice %f"
+"Search with sagasu..."            folder                   "sagasu \"\" %f"
+"gnome-search-tool..."             folder                   "gnome-search-tool --path=%f"
+"Open in new window"               folder                   $PREFIX/lib/evidence/action/newwindow.so
+"configure & build in folder"      folder                   "gconfigure %f"
+"New folder..."                    folder                   $PREFIX/lib/evidence/action/mkdir.so
+"Re-thumbnail this folder"         folder                   $PREFIX/lib/evidence/action/thumbnail.so
+#"Set this folder as desktop"       folder                   ls
+"Make this folder searchable"	    folder		     $PREFIX/lib/evidence/action/searchable.so
+"Make this folder and sub-folders searchable"		     folder				      $PREFIX/lib/evidence/action/searchable_r.so
+
+
+# menu you get when right-clicking in window (not on a file or folder)
+"Eterm here"                       internal/root3           Eterm
+#"Set current directory as desktop" internal/root3           "echo %s"
+
+
+
+# menu you get when left-clicking in window (not on a file or folder)
+# DEPRECATED
+# Escreen                            internal/root1           "Eterm -T Escreen -U screen://"
+# Xemacs                             internal/root1           xemacs
+# Galeon                             internal/root1           galeon
+# GIMP                               internal/root1           gimp-remote
+# xchat                              internal/root1           xchat
+# XMMS                               internal/root1           xmms
+# gkrellm                            internal/root1           gkrellm
+
+
+
+# these will not appear in the menu. they will determine what evidence will do
+# when it wants to open a rename-dialog, a properties-dialog, etc.
+"Delete..."                        internal/delete          $PREFIX/lib/evidence/action/delete.so
+"Rename..."                        internal/rename          $PREFIX/lib/evidence/action/rename.so
+"New folder..."                    internal/mkdir           $PREFIX/lib/evidence/action/mkdir.so
+"Search..."                        internal/search          "sagasu \"\" %f"
+"Edit properties..."               internal/properties      $PREFIX/lib/evidence/action/info_dial.so
+
+
+
+# debug
+#"Test 1"                           *                        gnuclient
+#"Test 2"                           *                        "gnuclient %f"
+"Edit as root"                     *                        "xterm -e su - -c \"vi %f\""

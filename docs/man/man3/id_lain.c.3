@@ -1,0 +1,155 @@
+.TH "id_lain.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+id_lain.c \- garish example idle-handler. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBset_image\fP (Evas_Object *o, int x, int y, int a)"
+.br
+.RI "\fIadjust image \fP"
+.ti -1c
+.RI "int \fBidle_func\fP (void **data)"
+.br
+.RI "\fIsystem is idle, do silly foo in the file-manager window \fP"
+.ti -1c
+.RI "static Evas_Object * \fBmake_image\fP (lainctl *ctl, char *name)"
+.br
+.RI "\fIload an image \fP"
+.ti -1c
+.RI "static Evas_Object * \fBmake_text\fP (lainctl *ctl, char *text, char *font, double size, int *rw, int *rh)"
+.br
+.RI "\fIcreate a text-object \fP"
+.ti -1c
+.RI "int \fBidle_init\fP (void *ilp, void **data, noir_theme *t)"
+.br
+.RI "\fIset up silly idle animations \fP"
+.ti -1c
+.RI "int \fBidle_exit\fP (void **data)"
+.br
+.RI "\fIclean-up on destall \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+garish example idle-handler. 
+
+an homage to 'serial experiments: lain'
+.PP
+the handler doesn't install any properties although it really really should.
+.SH "Function Documentation"
+.PP 
+.SS "int idle_exit (void ** data)"
+.PP
+clean-up on destall 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for could destall, FALSE for do not deactivate handler 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP this idler's param-block (lainctl)
+.RE
+.PP
+
+.SS "int idle_func (void ** data)"
+.PP
+system is idle, do silly foo in the file-manager window 
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE to destall, TRUE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP pointer to our private data (lainctl)
+.RE
+.PP
+
+.SS "int idle_init (void * ilp, void ** data, noir_theme * t)"
+.PP
+set up silly idle animations 
+.PP
+\fBReturns:\fP
+.RS 4
+call idler every n ms, 0 for never 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIilp\fP the icon-list to display the animation in 
+.br
+\fIdata\fP where to store a pointer to the param-block we'll create 
+.br
+\fIt\fP the current theme
+.RE
+.PP
+
+.SS "static Evas_Object* make_image (lainctl * ctl, char * name)\fC [inline, static]\fP"
+.PP
+load an image 
+.PP
+\fBReturns:\fP
+.RS 4
+an evas image-object 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIctl\fP our param-blk 
+.br
+\fIname\fP the file holding the image
+.RE
+.PP
+
+.SS "static Evas_Object* make_text (lainctl * ctl, char * text, char * font, double size, int * rw, int * rh)\fC [inline, static]\fP"
+.PP
+create a text-object 
+.PP
+\fBReturns:\fP
+.RS 4
+an evas text-object 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIctl\fP our param-blk 
+.br
+\fItext\fP what we want to say (C-string) 
+.br
+\fIfont\fP the font to use 
+.br
+\fIsize\fP the font-size to use 
+.br
+\fIrw\fP where to return the width of the newly-created object 
+.br
+\fIrh\fP where to return the height of the newly-created object
+.RE
+.PP
+
+.SS "static void set_image (Evas_Object * o, int x, int y, int a)\fC [inline, static]\fP"
+.PP
+adjust image 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIo\fP an evas-image-object 
+.br
+\fIx\fP x-ordinate 
+.br
+\fIy\fP y-ordinate 
+.br
+\fIa\fP transparency
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

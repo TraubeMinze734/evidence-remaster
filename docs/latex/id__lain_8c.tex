@@ -1,0 +1,125 @@
+\hypertarget{id__lain_8c}{
+\section{id\_\-lain.c File Reference}
+\label{id__lain_8c}\index{id_lain.c@{id\_\-lain.c}}
+}
+garish example idle-handler. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static void \hyperlink{id__lain_8c_a8}{set\_\-image} (Evas\_\-Object $\ast$o, int x, int y, int a)
+\begin{CompactList}\small\item\em adjust image \item\end{CompactList}\item 
+int \hyperlink{id__lain_8c_a9}{idle\_\-func} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em system is idle, do silly foo in the file-manager window \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{id__lain_8c_a10}{make\_\-image} (lainctl $\ast$ctl, char $\ast$name)
+\begin{CompactList}\small\item\em load an image \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{id__lain_8c_a11}{make\_\-text} (lainctl $\ast$ctl, char $\ast$text, char $\ast$font, double size, int $\ast$rw, int $\ast$rh)
+\begin{CompactList}\small\item\em create a text-object \item\end{CompactList}\item 
+int \hyperlink{id__lain_8c_a12}{idle\_\-init} (void $\ast$ilp, void $\ast$$\ast$data, noir\_\-theme $\ast$t)
+\begin{CompactList}\small\item\em set up silly idle animations \item\end{CompactList}\item 
+int \hyperlink{id__lain_8c_a13}{idle\_\-exit} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em clean-up on destall \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+garish example idle-handler. 
+
+an homage to \char`\"{}serial experiments: lain\char`\"{}
+
+the handler doesn't install any properties although it really really should.
+
+\subsection{Function Documentation}
+\hypertarget{id__lain_8c_a13}{
+\index{id_lain.c@{id\_\-lain.c}!idle_exit@{idle\_\-exit}}
+\index{idle_exit@{idle\_\-exit}!id_lain.c@{id\_\-lain.c}}
+\subsubsection[idle\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int idle\_\-exit (void $\ast$$\ast$ {\em data})}}
+\label{id__lain_8c_a13}
+
+
+clean-up on destall 
+
+\begin{Desc}
+\item[Returns:]TRUE for could destall, FALSE for do not deactivate handler \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]this idler's param-block (lainctl)\end{description}
+\end{Desc}
+\hypertarget{id__lain_8c_a9}{
+\index{id_lain.c@{id\_\-lain.c}!idle_func@{idle\_\-func}}
+\index{idle_func@{idle\_\-func}!id_lain.c@{id\_\-lain.c}}
+\subsubsection[idle\_\-func]{\setlength{\rightskip}{0pt plus 5cm}int idle\_\-func (void $\ast$$\ast$ {\em data})}}
+\label{id__lain_8c_a9}
+
+
+system is idle, do silly foo in the file-manager window 
+
+\begin{Desc}
+\item[Returns:]FALSE to destall, TRUE otherwise \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]pointer to our private data (lainctl)\end{description}
+\end{Desc}
+\hypertarget{id__lain_8c_a12}{
+\index{id_lain.c@{id\_\-lain.c}!idle_init@{idle\_\-init}}
+\index{idle_init@{idle\_\-init}!id_lain.c@{id\_\-lain.c}}
+\subsubsection[idle\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int idle\_\-init (void $\ast$ {\em ilp}, void $\ast$$\ast$ {\em data}, noir\_\-theme $\ast$ {\em t})}}
+\label{id__lain_8c_a12}
+
+
+set up silly idle animations 
+
+\begin{Desc}
+\item[Returns:]call idler every n ms, 0 for never \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ilp}]the icon-list to display the animation in \item[{\em data}]where to store a pointer to the param-block we'll create \item[{\em t}]the current theme\end{description}
+\end{Desc}
+\hypertarget{id__lain_8c_a10}{
+\index{id_lain.c@{id\_\-lain.c}!make_image@{make\_\-image}}
+\index{make_image@{make\_\-image}!id_lain.c@{id\_\-lain.c}}
+\subsubsection[make\_\-image]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ make\_\-image (lainctl $\ast$ {\em ctl}, char $\ast$ {\em name})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{id__lain_8c_a10}
+
+
+load an image 
+
+\begin{Desc}
+\item[Returns:]an evas image-object \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ctl}]our param-blk \item[{\em name}]the file holding the image\end{description}
+\end{Desc}
+\hypertarget{id__lain_8c_a11}{
+\index{id_lain.c@{id\_\-lain.c}!make_text@{make\_\-text}}
+\index{make_text@{make\_\-text}!id_lain.c@{id\_\-lain.c}}
+\subsubsection[make\_\-text]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ make\_\-text (lainctl $\ast$ {\em ctl}, char $\ast$ {\em text}, char $\ast$ {\em font}, double {\em size}, int $\ast$ {\em rw}, int $\ast$ {\em rh})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{id__lain_8c_a11}
+
+
+create a text-object 
+
+\begin{Desc}
+\item[Returns:]an evas text-object \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ctl}]our param-blk \item[{\em text}]what we want to say (C-string) \item[{\em font}]the font to use \item[{\em size}]the font-size to use \item[{\em rw}]where to return the width of the newly-created object \item[{\em rh}]where to return the height of the newly-created object\end{description}
+\end{Desc}
+\hypertarget{id__lain_8c_a8}{
+\index{id_lain.c@{id\_\-lain.c}!set_image@{set\_\-image}}
+\index{set_image@{set\_\-image}!id_lain.c@{id\_\-lain.c}}
+\subsubsection[set\_\-image]{\setlength{\rightskip}{0pt plus 5cm}static void set\_\-image (Evas\_\-Object $\ast$ {\em o}, int {\em x}, int {\em y}, int {\em a})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{id__lain_8c_a8}
+
+
+adjust image 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em o}]an evas-image-object \item[{\em x}]x-ordinate \item[{\em y}]y-ordinate \item[{\em a}]transparency\end{description}
+\end{Desc}

@@ -1,0 +1,56 @@
+.TH "about.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+about.c \- the 'about' (or credits-) tab. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static gboolean \fBwin_clicked\fP (GtkWidget *widget, GdkEventButton *ev, gpointer data)"
+.br
+.RI "\fIfallback callback for mouse-clicks that no better handler exists for. \fP"
+.ti -1c
+.RI "GtkWidget * \fBabout_init\fP (\fBnoir_sess\fP *ns, char *about)"
+.br
+.RI "\fIcreate 'about' page in GTK note-book \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+the 'about' (or credits-) tab. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "GtkWidget* about_init (\fBnoir_sess\fP * ns, char * about)"
+.PP
+create 'about' page in GTK note-book 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session 
+.br
+\fIabout\fP - path and name of an image representing the current theme, or NULL
+.RE
+.PP
+
+.SS "static gboolean win_clicked (GtkWidget * widget, GdkEventButton * ev, gpointer data)\fC [static]\fP"
+.PP
+fallback callback for mouse-clicks that no better handler exists for. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP - the widget that received the event 
+.br
+\fIev\fP - the actual event 
+.br
+\fIdata\fP - the session
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

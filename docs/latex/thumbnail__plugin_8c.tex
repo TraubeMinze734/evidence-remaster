@@ -1,0 +1,225 @@
+\hypertarget{thumbnail__plugin_8c}{
+\section{thumbnail\_\-plugin.c File Reference}
+\label{thumbnail__plugin_8c}\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+}
+plugin-API of the threaded modular thumbnailer. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static thumbnail\_\-plugin $\ast$ \hyperlink{thumbnail__plugin_8c_a9}{thumbnail\_\-plugin\_\-new} (const char $\ast$file)
+\begin{CompactList}\small\item\em create a thumbnailer record \item\end{CompactList}\item 
+int \hyperlink{thumbnail__plugin_8c_a10}{thumbnail\_\-plugin\_\-load} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em load a thumbnailer-plugin \item\end{CompactList}\item 
+static int \hyperlink{thumbnail__plugin_8c_a11}{thumbnail\_\-plugin\_\-unload} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em unload a thumbnailer-plugin \item\end{CompactList}\item 
+static void \hyperlink{thumbnail__plugin_8c_a12}{thumbnail\_\-plugins\_\-gc\_\-one} (char $\ast$key, void $\ast$value, void $\ast$data)
+\begin{CompactList}\small\item\em garbage-collect a plugin. \item\end{CompactList}\item 
+\hypertarget{thumbnail__plugin_8c_a13}{
+int \hyperlink{thumbnail__plugin_8c_a13}{thumbnail\_\-plugins\_\-gc} (void)}
+\label{thumbnail__plugin_8c_a13}
+
+\begin{CompactList}\small\item\em garbage-collect plugins \item\end{CompactList}\item 
+static int \hyperlink{thumbnail__plugin_8c_a14}{thumbnail\_\-plugin\_\-dst} (thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em discard a thumbnailer-plugin and dst its entry \item\end{CompactList}\item 
+\hypertarget{thumbnail__plugin_8c_a17}{
+static void \hyperlink{thumbnail__plugin_8c_a17}{tnp\_\-register\_\-dst} (void $\ast$f)}
+\label{thumbnail__plugin_8c_a17}
+
+\begin{CompactList}\small\item\em discard a MIME-type / thumbnailer assignment and \item\end{CompactList}\item 
+static int \hyperlink{thumbnail__plugin_8c_a22}{thumbnail\_\-plugins\_\-setup\_\-regenerate} (const char $\ast$setup)
+\begin{CompactList}\small\item\em load all plugins from plugin dir and work out what they can do \item\end{CompactList}\item 
+int \hyperlink{thumbnail__plugin_8c_a24}{thumbnail\_\-plugins\_\-init} (const char $\ast$setup)
+\begin{CompactList}\small\item\em try to load all available thumbnailer-plugins \item\end{CompactList}\item 
+\hypertarget{thumbnail__plugin_8c_a25}{
+int \hyperlink{thumbnail__plugin_8c_a25}{thumbnail\_\-plugins\_\-exit} (void)}
+\label{thumbnail__plugin_8c_a25}
+
+\begin{CompactList}\small\item\em discard all thumbnailer-plugins \item\end{CompactList}\item 
+\_\-thumbnail\_\-plugin $\ast$ \hyperlink{thumbnail__plugin_8c_a26}{thumbnail\_\-plugin\_\-find\_\-by\_\-mime} (const char $\ast$mime, thumbnail\_\-plugin\_\-register\_\-for type)
+\begin{CompactList}\small\item\em find a thumbnailer-plugin that handles the given MIME-type \item\end{CompactList}\item 
+int \hyperlink{thumbnail__plugin_8c_a27}{thumbnail\_\-plugin\_\-register\_\-mime} (thumbnail\_\-plugin $\ast$tp, const char $\ast$mime, thumbnail\_\-plugin\_\-prio prio, thumbnail\_\-plugin\_\-register\_\-for type)
+\begin{CompactList}\small\item\em lets thumbnailer-plugins announce they know how to thumbnail files of this MIME-type \item\end{CompactList}\item 
+int \hyperlink{thumbnail__plugin_8c_a28}{thumbnail\_\-plugin\_\-data\_\-set} (thumbnail\_\-plugin $\ast$tp, void $\ast$data)
+\begin{CompactList}\small\item\em lets a thumbnailer-plugin set private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded \item\end{CompactList}\item 
+int \hyperlink{thumbnail__plugin_8c_a29}{thumbnail\_\-plugin\_\-data\_\-get} (thumbnail\_\-plugin $\ast$tp, void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em lets a thumbnailer-plugin get its private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin-API of the threaded modular thumbnailer. 
+
+plugin-cache.
+
+by Azundris.
+
+\subsection{Function Documentation}
+\hypertarget{thumbnail__plugin_8c_a29}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_data_get@{thumbnail\_\-plugin\_\-data\_\-get}}
+\index{thumbnail_plugin_data_get@{thumbnail\_\-plugin\_\-data\_\-get}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-data\_\-get]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-data\_\-get (thumbnail\_\-plugin $\ast$ {\em tp}, void $\ast$$\ast$ {\em data})}}
+\label{thumbnail__plugin_8c_a29}
+
+
+lets a thumbnailer-plugin get its private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]the plugin \item[{\em data}]where to store from the plugin-struct\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a28}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_data_set@{thumbnail\_\-plugin\_\-data\_\-set}}
+\index{thumbnail_plugin_data_set@{thumbnail\_\-plugin\_\-data\_\-set}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-data\_\-set]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-data\_\-set (thumbnail\_\-plugin $\ast$ {\em tp}, void $\ast$ {\em data})}}
+\label{thumbnail__plugin_8c_a28}
+
+
+lets a thumbnailer-plugin set private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]the plugin \item[{\em data}]the data to store on the plugin-struct\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a14}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_dst@{thumbnail\_\-plugin\_\-dst}}
+\index{thumbnail_plugin_dst@{thumbnail\_\-plugin\_\-dst}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-plugin\_\-dst (thumbnail\_\-plugin $\ast$ {\em tp})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnail__plugin_8c_a14}
+
+
+discard a thumbnailer-plugin and dst its entry 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]the plugin\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a26}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_find_by_mime@{thumbnail\_\-plugin\_\-find\_\-by\_\-mime}}
+\index{thumbnail_plugin_find_by_mime@{thumbnail\_\-plugin\_\-find\_\-by\_\-mime}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-find\_\-by\_\-mime]{\setlength{\rightskip}{0pt plus 5cm}struct \_\-thumbnail\_\-plugin$\ast$ thumbnail\_\-plugin\_\-find\_\-by\_\-mime (const char $\ast$ {\em mime}, thumbnail\_\-plugin\_\-register\_\-for {\em type})}}
+\label{thumbnail__plugin_8c_a26}
+
+
+find a thumbnailer-plugin that handles the given MIME-type 
+
+\begin{Desc}
+\item[Returns:]the plugin, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mime}]the MIME-type \item[{\em type}]icons/mouseover/live\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a10}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_load@{thumbnail\_\-plugin\_\-load}}
+\index{thumbnail_plugin_load@{thumbnail\_\-plugin\_\-load}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-load]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-load (thumbnail\_\-plugin $\ast$ {\em tp})}}
+\label{thumbnail__plugin_8c_a10}
+
+
+load a thumbnailer-plugin 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]the plugin to load (plugin-struct)\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a9}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_new@{thumbnail\_\-plugin\_\-new}}
+\index{thumbnail_plugin_new@{thumbnail\_\-plugin\_\-new}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-new]{\setlength{\rightskip}{0pt plus 5cm}static thumbnail\_\-plugin$\ast$ thumbnail\_\-plugin\_\-new (const char $\ast$ {\em file})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnail__plugin_8c_a9}
+
+
+create a thumbnailer record 
+
+\begin{Desc}
+\item[Returns:]the newly-created record, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file}]the plugin (path+file) this is for (or NULL)\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a27}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_register_mime@{thumbnail\_\-plugin\_\-register\_\-mime}}
+\index{thumbnail_plugin_register_mime@{thumbnail\_\-plugin\_\-register\_\-mime}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-register\_\-mime]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugin\_\-register\_\-mime (thumbnail\_\-plugin $\ast$ {\em tp}, const char $\ast$ {\em mime}, thumbnail\_\-plugin\_\-prio {\em prio}, thumbnail\_\-plugin\_\-register\_\-for {\em type})}}
+\label{thumbnail__plugin_8c_a27}
+
+
+lets thumbnailer-plugins announce they know how to thumbnail files of this MIME-type 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]the plugin \item[{\em mime}]the MIME-type \item[{\em prio}]priority \item[{\em type}]can provide icon-size thumbs, quality previews, and/or live thumbs\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a11}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugin_unload@{thumbnail\_\-plugin\_\-unload}}
+\index{thumbnail_plugin_unload@{thumbnail\_\-plugin\_\-unload}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugin\_\-unload]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-plugin\_\-unload (thumbnail\_\-plugin $\ast$ {\em tp})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnail__plugin_8c_a11}
+
+
+unload a thumbnailer-plugin 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tp}]the plugin\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a12}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugins_gc_one@{thumbnail\_\-plugins\_\-gc\_\-one}}
+\index{thumbnail_plugins_gc_one@{thumbnail\_\-plugins\_\-gc\_\-one}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugins\_\-gc\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static void thumbnail\_\-plugins\_\-gc\_\-one (char $\ast$ {\em key}, void $\ast$ {\em value}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnail__plugin_8c_a12}
+
+
+garbage-collect a plugin. 
+
+maybe.\hypertarget{thumbnail__plugin_8c_a24}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugins_init@{thumbnail\_\-plugins\_\-init}}
+\index{thumbnail_plugins_init@{thumbnail\_\-plugins\_\-init}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugins\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-plugins\_\-init (const char $\ast$ {\em setup})}}
+\label{thumbnail__plugin_8c_a24}
+
+
+try to load all available thumbnailer-plugins 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em setup}]the directory containing the setup\end{description}
+\end{Desc}
+\hypertarget{thumbnail__plugin_8c_a22}{
+\index{thumbnail_plugin.c@{thumbnail\_\-plugin.c}!thumbnail_plugins_setup_regenerate@{thumbnail\_\-plugins\_\-setup\_\-regenerate}}
+\index{thumbnail_plugins_setup_regenerate@{thumbnail\_\-plugins\_\-setup\_\-regenerate}!thumbnail_plugin.c@{thumbnail\_\-plugin.c}}
+\subsubsection[thumbnail\_\-plugins\_\-setup\_\-regenerate]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-plugins\_\-setup\_\-regenerate (const char $\ast$ {\em setup})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnail__plugin_8c_a22}
+
+
+load all plugins from plugin dir and work out what they can do 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em setup}]the setup (not the plugins-!) dir\end{description}
+\end{Desc}

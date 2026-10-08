@@ -1,0 +1,83 @@
+\hypertarget{focus_8c}{
+\section{focus.c File Reference}
+\label{focus_8c}\index{focus.c@{focus.c}}
+}
+load (where necessary) and display a directory and all directories leading up to it. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{focus_8c_a0}{focus\_\-is\_\-path\_\-valid} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, const char $\ast$olddir, char $\ast$newdir)
+\begin{CompactList}\small\item\em check whether the new path exists and consists of directories only. \item\end{CompactList}\item 
+static int \hyperlink{focus_8c_a1}{do\_\-cwd} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, char $\ast$tag)
+\begin{CompactList}\small\item\em change the current working-directory of a session. \item\end{CompactList}\item 
+int \hyperlink{focus_8c_a2}{noir\_\-sess\_\-focus\_\-verify} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, const char $\ast$reqdir, char $\ast$$\ast$rd)
+\begin{CompactList}\small\item\em check whether change the current working-directory of a session to the given path would succeed. \item\end{CompactList}\item 
+int \hyperlink{focus_8c_a3}{noir\_\-sess\_\-focus} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, const char $\ast$reqdir)
+\begin{CompactList}\small\item\em change the current working-directory of a session. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+load (where necessary) and display a directory and all directories leading up to it. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{focus_8c_a1}{
+\index{focus.c@{focus.c}!do_cwd@{do\_\-cwd}}
+\index{do_cwd@{do\_\-cwd}!focus.c@{focus.c}}
+\subsubsection[do\_\-cwd]{\setlength{\rightskip}{0pt plus 5cm}static int do\_\-cwd (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, char $\ast$ {\em tag})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{focus_8c_a1}
+
+
+change the current working-directory of a session. 
+
+called by focus() to do the actual work. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session \item[{\em tag}]- the desired new working-directory\end{description}
+\end{Desc}
+\hypertarget{focus_8c_a0}{
+\index{focus.c@{focus.c}!focus_is_path_valid@{focus\_\-is\_\-path\_\-valid}}
+\index{focus_is_path_valid@{focus\_\-is\_\-path\_\-valid}!focus.c@{focus.c}}
+\subsubsection[focus\_\-is\_\-path\_\-valid]{\setlength{\rightskip}{0pt plus 5cm}static int focus\_\-is\_\-path\_\-valid (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, const char $\ast$ {\em olddir}, char $\ast$ {\em newdir})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{focus_8c_a0}
+
+
+check whether the new path exists and consists of directories only. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC if we don't object to newdir becoming ns-$>$cwd. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session we want to change the CWD for \item[{\em olddir}]- the CWD for that session \item[{\em newdir}]- the directory we want to become the new CWD\end{description}
+\end{Desc}
+\hypertarget{focus_8c_a3}{
+\index{focus.c@{focus.c}!noir_sess_focus@{noir\_\-sess\_\-focus}}
+\index{noir_sess_focus@{noir\_\-sess\_\-focus}!focus.c@{focus.c}}
+\subsubsection[noir\_\-sess\_\-focus]{\setlength{\rightskip}{0pt plus 5cm}int noir\_\-sess\_\-focus (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, const char $\ast$ {\em reqdir})}}
+\label{focus_8c_a3}
+
+
+change the current working-directory of a session. 
+
+provides the supporting structure to the actual work done in \hyperlink{focus_8c_a1}{do\_\-cwd()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session \item[{\em reqdir}]the desired new working-directory\end{description}
+\end{Desc}
+\hypertarget{focus_8c_a2}{
+\index{focus.c@{focus.c}!noir_sess_focus_verify@{noir\_\-sess\_\-focus\_\-verify}}
+\index{noir_sess_focus_verify@{noir\_\-sess\_\-focus\_\-verify}!focus.c@{focus.c}}
+\subsubsection[noir\_\-sess\_\-focus\_\-verify]{\setlength{\rightskip}{0pt plus 5cm}int noir\_\-sess\_\-focus\_\-verify (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, const char $\ast$ {\em reqdir}, char $\ast$$\ast$ {\em rd})}}
+\label{focus_8c_a2}
+
+
+check whether change the current working-directory of a session to the given path would succeed. 
+
+provides the supporting structure to the actual work done in \hyperlink{focus_8c_a1}{do\_\-cwd()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session \item[{\em reqdir}]the desired new working-directory \item[{\em rd}]what the new dir would be\end{description}
+\end{Desc}

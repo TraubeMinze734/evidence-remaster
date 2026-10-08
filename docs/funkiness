@@ -1,0 +1,5 @@
+
+icon_list:   user1: noir_sess
+
+client_funs: user1: next client *in this session*
+             user2: noir_sess

@@ -1,0 +1,85 @@
+\hypertarget{sb__example_8c}{
+\section{sb\_\-example.c File Reference}
+\label{sb__example_8c}\index{sb_example.c@{sb\_\-example.c}}
+}
+creates a scrollbar consisting of gradients 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void $\ast$ \hyperlink{sb__example_8c_a0}{sb\_\-new} (noir\_\-theme $\ast$t, void $\ast$canvas)
+\begin{CompactList}\small\item\em create a scroll-bar \item\end{CompactList}\item 
+void \hyperlink{sb__example_8c_a1}{sb\_\-set} (void $\ast$evas, \hyperlink{struct__icon}{icon} $\ast$i, int cw, int ch, int vis, int pos)
+\begin{CompactList}\small\item\em update scroll-bar position and/or size \item\end{CompactList}\item 
+void \hyperlink{sb__example_8c_a2}{sb\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct a scroll-bar \item\end{CompactList}\item 
+int \hyperlink{sb__example_8c_a3}{sb\_\-die} (noir\_\-theme $\ast$theme)
+\begin{CompactList}\small\item\em destall factory -- unregister listeners, free any resources etc. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+creates a scrollbar consisting of gradients 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{sb__example_8c_a3}{
+\index{sb_example.c@{sb\_\-example.c}!sb_die@{sb\_\-die}}
+\index{sb_die@{sb\_\-die}!sb_example.c@{sb\_\-example.c}}
+\subsubsection[sb\_\-die]{\setlength{\rightskip}{0pt plus 5cm}int sb\_\-die (noir\_\-theme $\ast$ {\em theme})}}
+\label{sb__example_8c_a3}
+
+
+destall factory -- unregister listeners, free any resources etc. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em theme}]the theme\end{description}
+\end{Desc}
+\hypertarget{sb__example_8c_a2}{
+\index{sb_example.c@{sb\_\-example.c}!sb_dst@{sb\_\-dst}}
+\index{sb_dst@{sb\_\-dst}!sb_example.c@{sb\_\-example.c}}
+\subsubsection[sb\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void sb\_\-dst (void $\ast$$\ast$ {\em data})}}
+\label{sb__example_8c_a2}
+
+
+destruct a scroll-bar 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the handle of the scroll-bar to destroy\end{description}
+\end{Desc}
+\hypertarget{sb__example_8c_a0}{
+\index{sb_example.c@{sb\_\-example.c}!sb_new@{sb\_\-new}}
+\index{sb_new@{sb\_\-new}!sb_example.c@{sb\_\-example.c}}
+\subsubsection[sb\_\-new]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ sb\_\-new (noir\_\-theme $\ast$ {\em t}, void $\ast$ {\em canvas})}}
+\label{sb__example_8c_a0}
+
+
+create a scroll-bar 
+
+\begin{Desc}
+\item[Returns:]a handle (icon) for the newly-created scroll-bar, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the current theme of this window \item[{\em canvas}]the canvas to create the scroll-bar on\end{description}
+\end{Desc}
+\hypertarget{sb__example_8c_a1}{
+\index{sb_example.c@{sb\_\-example.c}!sb_set@{sb\_\-set}}
+\index{sb_set@{sb\_\-set}!sb_example.c@{sb\_\-example.c}}
+\subsubsection[sb\_\-set]{\setlength{\rightskip}{0pt plus 5cm}void sb\_\-set (void $\ast$ {\em evas}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em cw}, int {\em ch}, int {\em vis}, int {\em pos})}}
+\label{sb__example_8c_a1}
+
+
+update scroll-bar position and/or size 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]the canvas the scrollbar is on \item[{\em i}]the scroll-bar object \item[{\em cw}]width (total) \item[{\em ch}]height (total) \item[{\em vis}]height (visible) \item[{\em pos}]y-offset (in pixels)\end{description}
+\end{Desc}

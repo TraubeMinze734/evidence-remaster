@@ -1,0 +1,138 @@
+.TH "evcfg.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+evcfg.c \- evidence setup tool generic client library in \fBevclient.c\fP 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBev_ipc_server_con\fP (void *data, int type, void *event)"
+.br
+.RI "\fIcallback: connected \fP"
+.ti -1c
+.RI "int \fBev_ipc_server_dis\fP (void *data, int type, void *event)"
+.br
+.RI "\fIcallback: disconnected \fP"
+.ti -1c
+.RI "int \fBev_ipc_server_sent\fP (void *data, int type, void *event)"
+.br
+.RI "\fIcallback: connected \fP"
+.ti -1c
+.RI "static void \fBdial_colour_closed\fP (GtkWidget *w, void *data)"
+.br
+.RI "\fIcallback: dial was closed, end program \fP"
+.ti -1c
+.RI "static void \fBdial_colour_activate\fP (GtkWidget *widget, col *c)"
+.br
+.RI "\fIcallback: colour was changed \fP"
+.ti -1c
+.RI "void \fBdial_colour_open\fP (char *prop)"
+.br
+.RI "\fIopen a GTK colour-selection dialog \fP"
+.ti -1c
+.RI "int \fBmain\fP (int argc, char **argv)"
+.br
+.RI "\fIevidence configuration tool (mainloop). \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+evidence setup tool generic client library in \fBevclient.c\fP 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static void dial_colour_activate (GtkWidget * widget, col * c)\fC [static]\fP"
+.PP
+callback: colour was changed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget that received the event 
+.br
+\fIc\fP our colour struct
+.RE
+.PP
+
+.SS "static void dial_colour_closed (GtkWidget * w, void * data)\fC [static]\fP"
+.PP
+callback: dial was closed, end program 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIw\fP the window that was closed 
+.br
+\fIdata\fP reserved
+.RE
+.PP
+
+.SS "void dial_colour_open (char * prop)"
+.PP
+open a GTK colour-selection dialog 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIprop\fP the name of the evidence-property we want to change the colour for
+.RE
+.PP
+
+.SS "int ev_ipc_server_con (void * data, int type, void * event)"
+.PP
+callback: connected 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP connstate variable 
+.br
+\fItype\fP event-type 
+.br
+\fIevent\fP the event
+.RE
+.PP
+
+.SS "int ev_ipc_server_dis (void * data, int type, void * event)"
+.PP
+callback: disconnected 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP connstate variable 
+.br
+\fItype\fP event-type 
+.br
+\fIevent\fP the event
+.RE
+.PP
+
+.SS "int ev_ipc_server_sent (void * data, int type, void * event)"
+.PP
+callback: connected 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP reserved 
+.br
+\fItype\fP event-type 
+.br
+\fIevent\fP the event
+.RE
+.PP
+
+.SS "int main (int argc, char ** argv)"
+.PP
+evidence configuration tool (mainloop). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIargc\fP number of command-line arguments 
+.br
+\fIargv\fP command-line arguments
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

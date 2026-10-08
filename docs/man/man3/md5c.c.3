@@ -1,0 +1,112 @@
+.TH "md5c.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md5c.c \- MD5 hashes. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBbyteReverse\fP (unsigned char *buf, unsigned longs)"
+.br
+.RI "\fIreverse byte-sex. \fP"
+.ti -1c
+.RI "void \fBMD5Init\fP (MD5_CTX *ctx)"
+.br
+.RI "\fIstart MD5 accumulation. \fP"
+.ti -1c
+.RI "void \fBMD5Update\fP (MD5_CTX *ctx, unsigned char const *buf, unsigned len)"
+.br
+.RI "\fIupdate context to reflect the concatenation of another buffer. \fP"
+.ti -1c
+.RI "void \fBMD5Final\fP (unsigned char digest[16], MD5_CTX *ctx)"
+.br
+.RI "\fIwrapup: pad to 64-byte boundary with the bit pattern 1 0* (64-bit count of bits processed,MSB-first) \fP"
+.ti -1c
+.RI "void \fBMD5Transform\fP (u_int32_t buf[4], u_int32_t const in[16])"
+.br
+.RI "\fIthe core of the MD5 algorithm. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+MD5 hashes. 
+
+This code implements the MD5 message-digest algorithm. The algorithm is due to Ron Rivest. This code was written by Colin Plumb in 1993, no copyright is claimed. This code is in the public domain; do with it what you wish.
+.PP
+Equivalent code is available from RSA Data Security, Inc. This code has been tested against that, and is equivalent, except that you don't need to include two pages of legalese with every copy.
+.PP
+To compute the message digest of a chunk of bytes, declare an MD5Context structure, pass it to MD5Init, call MD5Update as needed on buffers full of bytes, and then call MD5Final, which will fill a supplied 16-byte array with the digest.
+.SH "Function Documentation"
+.PP 
+.SS "static void byteReverse (unsigned char * buf, unsigned longs)\fC [static]\fP"
+.PP
+reverse byte-sex. 
+.PP
+this code is harmless on little-endian machines. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbuf\fP - where the data to transform lives 
+.br
+\fIlongs\fP - the number of longs to transform
+.RE
+.PP
+
+.SS "void MD5Final (unsigned char digest[16], MD5_CTX * ctx)"
+.PP
+wrapup: pad to 64-byte boundary with the bit pattern 1 0* (64-bit count of bits processed,MSB-first) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdigest\fP - buffer to write the MD5-digest to 
+.br
+\fIctx\fP - the context
+.RE
+.PP
+
+.SS "void MD5Init (MD5_CTX * ctx)"
+.PP
+start MD5 accumulation. 
+.PP
+Set bit count to 0 and buffer to mysterious initialization constants. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIctx\fP - MD5-context
+.RE
+.PP
+
+.SS "void MD5Transform (u_int32_t buf[4], u_int32_t const  in[16])"
+.PP
+the core of the MD5 algorithm. 
+.PP
+This alters an existing MD5 hash to reflect the addition of 16 longwords of new data. MD5Update blocks the data and converts bytes into longwords for this routine. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbuf\fP - the buffer 
+.br
+\fIin\fP - the new longs
+.RE
+.PP
+
+.SS "void MD5Update (MD5_CTX * ctx, unsigned char const * buf, unsigned len)"
+.PP
+update context to reflect the concatenation of another buffer. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIctx\fP - the context 
+.br
+\fIbuf\fP - the buffer 
+.br
+\fIlen\fP - length of the buffer
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

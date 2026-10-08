@@ -1,0 +1,411 @@
+.TH "gevas_bind.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+gevas_bind.c \- implements the parts of an icon-list specific to gevas. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "Evas * \fBget_evas_from_iconlist\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIget Evas-pointer from an icon-list. \fP"
+.ti -1c
+.RI "void \fBevas_queue_redraw\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIqueue a redraw of the canvas. \fP"
+.ti -1c
+.RI "static void \fBgevas_tooltip_cancel\fP (\fBnoir_sess\fP *ns, int redraw)"
+.br
+.RI "\fIcancel queued tooltip, or remove already displayed tooltip \fP"
+.ti -1c
+.RI "static void \fBgevas_tooltip_by_mouseover\fP (\fBnoir_sess\fP *ns, char *file, int x, int y, GtkWidget *widget)"
+.br
+.RI "\fImouse-over tooltip \fP"
+.ti -1c
+.RI "static void \fBgevas_tooltip_by_request\fP (\fBnoir_sess\fP *ns, GtkWidget *widget, \fBicon\fP *i)"
+.br
+.RI "\fIkeyboard-induced tooltip \fP"
+.ti -1c
+.RI "gboolean \fBgevas_exposed\fP (GtkWidget *widget, GdkEventExpose *ev, gpointer data)"
+.br
+.RI "\fIcallback: window was (partially?) obscured before, exposed now. \fP"
+.ti -1c
+.RI "static void \fBgevas_destroyed\fP (GtkWidget *widget, \fBicon_list\fP *il)"
+.br
+.RI "\fIcallback: window was destroyed \fP"
+.ti -1c
+.RI "static int \fBgevas_bg_update_x_error\fP (Display *display, XErrorEvent *error)"
+.br
+.RI "\fIcatch X error occurring while updating canvas-background (play along with pseudo-transparency plugins) \fP"
+.ti -1c
+.RI "int \fBgevas_bg_update\fP (\fBicon_list\fP *il, int w, int h)"
+.br
+.RI "\fIupdate canvas-background (play along with pseudo-transparency plugins) \fP"
+.ti -1c
+.RI "void \fBgevas_icon_list_resized\fP (GtkWidget *widget, GtkAllocation *allocation, gpointer data)"
+.br
+.RI "\fIcallback: window was resized \fP"
+.ti -1c
+.RI "void \fBgevas_icon_list_force\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIforce a resize-event on widget containing given icon-list \fP"
+.ti -1c
+.RI "static int \fBgevas_drag_icon_new\fP (\fBnoir_sess\fP *ns, \fBicon_list\fP *il, \fBicon\fP *i)"
+.br
+.RI "\fIcreate drag-icon \fP"
+.ti -1c
+.RI "static void \fBgevas_hilight_icon\fP (\fBicon_list\fP *il, \fBicon\fP *j)"
+.br
+.RI "\fIhilight a given icon in the icon-list, lowlight the rest \fP"
+.ti -1c
+.RI "static theme_area_event_modifiers \fBgevas_modifier_xlate\fP (int st)"
+.br
+.RI "\fImake logical modifier from physical one \fP"
+.ti -1c
+.RI "static gboolean \fBgevas_motioned\fP (GtkWidget *widget, GdkEventMotion *ev, gpointer data)"
+.br
+.RI "\fIcallback: mouse was moved across canvas \fP"
+.ti -1c
+.RI "static gboolean \fBgevas_keyed\fP (GtkWidget *widget, GdkEventKey *ev, gpointer data)"
+.br
+.RI "\fIcallback: key was pressed while canvas was focused. \fP"
+.ti -1c
+.RI "gboolean \fBgevas_scrolled\fP (GtkWidget *widget, GdkEventScroll *ev, gpointer data)"
+.br
+.RI "\fIcallback: canvas was scrolled without imwheel, we get here. \fP"
+.ti -1c
+.RI "static void \fBgevas_desktop_click\fP (int mx, int my, int mb, int state, unsigned long serial, unsigned long timestamp)"
+.br
+.RI "\fIforward mouse-click to desktop when evidence handles a desktop, it can forward clicks to the 'original' background (to call up window-manager menus etc. \fP"
+.ti -1c
+.RI "static gboolean \fBgevas_clicked\fP (GtkWidget *widget, GdkEventButton *ev, gpointer data)"
+.br
+.RI "\fIcallback: canvas was clicked on \fP"
+.ti -1c
+.RI "GtkWidget * \fBgevas_icon_list_new\fP (\fBnoir_sess\fP *ns, const char *name, int wpad, int hpad, int flags)"
+.br
+.RI "\fIconstructor for the canvas-specific part of icon-list \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+implements the parts of an icon-list specific to gevas. 
+
+generic parts are in icon_list. evas-specific parts are in evas2.
+.SH "Function Documentation"
+.PP 
+.SS "void evas_queue_redraw (\fBicon_list\fP * il)"
+.PP
+queue a redraw of the canvas. 
+.PP
+portability helper so plugins don't need to know about gevas. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - icon-list
+.RE
+.PP
+
+.SS "Evas* get_evas_from_iconlist (\fBicon_list\fP * il)"
+.PP
+get Evas-pointer from an icon-list. 
+.PP
+portability helper so plugins don't need to know about gevas. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - icon-list
+.RE
+.PP
+
+.SS "int gevas_bg_update (\fBicon_list\fP * il, int w, int h)"
+.PP
+update canvas-background (play along with pseudo-transparency plugins) 
+.PP
+if present, call \fBbg_upd()\fP in the background plugin to let the plugin know the window was moved/resized, the wallpaper was changed, or whatever. plugins that supply pseudo-transparency may then update the PT pixmap for the given evas icon-list. the plug-in may update the background it whatever manner it sees fit. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list 
+.br
+\fIw\fP the new width 
+.br
+\fIh\fP the new height
+.RE
+.PP
+
+.SS "static int gevas_bg_update_x_error (Display * display, XErrorEvent * error)\fC [static]\fP"
+.PP
+catch X error occurring while updating canvas-background (play along with pseudo-transparency plugins) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdisplay\fP the display the error is related to 
+.br
+\fIerror\fP the error
+.RE
+.PP
+
+.SS "static gboolean gevas_clicked (GtkWidget * widget, GdkEventButton * ev, gpointer data)\fC [static]\fP"
+.PP
+callback: canvas was clicked on 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE if event was handled conclusively 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIev\fP the click-event 
+.br
+\fIdata\fP the session
+.RE
+.PP
+
+.SS "static void gevas_desktop_click (int mx, int my, int mb, int state, unsigned long serial, unsigned long timestamp)\fC [inline, static]\fP"
+.PP
+forward mouse-click to desktop when evidence handles a desktop, it can forward clicks to the 'original' background (to call up window-manager menus etc. 
+.PP
+) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImx\fP mouse x 
+.br
+\fImy\fP mouse y 
+.br
+\fImb\fP mouse buttons (X format) 
+.br
+\fIstate\fP modifiers (shift etc., X format) 
+.br
+\fIserial\fP last X event seen 
+.br
+\fItimestamp\fP when did the event happen?
+.RE
+.PP
+
+.SS "static void gevas_destroyed (GtkWidget * widget, \fBicon_list\fP * il)\fC [static]\fP"
+.PP
+callback: window was destroyed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIil\fP icon-list shown in this window
+.RE
+.PP
+
+.SS "static int gevas_drag_icon_new (\fBnoir_sess\fP * ns, \fBicon_list\fP * il, \fBicon\fP * i)\fC [inline, static]\fP"
+.PP
+create drag-icon 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIil\fP the icon-list 
+.br
+\fIi\fP the icon
+.RE
+.PP
+
+.SS "gboolean gevas_exposed (GtkWidget * widget, GdkEventExpose * ev, gpointer data)"
+.PP
+callback: window was (partially?) obscured before, exposed now. 
+.PP
+I'm gevas exposed callback. Without me, gevas would have no scrollbar. 
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE so further handlers can be processed 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIev\fP the expose-event 
+.br
+\fIdata\fP the icon-list shown in this window
+.RE
+.PP
+
+.SS "static void gevas_hilight_icon (\fBicon_list\fP * il, \fBicon\fP * j)\fC [inline, static]\fP"
+.PP
+hilight a given icon in the icon-list, lowlight the rest 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list 
+.br
+\fIj\fP an icon to highlight, or NULL for none
+.RE
+.PP
+
+.SS "void gevas_icon_list_force (\fBicon_list\fP * il)"
+.PP
+force a resize-event on widget containing given icon-list 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list
+.RE
+.PP
+
+.SS "GtkWidget* gevas_icon_list_new (\fBnoir_sess\fP * ns, const char * name, int wpad, int hpad, int flags)"
+.PP
+constructor for the canvas-specific part of icon-list 
+.PP
+\fBReturns:\fP
+.RS 4
+a GTK-widget 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIname\fP the name for this icon-view 
+.br
+\fIwpad\fP horizontal padding between icons 
+.br
+\fIhpad\fP vertical padding between icons 
+.br
+\fIflags\fP flags for icon-list (reserved, 0)
+.RE
+.PP
+
+.SS "void gevas_icon_list_resized (GtkWidget * widget, GtkAllocation * allocation, gpointer data)"
+.PP
+callback: window was resized 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIallocation\fP the new size of the canvas 
+.br
+\fIdata\fP the session
+.RE
+.PP
+
+.SS "static gboolean gevas_keyed (GtkWidget * widget, GdkEventKey * ev, gpointer data)\fC [static]\fP"
+.PP
+callback: key was pressed while canvas was focused. 
+.PP
+w/ imwheel, mouse-wheel events go here, as well. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIev\fP the scroll-event 
+.br
+\fIdata\fP the session
+.RE
+.PP
+
+.SS "static theme_area_event_modifiers gevas_modifier_xlate (int st)\fC [inline, static]\fP"
+.PP
+make logical modifier from physical one 
+.PP
+\fBReturns:\fP
+.RS 4
+logical modifier 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIst\fP physical modifiers (bit-vector)
+.RE
+.PP
+
+.SS "static gboolean gevas_motioned (GtkWidget * widget, GdkEventMotion * ev, gpointer data)\fC [static]\fP"
+.PP
+callback: mouse was moved across canvas 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIev\fP the motion-event 
+.br
+\fIdata\fP the session
+.RE
+.PP
+
+.SS "gboolean gevas_scrolled (GtkWidget * widget, GdkEventScroll * ev, gpointer data)"
+.PP
+callback: canvas was scrolled without imwheel, we get here. 
+.PP
+w/ imwheel, we'll get a key-event instead. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gevas 
+.br
+\fIev\fP the scroll-event 
+.br
+\fIdata\fP the session
+.RE
+.PP
+
+.SS "static void gevas_tooltip_by_mouseover (\fBnoir_sess\fP * ns, char * file, int x, int y, GtkWidget * widget)\fC [inline, static]\fP"
+.PP
+mouse-over tooltip 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIfile\fP the path to the file to get info on 
+.br
+\fIx\fP where to display the tooltip 
+.br
+\fIy\fP where to display the tooltip 
+.br
+\fIwidget\fP the gevas
+.RE
+.PP
+
+.SS "static void gevas_tooltip_by_request (\fBnoir_sess\fP * ns, GtkWidget * widget, \fBicon\fP * i)\fC [static]\fP"
+.PP
+keyboard-induced tooltip 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIwidget\fP the gevas the tooltip should be displayed in (icon-view or shelf) 
+.br
+\fIi\fP the icon the tooltip is for
+.RE
+.PP
+
+.SS "static void gevas_tooltip_cancel (\fBnoir_sess\fP * ns, int redraw)\fC [static]\fP"
+.PP
+cancel queued tooltip, or remove already displayed tooltip 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIredraw\fP redraw the canvas after removing tooltip?
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

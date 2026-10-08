@@ -1,0 +1,65 @@
+\hypertarget{clipboard_8c}{
+\section{clipboard.c File Reference}
+\label{clipboard_8c}\index{clipboard.c@{clipboard.c}}
+}
+handle the clipboard and the primary selection. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{clipboard_8c_a0}{clipboard\_\-set} (Gdk\-Atom cb, const char $\ast$ascii)
+\begin{CompactList}\small\item\em set text 'ascii' on clipboard 'cb'. \item\end{CompactList}\item 
+int \hyperlink{clipboard_8c_a1}{clipboard\_\-get} (Gdk\-Atom cb, \hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em get text from clipboard and insert it into type-buffer. \item\end{CompactList}\item 
+int \hyperlink{clipboard_8c_a2}{selection\_\-update} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, \hyperlink{struct__client__funs}{client\_\-funs} $\ast$skip)
+\begin{CompactList}\small\item\em copy selection to all views in a session. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+handle the clipboard and the primary selection. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{clipboard_8c_a1}{
+\index{clipboard.c@{clipboard.c}!clipboard_get@{clipboard\_\-get}}
+\index{clipboard_get@{clipboard\_\-get}!clipboard.c@{clipboard.c}}
+\subsubsection[clipboard\_\-get]{\setlength{\rightskip}{0pt plus 5cm}int clipboard\_\-get (Gdk\-Atom {\em cb}, \hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{clipboard_8c_a1}
+
+
+get text from clipboard and insert it into type-buffer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em cb}]- the clipboard to read from \item[{\em ns}]- the session (text will be set in ns-$>$typebuffer)\end{description}
+\end{Desc}
+\hypertarget{clipboard_8c_a0}{
+\index{clipboard.c@{clipboard.c}!clipboard_set@{clipboard\_\-set}}
+\index{clipboard_set@{clipboard\_\-set}!clipboard.c@{clipboard.c}}
+\subsubsection[clipboard\_\-set]{\setlength{\rightskip}{0pt plus 5cm}int clipboard\_\-set (Gdk\-Atom {\em cb}, const char $\ast$ {\em ascii})}}
+\label{clipboard_8c_a0}
+
+
+set text 'ascii' on clipboard 'cb'. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em cb}]- the clipboard to modify \item[{\em ascii}]- the text to set\end{description}
+\end{Desc}
+\hypertarget{clipboard_8c_a2}{
+\index{clipboard.c@{clipboard.c}!selection_update@{selection\_\-update}}
+\index{selection_update@{selection\_\-update}!clipboard.c@{clipboard.c}}
+\subsubsection[selection\_\-update]{\setlength{\rightskip}{0pt plus 5cm}int selection\_\-update (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, \hyperlink{struct__client__funs}{client\_\-funs} $\ast$ {\em skip})}}
+\label{clipboard_8c_a2}
+
+
+copy selection to all views in a session. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session \item[{\em skip}]- the calling client (don't call setter on that, it already knows)\end{description}
+\end{Desc}

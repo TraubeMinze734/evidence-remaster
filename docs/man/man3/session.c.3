@@ -1,0 +1,674 @@
+.TH "session.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+session.c \- sessions (windows), and views (notebook-pages within a given session-window). 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBclient_funs\fP * \fBnoir_sess_client_get\fP (\fBnoir_sess\fP *ns, const char *tag)"
+.br
+.RI "\fIget the view object for a certain view in a given session \fP"
+.ti -1c
+.RI "void * \fBnoir_sess_client_get_data\fP (\fBnoir_sess\fP *ns, const char *tag)"
+.br
+.RI "\fIget user-data from the view-object for a certain view in a given session. \fP"
+.ti -1c
+.RI "\fBclient_funs\fP * \fBnoir_sess_client_register\fP (\fBnoir_sess\fP *ns, const char *name, void *data)"
+.br
+.RI "\fIregister a view with both the session and the model. \fP"
+.ti -1c
+.RI "\fBclient_funs\fP * \fBnoir_sess_client_register_full\fP (\fBnoir_sess\fP *ns, const char *name, void *data, int(*evt_view)(\fBfile_info\fP *, \fBmodel_event\fP type, \fBfile_flags\fP changed, void *), int(*dst_data)(void **), int(*set_selection)(void *))"
+.br
+.RI "\fIregister a view with both the session and the model and set callbacks. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_client_unregister\fP (\fBnoir_sess\fP *ns, \fBclient_funs\fP *cf)"
+.br
+.RI "\fIremove a view from a session. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_tell_clients\fP (\fBnoir_sess\fP *ns, void *fi, int etype, int eval)"
+.br
+.RI "\fIpropagate an event to all of a given session's views \fP"
+.ti -1c
+.RI "\fBclient_funs\fP * \fBnoir_sess_client_lock\fP (long serial, const char *tag)"
+.br
+.RI "\fIget a view object and lock it. \fP"
+.ti -1c
+.RI "void \fBnoir_sess_client_unlock\fP (\fBclient_funs\fP *c)"
+.br
+.RI "\fIrelease a lock on a view object \fP"
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBnoir_sess_new\fP (void)"
+.br
+.RI "\fIcreate a new session struct \fP"
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBnoir_sess_copy\fP (\fBnoir_sess\fP *d, \fBnoir_sess\fP *s)"
+.br
+.RI "\fIcopy session struct 's' to struct 'd', a proto-struct obtained with \fBnoir_sess_new()\fP. \fP"
+.ti -1c
+.RI "static void \fBnoir_sess_free\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIfree memory associated with a session. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_drop\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIdrop the session associated with a window. \fP"
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBnoir_sess_get_1st\fP (void)"
+.br
+.RI "\fIget first session in session-chain. \fP"
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBnoir_sess_get_next\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget next session in chain \fP"
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBnoir_sess_get_by_serial\fP (long serial)"
+.br
+.RI "\fIfind session that has 'serial' \fP"
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBnoir_sess_get_by_cwd\fP (const char *dir)"
+.br
+.RI "\fIfind (first) session that has 'dir' as current working directory \fP"
+.ti -1c
+.RI "long \fBnoir_sess_get_serial\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget serial number of a session \fP"
+.ti -1c
+.RI "char * \fBnoir_sess_get_cwd\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget current working directory of a session \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_cwd\fP (\fBnoir_sess\fP *ns, const char *cwd)"
+.br
+.RI "\fIset current working directory of a session (in data only) this does not actually change the directory shown in the view; the front-end should never call this! \fP"
+.ti -1c
+.RI "typebuffer * \fBnoir_sess_get_typebuffer\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget typebuffer of a session \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_typebuffer\fP (\fBnoir_sess\fP *ns, typebuffer *tb)"
+.br
+.RI "\fIset typebuffer of a session \fP"
+.ti -1c
+.RI "action_context * \fBnoir_sess_get_selection\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget current selection of a session \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_selection\fP (\fBnoir_sess\fP *ns, action_context *sel)"
+.br
+.RI "\fIset current selection of a session \fP"
+.ti -1c
+.RI "void * \fBnoir_sess_get_theme\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget theme of a session \fP"
+.ti -1c
+.RI "void * \fBnoir_sess_get_theme_props\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget theme-props of a session (this should possibly go into \fBtheme.c\fP mid-term) \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_theme\fP (\fBnoir_sess\fP *ns, void *t)"
+.br
+.RI "\fIset theme of a session \fP"
+.ti -1c
+.RI "int \fBnoir_sess_get_desktop\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIdesktopp \fP"
+.ti -1c
+.RI "void * \fBnoir_sess_get_sortflags\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget sortflags of a session \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_sortflags\fP (\fBnoir_sess\fP *ns, int sf)"
+.br
+.RI "\fIset sortflags of a session \fP"
+.ti -1c
+.RI "void * \fBnoir_sess_get_uidata\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget UI-specific struct (widgets et al. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_uidata\fP (\fBnoir_sess\fP *ns, void *w)"
+.br
+.RI "\fIset UI-specific struct (widgets et al. \fP"
+.ti -1c
+.RI "tooltip_flags \fBnoir_sess_get_tooltip_flags\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget UI-specific struct (widgets et al. \fP"
+.ti -1c
+.RI "int \fBnoir_sess_set_tooltip_flags\fP (\fBnoir_sess\fP *ns, tooltip_flags f)"
+.br
+.RI "\fIset tooltip flags \fP"
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fBnoir_sess\fP * \fBsa\fP = NULL"
+.br
+.RI "\fIsession anchor, co-used from \fBevidence.c\fP \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+sessions (windows), and views (notebook-pages within a given session-window). 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBclient_funs\fP* noir_sess_client_get (\fBnoir_sess\fP * ns, const char * tag)"
+.PP
+get the view object for a certain view in a given session 
+.PP
+\fBReturns:\fP
+.RS 4
+the view-object, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session/window 
+.br
+\fItag\fP the name/tag of the view
+.RE
+.PP
+
+.SS "void* noir_sess_client_get_data (\fBnoir_sess\fP * ns, const char * tag)"
+.PP
+get user-data from the view-object for a certain view in a given session. 
+.PP
+the user-data usually hold administrative struct (browser_view *, icon_view *, ...). 
+.PP
+\fBReturns:\fP
+.RS 4
+the user-data, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session/window 
+.br
+\fItag\fP the name/tag of the view
+.RE
+.PP
+
+.SS "\fBclient_funs\fP* noir_sess_client_lock (long serial, const char * tag)"
+.PP
+get a view object and lock it. 
+.PP
+\fBReturns:\fP
+.RS 4
+a view-object, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the serial number of the session to acquire 
+.br
+\fItag\fP the name of the view
+.RE
+.PP
+
+.SS "\fBclient_funs\fP* noir_sess_client_register (\fBnoir_sess\fP * ns, const char * name, void * data)"
+.PP
+register a view with both the session and the model. 
+.PP
+\fBReturns:\fP
+.RS 4
+the new view object, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session to register in (will become part of ns->clients chain) 
+.br
+\fIname\fP the name-tag for the view 
+.br
+\fIdata\fP user-data (usually administrative struct, browser_view *, icon_view *, ...)
+.RE
+.PP
+
+.SS "\fBclient_funs\fP* noir_sess_client_register_full (\fBnoir_sess\fP * ns, const char * name, void * data, int(*)(\fBfile_info\fP *, \fBmodel_event\fP type, \fBfile_flags\fP changed, void *) evt_view, int(*)(void **) dst_data, int(*)(void *) set_selection)"
+.PP
+register a view with both the session and the model and set callbacks. 
+.PP
+\fBReturns:\fP
+.RS 4
+the new view object, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session to register in (will become part of ns->clients chain) 
+.br
+\fIname\fP the name-tag for the view 
+.br
+\fIdata\fP user-data (usually administrative struct, browser_view *, icon_view *, ...) 
+.br
+\fIevt_view\fP what to call when the contents of the model change (new file, ...) 
+.br
+\fIdst_data\fP when this entry is destroyed, call this function to release user-data 
+.br
+\fIset_selection\fP what to call to set ns->selection on the view
+.RE
+.PP
+
+.SS "void noir_sess_client_unlock (\fBclient_funs\fP * c)"
+.PP
+release a lock on a view object 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP the view-object
+.RE
+.PP
+
+.SS "int noir_sess_client_unregister (\fBnoir_sess\fP * ns, \fBclient_funs\fP * cf)"
+.PP
+remove a view from a session. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC (done), NOIR_FAIL (einval), NOIR_NOTFOUND (unknown view) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session to remove the view from 
+.br
+\fIcf\fP the view-object
+.RE
+.PP
+
+.SS "\fBnoir_sess\fP* noir_sess_copy (\fBnoir_sess\fP * d, \fBnoir_sess\fP * s)"
+.PP
+copy session struct 's' to struct 'd', a proto-struct obtained with \fBnoir_sess_new()\fP. 
+.PP
+'d' will retain the serial issued by \fBnoir_sess_new()\fP rather than duplicate that of 's'. 
+.PP
+\fBReturns:\fP
+.RS 4
+the new session 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fId\fP buffer for the destination-session 
+.br
+\fIs\fP the source-session
+.RE
+.PP
+
+.SS "int noir_sess_drop (\fBnoir_sess\fP * ns)"
+.PP
+drop the session associated with a window. 
+.PP
+hook this into the 'window-destroyed' callback of your toolkit.
+.PP
+lock the session-chain's lock, find the session, remove it from the chain, then call \fBnoir_sess_free()\fP on it. unlock.
+.PP
+called from \fBevidence::closed()\fP. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session to drop
+.RE
+.PP
+
+.SS "static void noir_sess_free (\fBnoir_sess\fP * ns)\fC [static]\fP"
+.PP
+free memory associated with a session. 
+.PP
+session is expected to already have been removed from session-list. if the session still has views ('clients'), these will be removed. called from \fBnoir_sess_drop()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session to remove
+.RE
+.PP
+
+.SS "\fBnoir_sess\fP* noir_sess_get_1st (void)"
+.PP
+get first session in session-chain. 
+.PP
+(session-anchor is read-only)
+.SS "\fBnoir_sess\fP* noir_sess_get_by_cwd (const char * dir)"
+.PP
+find (first) session that has 'dir' as current working directory 
+.PP
+\fBReturns:\fP
+.RS 4
+the session, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdir\fP the working directory to look for
+.RE
+.PP
+
+.SS "\fBnoir_sess\fP* noir_sess_get_by_serial (long serial)"
+.PP
+find session that has 'serial' 
+.PP
+\fBReturns:\fP
+.RS 4
+the session, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the serial-no to look for
+.RE
+.PP
+
+.SS "char* noir_sess_get_cwd (\fBnoir_sess\fP * ns)"
+.PP
+get current working directory of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+the working directory 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "int noir_sess_get_desktop (\fBnoir_sess\fP * ns)"
+.PP
+desktopp 
+.PP
+\fBReturns:\fP
+.RS 4
+the theme 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the *address of* the session's sortflags
+.RE
+.PP
+
+.SS "\fBnoir_sess\fP* noir_sess_get_next (\fBnoir_sess\fP * ns)"
+.PP
+get next session in chain 
+.PP
+\fBReturns:\fP
+.RS 4
+succeeding session 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP current session
+.RE
+.PP
+
+.SS "action_context* noir_sess_get_selection (\fBnoir_sess\fP * ns)"
+.PP
+get current selection of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+the selection 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "long noir_sess_get_serial (\fBnoir_sess\fP * ns)"
+.PP
+get serial number of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+the serial 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "void* noir_sess_get_sortflags (\fBnoir_sess\fP * ns)"
+.PP
+get sortflags of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+the theme 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the *address of* the session's sortflags
+.RE
+.PP
+
+.SS "void* noir_sess_get_theme (\fBnoir_sess\fP * ns)"
+.PP
+get theme of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+the theme 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "void* noir_sess_get_theme_props (\fBnoir_sess\fP * ns)"
+.PP
+get theme-props of a session (this should possibly go into \fBtheme.c\fP mid-term) 
+.PP
+\fBReturns:\fP
+.RS 4
+the theme 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "tooltip_flags noir_sess_get_tooltip_flags (\fBnoir_sess\fP * ns)"
+.PP
+get UI-specific struct (widgets et al. 
+.PP
+) 
+.PP
+\fBReturns:\fP
+.RS 4
+a pointer to the struct, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "typebuffer* noir_sess_get_typebuffer (\fBnoir_sess\fP * ns)"
+.PP
+get typebuffer of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+the typebuffer 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "void* noir_sess_get_uidata (\fBnoir_sess\fP * ns)"
+.PP
+get UI-specific struct (widgets et al. 
+.PP
+) 
+.PP
+\fBReturns:\fP
+.RS 4
+a pointer to the struct, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "int noir_sess_set_cwd (\fBnoir_sess\fP * ns, const char * cwd)"
+.PP
+set current working directory of a session (in data only) this does not actually change the directory shown in the view; the front-end should never call this! 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIcwd\fP the working directory
+.RE
+.PP
+
+.SS "int noir_sess_set_selection (\fBnoir_sess\fP * ns, action_context * sel)"
+.PP
+set current selection of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIsel\fP the selection
+.RE
+.PP
+
+.SS "int noir_sess_set_sortflags (\fBnoir_sess\fP * ns, int sf)"
+.PP
+set sortflags of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIsf\fP new sort-flags
+.RE
+.PP
+
+.SS "int noir_sess_set_theme (\fBnoir_sess\fP * ns, void * t)"
+.PP
+set theme of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIt\fP the theme
+.RE
+.PP
+
+.SS "int noir_sess_set_tooltip_flags (\fBnoir_sess\fP * ns, tooltip_flags f)"
+.PP
+set tooltip flags 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIf\fP the flags to set
+.RE
+.PP
+
+.SS "int noir_sess_set_typebuffer (\fBnoir_sess\fP * ns, typebuffer * tb)"
+.PP
+set typebuffer of a session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fItb\fP the typebuffer
+.RE
+.PP
+
+.SS "int noir_sess_set_uidata (\fBnoir_sess\fP * ns, void * w)"
+.PP
+set UI-specific struct (widgets et al. 
+.PP
+) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIw\fP a pointer to the struct, or NULL
+.RE
+.PP
+
+.SS "int noir_sess_tell_clients (\fBnoir_sess\fP * ns, void * fi, int etype, int eval)"
+.PP
+propagate an event to all of a given session's views 
+.PP
+\fBReturns:\fP
+.RS 4
+the count of views who received this event 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session whose views to inform 
+.br
+\fIfi\fP the file this event is about 
+.br
+\fIetype\fP the event type (changed, deleted, ...) 
+.br
+\fIeval\fP the event's flags or value
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

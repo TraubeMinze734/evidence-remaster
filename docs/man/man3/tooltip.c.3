@@ -1,0 +1,265 @@
+.TH "tooltip.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+tooltip.c \- GTK2 file-info tooltips. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static gint \fBtooltip_gtk2_expose\fP (noir_tooltip *tooltip)"
+.br
+.RI "\fIcallback for expose events on tooltip \fP"
+.ti -1c
+.RI "static gboolean \fBtooltip_gtk2_hide\fP (gpointer data)"
+.br
+.RI "\fIcallback for leave events of session's window \fP"
+.ti -1c
+.RI "static gboolean \fBtooltip_gtk2_leave\fP (gpointer data)"
+.br
+.RI "\fImouse was moved in time, forget about ever showing the tooltip \fP"
+.ti -1c
+.RI "static gint \fBtooltip_gtk2_create\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIcreate GtkWindow et al. \fP"
+.ti -1c
+.RI "static int \fBtooltip_evas_cancel\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIclose evas tooltip, if one is open \fP"
+.ti -1c
+.RI "int \fBtooltip_cancel\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fImouse was moved in time, forget about ever showing the tooltip \fP"
+.ti -1c
+.RI "int \fBtooltip_exit\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIdeinit tooltip for this session \fP"
+.ti -1c
+.RI "int \fBtooltip_init\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIinitialize GTK2 tooltip subsystem for this session \fP"
+.ti -1c
+.RI "static \fBfile_info\fP * \fBtooltip_find_in_virtual\fP (const char *vfolder, const char *virtual)"
+.br
+.RI "\fIfind file in vfolder (search-result, or what-not) \fP"
+.ti -1c
+.RI "int \fBtooltip_show_for\fP (\fBnoir_sess\fP *ns, char *file, int x, int y)"
+.br
+.RI "\fIshow tooltip *now* (evas or GTK2) \fP"
+.ti -1c
+.RI "static gint \fBtooltip_timeout\fP (gpointer data)"
+.br
+.RI "\fImouse was not moved in time, show tooltip \fP"
+.ti -1c
+.RI "int \fBtooltip_maybe\fP (\fBnoir_sess\fP *ns, char *file, int x, int y)"
+.br
+.RI "\fIQ tip: if mouse doesn't leave this item soon, show tooltip for it. \fP"
+.ti -1c
+.RI "const char * \fBtooltip_get_file\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIenquire what the current file for the tooltip (shown or not) is \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+GTK2 file-info tooltips. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int tooltip_cancel (\fBnoir_sess\fP * ns)"
+.PP
+mouse was moved in time, forget about ever showing the tooltip 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int tooltip_evas_cancel (\fBnoir_sess\fP * ns)\fC [static]\fP"
+.PP
+close evas tooltip, if one is open 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "int tooltip_exit (\fBnoir_sess\fP * ns)"
+.PP
+deinit tooltip for this session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static \fBfile_info\fP* tooltip_find_in_virtual (const char * vfolder, const char * virtual)\fC [static]\fP"
+.PP
+find file in vfolder (search-result, or what-not) 
+.PP
+\fBReturns:\fP
+.RS 4
+the file-info, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIvfolder\fP the tag of the folder to search in 
+.br
+\fIvirtual\fP the tag of the file to find
+.RE
+.PP
+
+.SS "const char* tooltip_get_file (\fBnoir_sess\fP * ns)"
+.PP
+enquire what the current file for the tooltip (shown or not) is 
+.PP
+\fBReturns:\fP
+.RS 4
+a pointer to the tag, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static gint tooltip_gtk2_create (\fBnoir_sess\fP * ns)\fC [static]\fP"
+.PP
+create GtkWindow et al. 
+.PP
+for GTK2 tooltip; connect signals 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static gint tooltip_gtk2_expose (noir_tooltip * tooltip)\fC [static]\fP"
+.PP
+callback for expose events on tooltip 
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItooltip\fP the tooltip
+.RE
+.PP
+
+.SS "static gboolean tooltip_gtk2_hide (gpointer data)\fC [static]\fP"
+.PP
+callback for leave events of session's window 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the tooltip-widget
+.RE
+.PP
+
+.SS "static gboolean tooltip_gtk2_leave (gpointer data)\fC [static]\fP"
+.PP
+mouse was moved in time, forget about ever showing the tooltip 
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the tooltip, or NULL
+.RE
+.PP
+
+.SS "int tooltip_init (\fBnoir_sess\fP * ns)"
+.PP
+initialize GTK2 tooltip subsystem for this session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "int tooltip_maybe (\fBnoir_sess\fP * ns, char * file, int x, int y)"
+.PP
+Q tip: if mouse doesn't leave this item soon, show tooltip for it. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIfile\fP the file for which to show the info 
+.br
+\fIx\fP the coordinate where the mouse must more or less remain 
+.br
+\fIy\fP the coordinate where the mouse must more or less remain
+.RE
+.PP
+
+.SS "int tooltip_show_for (\fBnoir_sess\fP * ns, char * file, int x, int y)"
+.PP
+show tooltip *now* (evas or GTK2) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIfile\fP the file to show the tooltip for 
+.br
+\fIx\fP where to show the tooltip 
+.br
+\fIy\fP where to show the tooltip
+.RE
+.PP
+
+.SS "static gint tooltip_timeout (gpointer data)\fC [static]\fP"
+.PP
+mouse was not moved in time, show tooltip 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the session
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,20 @@
+WHICH ICON TO USE
+
+This directory contains (at least) two icons, evidence.png and
+filemanager.png.
+
+"filemanager" identifies the task of file-managing (using the accepted
+generic of a house to symbolize "home-directory"); "evidence"
+identifies the evidence file-manager in a group of file-managers.
+
+Hence, when a menu is presented to the user where she may select from
+a variety of file-managers, the use of the evidence-icon is suggested.
+
+In all other contexts, the use of a generic file-manager icon is
+suggested, indicating the action of "start the default file-manager
+(whatever that may be)."
+
+An example for a generic file-manager icon is supplied.  If evidence
+is part of a distribution that offers several desktop environments,
+the packager may choose to use the same generic icon across desktop
+environments.

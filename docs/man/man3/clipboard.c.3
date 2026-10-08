@@ -1,0 +1,70 @@
+.TH "clipboard.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+clipboard.c \- handle the clipboard and the primary selection. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBclipboard_set\fP (GdkAtom cb, const char *ascii)"
+.br
+.RI "\fIset text 'ascii' on clipboard 'cb'. \fP"
+.ti -1c
+.RI "int \fBclipboard_get\fP (GdkAtom cb, \fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget text from clipboard and insert it into type-buffer. \fP"
+.ti -1c
+.RI "int \fBselection_update\fP (\fBnoir_sess\fP *ns, \fBclient_funs\fP *skip)"
+.br
+.RI "\fIcopy selection to all views in a session. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+handle the clipboard and the primary selection. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int clipboard_get (GdkAtom cb, \fBnoir_sess\fP * ns)"
+.PP
+get text from clipboard and insert it into type-buffer. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcb\fP - the clipboard to read from 
+.br
+\fIns\fP - the session (text will be set in ns->typebuffer)
+.RE
+.PP
+
+.SS "int clipboard_set (GdkAtom cb, const char * ascii)"
+.PP
+set text 'ascii' on clipboard 'cb'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcb\fP - the clipboard to modify 
+.br
+\fIascii\fP - the text to set
+.RE
+.PP
+
+.SS "int selection_update (\fBnoir_sess\fP * ns, \fBclient_funs\fP * skip)"
+.PP
+copy selection to all views in a session. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP - the session 
+.br
+\fIskip\fP - the calling client (don't call setter on that, it already knows)
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

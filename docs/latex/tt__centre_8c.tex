@@ -1,0 +1,73 @@
+\hypertarget{tt__centre_8c}{
+\section{tt\_\-centre.c File Reference}
+\label{tt__centre_8c}\index{tt_centre.c@{tt\_\-centre.c}}
+}
+plugin that creates a file-info \char`\"{}tooltip\char`\"{} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static \hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{tt__centre_8c_a2}{frame\_\-new} (Evas $\ast$evas, \hyperlink{struct__icon}{icon} $\ast$\hyperlink{struct__icon}{icon}, \hyperlink{struct__icon__el}{icon\_\-el} $\ast$el, double x1, double y1, double x2, double y2)
+\begin{CompactList}\small\item\em create a frame around the tooltip. \item\end{CompactList}\item 
+void \hyperlink{tt__centre_8c_a3}{tt\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct a tooltip. \item\end{CompactList}\item 
+void $\ast$ \hyperlink{tt__centre_8c_a4}{tt\_\-new} (void $\ast$data, int x, int y, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em create a tooltip. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that creates a file-info \char`\"{}tooltip\char`\"{} 
+
+this plugin creates tooltips that are centered in the middle of the window.
+
+some tunables exist as defines and should be turned into properties at some point. \#\#\#
+
+\subsection{Function Documentation}
+\hypertarget{tt__centre_8c_a2}{
+\index{tt_centre.c@{tt\_\-centre.c}!frame_new@{frame\_\-new}}
+\index{frame_new@{frame\_\-new}!tt_centre.c@{tt\_\-centre.c}}
+\subsubsection[frame\_\-new]{\setlength{\rightskip}{0pt plus 5cm}static \hyperlink{struct__icon__el}{icon\_\-el}$\ast$ frame\_\-new (Evas $\ast$ {\em evas}, \hyperlink{struct__icon}{icon} $\ast$ {\em icon}, \hyperlink{struct__icon__el}{icon\_\-el} $\ast$ {\em el}, double {\em x1}, double {\em y1}, double {\em x2}, double {\em y2})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tt__centre_8c_a2}
+
+
+create a frame around the tooltip. 
+
+\begin{Desc}
+\item[Returns:]a linked list of icon-elements. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]- the evas \item[{\em icon}]- the tooltip to append the elements to (needed by ICON\_\-EL\_\-$\ast$()) \item[{\em el}]- the current icon-element \item[{\em x1}]- left boundary \item[{\em y1}]- upper boundary \item[{\em x2}]- right boundary \item[{\em y2}]- lower boundary\end{description}
+\end{Desc}
+\hypertarget{tt__centre_8c_a3}{
+\index{tt_centre.c@{tt\_\-centre.c}!tt_dst@{tt\_\-dst}}
+\index{tt_dst@{tt\_\-dst}!tt_centre.c@{tt\_\-centre.c}}
+\subsubsection[tt\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void tt\_\-dst (void $\ast$$\ast$ {\em data})}}
+\label{tt__centre_8c_a3}
+
+
+destruct a tooltip. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the tooltip-handle \hyperlink{tt__centre_8c_a4}{tt\_\-new()} gave us\end{description}
+\end{Desc}
+\hypertarget{tt__centre_8c_a4}{
+\index{tt_centre.c@{tt\_\-centre.c}!tt_new@{tt\_\-new}}
+\index{tt_new@{tt\_\-new}!tt_centre.c@{tt\_\-centre.c}}
+\subsubsection[tt\_\-new]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ tt\_\-new (void $\ast$ {\em data}, int {\em x}, int {\em y}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})}}
+\label{tt__centre_8c_a4}
+
+
+create a tooltip. 
+
+no assumptions about the nature of the tooltip are made; for all the main application knows, the plugin might read the info to the user aloud.
+
+\begin{Desc}
+\item[Returns:]a handle to pass to \hyperlink{tt__centre_8c_a3}{tt\_\-dst()} when destroy the tooltip. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the icon-list the tooltip is related to \item[{\em x}]- x-position of the icon the info is for \item[{\em y}]- y-position of the icon the info is for \item[{\em fi}]- the file we're displaying info for\end{description}
+\end{Desc}

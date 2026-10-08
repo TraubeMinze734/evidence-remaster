@@ -1,0 +1,35 @@
+\hypertarget{ix__textpath_8c}{
+\section{ix\_\-textpath.c File Reference}
+\label{ix__textpath_8c}\index{ix_textpath.c@{ix\_\-textpath.c}}
+}
+common routines for \char`\"{}text-path\char`\"{} plugins 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{ix__textpath_8c_a0}{ext\_\-evt} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, int x, int y, int b, theme\_\-area\_\-event\_\-type t, theme\_\-area\_\-event\_\-modifiers m, void $\ast$data, void $\ast$$\ast$rp)
+\begin{CompactList}\small\item\em something happened in the area that is \char`\"{}owned\char`\"{} by this extension. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+common routines for \char`\"{}text-path\char`\"{} plugins 
+
+written by Azundris
+
+\subsection{Function Documentation}
+\hypertarget{ix__textpath_8c_a0}{
+\index{ix_textpath.c@{ix\_\-textpath.c}!ext_evt@{ext\_\-evt}}
+\index{ext_evt@{ext\_\-evt}!ix_textpath.c@{ix\_\-textpath.c}}
+\subsubsection[ext\_\-evt]{\setlength{\rightskip}{0pt plus 5cm}int ext\_\-evt (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em x}, int {\em y}, int {\em b}, theme\_\-area\_\-event\_\-type {\em t}, theme\_\-area\_\-event\_\-modifiers {\em m}, void $\ast$ {\em data}, void $\ast$$\ast$ {\em rp})}}
+\label{ix__textpath_8c_a0}
+
+
+something happened in the area that is \char`\"{}owned\char`\"{} by this extension. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC if we handled and \char`\"{}swallowed\char`\"{} the event, NOIR\_\-IGNORED otherwise \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list where the event happened \item[{\em i}]- the instance of this extension \item[{\em x}]- mouse/x \item[{\em y}]- mouse/y \item[{\em b}]- mouse/button \item[{\em t}]- event-type (see theme.h) \item[{\em m}]- modifiers (see theme.h) \item[{\em data}]- user-data (often the session) \item[{\em rp}]- where the plugin can return a pointer\end{description}
+\end{Desc}

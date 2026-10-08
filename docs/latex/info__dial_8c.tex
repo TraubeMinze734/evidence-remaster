@@ -1,0 +1,333 @@
+\hypertarget{info__dial_8c}{
+\section{info\_\-dial.c File Reference}
+\label{info__dial_8c}\index{info_dial.c@{info\_\-dial.c}}
+}
+file properties dialog. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static void \hyperlink{info__dial_8c_a9}{effigy\_\-dial\_\-populate} (noir\_\-file $\ast$nf)
+\begin{CompactList}\small\item\em populate dialog window \item\end{CompactList}\item 
+static Gtk\-Widget $\ast$ \hyperlink{info__dial_8c_a10}{ace\_\-new} (Gtk\-Widget $\ast$table, noir\_\-meta $\ast$m, int $\ast$cptr, noir\_\-file $\ast$nf)
+\begin{CompactList}\small\item\em create an ACE-row \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a11}{effigy\_\-check\_\-entry} (Gtk\-Entry $\ast$w, gpointer data)
+\begin{CompactList}\small\item\em check an entry-field for changes. \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a12}{effigy\_\-check\_\-widget} (Gtk\-Widget $\ast$w, gpointer data)
+\begin{CompactList}\small\item\em check a widget (container or entry-field) for changes \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a13}{effigy\_\-popup\_\-clicked} (Gtk\-Widget $\ast$item, gpointer data)
+\begin{CompactList}\small\item\em callback: something was selected in pop-up menu; update entry-field. \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a14}{effigy\_\-popup\_\-add} (Gtk\-Widget $\ast$menu, char $\ast$title, gpointer data)
+\begin{CompactList}\small\item\em add an item to a pop-up menu \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a15}{effigy\_\-popbutton\_\-clicked} (gpointer data, Gtk\-Button $\ast$button)
+\begin{CompactList}\small\item\em popbutton was clicked, open the pop-up for this entry-field \item\end{CompactList}\item 
+static Gtk\-Widget $\ast$ \hyperlink{info__dial_8c_a16}{effigy\_\-make\_\-label} (noir\_\-meta $\ast$m)
+\begin{CompactList}\small\item\em make a label for an item. \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a17}{effigy\_\-table\_\-add\_\-row} (Gtk\-Widget $\ast$table, Gtk\-Widget $\ast$key, Gtk\-Widget $\ast$val, Gtk\-Tooltips $\ast$tt, noir\_\-meta $\ast$m, int $\ast$count)
+\begin{CompactList}\small\item\em add a row to a notebook \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a18}{effigy\_\-acl\_\-check\_\-mask} (Gtk\-Widget $\ast$w, gpointer data)
+\begin{CompactList}\small\item\em recalc ACL-mask -- if perm is set in any ACE, set it in mask \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a19}{effigy\_\-acl\_\-table\_\-rebuild} (noir\_\-file $\ast$nf, noir\_\-meta $\ast$r, Gtk\-Widget $\ast$table)
+\begin{CompactList}\small\item\em rebuild ACL table after an ACE was added or removed \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a20}{effigy\_\-ace\_\-get} (Gtk\-Widget $\ast$w, gpointer data)
+\begin{CompactList}\small\item\em get new ACE's perms and qualifier from dialog and put in ACE struct (\char`\"{}add ACE\char`\"{}-button was clicked) \item\end{CompactList}\item 
+static int \hyperlink{info__dial_8c_a21}{effigy\_\-ace\_\-find} (noir\_\-md $\ast$md, noir\_\-meta $\ast$r, char $\ast$key, char $\ast$qual)
+\begin{CompactList}\small\item\em find ACE (so we can avoid duplicates) duplicates are only possibly for named user/named group entries, so 'qual' will always be set. \item\end{CompactList}\item 
+static gboolean \hyperlink{info__dial_8c_a22}{effigy\_\-ace\_\-button\_\-clicked} (Gtk\-Widget $\ast$ebox, Gdk\-Event\-Button $\ast$event, gpointer data)
+\begin{CompactList}\small\item\em callback: one of the ACE buttons (add, delete, recalc, . \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a23}{effigy\_\-ace\_\-perm\_\-toggled} (Gtk\-Toggle\-Button $\ast$widget, noir\_\-meta $\ast$m)
+\begin{CompactList}\small\item\em a permission toggle-button (R/W/X/. \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a24}{effigy\_\-dial\_\-clicked} (gpointer data, Gtk\-Button $\ast$button)
+\begin{CompactList}\small\item\em callback: one of \char`\"{}Apply\char`\"{} and \char`\"{}Close\char`\"{} was clicked \item\end{CompactList}\item 
+static void \hyperlink{info__dial_8c_a25}{effigy\_\-dial\_\-destroyed} (gpointer data, Gtk\-Widget $\ast$w)
+\begin{CompactList}\small\item\em callback: inspector window was destroyed, release admin structs \item\end{CompactList}\item 
+static noir\_\-file $\ast$ \hyperlink{info__dial_8c_a26}{effigy\_\-dial\_\-create} (long serial, char $\ast$filename, noir\_\-md $\ast$md)
+\begin{CompactList}\small\item\em create and populate file'n'dial struct \item\end{CompactList}\item 
+int \hyperlink{info__dial_8c_a27}{efun} (long serial, char $\ast$filename, noir\_\-md $\ast$md, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em context-menu action: info-dial \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+file properties dialog. 
+
+shared-object \char`\"{}info\_\-dial.so\char`\"{}, stand-alone \char`\"{}effigy\char`\"{} GPL, part of the evidence project.
+
+\subsection{Function Documentation}
+\hypertarget{info__dial_8c_a10}{
+\index{info_dial.c@{info\_\-dial.c}!ace_new@{ace\_\-new}}
+\index{ace_new@{ace\_\-new}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[ace\_\-new]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Widget $\ast$ ace\_\-new (Gtk\-Widget $\ast$ {\em table}, noir\_\-meta $\ast$ {\em m}, int $\ast$ {\em cptr}, noir\_\-file $\ast$ {\em nf})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a10}
+
+
+create an ACE-row 
+
+\begin{Desc}
+\item[Returns:]a GTK HBox holding the new row, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em table}]the GTK table to add the row to \item[{\em m}]the meta-data for this row \item[{\em cptr}]row-count \item[{\em nf}]the file'n'dial struct\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a22}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_ace_button_clicked@{effigy\_\-ace\_\-button\_\-clicked}}
+\index{effigy_ace_button_clicked@{effigy\_\-ace\_\-button\_\-clicked}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-ace\_\-button\_\-clicked]{\setlength{\rightskip}{0pt plus 5cm}static gboolean effigy\_\-ace\_\-button\_\-clicked (Gtk\-Widget $\ast$ {\em ebox}, Gdk\-Event\-Button $\ast$ {\em event}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a22}
+
+
+callback: one of the ACE buttons (add, delete, recalc, . 
+
+..) was clicked \begin{Desc}
+\item[Returns:]TRUE for handled \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ebox}]the event-box containing the icon that was clicked \item[{\em event}]the GDK button-event \item[{\em data}]the row's meta-data\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a21}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_ace_find@{effigy\_\-ace\_\-find}}
+\index{effigy_ace_find@{effigy\_\-ace\_\-find}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-ace\_\-find]{\setlength{\rightskip}{0pt plus 5cm}static int effigy\_\-ace\_\-find (noir\_\-md $\ast$ {\em md}, noir\_\-meta $\ast$ {\em r}, char $\ast$ {\em key}, char $\ast$ {\em qual})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a21}
+
+
+find ACE (so we can avoid duplicates) duplicates are only possibly for named user/named group entries, so 'qual' will always be set. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of the meta-data \item[{\em r}]the meta-data of the potential new ACE \item[{\em key}]the key/label (user, group, named user, ...) \item[{\em qual}]the qualifier (user/group for named user/named group)j\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a20}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_ace_get@{effigy\_\-ace\_\-get}}
+\index{effigy_ace_get@{effigy\_\-ace\_\-get}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-ace\_\-get]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-ace\_\-get (Gtk\-Widget $\ast$ {\em w}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a20}
+
+
+get new ACE's perms and qualifier from dialog and put in ACE struct (\char`\"{}add ACE\char`\"{}-button was clicked) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em w}]the widget to look at \item[{\em data}]the ACE-struct\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a23}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_ace_perm_toggled@{effigy\_\-ace\_\-perm\_\-toggled}}
+\index{effigy_ace_perm_toggled@{effigy\_\-ace\_\-perm\_\-toggled}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-ace\_\-perm\_\-toggled]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-ace\_\-perm\_\-toggled (Gtk\-Toggle\-Button $\ast$ {\em widget}, noir\_\-meta $\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a23}
+
+
+a permission toggle-button (R/W/X/. 
+
+..) in an ACE was toggled. update ACE. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]the toggle-button \item[{\em m}]the row's meta-data\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a18}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_acl_check_mask@{effigy\_\-acl\_\-check\_\-mask}}
+\index{effigy_acl_check_mask@{effigy\_\-acl\_\-check\_\-mask}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-acl\_\-check\_\-mask]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-acl\_\-check\_\-mask (Gtk\-Widget $\ast$ {\em w}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a18}
+
+
+recalc ACL-mask -- if perm is set in any ACE, set it in mask 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em w}]the GTK widget \item[{\em data}]the ACL struct to return the data in\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a19}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_acl_table_rebuild@{effigy\_\-acl\_\-table\_\-rebuild}}
+\index{effigy_acl_table_rebuild@{effigy\_\-acl\_\-table\_\-rebuild}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-acl\_\-table\_\-rebuild]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-acl\_\-table\_\-rebuild (noir\_\-file $\ast$ {\em nf}, noir\_\-meta $\ast$ {\em r}, Gtk\-Widget $\ast$ {\em table})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a19}
+
+
+rebuild ACL table after an ACE was added or removed 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em nf}]the file'n'dial struct \item[{\em r}]the meta-data of the ACE that was modified \item[{\em table}]the GTK table that holds the ACL\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a11}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_check_entry@{effigy\_\-check\_\-entry}}
+\index{effigy_check_entry@{effigy\_\-check\_\-entry}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-check\_\-entry]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-check\_\-entry (Gtk\-Entry $\ast$ {\em w}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a11}
+
+
+check an entry-field for changes. 
+
+adjust list of meta-data where needed. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em w}]the GTK entry-field \item[{\em data}]the field's meta-data\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a12}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_check_widget@{effigy\_\-check\_\-widget}}
+\index{effigy_check_widget@{effigy\_\-check\_\-widget}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-check\_\-widget]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-check\_\-widget (Gtk\-Widget $\ast$ {\em w}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a12}
+
+
+check a widget (container or entry-field) for changes 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em w}]the GTK widget \item[{\em data}]the field's meta-data\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a24}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_dial_clicked@{effigy\_\-dial\_\-clicked}}
+\index{effigy_dial_clicked@{effigy\_\-dial\_\-clicked}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-dial\_\-clicked]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-dial\_\-clicked (gpointer {\em data}, Gtk\-Button $\ast$ {\em button})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a24}
+
+
+callback: one of \char`\"{}Apply\char`\"{} and \char`\"{}Close\char`\"{} was clicked 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the file'n'dial struct \item[{\em button}]the button that was clicked\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a26}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_dial_create@{effigy\_\-dial\_\-create}}
+\index{effigy_dial_create@{effigy\_\-dial\_\-create}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-dial\_\-create]{\setlength{\rightskip}{0pt plus 5cm}static noir\_\-file$\ast$ effigy\_\-dial\_\-create (long {\em serial}, char $\ast$ {\em filename}, noir\_\-md $\ast$ {\em md})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a26}
+
+
+create and populate file'n'dial struct 
+
+\begin{Desc}
+\item[Returns:]file'n'dial struct \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]session's serial number \item[{\em filename}]the file we're inspecting \item[{\em md}]the file's meta-data\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a25}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_dial_destroyed@{effigy\_\-dial\_\-destroyed}}
+\index{effigy_dial_destroyed@{effigy\_\-dial\_\-destroyed}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-dial\_\-destroyed]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-dial\_\-destroyed (gpointer {\em data}, Gtk\-Widget $\ast$ {\em w})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a25}
+
+
+callback: inspector window was destroyed, release admin structs 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]file'n'dial struct \item[{\em w}]the window that was destroyed\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a9}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_dial_populate@{effigy\_\-dial\_\-populate}}
+\index{effigy_dial_populate@{effigy\_\-dial\_\-populate}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-dial\_\-populate]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-dial\_\-populate (noir\_\-file $\ast$ {\em nf})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a9}
+
+
+populate dialog window 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em nf}]file'n'dial info\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a16}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_make_label@{effigy\_\-make\_\-label}}
+\index{effigy_make_label@{effigy\_\-make\_\-label}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-make\_\-label]{\setlength{\rightskip}{0pt plus 5cm}static Gtk\-Widget$\ast$ effigy\_\-make\_\-label (noir\_\-meta $\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{info__dial_8c_a16}
+
+
+make a label for an item. 
+
+make it clickable if we have data for a pop-up. \begin{Desc}
+\item[Returns:]a Gtk\-Widget (the label) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the meta-data\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a15}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_popbutton_clicked@{effigy\_\-popbutton\_\-clicked}}
+\index{effigy_popbutton_clicked@{effigy\_\-popbutton\_\-clicked}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-popbutton\_\-clicked]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-popbutton\_\-clicked (gpointer {\em data}, Gtk\-Button $\ast$ {\em button})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a15}
+
+
+popbutton was clicked, open the pop-up for this entry-field 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the meta-data for this entry-field \item[{\em button}]the button whick was clicked\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a14}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_popup_add@{effigy\_\-popup\_\-add}}
+\index{effigy_popup_add@{effigy\_\-popup\_\-add}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-popup\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-popup\_\-add (Gtk\-Widget $\ast$ {\em menu}, char $\ast$ {\em title}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{info__dial_8c_a14}
+
+
+add an item to a pop-up menu 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em menu}]the GTK menu to add the item to \item[{\em title}]the label for the item \item[{\em data}]the meta-data entry for this field\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a13}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_popup_clicked@{effigy\_\-popup\_\-clicked}}
+\index{effigy_popup_clicked@{effigy\_\-popup\_\-clicked}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-popup\_\-clicked]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-popup\_\-clicked (Gtk\-Widget $\ast$ {\em item}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{info__dial_8c_a13}
+
+
+callback: something was selected in pop-up menu; update entry-field. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em item}]the item that was selected (\char`\"{}data\char`\"{} holds ASCII item to fill into entry-field) \item[{\em data}]the meta-data item for this entry-field\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a17}{
+\index{info_dial.c@{info\_\-dial.c}!effigy_table_add_row@{effigy\_\-table\_\-add\_\-row}}
+\index{effigy_table_add_row@{effigy\_\-table\_\-add\_\-row}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[effigy\_\-table\_\-add\_\-row]{\setlength{\rightskip}{0pt plus 5cm}static void effigy\_\-table\_\-add\_\-row (Gtk\-Widget $\ast$ {\em table}, Gtk\-Widget $\ast$ {\em key}, Gtk\-Widget $\ast$ {\em val}, Gtk\-Tooltips $\ast$ {\em tt}, noir\_\-meta $\ast$ {\em m}, int $\ast$ {\em count})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{info__dial_8c_a17}
+
+
+add a row to a notebook 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em table}]the table to add to \item[{\em key}]the label \item[{\em val}]the field \item[{\em tt}]the tooltips-object \item[{\em m}]the meta-data item for this row \item[{\em count}]the index of this row\end{description}
+\end{Desc}
+\hypertarget{info__dial_8c_a27}{
+\index{info_dial.c@{info\_\-dial.c}!efun@{efun}}
+\index{efun@{efun}!info_dial.c@{info\_\-dial.c}}
+\subsubsection[efun]{\setlength{\rightskip}{0pt plus 5cm}int efun (long {\em serial}, char $\ast$ {\em filename}, noir\_\-md $\ast$ {\em md}, action\_\-context $\ast$ {\em ac})}}
+\label{info__dial_8c_a27}
+
+
+context-menu action: info-dial 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the serial number of the session that called us \item[{\em filename}]the file to act on \item[{\em md}]the file's meta-data \item[{\em ac}]the context of this action (selection et al.)\end{description}
+\end{Desc}

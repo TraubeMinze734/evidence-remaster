@@ -1,0 +1,51 @@
+.TH "thumbnail.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+thumbnail.c \- rebuild thumbnail(s) 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBrethumb\fP (\fBfile_info\fP *fi)"
+.br
+.RI "\fIre-generate thumbnail for the given item \fP"
+.ti -1c
+.RI "int \fBefun\fP (long serial, char *filename, noir_md *md, action_context *ac)"
+.br
+.RI "\fIcontext-menu action: rethumbnail items \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+rebuild thumbnail(s) 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int efun (long serial, char * filename, noir_md * md, action_context * ac)"
+.PP
+context-menu action: rethumbnail items 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the serial number of the session that called us 
+.br
+\fIfilename\fP the file to act on 
+.br
+\fImd\fP the file's meta-data 
+.br
+\fIac\fP the context of this action (selection et al.)
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,253 @@
+\hypertarget{menu__common_8c}{
+\section{menu\_\-common.c File Reference}
+\label{menu__common_8c}\index{menu_common.c@{menu\_\-common.c}}
+}
+implements the widget-library independent part of the context-menus. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static menu\_\-action $\ast$ \hyperlink{menu__common_8c_a1}{menu\_\-del\_\-all} (menu\_\-action $\ast$$\ast$ml)
+\begin{CompactList}\small\item\em throw away all info on context-menu actions. \item\end{CompactList}\item 
+\hypertarget{menu__common_8c_a2}{
+int \hyperlink{menu__common_8c_a2}{menu\_\-lib\_\-gc} (void)}
+\label{menu__common_8c_a2}
+
+\begin{CompactList}\small\item\em garbage collection: close SOs that have idled out. \item\end{CompactList}\item 
+static int \hyperlink{menu__common_8c_a3}{menu\_\-add\_\-handler} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, menu\_\-action $\ast$$\ast$ml, char $\ast$title, char $\ast$mime, char $\ast$file)
+\begin{CompactList}\small\item\em add context-menu action. \item\end{CompactList}\item 
+menu\_\-action $\ast$ \hyperlink{menu__common_8c_a4}{menu\_\-action\_\-get\_\-anchor} (void)
+\begin{CompactList}\small\item\em find anchor of menu-actions \item\end{CompactList}\item 
+menu\_\-action $\ast$ \hyperlink{menu__common_8c_a5}{menu\_\-action\_\-by\_\-mime\_\-first} (menu\_\-action $\ast$$\ast$ml, char $\ast$mime)
+\begin{CompactList}\small\item\em find first action for MIME-type 'mime'. \item\end{CompactList}\item 
+menu\_\-action $\ast$ \hyperlink{menu__common_8c_a6}{menu\_\-action\_\-by\_\-mime\_\-next} (menu\_\-action $\ast$$\ast$ml, char $\ast$mime)
+\begin{CompactList}\small\item\em find next action for MIME-type 'mime'. \item\end{CompactList}\item 
+int \hyperlink{menu__common_8c_a7}{menu\_\-action\_\-by\_\-entry} (long serial, menu\_\-action $\ast$m, noir\_\-md $\ast$r, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em run context action 'm' on file described in 'r'. \item\end{CompactList}\item 
+static int \hyperlink{menu__common_8c_a8}{menu\_\-action\_\-by\_\-mime\_\-one} (long serial, char $\ast$mime, const char $\ast$file, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em run context the action for 'mime' on a single file given in 'file'. \item\end{CompactList}\item 
+int \hyperlink{menu__common_8c_a9}{menu\_\-action\_\-by\_\-mime} (long serial, char $\ast$mime, char $\ast$file, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em run context the action for 'mime' on a file or a selection \item\end{CompactList}\item 
+static int \hyperlink{menu__common_8c_a10}{menu\_\-selection\_\-action\_\-add} (action\_\-context $\ast$ac, selection\_\-action $\ast$$\ast$e, menu\_\-action $\ast$m, mime\_\-match mm)
+\begin{CompactList}\small\item\em add action 'm' to list of actions available for current selection ('e') unless already present. \item\end{CompactList}\item 
+int \hyperlink{menu__common_8c_a11}{menu\_\-selection\_\-file\_\-add} (action\_\-context $\ast$ac, const char $\ast$file, selection\_\-action $\ast$$\ast$e)
+\begin{CompactList}\small\item\em get MIME-type of file. \item\end{CompactList}\item 
+int \hyperlink{menu__common_8c_a12}{menu\_\-file\_\-context} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, const char $\ast$cwd, const char $\ast$file)
+\begin{CompactList}\small\item\em top-level function that will open a context-menu for the given file. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{menu__common_8c_a13}{menu\_\-submenu\_\-title\_\-from\_\-mime\_\-type} (const char $\ast$mime)
+\begin{CompactList}\small\item\em create a title for a sub-menu \item\end{CompactList}\item 
+int \hyperlink{menu__common_8c_a14}{menu\_\-init} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em initialize menu sub-system. \item\end{CompactList}\item 
+int \hyperlink{menu__common_8c_a15}{menu\_\-exit} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em deinitialize menu sub-system \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+implements the widget-library independent part of the context-menus. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{menu__common_8c_a7}{
+\index{menu_common.c@{menu\_\-common.c}!menu_action_by_entry@{menu\_\-action\_\-by\_\-entry}}
+\index{menu_action_by_entry@{menu\_\-action\_\-by\_\-entry}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-action\_\-by\_\-entry]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-action\_\-by\_\-entry (long {\em serial}, menu\_\-action $\ast$ {\em m}, noir\_\-md $\ast$ {\em r}, action\_\-context $\ast$ {\em ac})}}
+\label{menu__common_8c_a7}
+
+
+run context action 'm' on file described in 'r'. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the session's serial \item[{\em m}]the menu-action to apply to the file \item[{\em r}]the meta-data for the file to be acted on \item[{\em ac}]the action-context (or NULL)\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a9}{
+\index{menu_common.c@{menu\_\-common.c}!menu_action_by_mime@{menu\_\-action\_\-by\_\-mime}}
+\index{menu_action_by_mime@{menu\_\-action\_\-by\_\-mime}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-action\_\-by\_\-mime]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-action\_\-by\_\-mime (long {\em serial}, char $\ast$ {\em mime}, char $\ast$ {\em file}, action\_\-context $\ast$ {\em ac})}}
+\label{menu__common_8c_a9}
+
+
+run context the action for 'mime' on a file or a selection 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the session's serial \item[{\em mime}]the MIME-type of the file, or NULL to get from meta-data \item[{\em file}]the file to be acted on \item[{\em ac}]the action-context to get the selection from, or NULL\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a5}{
+\index{menu_common.c@{menu\_\-common.c}!menu_action_by_mime_first@{menu\_\-action\_\-by\_\-mime\_\-first}}
+\index{menu_action_by_mime_first@{menu\_\-action\_\-by\_\-mime\_\-first}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-action\_\-by\_\-mime\_\-first]{\setlength{\rightskip}{0pt plus 5cm}menu\_\-action$\ast$ menu\_\-action\_\-by\_\-mime\_\-first (menu\_\-action $\ast$$\ast$ {\em ml}, char $\ast$ {\em mime})}}
+\label{menu__common_8c_a5}
+
+
+find first action for MIME-type 'mime'. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ml}]anchor of list of menu-actions \item[{\em mime}]the MIME-type we're interested in\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a6}{
+\index{menu_common.c@{menu\_\-common.c}!menu_action_by_mime_next@{menu\_\-action\_\-by\_\-mime\_\-next}}
+\index{menu_action_by_mime_next@{menu\_\-action\_\-by\_\-mime\_\-next}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-action\_\-by\_\-mime\_\-next]{\setlength{\rightskip}{0pt plus 5cm}menu\_\-action$\ast$ menu\_\-action\_\-by\_\-mime\_\-next (menu\_\-action $\ast$$\ast$ {\em ml}, char $\ast$ {\em mime})}}
+\label{menu__common_8c_a6}
+
+
+find next action for MIME-type 'mime'. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ml}]anchor of list of menu-actions \item[{\em mime}]the MIME-type we're interested in\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a8}{
+\index{menu_common.c@{menu\_\-common.c}!menu_action_by_mime_one@{menu\_\-action\_\-by\_\-mime\_\-one}}
+\index{menu_action_by_mime_one@{menu\_\-action\_\-by\_\-mime\_\-one}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-action\_\-by\_\-mime\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static int menu\_\-action\_\-by\_\-mime\_\-one (long {\em serial}, char $\ast$ {\em mime}, const char $\ast$ {\em file}, action\_\-context $\ast$ {\em ac})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__common_8c_a8}
+
+
+run context the action for 'mime' on a single file given in 'file'. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the session's serial \item[{\em mime}]the MIME-type of the file, or NULL to get from meta-data \item[{\em file}]the file to be acted on \item[{\em ac}]the action-context, or NULL\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a4}{
+\index{menu_common.c@{menu\_\-common.c}!menu_action_get_anchor@{menu\_\-action\_\-get\_\-anchor}}
+\index{menu_action_get_anchor@{menu\_\-action\_\-get\_\-anchor}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-action\_\-get\_\-anchor]{\setlength{\rightskip}{0pt plus 5cm}menu\_\-action$\ast$ menu\_\-action\_\-get\_\-anchor (void)}}
+\label{menu__common_8c_a4}
+
+
+find anchor of menu-actions 
+
+\begin{Desc}
+\item[Returns:]first in list of menu-actions\end{Desc}
+\hypertarget{menu__common_8c_a3}{
+\index{menu_common.c@{menu\_\-common.c}!menu_add_handler@{menu\_\-add\_\-handler}}
+\index{menu_add_handler@{menu\_\-add\_\-handler}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-add\_\-handler]{\setlength{\rightskip}{0pt plus 5cm}static int menu\_\-add\_\-handler (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, menu\_\-action $\ast$$\ast$ {\em ml}, char $\ast$ {\em title}, char $\ast$ {\em mime}, char $\ast$ {\em file})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__common_8c_a3}
+
+
+add context-menu action. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]session \item[{\em ml}]anchor of list of menu-actions \item[{\em title}]the action's label in the menu \item[{\em mime}]the MIME-type the handler can be applied to \item[{\em file}]the action (name of shared library, or template for executable)\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a1}{
+\index{menu_common.c@{menu\_\-common.c}!menu_del_all@{menu\_\-del\_\-all}}
+\index{menu_del_all@{menu\_\-del\_\-all}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-del\_\-all]{\setlength{\rightskip}{0pt plus 5cm}static menu\_\-action$\ast$ menu\_\-del\_\-all (menu\_\-action $\ast$$\ast$ {\em ml})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__common_8c_a1}
+
+
+throw away all info on context-menu actions. 
+
+close SOs.
+
+called from info\_\-exit(). \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ml}]anchor of list of menu-actions\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a15}{
+\index{menu_common.c@{menu\_\-common.c}!menu_exit@{menu\_\-exit}}
+\index{menu_exit@{menu\_\-exit}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-exit (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{menu__common_8c_a15}
+
+
+deinitialize menu sub-system 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]session\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a12}{
+\index{menu_common.c@{menu\_\-common.c}!menu_file_context@{menu\_\-file\_\-context}}
+\index{menu_file_context@{menu\_\-file\_\-context}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-file\_\-context]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-file\_\-context (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, const char $\ast$ {\em cwd}, const char $\ast$ {\em file})}}
+\label{menu__common_8c_a12}
+
+
+top-level function that will open a context-menu for the given file. 
+
+the menu will also contain possible actions for the session's current selection if there is one. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session \item[{\em cwd}]the working-dir \item[{\em file}]the file the context-menu was opened for\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a14}{
+\index{menu_common.c@{menu\_\-common.c}!menu_init@{menu\_\-init}}
+\index{menu_init@{menu\_\-init}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-init (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{menu__common_8c_a14}
+
+
+initialize menu sub-system. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]session\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a10}{
+\index{menu_common.c@{menu\_\-common.c}!menu_selection_action_add@{menu\_\-selection\_\-action\_\-add}}
+\index{menu_selection_action_add@{menu\_\-selection\_\-action\_\-add}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-selection\_\-action\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static int menu\_\-selection\_\-action\_\-add (action\_\-context $\ast$ {\em ac}, selection\_\-action $\ast$$\ast$ {\em e}, menu\_\-action $\ast$ {\em m}, mime\_\-match {\em mm})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{menu__common_8c_a10}
+
+
+add action 'm' to list of actions available for current selection ('e') unless already present. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context \item[{\em e}]list of actions available for current selection \item[{\em m}]action to add to the list \item[{\em mm}]MIME match quality (full, partial, any match)\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a11}{
+\index{menu_common.c@{menu\_\-common.c}!menu_selection_file_add@{menu\_\-selection\_\-file\_\-add}}
+\index{menu_selection_file_add@{menu\_\-selection\_\-file\_\-add}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-selection\_\-file\_\-add]{\setlength{\rightskip}{0pt plus 5cm}int menu\_\-selection\_\-file\_\-add (action\_\-context $\ast$ {\em ac}, const char $\ast$ {\em file}, selection\_\-action $\ast$$\ast$ {\em e})}}
+\label{menu__common_8c_a11}
+
+
+get MIME-type of file. 
+
+get actions for that MIME-type. add to list of available actions for selection, if not already present. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context \item[{\em file}]a file in the selection \item[{\em e}]list of available actions for current selection.\end{description}
+\end{Desc}
+\hypertarget{menu__common_8c_a13}{
+\index{menu_common.c@{menu\_\-common.c}!menu_submenu_title_from_mime_type@{menu\_\-submenu\_\-title\_\-from\_\-mime\_\-type}}
+\index{menu_submenu_title_from_mime_type@{menu\_\-submenu\_\-title\_\-from\_\-mime\_\-type}!menu_common.c@{menu\_\-common.c}}
+\subsubsection[menu\_\-submenu\_\-title\_\-from\_\-mime\_\-type]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ menu\_\-submenu\_\-title\_\-from\_\-mime\_\-type (const char $\ast$ {\em mime})}}
+\label{menu__common_8c_a13}
+
+
+create a title for a sub-menu 
+
+\begin{Desc}
+\item[Returns:]a malloc()'d string the caller will have to free, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mime}]the MIME-type (\char`\"{}text/html\char`\"{}, \char`\"{}text/\char`\"{}, \char`\"{}\char`\"{})\end{description}
+\end{Desc}

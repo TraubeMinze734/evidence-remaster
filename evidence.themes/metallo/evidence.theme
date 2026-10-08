@@ -1,0 +1,30 @@
+logo:			jpg
+author:			Azundris
+
+typebuffer_factory:	default
+scrollbar_factory:	default
+icon_factory:		alignbelow
+background_factory:	ebg_trans
+tooltip_factory:	traditional
+rubberband_factory:	gradient2
+
+open_folder_animation:	growfade
+open_app_animation:	grey
+open_file_animation:	basic
+
+idle_fun_icon_view:	flutterby
+
+shelf:			metallo
+icon_view:		metallo
+
+typebuffer_font:	electroh
+typebuffer_font_size:	60
+icon_font:		code3x-d
+icon_font_size:		41
+tooltip_font:		comic
+tooltip_font_size:	18
+textpath_font:          comic
+textpath_font_size:	18
+
+icon_set:		ento_64
+icon_mode:		{w,h}/h

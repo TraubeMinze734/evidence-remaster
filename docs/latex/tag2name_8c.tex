@@ -1,0 +1,161 @@
+\hypertarget{tag2name_8c}{
+\section{tag2name.c File Reference}
+\label{tag2name_8c}\index{tag2name.c@{tag2name.c}}
+}
+context-menu action \char`\"{}tag2name\char`\"{} set file-name from ID3 or Ogg-tag TODO \#\#\# should get template for file-name from properties 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static char $\ast$ \hyperlink{tag2name_8c_a1}{get\_\-val} (noir\_\-md $\ast$md, char $\ast$key)
+\begin{CompactList}\small\item\em get the value of a meta-data item \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{tag2name_8c_a2}{get\_\-two} (noir\_\-md $\ast$md, char $\ast$k1, char $\ast$k2)
+\begin{CompactList}\small\item\em get the value of the first existing of two meta-data items \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{tag2name_8c_a3}{rep} (char $\ast$s, size\_\-t d, char $\ast$n)
+\begin{CompactList}\small\item\em replace a substring with another, possibly with a different length \item\end{CompactList}\item 
+static int \hyperlink{tag2name_8c_a4}{tp\_\-do} (tag $\ast$t, char $\ast$buf)
+\begin{CompactList}\small\item\em expand -sequences in user-defined template for new name \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{tag2name_8c_a5}{tprintf} (tag $\ast$t, char $\ast$fmt)
+\begin{CompactList}\small\item\em create file-name by user-defined rule sprintf() with automatic buffer allocation. \item\end{CompactList}\item 
+static int \hyperlink{tag2name_8c_a6}{check} (void $\ast$ns, action\_\-context $\ast$ac, char $\ast$f, char $\ast$p, char $\ast$l)
+\begin{CompactList}\small\item\em check whether required meta-data item is present \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{tag2name_8c_a7}{tag2name\_\-get\_\-mask} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em get formatting mask for renamed files from prop-list, or return the default. \item\end{CompactList}\item 
+int \hyperlink{tag2name_8c_a8}{efun} (long serial, char $\ast$filename, noir\_\-md $\ast$md, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em context-menu action: derive file-name from ID3/Vorbis-tag \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+context-menu action \char`\"{}tag2name\char`\"{} set file-name from ID3 or Ogg-tag TODO \#\#\# should get template for file-name from properties 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{tag2name_8c_a6}{
+\index{tag2name.c@{tag2name.c}!check@{check}}
+\index{check@{check}!tag2name.c@{tag2name.c}}
+\subsubsection[check]{\setlength{\rightskip}{0pt plus 5cm}static int check (void $\ast$ {\em ns}, action\_\-context $\ast$ {\em ac}, char $\ast$ {\em f}, char $\ast$ {\em p}, char $\ast$ {\em l})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a6}
+
+
+check whether required meta-data item is present 
+
+\begin{Desc}
+\item[Returns:]TRUE for present, FALSE otherwise \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session, or NULL \item[{\em ac}]the action-context \item[{\em f}]the file's name \item[{\em p}]the pointer to the meta-data item's value, or NULL \item[{\em l}]a textual description of the meta-data item\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a8}{
+\index{tag2name.c@{tag2name.c}!efun@{efun}}
+\index{efun@{efun}!tag2name.c@{tag2name.c}}
+\subsubsection[efun]{\setlength{\rightskip}{0pt plus 5cm}int efun (long {\em serial}, char $\ast$ {\em filename}, noir\_\-md $\ast$ {\em md}, action\_\-context $\ast$ {\em ac})}}
+\label{tag2name_8c_a8}
+
+
+context-menu action: derive file-name from ID3/Vorbis-tag 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the serial number of the session that called us \item[{\em filename}]the file to act on \item[{\em md}]the file's meta-data \item[{\em ac}]the context of this action (selection et al.)\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a2}{
+\index{tag2name.c@{tag2name.c}!get_two@{get\_\-two}}
+\index{get_two@{get\_\-two}!tag2name.c@{tag2name.c}}
+\subsubsection[get\_\-two]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ get\_\-two (noir\_\-md $\ast$ {\em md}, char $\ast$ {\em k1}, char $\ast$ {\em k2})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a2}
+
+
+get the value of the first existing of two meta-data items 
+
+\begin{Desc}
+\item[Returns:]a value, or \char`\"{}\char`\"{} \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of meta-data \item[{\em k1}]the 1st key, or NULL \item[{\em k2}]the 2nd key, or NULL\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a1}{
+\index{tag2name.c@{tag2name.c}!get_val@{get\_\-val}}
+\index{get_val@{get\_\-val}!tag2name.c@{tag2name.c}}
+\subsubsection[get\_\-val]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ get\_\-val (noir\_\-md $\ast$ {\em md}, char $\ast$ {\em key})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a1}
+
+
+get the value of a meta-data item 
+
+\begin{Desc}
+\item[Returns:]a value, or \char`\"{}\char`\"{} \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of meta-data \item[{\em key}]the key of the item to look for\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a3}{
+\index{tag2name.c@{tag2name.c}!rep@{rep}}
+\index{rep@{rep}!tag2name.c@{tag2name.c}}
+\subsubsection[rep]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ rep (char $\ast$ {\em s}, size\_\-t {\em d}, char $\ast$ {\em n})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a3}
+
+
+replace a substring with another, possibly with a different length 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em s}]replace from this position \item[{\em d}]remove this many chars \item[{\em n}]insert this string\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a7}{
+\index{tag2name.c@{tag2name.c}!tag2name_get_mask@{tag2name\_\-get\_\-mask}}
+\index{tag2name_get_mask@{tag2name\_\-get\_\-mask}!tag2name.c@{tag2name.c}}
+\subsubsection[tag2name\_\-get\_\-mask]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ tag2name\_\-get\_\-mask (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a7}
+
+
+get formatting mask for renamed files from prop-list, or return the default. 
+
+\begin{Desc}
+\item[Returns:]the mask as a C-string, which must be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a4}{
+\index{tag2name.c@{tag2name.c}!tp_do@{tp\_\-do}}
+\index{tp_do@{tp\_\-do}!tag2name.c@{tag2name.c}}
+\subsubsection[tp\_\-do]{\setlength{\rightskip}{0pt plus 5cm}static int tp\_\-do (tag $\ast$ {\em t}, char $\ast$ {\em buf})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a4}
+
+
+expand -sequences in user-defined template for new name 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the data from the tag \item[{\em buf}]the buffer for the new name\end{description}
+\end{Desc}
+\hypertarget{tag2name_8c_a5}{
+\index{tag2name.c@{tag2name.c}!tprintf@{tprintf}}
+\index{tprintf@{tprintf}!tag2name.c@{tag2name.c}}
+\subsubsection[tprintf]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ tprintf (tag $\ast$ {\em t}, char $\ast$ {\em fmt})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tag2name_8c_a5}
+
+
+create file-name by user-defined rule sprintf() with automatic buffer allocation. 
+
+grip compatible switches: d disc-name t trackno a artist (track) n name (title) y year G genre
+
+\begin{Desc}
+\item[Returns:]a newly-allocated buffer holding the new name \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the data from the tag \item[{\em fmt}]the user-defined template for the new name\end{description}
+\end{Desc}

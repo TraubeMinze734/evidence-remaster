@@ -1,0 +1,144 @@
+\hypertarget{action_8h}{
+\section{action.h File Reference}
+\label{action_8h}\index{action.h@{action.h}}
+}
+action-contexts for context-menu (\char`\"{}right click\char`\"{}) actions 
+
+\subsection*{Enumerations}
+\begin{CompactItemize}
+\item 
+enum \hyperlink{action_8h_a42}{action\_\-flags} \{ \par
+\hyperlink{action_8h_a42a3}{AF\_\-NONE} = 0, 
+\par
+\hyperlink{action_8h_a42a4}{AF\_\-YES\_\-TO\_\-ALL} = 1, 
+\par
+\hyperlink{action_8h_a42a5}{AF\_\-CANCEL\_\-ALL} = 2, 
+\par
+\hyperlink{action_8h_a42a6}{AF\_\-SELECTION} = 4, 
+\par
+\hyperlink{action_8h_a42a7}{AF\_\-MENUDONE} = 8, 
+\par
+\hyperlink{action_8h_a42a8}{AF\_\-LAST} = 16
+ \}
+\begin{CompactList}\small\item\em context for an action selected from the context-menu. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+action\_\-file $\ast$ \hyperlink{action_8h_a9}{action\_\-file\_\-dst} (action\_\-file $\ast$)
+\begin{CompactList}\small\item\em destroy a file-entry in a menu-action context \item\end{CompactList}\item 
+action\_\-file $\ast$ \hyperlink{action_8h_a11}{action\_\-file\_\-new} (action\_\-context $\ast$ac, const char $\ast$tag)
+\begin{CompactList}\small\item\em add a file-entry to a menu-action context \item\end{CompactList}\item 
+void \hyperlink{action_8h_a31}{action\_\-context\_\-dst} (action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em destroy an action-context \item\end{CompactList}\item 
+action\_\-context $\ast$ \hyperlink{action_8h_a32}{action\_\-context\_\-new} (long serial, const char $\ast$cwd)
+\begin{CompactList}\small\item\em create a new action-context \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+action-contexts for context-menu (\char`\"{}right click\char`\"{}) actions 
+
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{action_8h_a42}{
+\index{action.h@{action.h}!action_flags@{action\_\-flags}}
+\index{action_flags@{action\_\-flags}!action.h@{action.h}}
+\subsubsection[action\_\-flags]{\setlength{\rightskip}{0pt plus 5cm}enum \hyperlink{action_8h_a42}{action\_\-flags}}}
+\label{action_8h_a42}
+
+
+context for an action selected from the context-menu. 
+
+this is interesting mostly when the action is to be applied to a seletion of several objects. \begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{AF_NONE@{AF\_\-NONE}!action.h@{action.h}}\index{action.h@{action.h}!AF_NONE@{AF\_\-NONE}}\item[{\em 
+\hypertarget{action_8h_a42a3}{
+AF\_\-NONE}
+\label{action_8h_a42a3}
+}]no flags \index{AF_YES_TO_ALL@{AF\_\-YES\_\-TO\_\-ALL}!action.h@{action.h}}\index{action.h@{action.h}!AF_YES_TO_ALL@{AF\_\-YES\_\-TO\_\-ALL}}\item[{\em 
+\hypertarget{action_8h_a42a4}{
+AF\_\-YES\_\-TO\_\-ALL}
+\label{action_8h_a42a4}
+}]\char`\"{}yes to all\char`\"{}, stop asking \index{AF_CANCEL_ALL@{AF\_\-CANCEL\_\-ALL}!action.h@{action.h}}\index{action.h@{action.h}!AF_CANCEL_ALL@{AF\_\-CANCEL\_\-ALL}}\item[{\em 
+\hypertarget{action_8h_a42a5}{
+AF\_\-CANCEL\_\-ALL}
+\label{action_8h_a42a5}
+}]\char`\"{}no to all\char`\"{}, stop asking \index{AF_SELECTION@{AF\_\-SELECTION}!action.h@{action.h}}\index{action.h@{action.h}!AF_SELECTION@{AF\_\-SELECTION}}\item[{\em 
+\hypertarget{action_8h_a42a6}{
+AF\_\-SELECTION}
+\label{action_8h_a42a6}
+}]selection set on action-context (multiple files) \index{AF_MENUDONE@{AF\_\-MENUDONE}!action.h@{action.h}}\index{action.h@{action.h}!AF_MENUDONE@{AF\_\-MENUDONE}}\item[{\em 
+\hypertarget{action_8h_a42a7}{
+AF\_\-MENUDONE}
+\label{action_8h_a42a7}
+}]terminate menu-loop \index{AF_LAST@{AF\_\-LAST}!action.h@{action.h}}\index{action.h@{action.h}!AF_LAST@{AF\_\-LAST}}\item[{\em 
+\hypertarget{action_8h_a42a8}{
+AF\_\-LAST}
+\label{action_8h_a42a8}
+}]last item to process, free any resources. 
+
+plugins using this should check this last thing before returning (specifically, after any calls to \hyperlink{alert_8c_a13}{form\_\-yes\_\-no\_\-all()}) \end{description}
+\end{Desc}
+
+
+
+\subsection{Function Documentation}
+\hypertarget{action_8h_a31}{
+\index{action.h@{action.h}!action_context_dst@{action\_\-context\_\-dst}}
+\index{action_context_dst@{action\_\-context\_\-dst}!action.h@{action.h}}
+\subsubsection[action\_\-context\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void action\_\-context\_\-dst (action\_\-context $\ast$ {\em ac})}}
+\label{action_8h_a31}
+
+
+destroy an action-context 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]the action-context to destroy\end{description}
+\end{Desc}
+\hypertarget{action_8h_a32}{
+\index{action.h@{action.h}!action_context_new@{action\_\-context\_\-new}}
+\index{action_context_new@{action\_\-context\_\-new}!action.h@{action.h}}
+\subsubsection[action\_\-context\_\-new]{\setlength{\rightskip}{0pt plus 5cm}action\_\-context$\ast$ action\_\-context\_\-new (long {\em serial}, const char $\ast$ {\em cwd})}}
+\label{action_8h_a32}
+
+
+create a new action-context 
+
+\begin{Desc}
+\item[Returns:]an action-context. serial is that of the calling session. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the serial of the calling session \item[{\em cwd}]the work-directory\end{description}
+\end{Desc}
+\hypertarget{action_8h_a9}{
+\index{action.h@{action.h}!action_file_dst@{action\_\-file\_\-dst}}
+\index{action_file_dst@{action\_\-file\_\-dst}!action.h@{action.h}}
+\subsubsection[action\_\-file\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}action\_\-file$\ast$ action\_\-file\_\-dst (action\_\-file $\ast$ {\em af})}}
+\label{action_8h_a9}
+
+
+destroy a file-entry in a menu-action context 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em af}]the file-entry\end{description}
+\end{Desc}
+\hypertarget{action_8h_a11}{
+\index{action.h@{action.h}!action_file_new@{action\_\-file\_\-new}}
+\index{action_file_new@{action\_\-file\_\-new}!action.h@{action.h}}
+\subsubsection[action\_\-file\_\-new]{\setlength{\rightskip}{0pt plus 5cm}action\_\-file$\ast$ action\_\-file\_\-new (action\_\-context $\ast$ {\em ac}, const char $\ast$ {\em tag})}}
+\label{action_8h_a11}
+
+
+add a file-entry to a menu-action context 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ac}]an action context to add to, or NULL \item[{\em tag}]the file's name\end{description}
+\end{Desc}

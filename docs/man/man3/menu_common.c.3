@@ -1,0 +1,294 @@
+.TH "menu_common.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+menu_common.c \- implements the widget-library independent part of the context-menus. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static menu_action * \fBmenu_del_all\fP (menu_action **ml)"
+.br
+.RI "\fIthrow away all info on context-menu actions. \fP"
+.ti -1c
+.RI "int \fBmenu_lib_gc\fP (void)"
+.br
+.RI "\fIgarbage collection: close SOs that have idled out. \fP"
+.ti -1c
+.RI "static int \fBmenu_add_handler\fP (\fBnoir_sess\fP *ns, menu_action **ml, char *title, char *mime, char *file)"
+.br
+.RI "\fIadd context-menu action. \fP"
+.ti -1c
+.RI "menu_action * \fBmenu_action_get_anchor\fP (void)"
+.br
+.RI "\fIfind anchor of menu-actions \fP"
+.ti -1c
+.RI "menu_action * \fBmenu_action_by_mime_first\fP (menu_action **ml, char *mime)"
+.br
+.RI "\fIfind first action for MIME-type 'mime'. \fP"
+.ti -1c
+.RI "menu_action * \fBmenu_action_by_mime_next\fP (menu_action **ml, char *mime)"
+.br
+.RI "\fIfind next action for MIME-type 'mime'. \fP"
+.ti -1c
+.RI "int \fBmenu_action_by_entry\fP (long serial, menu_action *m, noir_md *r, action_context *ac)"
+.br
+.RI "\fIrun context action 'm' on file described in 'r'. \fP"
+.ti -1c
+.RI "static int \fBmenu_action_by_mime_one\fP (long serial, char *mime, const char *file, action_context *ac)"
+.br
+.RI "\fIrun context the action for 'mime' on a single file given in 'file'. \fP"
+.ti -1c
+.RI "int \fBmenu_action_by_mime\fP (long serial, char *mime, char *file, action_context *ac)"
+.br
+.RI "\fIrun context the action for 'mime' on a file or a selection \fP"
+.ti -1c
+.RI "static int \fBmenu_selection_action_add\fP (action_context *ac, selection_action **e, menu_action *m, mime_match mm)"
+.br
+.RI "\fIadd action 'm' to list of actions available for current selection ('e') unless already present. \fP"
+.ti -1c
+.RI "int \fBmenu_selection_file_add\fP (action_context *ac, const char *file, selection_action **e)"
+.br
+.RI "\fIget MIME-type of file. \fP"
+.ti -1c
+.RI "int \fBmenu_file_context\fP (\fBnoir_sess\fP *ns, const char *cwd, const char *file)"
+.br
+.RI "\fItop-level function that will open a context-menu for the given file. \fP"
+.ti -1c
+.RI "char * \fBmenu_submenu_title_from_mime_type\fP (const char *mime)"
+.br
+.RI "\fIcreate a title for a sub-menu \fP"
+.ti -1c
+.RI "int \fBmenu_init\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIinitialize menu sub-system. \fP"
+.ti -1c
+.RI "int \fBmenu_exit\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIdeinitialize menu sub-system \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+implements the widget-library independent part of the context-menus. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int menu_action_by_entry (long serial, menu_action * m, noir_md * r, action_context * ac)"
+.PP
+run context action 'm' on file described in 'r'. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the session's serial 
+.br
+\fIm\fP the menu-action to apply to the file 
+.br
+\fIr\fP the meta-data for the file to be acted on 
+.br
+\fIac\fP the action-context (or NULL)
+.RE
+.PP
+
+.SS "int menu_action_by_mime (long serial, char * mime, char * file, action_context * ac)"
+.PP
+run context the action for 'mime' on a file or a selection 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the session's serial 
+.br
+\fImime\fP the MIME-type of the file, or NULL to get from meta-data 
+.br
+\fIfile\fP the file to be acted on 
+.br
+\fIac\fP the action-context to get the selection from, or NULL
+.RE
+.PP
+
+.SS "menu_action* menu_action_by_mime_first (menu_action ** ml, char * mime)"
+.PP
+find first action for MIME-type 'mime'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIml\fP anchor of list of menu-actions 
+.br
+\fImime\fP the MIME-type we're interested in
+.RE
+.PP
+
+.SS "menu_action* menu_action_by_mime_next (menu_action ** ml, char * mime)"
+.PP
+find next action for MIME-type 'mime'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIml\fP anchor of list of menu-actions 
+.br
+\fImime\fP the MIME-type we're interested in
+.RE
+.PP
+
+.SS "static int menu_action_by_mime_one (long serial, char * mime, const char * file, action_context * ac)\fC [static]\fP"
+.PP
+run context the action for 'mime' on a single file given in 'file'. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the session's serial 
+.br
+\fImime\fP the MIME-type of the file, or NULL to get from meta-data 
+.br
+\fIfile\fP the file to be acted on 
+.br
+\fIac\fP the action-context, or NULL
+.RE
+.PP
+
+.SS "menu_action* menu_action_get_anchor (void)"
+.PP
+find anchor of menu-actions 
+.PP
+\fBReturns:\fP
+.RS 4
+first in list of menu-actions
+.RE
+.PP
+
+.SS "static int menu_add_handler (\fBnoir_sess\fP * ns, menu_action ** ml, char * title, char * mime, char * file)\fC [static]\fP"
+.PP
+add context-menu action. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP session 
+.br
+\fIml\fP anchor of list of menu-actions 
+.br
+\fItitle\fP the action's label in the menu 
+.br
+\fImime\fP the MIME-type the handler can be applied to 
+.br
+\fIfile\fP the action (name of shared library, or template for executable)
+.RE
+.PP
+
+.SS "static menu_action* menu_del_all (menu_action ** ml)\fC [static]\fP"
+.PP
+throw away all info on context-menu actions. 
+.PP
+close SOs.
+.PP
+called from info_exit(). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIml\fP anchor of list of menu-actions
+.RE
+.PP
+
+.SS "int menu_exit (\fBnoir_sess\fP * ns)"
+.PP
+deinitialize menu sub-system 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP session
+.RE
+.PP
+
+.SS "int menu_file_context (\fBnoir_sess\fP * ns, const char * cwd, const char * file)"
+.PP
+top-level function that will open a context-menu for the given file. 
+.PP
+the menu will also contain possible actions for the session's current selection if there is one. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session 
+.br
+\fIcwd\fP the working-dir 
+.br
+\fIfile\fP the file the context-menu was opened for
+.RE
+.PP
+
+.SS "int menu_init (\fBnoir_sess\fP * ns)"
+.PP
+initialize menu sub-system. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP session
+.RE
+.PP
+
+.SS "static int menu_selection_action_add (action_context * ac, selection_action ** e, menu_action * m, mime_match mm)\fC [static]\fP"
+.PP
+add action 'm' to list of actions available for current selection ('e') unless already present. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context 
+.br
+\fIe\fP list of actions available for current selection 
+.br
+\fIm\fP action to add to the list 
+.br
+\fImm\fP MIME match quality (full, partial, any match)
+.RE
+.PP
+
+.SS "int menu_selection_file_add (action_context * ac, const char * file, selection_action ** e)"
+.PP
+get MIME-type of file. 
+.PP
+get actions for that MIME-type. add to list of available actions for selection, if not already present. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context 
+.br
+\fIfile\fP a file in the selection 
+.br
+\fIe\fP list of available actions for current selection.
+.RE
+.PP
+
+.SS "char* menu_submenu_title_from_mime_type (const char * mime)"
+.PP
+create a title for a sub-menu 
+.PP
+\fBReturns:\fP
+.RS 4
+a malloc()'d string the caller will have to free, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImime\fP the MIME-type ('text/html', 'text/', '')
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

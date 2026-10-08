@@ -1,0 +1,80 @@
+.TH "exif.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+exif.c \- meta-data provider plug-in 'EXIF' 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMA\fP(k, d, v)   meta_add(ImageInfo->md,META_RO,META_STR,(k),(d),MY_NAME,(v),prov)"
+.br
+.RI "\fIShow the collected image info, displaying camera F-stop and shutter speed in a consistent and legible fashion. \fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBprocess_EXIF\fP (ImageInfo_t *ImageInfo, unsigned char *ExifSection, unsigned int length)"
+.br
+.RI "\fIProcess a EXIF marker -- describes all the drivel that most digital cameras include. \fP"
+.ti -1c
+.RI "static int \fBReadJpegSections\fP (ImageInfo_t *ImageInfo, Section_t Sections[], FILE *infile)"
+.br
+.RI "\fIParse the marker stream until SOS or EOI is seen. \fP"
+.ti -1c
+.RI "int \fBmeta_get_for_file\fP (noir_md *md, char *file, noir_provider *prov)"
+.br
+.RI "\fIget meta-data for this file \fP"
+.ti -1c
+.RI "int \fBlayoutp\fP (void)"
+.br
+.RI "\fIlet info-dialog do the layout for us \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+meta-data provider plug-in 'EXIF' 
+
+get EXIF tags (JPEGs taken by digital cameras) code adapated from JHead by Matthias Wandel
+.SH "Function Documentation"
+.PP 
+.SS "int layoutp (void)"
+.PP
+let info-dialog do the layout for us 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC to do our own layout, NOIR_FAIL to have the caller do it
+.RE
+.PP
+
+.SS "int meta_get_for_file (noir_md * md, char * file, noir_provider * prov)"
+.PP
+get meta-data for this file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImd\fP the list of (all) meta-data 
+.br
+\fIfile\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SS "static int process_EXIF (ImageInfo_t * ImageInfo, unsigned char * ExifSection, unsigned int length)\fC [static]\fP"
+.PP
+Process a EXIF marker -- describes all the drivel that most digital cameras include. 
+.PP
+..
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

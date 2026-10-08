@@ -1,0 +1,35 @@
+logo:			png
+author:			Azundris
+
+typebuffer_factory:	default
+scrollbar_factory:	default
+icon_factory:		nautilus
+background_factory:	tile
+tooltip_factory:	traditional
+rubberband_factory:	nautilus
+
+open_folder_animation:	growfade
+open_app_animation:	grey
+open_file_animation:	basic
+
+extensions:		rephormed
+
+idle_fun_icon_view:	flutterby
+
+shelf:			beige
+icon_view:		beige
+
+typebuffer_font:	vera
+typebuffer_font_size:	60
+icon_font:		vera
+icon_font_size:		20
+tooltip_font:		vera
+tooltip_font_size:	18
+textpath_font:          vera
+textpath_font_size:	18
+textpath_dropshadow:    2
+
+icon_set:		gorilla_36
+icon_mode:		{w,h}/h
+
+icon_view_pad_y:	28

@@ -1,0 +1,238 @@
+\hypertarget{e__bg_8c}{
+\section{e\_\-bg.c File Reference}
+\label{e__bg_8c}\index{e_bg.c@{e\_\-bg.c}}
+}
+routines for the (deprecated) e-bg format 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static E\_\-Background\_\-Gradient \hyperlink{e__bg_8c_a0}{e\_\-bg\_\-gradient\_\-new} (void)
+\begin{CompactList}\small\item\em allocate a 0'ed out E\_\-Background\_\-Gradient \item\end{CompactList}\item 
+E\_\-Background\_\-Layer \hyperlink{e__bg_8c_a1}{e\_\-bg\_\-layer\_\-new} (void)
+\begin{CompactList}\small\item\em allocate and zero out a new E\_\-Background\_\-Layer struct \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a2}{e\_\-bg\_\-layer\_\-free} (E\_\-Background bg, E\_\-Background\_\-Layer bl)
+\begin{CompactList}\small\item\em free an E\_\-Background\_\-Layer \item\end{CompactList}\item 
+E\_\-Background\_\-Layer \hyperlink{e__bg_8c_a3}{e\_\-bg\_\-get\_\-layer\_\-number} (E\_\-Background bg, int num)
+\begin{CompactList}\small\item\em retrieve the specified layer from an E\_\-Background \item\end{CompactList}\item 
+E\_\-Background \hyperlink{e__bg_8c_a4}{e\_\-bg\_\-new} (void)
+\begin{CompactList}\small\item\em allocate a new E\_\-Background struct \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a5}{e\_\-bg\_\-free} (E\_\-Background bg)
+\begin{CompactList}\small\item\em free the E\_\-Background and all of its layers \item\end{CompactList}\item 
+E\_\-Background \hyperlink{e__bg_8c_a6}{e\_\-bg\_\-load} (char $\ast$file)
+\begin{CompactList}\small\item\em Allocate and populate an E\_\-Background from a .bg.db. \item\end{CompactList}\item 
+int \hyperlink{e__bg_8c_a7}{e\_\-bg\_\-add\_\-to\_\-evas} (E\_\-Background bg, Evas $\ast$evas)
+\begin{CompactList}\small\item\em add a bg to an evas After loading or manually allocating an E\_\-Background it can be added to an evas. \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a8}{e\_\-bg\_\-set\_\-scroll} (E\_\-Background bg, int sx, int sy)
+\begin{CompactList}\small\item\em Set the scroll effect for each layer. \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a9}{e\_\-bg\_\-set\_\-layer} (E\_\-Background bg, int layer)
+\begin{CompactList}\small\item\em Put the E\_\-Background in the specified layer. \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a10}{e\_\-bg\_\-move} (E\_\-Background bg, int \_\-x, int \_\-y)
+\begin{CompactList}\small\item\em move the E\_\-Background to the specified x/y in the evas \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a11}{e\_\-bg\_\-resize} (E\_\-Background bg, int w, int h)
+\begin{CompactList}\small\item\em resize the E\_\-Background to the given height/width \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a12}{e\_\-bg\_\-show} (E\_\-Background bg)
+\begin{CompactList}\small\item\em show all the layers in the E\_\-Background \item\end{CompactList}\item 
+void \hyperlink{e__bg_8c_a13}{e\_\-bg\_\-hide} (E\_\-Background bg)
+\begin{CompactList}\small\item\em hide all the layers in the E\_\-Background \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+routines for the (deprecated) e-bg format 
+
+ebg was the format used by the first prototype of enlightenment DR17. it lets you compose a background out of individual items such as gradients, images etc. each item can be placed/resized to fit the current resolution. to compile this plugin, only edb is required, but to create your own ebgs (.bg.db), you'll need ebony, the graphical ebg-editor.
+
+part of original e17 libraries, see there for AUTHORS and COPYRIGHT
+
+\subsection{Function Documentation}
+\hypertarget{e__bg_8c_a7}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_add_to_evas@{e\_\-bg\_\-add\_\-to\_\-evas}}
+\index{e_bg_add_to_evas@{e\_\-bg\_\-add\_\-to\_\-evas}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-add\_\-to\_\-evas]{\setlength{\rightskip}{0pt plus 5cm}int e\_\-bg\_\-add\_\-to\_\-evas (E\_\-Background {\em bg}, Evas $\ast$ {\em evas})}}
+\label{e__bg_8c_a7}
+
+
+add a bg to an evas After loading or manually allocating an E\_\-Background it can be added to an evas. 
+
+All layers pass event thru to a white base object in the E\_\-Background. It does not show the bg, use e\_\-bg\_\-show(bg) \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the bg to add and show in the evas \item[{\em evas}]the evas to add the E\_\-Background to\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a5}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_free@{e\_\-bg\_\-free}}
+\index{e_bg_free@{e\_\-bg\_\-free}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-free]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-free (E\_\-Background {\em bg})}}
+\label{e__bg_8c_a5}
+
+
+free the E\_\-Background and all of its layers 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the bg to be freed\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a3}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_get_layer_number@{e\_\-bg\_\-get\_\-layer\_\-number}}
+\index{e_bg_get_layer_number@{e\_\-bg\_\-get\_\-layer\_\-number}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-get\_\-layer\_\-number]{\setlength{\rightskip}{0pt plus 5cm}E\_\-Background\_\-Layer e\_\-bg\_\-get\_\-layer\_\-number (E\_\-Background {\em bg}, int {\em num})}}
+\label{e__bg_8c_a3}
+
+
+retrieve the specified layer from an E\_\-Background 
+
+\begin{Desc}
+\item[Returns:]the layer \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the E\_\-Background to request the layer from \item[{\em num}]the layer number request, 0 being the first(bottom) layer\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a0}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_gradient_new@{e\_\-bg\_\-gradient\_\-new}}
+\index{e_bg_gradient_new@{e\_\-bg\_\-gradient\_\-new}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-gradient\_\-new]{\setlength{\rightskip}{0pt plus 5cm}static E\_\-Background\_\-Gradient e\_\-bg\_\-gradient\_\-new (void)\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{e__bg_8c_a0}
+
+
+allocate a 0'ed out E\_\-Background\_\-Gradient 
+
+\begin{Desc}
+\item[Returns:]a zeroed out E\_\-Background\_\-Gradient\end{Desc}
+\hypertarget{e__bg_8c_a13}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_hide@{e\_\-bg\_\-hide}}
+\index{e_bg_hide@{e\_\-bg\_\-hide}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-hide]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-hide (E\_\-Background {\em bg})}}
+\label{e__bg_8c_a13}
+
+
+hide all the layers in the E\_\-Background 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the background to hide\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a2}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_layer_free@{e\_\-bg\_\-layer\_\-free}}
+\index{e_bg_layer_free@{e\_\-bg\_\-layer\_\-free}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-layer\_\-free]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-layer\_\-free (E\_\-Background {\em bg}, E\_\-Background\_\-Layer {\em bl})}}
+\label{e__bg_8c_a2}
+
+
+free an E\_\-Background\_\-Layer 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the E\_\-Background containing the layer to be freed \item[{\em bl}]the E\_\-Background\_\-Layer to be free\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a1}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_layer_new@{e\_\-bg\_\-layer\_\-new}}
+\index{e_bg_layer_new@{e\_\-bg\_\-layer\_\-new}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-layer\_\-new]{\setlength{\rightskip}{0pt plus 5cm}E\_\-Background\_\-Layer e\_\-bg\_\-layer\_\-new (void)}}
+\label{e__bg_8c_a1}
+
+
+allocate and zero out a new E\_\-Background\_\-Layer struct 
+
+\begin{Desc}
+\item[Returns:]a zeroed out E\_\-Background\_\-Layer\end{Desc}
+\hypertarget{e__bg_8c_a6}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_load@{e\_\-bg\_\-load}}
+\index{e_bg_load@{e\_\-bg\_\-load}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-load]{\setlength{\rightskip}{0pt plus 5cm}E\_\-Background e\_\-bg\_\-load (char $\ast$ {\em file})}}
+\label{e__bg_8c_a6}
+
+
+Allocate and populate an E\_\-Background from a .bg.db. 
+
+\begin{Desc}
+\item[Returns:]E\_\-Background with the data from the bg.db, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file}]the filename of the .bg.db on disk\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a10}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_move@{e\_\-bg\_\-move}}
+\index{e_bg_move@{e\_\-bg\_\-move}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-move]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-move (E\_\-Background {\em bg}, int {\em \_\-x}, int {\em \_\-y})}}
+\label{e__bg_8c_a10}
+
+
+move the E\_\-Background to the specified x/y in the evas 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the E\_\-Background to be moved \item[{\em \_\-x}]the x coordinate in the evas for the upper left corner of the bg \item[{\em \_\-y}]the y coordinate in the evas for the upper left corner of the bg\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a4}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_new@{e\_\-bg\_\-new}}
+\index{e_bg_new@{e\_\-bg\_\-new}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-new]{\setlength{\rightskip}{0pt plus 5cm}E\_\-Background e\_\-bg\_\-new (void)}}
+\label{e__bg_8c_a4}
+
+
+allocate a new E\_\-Background struct 
+
+\begin{Desc}
+\item[Returns:]a zeroed out E\_\-Background struct, or NULL\end{Desc}
+\hypertarget{e__bg_8c_a11}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_resize@{e\_\-bg\_\-resize}}
+\index{e_bg_resize@{e\_\-bg\_\-resize}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-resize]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-resize (E\_\-Background {\em bg}, int {\em w}, int {\em h})}}
+\label{e__bg_8c_a11}
+
+
+resize the E\_\-Background to the given height/width 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the E\_\-Background to be resized \item[{\em w}]the new requested width \item[{\em h}]the new requested height\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a9}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_set_layer@{e\_\-bg\_\-set\_\-layer}}
+\index{e_bg_set_layer@{e\_\-bg\_\-set\_\-layer}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-set\_\-layer]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-set\_\-layer (E\_\-Background {\em bg}, int {\em layer})}}
+\label{e__bg_8c_a9}
+
+
+Put the E\_\-Background in the specified layer. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the E\_\-Background to be moved to the new layer \item[{\em layer}]the layer number requested to put the E\_\-Background in\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a8}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_set_scroll@{e\_\-bg\_\-set\_\-scroll}}
+\index{e_bg_set_scroll@{e\_\-bg\_\-set\_\-scroll}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-set\_\-scroll]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-set\_\-scroll (E\_\-Background {\em bg}, int {\em sx}, int {\em sy})}}
+\label{e__bg_8c_a8}
+
+
+Set the scroll effect for each layer. 
+
+This $\ast$might$\ast$ be broken with types other than images \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]the E\_\-Background to set the scroll value for \item[{\em sx}]the scroll x offset \item[{\em sy}]the scroll y offset\end{description}
+\end{Desc}
+\hypertarget{e__bg_8c_a12}{
+\index{e_bg.c@{e\_\-bg.c}!e_bg_show@{e\_\-bg\_\-show}}
+\index{e_bg_show@{e\_\-bg\_\-show}!e_bg.c@{e\_\-bg.c}}
+\subsubsection[e\_\-bg\_\-show]{\setlength{\rightskip}{0pt plus 5cm}void e\_\-bg\_\-show (E\_\-Background {\em bg})}}
+\label{e__bg_8c_a12}
+
+
+show all the layers in the E\_\-Background 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bg}]The background to show\end{description}
+\end{Desc}

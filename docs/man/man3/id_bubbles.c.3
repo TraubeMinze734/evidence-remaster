@@ -1,0 +1,187 @@
+.TH "id_bubbles.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+id_bubbles.c \- campy example idle-handler. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static Evas_Object * \fBmake_bubble_obj\fP (Evas *e, int x, int y, char *file)"
+.br
+.RI "\fImake evas-object for a bubble \fP"
+.ti -1c
+.RI "static bubble * \fBmake_bubble\fP (bubctl *c)"
+.br
+.RI "\fIcreate a bubble \fP"
+.ti -1c
+.RI "static void \fBunmake_bubble\fP (bubctl *c, bubble *b)"
+.br
+.RI "\fIdestroy a bubble \fP"
+.ti -1c
+.RI "static void \fBmove_bubbles\fP (bubctl *c)"
+.br
+.RI "\fIanimate bubbles \fP"
+.ti -1c
+.RI "static void \fBmake_fish\fP (bubctl *c)"
+.br
+.RI "\fImake the fish (there can be only one!) \fP"
+.ti -1c
+.RI "static void \fBunmake_fish\fP (bubctl *c)"
+.br
+.RI "\fIdestroy the fish \fP"
+.ti -1c
+.RI "int \fBidle_func\fP (void **data)"
+.br
+.RI "\fIsystem is idle, do silly foo in the file-manager window \fP"
+.ti -1c
+.RI "int \fBidle_init\fP (void *ilp, void **data, noir_theme *t)"
+.br
+.RI "\fIset up silly idle animations \fP"
+.ti -1c
+.RI "int \fBidle_exit\fP (void **data)"
+.br
+.RI "\fIclean-up on destall \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+campy example idle-handler. 
+
+bubbles rise in icon-view. works best with fishtank-theme (evidence -T fishtank). extra fish by tillsan.
+.PP
+the handler doesn't install any properties although it really really should.
+.SH "Function Documentation"
+.PP 
+.SS "int idle_exit (void ** data)"
+.PP
+clean-up on destall 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for could destall, FALSE for do not deactivate handler 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP this idler's param-block (bubctl)
+.RE
+.PP
+
+.SS "int idle_func (void ** data)"
+.PP
+system is idle, do silly foo in the file-manager window 
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE to destall, TRUE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP pointer to our private data (bubctl)
+.RE
+.PP
+
+.SS "int idle_init (void * ilp, void ** data, noir_theme * t)"
+.PP
+set up silly idle animations 
+.PP
+\fBReturns:\fP
+.RS 4
+call idler every n ms, 0 for never 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIilp\fP the icon-list to display the animation in 
+.br
+\fIdata\fP where to store a pointer to the param-block we'll create 
+.br
+\fIt\fP the current theme
+.RE
+.PP
+
+.SS "static bubble* make_bubble (bubctl * c)\fC [inline, static]\fP"
+.PP
+create a bubble 
+.PP
+\fBReturns:\fP
+.RS 4
+a new bubble object 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP our param-blk
+.RE
+.PP
+
+.SS "static Evas_Object* make_bubble_obj (Evas * e, int x, int y, char * file)\fC [inline, static]\fP"
+.PP
+make evas-object for a bubble 
+.PP
+\fBReturns:\fP
+.RS 4
+an evas image-object 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the canvas for the bubble to live on 
+.br
+\fIx\fP horizontal position of the bubble 
+.br
+\fIy\fP vertical position 
+.br
+\fIfile\fP file containing a bubble 'bubble?.png', 1..5
+.RE
+.PP
+
+.SS "static void make_fish (bubctl * c)\fC [static]\fP"
+.PP
+make the fish (there can be only one!) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP our param-blk
+.RE
+.PP
+
+.SS "static void move_bubbles (bubctl * c)\fC [inline, static]\fP"
+.PP
+animate bubbles 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP our param-blk
+.RE
+.PP
+
+.SS "static void unmake_bubble (bubctl * c, bubble * b)\fC [inline, static]\fP"
+.PP
+destroy a bubble 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP our param-blk 
+.br
+\fIb\fP the bubble to burst
+.RE
+.PP
+
+.SS "static void unmake_fish (bubctl * c)\fC [static]\fP"
+.PP
+destroy the fish 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP our param-blk
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

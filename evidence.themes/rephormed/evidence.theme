@@ -1,0 +1,36 @@
+logo:				jpg
+author:				Azundris
+
+typebuffer_factory:		default
+scrollbar_factory:		default
+icon_factory:			nautilus
+background_factory:		tile
+tooltip_factory:		diagram
+rubberband_factory:		nautilus
+
+extensions:			rephormed
+iconviewpady:			16
+
+# open_folder_animation:	growfade
+open_folder_animation:		none
+open_app_animation:		grey
+open_file_animation:		basic
+
+shelf:				plain
+icon_view:			plain
+
+typebuffer_font:		aircut3
+typebuffer_font_size:		51
+icon_font:			vera
+icon_font_size:			12
+icon_meta_label_x_offset:	0
+icon_meta_label_y_offset:	8
+icon_meta_label_width:		48
+icon_list_grid:			-1.6
+tooltip_font:			vera
+tooltip_font_size:		18
+textpath_font:			vera
+textpath_font_size:		14
+
+icon_set:			rephormed
+icon_mode:			auto

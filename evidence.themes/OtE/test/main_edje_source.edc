@@ -1,0 +1,146 @@
+// expedition
+// analog clock edje
+// images and inspiration by tokyo : http://tokyo.cored.org
+// embryonics & refactorphonics by atmos : http://www.atmos.org/edje/
+// neofeed had a lot to do with this coming to life
+
+#include "macros/macros.edc"
+
+images {
+#  include "images/images.edc"
+}
+
+fonts {
+#  include "fonts/fonts.edc"
+}
+
+collections { 
+
+  group { 
+    name: "Bg"; 
+
+    script {
+#     include "embryo/global.edc"
+    }
+
+    parts {
+#     include "parts/mainbg.edc"
+#     include "parts/bg.edc"
+#     include "parts/day.edc"
+#     include "parts/hands.edc"
+
+      part {
+        name:        "cwd";
+        type:         TEXT;
+        effect:       SHADOW;
+        mouse_events: 1;
+
+        description {
+          state:     "default" 0.0;
+          visible:    1;
+          rel1 {
+            relative: 0.0 1.0;
+            offset:   4 -32;
+          }
+          rel2 {
+            relative: 1.0 1.0;
+          }
+
+          color:      0   0   0   128;
+          color3:     255 255 255 128;
+          text {
+            text:    "evidence";
+            font:    "Edje.Vera";
+            size:     14;
+            fit:      0 0;
+            align:    0.0 1.0;
+            min:      1 1;
+          }
+        }
+      }
+
+    }
+
+    programs {
+#     include "programs/programs.edc"
+#     include "programs/seconds.edc"
+#     include "programs/hour.edc"
+#     include "programs/minutes.edc"
+
+      program {
+        name:   "bg_clicked";
+        signal: "mouse,down,*";
+        source: "cwd";
+        action: SIGNAL_EMIT "MOUSE_DOWN" "cwd";
+      }
+
+      program {
+        name:   "bg_released";
+        signal: "mouse,up,*";
+        source: "cwd";
+        action: SIGNAL_EMIT "MOUSE_UP" "cwd";
+      }
+
+    }
+  }
+
+
+
+  group {
+    name: "Fg";
+
+    parts {
+
+      part {
+        name:        "Logo";
+        type:         TEXT;
+        effect:       SHADOW;
+        mouse_events: 1;
+
+        description {
+          state:     "default" 0.0;
+          visible:    1;
+          rel1 {
+            relative: 0.0 1.0;
+            offset:   0 -32;
+          }
+          rel2 {
+            relative: 1.0 1.0;
+            offset:   -16 0;
+          }
+
+          color:      100 100 100 255;
+          color3:     229 229 229 128;
+          text {
+            text:    "evidence";
+            font:    "Edje.Vera";
+            size:     20;
+            fit:      0 0;
+            align:    1.0 1.0;
+            min:      1 1;
+          }
+        }
+      }
+
+    }
+
+    programs {
+
+      program {
+        name:   "fg_clicked";
+        signal: "mouse,down,*";
+        source: "Logo";
+        action: SIGNAL_EMIT "MOUSE_DOWN" "Logo";
+      }
+
+      program {
+        name:   "fg_released";
+        signal: "mouse,up,*";
+        source: "Logo";
+        action: SIGNAL_EMIT "MOUSE_UP" "Logo";
+      }
+
+    }
+  }
+
+}

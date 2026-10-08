@@ -1,0 +1,538 @@
+.TH "icon_list.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+icon_list.c \- generic parts of icon-lists. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBicon_el\fP * \fBicon_el_new\fP (icon_state state, int xo, int yo, int w, int h, void *data, void *next)"
+.br
+.RI "\fIcreate new icon-element. \fP"
+.ti -1c
+.RI "void \fBicon_el_dst\fP (\fBicon_el\fP *e)"
+.br
+.RI "\fIdestruct an icon-element. \fP"
+.ti -1c
+.RI "\fBicon_el\fP * \fBicon_el_dst_all\fP (\fBicon_el\fP *e)"
+.br
+.RI "\fIdestruct an icon-element and all its successors. \fP"
+.ti -1c
+.RI "\fBicon_el\fP * \fBicon_el_get_by_tag\fP (\fBicon_el\fP *el, element_tag t, void **o)"
+.br
+.RI "\fIfind icon-element by tag. \fP"
+.ti -1c
+.RI "\fBicon\fP * \fBicon_el_dst_by_tag\fP (\fBicon\fP *i, element_tag t)"
+.br
+.RI "\fIdestruct icon-element by tag. \fP"
+.ti -1c
+.RI "void \fBicon_dst\fP (\fBicon\fP *i)"
+.br
+.RI "\fIdestruct an icon and its elements. \fP"
+.ti -1c
+.RI "void \fBicon_dst_all\fP (\fBicon\fP *i)"
+.br
+.RI "\fIdestruct an icon and all its successors. \fP"
+.ti -1c
+.RI "void \fBicon_list_destroy\fP (void *il)"
+.br
+.RI "\fIdestruct an icon-list and all its icons. \fP"
+.ti -1c
+.RI "int \fBicon_list_layout_all\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIrecalc layout of all icons in list. \fP"
+.ti -1c
+.RI "static int \fBicon_compare\fP (const void *flags, const void *a, const void *b)"
+.br
+.RI "\fIcompare two icons (for sort-order) \fP"
+.ti -1c
+.RI "int \fBicon_list_resort\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIsort icons in icon-list. \fP"
+.ti -1c
+.RI "static char * \fBmake_label\fP (\fBicon_list\fP *il, const char *in)"
+.br
+.RI "\fImake icon-label with suggested wrap-points. \fP"
+.ti -1c
+.RI "\fBicon\fP * \fBicon_list_icon_insert\fP (\fBicon_list\fP *il, int index, const char *name, const char *file, const char *label, const char *thumb, void *user1, void *user2, int redraw)"
+.br
+.RI "\fIinsert icon into icon-list. \fP"
+.ti -1c
+.RI "\fBicon\fP * \fBicon_list_icon_insert_sorted\fP (\fBicon_list\fP *il, const char *name, const char *file, const char *label, const char *thumb, void *user1, void *user2, int redraw)"
+.br
+.RI "\fIdetermine index, insert icon into icon-list. \fP"
+.ti -1c
+.RI "int \fBicon_list_icon_remove\fP (\fBicon_list\fP *il, \fBicon\fP *i, int redraw)"
+.br
+.RI "\fIremove an icon from the icon-list. \fP"
+.ti -1c
+.RI "int \fBicon_list_icon_in_rubber\fP (\fBicon_list\fP *il, \fBicon\fP *i)"
+.br
+.RI "\fIfind out whether icon is in rubber-band selection. \fP"
+.ti -1c
+.RI "int \fBicon_list_icon_visible\fP (\fBicon_list\fP *il, \fBicon\fP *i)"
+.br
+.RI "\fIfind out whether icon is exposed. \fP"
+.ti -1c
+.RI "\fBicon\fP * \fBicon_list_get_icon_by_index\fP (\fBicon_list\fP *il, int in)"
+.br
+.RI "\fIget icon number 'in'. \fP"
+.ti -1c
+.RI "\fBicon\fP * \fBicon_list_get_icon_by_file\fP (\fBicon_list\fP *il, const char *file)"
+.br
+.RI "\fIget the icon that represents a given file. \fP"
+.ti -1c
+.RI "\fBicon\fP * \fBicon_list_get_icon_at\fP (\fBicon_list\fP *il, int x, int y)"
+.br
+.RI "\fIget the icon at a given coordinate \fP"
+.ti -1c
+.RI "int \fBicon_list_get_index_at\fP (\fBicon_list\fP *il, int x, int y)"
+.br
+.RI "\fIfind out the index of the icon at a given coordinate \fP"
+.ti -1c
+.RI "int \fBicon_list_set_separators\fP (\fBicon_list\fP *il, const char *sep)"
+.br
+.RI "\fIset separators for word-wrap. \fP"
+.ti -1c
+.RI "static int \fBicon_list_scroll_do\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIdo the actual footwork for the scrolling routines. \fP"
+.ti -1c
+.RI "int \fBicon_list_scroll_abs\fP (\fBicon_list\fP *il, int sx, int sy)"
+.br
+.RI "\fIscroll icon-list to absolute position. \fP"
+.ti -1c
+.RI "int \fBicon_list_scroll_rel\fP (\fBicon_list\fP *il, int sx, int sy)"
+.br
+.RI "\fIscroll relative to current position. \fP"
+.ti -1c
+.RI "int \fBicon_list_scroll_pg\fP (\fBicon_list\fP *il, int sx, int sy)"
+.br
+.RI "\fIscroll icon-list page-wise. \fP"
+.ti -1c
+.RI "\fBicon_list\fP * \fBicon_list_rst\fP (\fBicon_list\fP *il)"
+.br
+.RI "\fIreset icon-list. \fP"
+.ti -1c
+.RI "\fBicon_list\fP * \fBicon_list_new\fP (const char *name, void *theme, void *canvas, int wpad, int hpad, int flags)"
+.br
+.RI "\fIcreate new icon-list \fP"
+.ti -1c
+.RI "void \fBicon_list_resized\fP (\fBicon_list\fP *il, long w, long h)"
+.br
+.RI "\fIadjust size of icon-list. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+generic parts of icon-lists. 
+
+right now only used when compiling with specific parts from evas2.c, should replace gnome-icon-list in the future, however. 
+.SH "Function Documentation"
+.PP 
+.SS "static int icon_compare (const void * flags, const void * a, const void * b)\fC [static]\fP"
+.PP
+compare two icons (for sort-order) 
+.PP
+\fBReturns:\fP
+.RS 4
+-1,0,+1 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIflags\fP sort-flags 
+.br
+\fIa\fP the first icon 
+.br
+\fIb\fP the second icon
+.RE
+.PP
+
+.SS "void icon_dst (\fBicon\fP * i)"
+.PP
+destruct an icon and its elements. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP - the icon to release
+.RE
+.PP
+
+.SS "void icon_dst_all (\fBicon\fP * i)"
+.PP
+destruct an icon and all its successors. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP - the first icon to release
+.RE
+.PP
+
+.SS "void icon_el_dst (\fBicon_el\fP * e)"
+.PP
+destruct an icon-element. 
+.PP
+if e->data is set, will call \fBicon_el_data_dst()\fP. since the nature of the data is GUI-specific (Evas_Object or such), \fBicon_el_data_dst()\fP is as well. it must be defined in the GUI-specific module. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the element to destruct
+.RE
+.PP
+
+.SS "\fBicon_el\fP* icon_el_dst_all (\fBicon_el\fP * e)"
+.PP
+destruct an icon-element and all its successors. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the first element to destruct (normally the first element of the icon)
+.RE
+.PP
+
+.SS "\fBicon\fP* icon_el_dst_by_tag (\fBicon\fP * i, element_tag t)"
+.PP
+destruct icon-element by tag. 
+.PP
+convenience function. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP - the icon to remove elements from 
+.br
+\fIt\fP - tag to look for (all matches)
+.RE
+.PP
+
+.SS "\fBicon_el\fP* icon_el_get_by_tag (\fBicon_el\fP * el, element_tag t, void ** o)"
+.PP
+find icon-element by tag. 
+.PP
+convenience function. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIel\fP - first element in list 
+.br
+\fIt\fP - tag to look for (first match) 
+.br
+\fIo\fP - where to copy the data-element of the found icon_el, or NULL
+.RE
+.PP
+
+.SS "\fBicon_el\fP* icon_el_new (icon_state state, int xo, int yo, int w, int h, void * data, void * next)"
+.PP
+create new icon-element. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstate\fP - this element should be visible when the icon is in 'state' 
+.br
+\fIxo\fP - x-offset to icon's upper-left corner (to 'icon-x') 
+.br
+\fIyo\fP - y-offset to icon's upper-left corner (to 'icon-y') 
+.br
+\fIw\fP - width of element 
+.br
+\fIh\fP - height of element 
+.br
+\fIdata\fP - payload (e.g. an Evas_Object) 
+.br
+\fInext\fP - next element, or NULL for EOL
+.RE
+.PP
+
+.SS "void icon_list_destroy (void * il)"
+.PP
+destruct an icon-list and all its icons. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list to release
+.RE
+.PP
+
+.SS "\fBicon\fP* icon_list_get_icon_at (\fBicon_list\fP * il, int x, int y)"
+.PP
+get the icon at a given coordinate 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIx\fP - icon-list relative x (0..) 
+.br
+\fIy\fP - icon-list relative y (0..)
+.RE
+.PP
+
+.SS "\fBicon\fP* icon_list_get_icon_by_file (\fBicon_list\fP * il, const char * file)"
+.PP
+get the icon that represents a given file. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIfile\fP - the file to find the icon for
+.RE
+.PP
+
+.SS "\fBicon\fP* icon_list_get_icon_by_index (\fBicon_list\fP * il, int in)"
+.PP
+get icon number 'in'. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIin\fP - the index
+.RE
+.PP
+
+.SS "int icon_list_get_index_at (\fBicon_list\fP * il, int x, int y)"
+.PP
+find out the index of the icon at a given coordinate 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIx\fP - icon-list relative x (0..) 
+.br
+\fIy\fP - icon-list relative y (0..)
+.RE
+.PP
+
+.SS "int icon_list_icon_in_rubber (\fBicon_list\fP * il, \fBicon\fP * i)\fC [inline]\fP"
+.PP
+find out whether icon is in rubber-band selection. 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE if icon is at least partially in the rectangular rubber-band selection. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP -the icon-list 
+.br
+\fIi\fP - the icon
+.RE
+.PP
+
+.SS "\fBicon\fP* icon_list_icon_insert (\fBicon_list\fP * il, int index, const char * name, const char * file, const char * label, const char * thumb, void * user1, void * user2, int redraw)"
+.PP
+insert icon into icon-list. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - icon-list 
+.br
+\fIindex\fP - insert after index'th icon (0 for 'make first icon in list') 
+.br
+\fIname\fP - the name of the icon-image ('/foo/bar/binary.png') 
+.br
+\fIfile\fP - the file represented by the icon ('/bin/ls') 
+.br
+\fIlabel\fP - the text-label to go underneath the icon-image ('ls') 
+.br
+\fIthumb\fP - the 'thumbnail' for the file, or NULL ('/home/azundris/.thumbnails/large/ffa4b11d64a9d082c4b8d4e795d9b3e8.png') 
+.br
+\fIuser1\fP - user-data. in evidence, the stat-info for the icon. 
+.br
+\fIuser2\fP - user-data. in evidence, the file-info for the icon. 
+.br
+\fIredraw\fP - redraw icon-list after icon is inserted?
+.RE
+.PP
+
+.SS "\fBicon\fP* icon_list_icon_insert_sorted (\fBicon_list\fP * il, const char * name, const char * file, const char * label, const char * thumb, void * user1, void * user2, int redraw)"
+.PP
+determine index, insert icon into icon-list. 
+.PP
+see \fBicon_list_icon_insert()\fP re the parameters.
+.SS "int icon_list_icon_remove (\fBicon_list\fP * il, \fBicon\fP * i, int redraw)"
+.PP
+remove an icon from the icon-list. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIi\fP - the icon to remove 
+.br
+\fIredraw\fP - redraw the icon-list after removing the icon?
+.RE
+.PP
+
+.SS "int icon_list_icon_visible (\fBicon_list\fP * il, \fBicon\fP * i)\fC [inline]\fP"
+.PP
+find out whether icon is exposed. 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE if icon is at least partially in the exposed part of the scroll-area. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP -the icon-list 
+.br
+\fIi\fP - the icon
+.RE
+.PP
+
+.SS "int icon_list_layout_all (\fBicon_list\fP * il)"
+.PP
+recalc layout of all icons in list. 
+.PP
+unless the FR_NOSCROLL-bit is set on the frozen-property, a redraw will be effected calling the efun \fBsb_update()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list
+.RE
+.PP
+
+.SS "\fBicon_list\fP* icon_list_new (const char * name, void * theme, void * canvas, int wpad, int hpad, int flags)"
+.PP
+create new icon-list 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIname\fP - name for the icon-list (evidence: 'iconview' or 'shelf') 
+.br
+\fItheme\fP - the theme for this icon-list 
+.br
+\fIcanvas\fP - the canvas for this icon-list (GtkGEvas, Evas, ...) 
+.br
+\fIwpad\fP - horizontal padding between icons 
+.br
+\fIhpad\fP - vertical padding between icons 
+.br
+\fIflags\fP - reserved
+.RE
+.PP
+
+.SS "void icon_list_resized (\fBicon_list\fP * il, long w, long h)"
+.PP
+adjust size of icon-list. 
+.PP
+the GUI-part of the icon-list will likely have a callback for when the window's size changes. that callback should in turn call icon_list_resized to let the internal representation know about the change as well. \fBicon_list_resized()\fP will also re-layout the window's contents. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIw\fP - the new width of the icon-list 
+.br
+\fIh\fP - the new height of the icon-list
+.RE
+.PP
+
+.SS "int icon_list_resort (\fBicon_list\fP * il)"
+.PP
+sort icons in icon-list. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list
+.RE
+.PP
+
+.SS "\fBicon_list\fP* icon_list_rst (\fBicon_list\fP * il)"
+.PP
+reset icon-list. 
+.PP
+this throws out all icons and resets settings to 'factory defaults.' in other words, it should be similar to destructing an icon-list and making a new one. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list
+.RE
+.PP
+
+.SS "int icon_list_scroll_abs (\fBicon_list\fP * il, int sx, int sy)"
+.PP
+scroll icon-list to absolute position. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIsx\fP - the desired horizontal position (0..) 
+.br
+\fIsy\fP - the desired vertical position (0..)
+.RE
+.PP
+
+.SS "static int icon_list_scroll_do (\fBicon_list\fP * il)\fC [static]\fP"
+.PP
+do the actual footwork for the scrolling routines. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list
+.RE
+.PP
+
+.SS "int icon_list_scroll_pg (\fBicon_list\fP * il, int sx, int sy)"
+.PP
+scroll icon-list page-wise. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIsx\fP - scroll horizontally: <0, page left; 0, don't scroll; >0, page right 
+.br
+\fIsy\fP - scroll vertically: <0, page up; 0, don't scroll; >0, page down
+.RE
+.PP
+
+.SS "int icon_list_scroll_rel (\fBicon_list\fP * il, int sx, int sy)"
+.PP
+scroll relative to current position. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list 
+.br
+\fIsx\fP - the horizontal offset 
+.br
+\fIsy\fP - the vertical offset
+.RE
+.PP
+
+.SS "int icon_list_set_separators (\fBicon_list\fP * il, const char * sep)"
+.PP
+set separators for word-wrap. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list to change the separators on 
+.br
+\fIsep\fP - a C-string containing the desired separators
+.RE
+.PP
+
+.SS "static char* make_label (\fBicon_list\fP * il, const char * in)\fC [inline, static]\fP"
+.PP
+make icon-label with suggested wrap-points. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list (containing a list of separator characters) 
+.br
+\fIin\fP - the text for the label
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,70 @@
+\hypertarget{options_8c}{
+\section{options.c File Reference}
+\label{options_8c}\index{options.c@{options.c}}
+}
+handle command-line options. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{options_8c_a1}{
+void \hyperlink{options_8c_a1}{print\_\-version} (void)}
+\label{options_8c_a1}
+
+\begin{CompactList}\small\item\em print version information. \item\end{CompactList}\item 
+static void \hyperlink{options_8c_a2}{print\_\-help} (char $\ast$name)
+\begin{CompactList}\small\item\em print usage information and exit. \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{options_8c_a3}{make\_\-abs} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, char $\ast$path)
+\begin{CompactList}\small\item\em make path absolute \item\end{CompactList}\item 
+int \hyperlink{options_8c_a4}{parse\_\-options} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, int argc, char $\ast$$\ast$argv, action\_\-context $\ast$$\ast$dir\_\-, action\_\-context $\ast$$\ast$sel\_\-)
+\begin{CompactList}\small\item\em react to command-line options. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+handle command-line options. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{options_8c_a3}{
+\index{options.c@{options.c}!make_abs@{make\_\-abs}}
+\index{make_abs@{make\_\-abs}!options.c@{options.c}}
+\subsubsection[make\_\-abs]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ make\_\-abs (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, char $\ast$ {\em path})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{options_8c_a3}
+
+
+make path absolute 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session (so we can get the cwd) \item[{\em path}]- the path to be made absolute\end{description}
+\end{Desc}
+\hypertarget{options_8c_a4}{
+\index{options.c@{options.c}!parse_options@{parse\_\-options}}
+\index{parse_options@{parse\_\-options}!options.c@{options.c}}
+\subsubsection[parse\_\-options]{\setlength{\rightskip}{0pt plus 5cm}int parse\_\-options (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, int {\em argc}, char $\ast$$\ast$ {\em argv}, action\_\-context $\ast$$\ast$ {\em dir\_\-}, action\_\-context $\ast$$\ast$ {\em sel\_\-})}}
+\label{options_8c_a4}
+
+
+react to command-line options. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- session \item[{\em argc}]- as passed to \hyperlink{evcfg_8c_a12}{main()} \item[{\em argv}]- as passed to \hyperlink{evcfg_8c_a12}{main()} \item[{\em dir\_\-}]- anchor of list of dirs to open at start-up \item[{\em sel\_\-}]- list of files to select at start-up\end{description}
+\end{Desc}
+\hypertarget{options_8c_a2}{
+\index{options.c@{options.c}!print_help@{print\_\-help}}
+\index{print_help@{print\_\-help}!options.c@{options.c}}
+\subsubsection[print\_\-help]{\setlength{\rightskip}{0pt plus 5cm}static void print\_\-help (char $\ast$ {\em name})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{options_8c_a2}
+
+
+print usage information and exit. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em name}]- the program's name\end{description}
+\end{Desc}

@@ -1,0 +1,67 @@
+.TH "_client_funs" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+_client_funs \- a client/view object  
+
+.PP
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "const char * \fBname\fP"
+.br
+.RI "\fIthe view's name (usually type) \fP"
+.ti -1c
+.RI "void * \fBdata\fP"
+.br
+.RI "\fIview's data (struct _myview *) \fP"
+.ti -1c
+.RI "\fBclient_flags\fP \fBflags\fP"
+.br
+.RI "\fIflags: paused etc. \fP"
+.ti -1c
+.RI "int(* \fBevt_view\fP )(\fBfile_info\fP *, \fBmodel_event\fP type, \fBfile_flags\fP changed, void *)"
+.br
+.RI "\fIevent callback \fP"
+.ti -1c
+.RI "int(* \fBdst_data\fP )(void **)"
+.br
+.RI "\fIdestructor for private 'data' \fP"
+.ti -1c
+.RI "int(* \fBset_selection\fP )(void *)"
+.br
+.RI "\fImethod to highlight session's selection in this view \fP"
+.ti -1c
+.RI "void *(* \fBdcd_set_data\fP )(void *)"
+.br
+.RI "\fIDCD setter. \fP"
+.ti -1c
+.RI "int(* \fBdcd_dst_data\fP )(void **)"
+.br
+.RI "\fIDCD destructor. \fP"
+.ti -1c
+.RI "pthread_mutex_t \fBviewlock\fP"
+.br
+.RI "\fIview mutex \fP"
+.ti -1c
+.RI "void * \fBuser1\fP"
+.br
+.RI "\fInext view in per-session chain \fP"
+.ti -1c
+.RI "void * \fBuser2\fP"
+.br
+.RI "\fIsession this view belongs to \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+a client/view object 
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

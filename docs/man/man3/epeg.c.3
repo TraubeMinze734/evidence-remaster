@@ -1,0 +1,104 @@
+.TH "epeg.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+epeg.c \- epeg JPEG thumbnailer 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBevidence_thumb_epeg_image_preview\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIthumbnail a JPEG (using ePEG). \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_init\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIinitialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_exit\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIdeinitialize the thumbnailer-plugin and free any resources it may hold \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_make\fP (thumbnail_plugin *tp, Evidence_Thumb *e, void **data)"
+.br
+.RI "\fIcreate a thumbnail \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+epeg JPEG thumbnailer 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static int evidence_thumb_epeg_image_preview (Evidence_Thumb * e)\fC [inline, static]\fP"
+.PP
+thumbnail a JPEG (using ePEG). 
+.PP
+called from thumbnail_generate() only. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the thumbnail struct
+.RE
+.PP
+
+.SS "int thumbnail_plugin_exit (thumbnail_plugin * tp)"
+.PP
+deinitialize the thumbnailer-plugin and free any resources it may hold 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct
+.RE
+.PP
+
+.SS "int thumbnail_plugin_init (thumbnail_plugin * tp)"
+.PP
+initialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code <0, or a set of features supported by the plugin 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct
+.RE
+.PP
+
+.SS "int thumbnail_plugin_make (thumbnail_plugin * tp, Evidence_Thumb * e, void ** data)"
+.PP
+create a thumbnail 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct 
+.br
+\fIe\fP the struct describing the thumbnail 
+.br
+\fIdata\fP the imlib-image (if TP_IMLIB)
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,141 @@
+\hypertarget{tb__default_8c}{
+\section{tb\_\-default.c File Reference}
+\label{tb__default_8c}\index{tb_default.c@{tb\_\-default.c}}
+}
+handles a \char`\"{}type-buffer\char`\"{} micro-shell 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{tb__default_8c_a9}{tb\_\-die} (noir\_\-theme $\ast$theme)
+\begin{CompactList}\small\item\em destall factory -- unregister listeners, free any resources etc. \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{tb__default_8c_a10}{tb\_\-to} (Evas $\ast$evas, char $\ast$font, long fs)
+\begin{CompactList}\small\item\em create an evas text-object \item\end{CompactList}\item 
+void \hyperlink{tb__default_8c_a11}{tb\_\-redraw} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em redraw typebuffer contents \item\end{CompactList}\item 
+void \hyperlink{tb__default_8c_a12}{tb\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct a typebuffer \item\end{CompactList}\item 
+static int \hyperlink{tb__default_8c_a13}{tb\_\-str\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our string-properties. \item\end{CompactList}\item 
+static int \hyperlink{tb__default_8c_a14}{tb\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our numeric properties. \item\end{CompactList}\item 
+\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ \hyperlink{tb__default_8c_a15}{tb\_\-set} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, void $\ast$iel, char $\ast$msg, int cursor)
+\begin{CompactList}\small\item\em set typebuffer contents \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+handles a \char`\"{}type-buffer\char`\"{} micro-shell 
+
+properties:\begin{itemize}
+\item typebuffer-shadow-colour\item typebuffer-shadow-alpha\item typebuffer-text-alpha\item typebuffer-text-colour\item typebuffer-font-size\item typebuffer-font\end{itemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{tb__default_8c_a9}{
+\index{tb_default.c@{tb\_\-default.c}!tb_die@{tb\_\-die}}
+\index{tb_die@{tb\_\-die}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-die]{\setlength{\rightskip}{0pt plus 5cm}int tb\_\-die (noir\_\-theme $\ast$ {\em theme})}}
+\label{tb__default_8c_a9}
+
+
+destall factory -- unregister listeners, free any resources etc. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em theme}]the theme\end{description}
+\end{Desc}
+\hypertarget{tb__default_8c_a12}{
+\index{tb_default.c@{tb\_\-default.c}!tb_dst@{tb\_\-dst}}
+\index{tb_dst@{tb\_\-dst}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void tb\_\-dst (void $\ast$$\ast$ {\em data})}}
+\label{tb__default_8c_a12}
+
+
+destruct a typebuffer 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the handle of the typebuffer to destroy\end{description}
+\end{Desc}
+\hypertarget{tb__default_8c_a14}{
+\index{tb_default.c@{tb\_\-default.c}!tb_num_listener@{tb\_\-num\_\-listener}}
+\index{tb_num_listener@{tb\_\-num\_\-listener}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int tb\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tb__default_8c_a14}
+
+
+listen for changes in our numeric properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{tb__default_8c_a11}{
+\index{tb_default.c@{tb\_\-default.c}!tb_redraw@{tb\_\-redraw}}
+\index{tb_redraw@{tb\_\-redraw}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-redraw]{\setlength{\rightskip}{0pt plus 5cm}void tb\_\-redraw (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{tb__default_8c_a11}
+
+
+redraw typebuffer contents 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]the icon-list the typebuffer is associated with\end{description}
+\end{Desc}
+\hypertarget{tb__default_8c_a15}{
+\index{tb_default.c@{tb\_\-default.c}!tb_set@{tb\_\-set}}
+\index{tb_set@{tb\_\-set}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-set]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon__el}{icon\_\-el}$\ast$ tb\_\-set (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, void $\ast$ {\em iel}, char $\ast$ {\em msg}, int {\em cursor})}}
+\label{tb__default_8c_a15}
+
+
+set typebuffer contents 
+
+\begin{Desc}
+\item[Returns:]a handle for this typebuffer (here: chains of icon-elements) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]the icon-list the typebuffer is associated with \item[{\em iel}]handle of the previous typebuffer \item[{\em msg}]the text to display \item[{\em cursor}]cursor-index (on character 0..n)\end{description}
+\end{Desc}
+\hypertarget{tb__default_8c_a13}{
+\index{tb_default.c@{tb\_\-default.c}!tb_str_listener@{tb\_\-str\_\-listener}}
+\index{tb_str_listener@{tb\_\-str\_\-listener}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-str\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int tb\_\-str\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{tb__default_8c_a13}
+
+
+listen for changes in our string-properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{tb__default_8c_a10}{
+\index{tb_default.c@{tb\_\-default.c}!tb_to@{tb\_\-to}}
+\index{tb_to@{tb\_\-to}!tb_default.c@{tb\_\-default.c}}
+\subsubsection[tb\_\-to]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ tb\_\-to (Evas $\ast$ {\em evas}, char $\ast$ {\em font}, long {\em fs})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{tb__default_8c_a10}
+
+
+create an evas text-object 
+
+\begin{Desc}
+\item[Returns:]an evas-object, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]the canvas to create the object on \item[{\em font}]the font to use \item[{\em fs}]the font-size to use\end{description}
+\end{Desc}

@@ -1,0 +1,121 @@
+EVIDENCE ARCHITECTURE
+
+
+
+What a file-manager does
+
+  1. Get meta-data about files (from file-system)
+
+    1.1  What files are there in a given directory?
+    1.2  What are their meta-data (size, permissions, ...)?
+
+  2. Optionally, get meta-data about file-contents (from files themselves)
+
+    2.1  Get meta-data (MP3/ID3-tags, vorbis-tags, TrueType font-tags, ...)
+    2.2  Generate previews ("thumbnails")
+
+  3. Keep data cached for faster access
+
+    3.1  Keep cached data in sync with on-disk data
+    3.2  Keep caches on-disk between sessions for pathological cases
+
+  4. Present data to user
+
+    4.1  Several windows ("sessions") may be opened
+    4.2  Each window may provide one or several views on the same
+         content (icon-view, tree-view, browser-view, ...).
+         In the simplest case, one session will contain one view.
+         In the advanced case, a session may contain several views
+         (e.g. in a "notebook"), which share certain per-session
+         properties (current directory, typebuffer micro-shell, ...).
+    4.3  The backend (1+2) and middle layer (3) should know as little
+         as possible about the presentation of the data; for all the
+         lower layers knows, the data could be read to the user aloud.
+         Specifically, the lower layers know nothing about theming.
+         In extreme cases, a view may allow another layer of plugins
+         that further customize the view (plugins for tooltips,
+         window-background, selections, icon-factories, ...).
+
+  5. Allow the user to interact with the data
+
+    5.1  Change file-system specific meta-data (move file, change
+         permissions, ...)
+    5.2  Change file-specific meta-data (edit MP3/ID3-tags, ...)
+    5.3  Change, view, print file-contents (start external application)
+    5.4  Miscellaneous (drag and drop, ...)
+
+
+
+
+
+
+Where this is done in evidence
+
+  1. Get meta-data about files (from file-system)
+
+     src/providers/backends/...
+
+
+
+  2. Optionally, get meta-data about file-contents (from files themselves)
+
+    2.1  Get meta-data (MP3/ID3-tags, vorbis-tags, TrueType font-tags, ...)
+
+         src/providers/...
+
+    2.2  Generate previews ("thumbnails")
+
+         src/thumbnail.c
+
+  3. Keep data cached for faster access
+
+         src/model.c
+
+    3.1  Keep cached data in sync with on-disk data
+
+         src/monitors.c
+
+    3.2  Keep caches on-disk between sessions for pathological cases
+
+         src/cache.c
+
+  4. Present data to user
+
+    4.1  Several windows ("sessions") may be opened
+
+         src/typebuffer.c
+         src/...
+
+    4.2  Each window may provide one or several views on the same
+         content (icon-view, tree-view, browser-view, ...).
+
+         browser:  src/browser_view.c  src/cr_arrow.c
+         treeview: src/tree_view.c     src/cr_date.c   src/cr_size.c
+         iconview: src/gevas_light.c   src/evas2.c     src/gevas_bind.c
+
+    4.3  Plugins that further customize the view
+
+         evidence.themes/engines/...
+
+  5. Allow the user to interact with the data
+
+         src/menu_common.c
+         src/menu_gtk.c
+
+    5.1  Change file-system specific meta-data (move file, change
+         permissions, ...)
+
+         src/actions/*
+
+    5.2  Change file-specific meta-data (edit MP3/ID3-tags, ...)
+
+         src/providers/*
+
+    5.3  Change, view, print file-contents (start external application)
+
+         src/file.c
+         src/typebuffer.c
+
+    5.4  Miscellaneous (drag and drop, ...)
+
+         src/dnd.c

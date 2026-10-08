@@ -1,0 +1,264 @@
+.TH "shelf.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+shelf.c \- implements shelf (icon-view in \fBicon_view.c\fP) independent of the actual icon-list (evas/icon_list or gnome-icon-list) used. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBshelf_drag_data_received\fP (GtkWidget *widget, GdkDragContext *dc, gint x, gint y, GtkSelectionData *selection, guint info, guint timestamp, gpointer data)"
+.br
+.RI "\fIDND: drop source sent data. \fP"
+.ti -1c
+.RI "static void \fBshelf_drag_data_get\fP (GtkWidget *widget, GdkDragContext *dc, GtkSelectionData *selectionData, guint info, guint timestamp, gpointer data)"
+.br
+.RI "\fIDND: drop target asks for data. \fP"
+.ti -1c
+.RI "static gboolean \fBshelf_drop\fP (GtkWidget *widget, GdkDragContext *dc, gint x, gint y, guint time, gpointer data)"
+.br
+.RI "\fIDND:. \fP"
+.ti -1c
+.RI "gboolean \fBshelf_exposed\fP (GtkWidget *widget, GdkEventExpose *ev, gpointer data)"
+.br
+.RI "\fIcallback for 'exposed'-event the other views don't update our thumbnails for reasons of speed, so if the directory-focus was changed in another view, we'll have to get the thumbnails NOW. \fP"
+.ti -1c
+.RI "static int \fBshelf_evt\fP (\fBfile_info\fP *fi, \fBmodel_event\fP type, \fBfile_flags\fP changed, void *data)"
+.br
+.RI "\fIhandle model-event \fP"
+.ti -1c
+.RI "static int \fBshelf_dst\fP (void **data)"
+.br
+.RI "\fIdestruct shelf \fP"
+.ti -1c
+.RI "static int \fBshelf_num_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our numeric properties. \fP"
+.ti -1c
+.RI "static int \fBshelf_str_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our string-properties. \fP"
+.ti -1c
+.RI "int \fBshelf_init\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIcreate shelf in given session \fP"
+.ti -1c
+.RI "int \fBshelf_exit\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIdrop shelf in given session icons are destroyed in gevas' call-back (cf. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+implements shelf (icon-view in \fBicon_view.c\fP) independent of the actual icon-list (evas/icon_list or gnome-icon-list) used. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static void shelf_drag_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selectionData, guint info, guint timestamp, gpointer data)\fC [static]\fP"
+.PP
+DND: drop target asks for data. 
+.PP
+collect and send. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget that was dragged from, or NULL 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIselectionData\fP the selection we're to set the data on 
+.br
+\fIinfo\fP type of the data as per GtkTargetList 
+.br
+\fItimestamp\fP when the event happened 
+.br
+\fIdata\fP session
+.RE
+.PP
+
+.SS "static void shelf_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection, guint info, guint timestamp, gpointer data)\fC [static]\fP"
+.PP
+DND: drop source sent data. 
+.PP
+act upon them. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIx\fP where the data was dropped 
+.br
+\fIy\fP where the data was dropped 
+.br
+\fIselection\fP the received data 
+.br
+\fIinfo\fP type of the data as per GtkTargetList 
+.br
+\fItimestamp\fP when the event happened 
+.br
+\fIdata\fP session
+.RE
+.PP
+
+.SS "static gboolean shelf_drop (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, guint time, gpointer data)\fC [static]\fP"
+.PP
+DND:. 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for success, FALSE for failure 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget that was dragged from, or NULL 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIx\fP where the drop occurred 
+.br
+\fIy\fP where the drop occurred 
+.br
+\fItime\fP when the event happened 
+.br
+\fIdata\fP session
+.RE
+.PP
+
+.SS "static int shelf_dst (void ** data)\fC [static]\fP"
+.PP
+destruct shelf 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the shelf
+.RE
+.PP
+
+.SS "static int shelf_evt (\fBfile_info\fP * fi, \fBmodel_event\fP type, \fBfile_flags\fP changed, void * data)\fC [static]\fP"
+.PP
+handle model-event 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfi\fP the fs object this event is about 
+.br
+\fItype\fP event-type 
+.br
+\fIchanged\fP what parts of 'fi' changed 
+.br
+\fIdata\fP the icon-view
+.RE
+.PP
+
+.SS "int shelf_exit (\fBnoir_sess\fP * ns)"
+.PP
+drop shelf in given session icons are destroyed in gevas' call-back (cf. 
+.PP
+\fBgevas_icon_list_new()\fP) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "gboolean shelf_exposed (GtkWidget * widget, GdkEventExpose * ev, gpointer data)"
+.PP
+callback for 'exposed'-event the other views don't update our thumbnails for reasons of speed, so if the directory-focus was changed in another view, we'll have to get the thumbnails NOW. 
+.PP
+\fBReturns:\fP
+.RS 4
+FALSE 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the gEvas 
+.br
+\fIev\fP the GDK expose-event 
+.br
+\fIdata\fP the session
+.RE
+.PP
+
+.SS "int shelf_init (\fBnoir_sess\fP * ns)"
+.PP
+create shelf in given session 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static int shelf_num_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our numeric properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SS "static int shelf_str_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our string-properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,78 @@
+.TH "_icon" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+_icon \- an icon  
+
+.PP
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char * \fBlabel\fP"
+.br
+.RI "\fIthe text underneath the icon \fP"
+.ti -1c
+.RI "char * \fBfile\fP"
+.br
+.RI "\fIthe file it represents \fP"
+.ti -1c
+.RI "char * \fBname\fP"
+.br
+.RI "\fIthe file that holds the icon-image \fP"
+.ti -1c
+.RI "int \fBy\fP"
+.br
+.RI "\fIposition \fP"
+.ti -1c
+.RI "int \fBh\fP"
+.br
+.RI "\fIsize \fP"
+.ti -1c
+.RI "int \fBindex\fP"
+.br
+.RI "\fIindex in icon-list (0. \fP"
+.ti -1c
+.RI "icon_state \fBstate\fP"
+.br
+.RI "\fIstate (selected, . \fP"
+.ti -1c
+.RI "\fBicon_el\fP * \fBels\fP"
+.br
+.RI "\fIlinked list of icon-elements \fP"
+.ti -1c
+.RI "void * \fBuser1\fP"
+.br
+.RI "\fIevidence stores fi->intrinsic (posixmd) here \fP"
+.ti -1c
+.RI "void * \fBuser2\fP"
+.br
+.RI "\fIevidence stores fi (file_info) here \fP"
+.ti -1c
+.RI "\fB_icon\fP * \fBnext\fP"
+.br
+.RI "\fInext icon in this icon-list \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+an icon 
+.PP
+.SH "Field Documentation"
+.PP 
+.SS "int \fB_icon::index\fP"
+.PP
+index in icon-list (0. 
+.PP
+.n-1) 
+.SS "icon_state \fB_icon::state\fP"
+.PP
+state (selected, . 
+.PP
+..) 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

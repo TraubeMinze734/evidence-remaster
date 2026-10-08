@@ -1,0 +1,48 @@
+\hypertarget{folder_8c}{
+\section{folder.c File Reference}
+\label{folder_8c}\index{folder.c@{folder.c}}
+}
+meta-data provider for folders 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{folder_8c_a3}{meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$md, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\item 
+int \hyperlink{folder_8c_a4}{layoutp} (void)
+\begin{CompactList}\small\item\em let info-dialog do the layout for us \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+meta-data provider for folders 
+
+reacts on folder containing certain files, like a CVS-folder
+
+\subsection{Function Documentation}
+\hypertarget{folder_8c_a4}{
+\index{folder.c@{folder.c}!layoutp@{layoutp}}
+\index{layoutp@{layoutp}!folder.c@{folder.c}}
+\subsubsection[layoutp]{\setlength{\rightskip}{0pt plus 5cm}int layoutp (void)}}
+\label{folder_8c_a4}
+
+
+let info-dialog do the layout for us 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC to do our own layout, NOIR\_\-FAIL to have the caller do it\end{Desc}
+\hypertarget{folder_8c_a3}{
+\index{folder.c@{folder.c}!meta_get_for_file@{meta\_\-get\_\-for\_\-file}}
+\index{meta_get_for_file@{meta\_\-get\_\-for\_\-file}!folder.c@{folder.c}}
+\subsubsection[meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em md}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{folder_8c_a3}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}

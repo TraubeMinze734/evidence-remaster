@@ -1,0 +1,769 @@
+\hypertarget{thumbnailer_2thumbnail_8c}{
+\section{thumbnail.c File Reference}
+\label{thumbnailer_2thumbnail_8c}\index{thumbnail.c@{thumbnail.c}}
+}
+threaded modular thumbnailer. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a14}{thumbnail\_\-failinfo\_\-save} (const char $\ast$fail, const char $\ast$software, char $\ast$$\ast$path)
+\begin{CompactList}\small\item\em create an application-specific thumbnail-failure entry in thumbnail cache \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a15}{thumbnailer\_\-start} (Evidence\_\-Thumbnailer $\ast$t)
+\begin{CompactList}\small\item\em start thumbnailing thread (unless already running). \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a16}{thumbnail\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listener for numeric properties \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a17}{thumbnail\_\-str\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listener for string properties \item\end{CompactList}\item 
+char $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a18}{evidence\_\-thumb\_\-get\_\-tmpname} (const char $\ast$file, const char $\ast$ext)
+\begin{CompactList}\small\item\em make a temporary file-name. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a19}{evidence\_\-thumbnail\_\-path} (thumbnaildir td, const char $\ast$file, const char $\ast$ext)
+\begin{CompactList}\small\item\em create path for a thumbnail. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a20}{evidence\_\-thumb\_\-hash\_\-name} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em get the thumbnail name (hash) on disk. \item\end{CompactList}\item 
+static void \hyperlink{thumbnailer_2thumbnail_8c_a21}{evidence\_\-thumb\_\-free\_\-attributes} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em free the attributes of an Evidence\_\-Thumb. \item\end{CompactList}\item 
+static void \hyperlink{thumbnailer_2thumbnail_8c_a22}{evidence\_\-thumb\_\-free} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em free an Evidence\_\-Thumb. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a23}{evidence\_\-thumb\_\-new} (Evidence\_\-Thumb $\ast$$\ast$thumb, void $\ast$t, const char $\ast$file, const char $\ast$mime)
+\begin{CompactList}\small\item\em Allocate a new Evas\_\-Thumb, setting up everything. \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a24}{evidence\_\-thumb\_\-find\_\-cached} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em find thumbnail in any of the cache-dirs. \item\end{CompactList}\item 
+static FILE $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a25}{evidence\_\-thumb\_\-open\_\-png} (char $\ast$filename)
+\begin{CompactList}\small\item\em Open a PNG-image. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a26}{evidence\_\-thumb\_\-read\_\-file\_\-attributes} (Evidence\_\-Thumb $\ast$e, int f)
+\begin{CompactList}\small\item\em read the attributes of an e\-PEG or PNG thumbnail. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a27}{evidence\_\-thumb\_\-write\_\-png} (char $\ast$file, Evidence\_\-Thumb $\ast$e, const char $\ast$software)
+\begin{CompactList}\small\item\em write thumbnail (from e-$>$data) to a PNG image. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a28}{evidence\_\-thumb\_\-save\_\-png} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em save thumbnail(s) for a file. \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a29}{
+void \hyperlink{thumbnailer_2thumbnail_8c_a29}{thumbnail\_\-imlib\_\-gc} (void)}
+\label{thumbnailer_2thumbnail_8c_a29}
+
+\begin{CompactList}\small\item\em flush unused fonts and images \item\end{CompactList}\item 
+Imlib\_\-Image \hyperlink{thumbnailer_2thumbnail_8c_a30}{evidence\_\-thumb\_\-imlib\_\-standardize} (Evidence\_\-Thumb $\ast$e)
+\begin{CompactList}\small\item\em resize thumbnail to standard-size (using Imlib2). \item\end{CompactList}\item 
+Evidence\_\-Thumbnailer $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a31}{thumbnailer\_\-new} (void)
+\begin{CompactList}\small\item\em create a new thumbnailer-struct \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a32}{thumbnailer\_\-cxl} (Evidence\_\-Thumbnailer $\ast$t)
+\begin{CompactList}\small\item\em stop a thumbnailer \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a33}{thumbnailer\_\-gc} (Evidence\_\-Thumbnailer $\ast$t)
+\begin{CompactList}\small\item\em check whether a given thumbnailer has timed out. \item\end{CompactList}\item 
+Evidence\_\-Thumbnailer $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a34}{thumbnailer\_\-dst} (Evidence\_\-Thumbnailer $\ast$t)
+\begin{CompactList}\small\item\em destroy a thumbnailer (thread, struct, Q) \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a35}{thumbnailer\_\-enqueue} (Evidence\_\-Thumbnailer $\ast$t, Evidence\_\-Thumb $\ast$thumb)
+\begin{CompactList}\small\item\em enqueue an item to be thumbnailed \item\end{CompactList}\item 
+Evidence\_\-Thumb $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a36}{thumbnailer\_\-dequeue} (Evidence\_\-Thumbnailer $\ast$t)
+\begin{CompactList}\small\item\em pop an item from the Q for a given thumbnailer \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a37}{thumbnailer\_\-generate} (Evidence\_\-Thumb $\ast$thumb)
+\begin{CompactList}\small\item\em creates a new thumbnail (using a plugin, e\-PEG or Imlib2 or whatver). \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a38}{
+int \hyperlink{thumbnailer_2thumbnail_8c_a38}{thumbnailer\_\-protected\_\-sigchld} (void $\ast$data, int type, void $\ast$event)}
+\label{thumbnailer_2thumbnail_8c_a38}
+
+\begin{CompactList}\small\item\em thumbnailing task exited; release associated thread \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a39}{thumbnailer\_\-protected\_\-generate} (Evidence\_\-Thumbnailer $\ast$t, Evidence\_\-Thumb $\ast$thumb)
+\begin{CompactList}\small\item\em execute thumbnailer in separate task so it won't take down evidence if it crashes. \item\end{CompactList}\item 
+static void $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a40}{thumbnailer\_\-generator} (void $\ast$q)
+\begin{CompactList}\small\item\em the thumbnailing thread. \item\end{CompactList}\item 
+\hyperlink{struct__file__info}{file\_\-info} $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a41}{thumbnailer\_\-pending} (void)
+\begin{CompactList}\small\item\em if any new thumbnails have arrived, dequeue the top one from the ready-Q, add the thumbfile to the file-info instance, and return fi to model. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a42}{thumbnail\_\-enqueue\_\-do} (void $\ast$t, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, thumbnail\_\-plugin $\ast$tp)
+\begin{CompactList}\small\item\em fetches or creates a new thumbnail. \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a43}{thumbnail\_\-init} (const char $\ast$setup)
+\begin{CompactList}\small\item\em creates the directories we need for thumbnailing. \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a44}{thumbnail\_\-find\_\-for} (const char $\ast$tag, char $\ast$$\ast$path)
+\begin{CompactList}\small\item\em find a thumbnail for a given file, if one exists \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a45}{
+static int \hyperlink{thumbnailer_2thumbnail_8c_a45}{thumbnailers\_\-gc} (void)}
+\label{thumbnailer_2thumbnail_8c_a45}
+
+\begin{CompactList}\small\item\em deinitialize thumbnail sub-system. \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a46}{thumbnail\_\-lib\_\-gc} (void)
+\begin{CompactList}\small\item\em garbage-collect plugins \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a47}{thumbnail\_\-disk\_\-gc\_\-one} (const char $\ast$tag)
+\begin{CompactList}\small\item\em delete all the thumbnails for the given source file. \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a48}{
+int \hyperlink{thumbnailer_2thumbnail_8c_a48}{thumbnail\_\-disk\_\-gc} (void)}
+\label{thumbnailer_2thumbnail_8c_a48}
+
+\begin{CompactList}\small\item\em Using the URI tag stored in the png, check all the thumbnails to see if their source file has been deleted; if so, delete the thumbnail as well. \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a49}{thumbnail\_\-disk\_\-op} (noir\_\-job\_\-type t, const char $\ast$src, const char $\ast$dst)
+\begin{CompactList}\small\item\em react to a disk-op (copy, move (re-tag), delete thumbnail) \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a50}{thumbnail\_\-attribute\_\-add} (Evidence\_\-Thumb $\ast$e, const char $\ast$key\_\-, const char $\ast$val\_\-)
+\begin{CompactList}\small\item\em add an attribute to a thumbnail \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a51}{
+int \hyperlink{thumbnailer_2thumbnail_8c_a51}{thumbnail\_\-exit} (void)}
+\label{thumbnailer_2thumbnail_8c_a51}
+
+\begin{CompactList}\small\item\em deinitialize thumbnail sub-system. \item\end{CompactList}\item 
+int \hyperlink{thumbnailer_2thumbnail_8c_a52}{thumbnail\_\-enqueue} (\hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em enqueue a file for thumbnail-creation, if its format is supported. \item\end{CompactList}\item 
+static int \hyperlink{thumbnailer_2thumbnail_8c_a53}{evidence\_\-thumb\_\-calc\_\-size} (void $\ast$t, int $\ast$w, int $\ast$h)
+\begin{CompactList}\small\item\em resize thumb-object to fit theme (after saving in standardized size). \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a54}{evidence\_\-thumb\_\-evas\_\-image\_\-load} (Evas $\ast$evas, const char $\ast$file)
+\begin{CompactList}\small\item\em try to load the image (using Evas). \item\end{CompactList}\item 
+Evas\_\-Object $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a55}{evas\_\-thumbnail\_\-dead} (void $\ast$t, Evas $\ast$evas, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em load an existing thumbnail \item\end{CompactList}\item 
+Evas\_\-Object $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a56}{evas\_\-thumbnail\_\-live} (void $\ast$t, Evas $\ast$evas, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, int w, int h)
+\begin{CompactList}\small\item\em create a \char`\"{}live\char`\"{} thumbnail \item\end{CompactList}\item 
+Evas\_\-Object $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a57}{evas\_\-thumbnail\_\-dead\_\-or\_\-alive} (void $\ast$t, Evas $\ast$evas, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, int w, int h)
+\begin{CompactList}\small\item\em create a \char`\"{}live\char`\"{} thumbnail if possible, otherwise return a static one \item\end{CompactList}\item 
+Evas\_\-Object $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a58}{evas\_\-object\_\-from\_\-imlib\_\-image} (Evas $\ast$evas, void $\ast$im)
+\begin{CompactList}\small\item\em create a new evas image-object from a given Imlib2-image \item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+pthread\_\-mutex\_\-t \hyperlink{thumbnailer_2thumbnail_8c_a6}{imlib\_\-mutex}
+\begin{CompactList}\small\item\em frontend and backend shouldn't use imlib2 at the same time, it's not threadsafe. \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a7}{
+Evidence\_\-Thumbnailer $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a7}{thumbnailers} = NULL}
+\label{thumbnailer_2thumbnail_8c_a7}
+
+\begin{CompactList}\small\item\em list of thumbnailers (one for now) \item\end{CompactList}\item 
+\hypertarget{thumbnailer_2thumbnail_8c_a8}{
+Evidence\_\-Thumbnailer $\ast$ \hyperlink{thumbnailer_2thumbnail_8c_a8}{thumbnails\_\-complete} = NULL}
+\label{thumbnailer_2thumbnail_8c_a8}
+
+\begin{CompactList}\small\item\em list of complete thumbnails \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+threaded modular thumbnailer. 
+
+original imlib2 thumbnailer by Azundris original truetype thumbnailer by raster original freedesktop.org-compatible thumbnailer by atmos threaded thumbnailer by Azundris modular thumbnailer by Azundris
+
+\subsection{Function Documentation}
+\hypertarget{thumbnailer_2thumbnail_8c_a58}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evas_object_from_imlib_image@{evas\_\-object\_\-from\_\-imlib\_\-image}}
+\index{evas_object_from_imlib_image@{evas\_\-object\_\-from\_\-imlib\_\-image}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evas\_\-object\_\-from\_\-imlib\_\-image]{\setlength{\rightskip}{0pt plus 5cm}Evas\_\-Object$\ast$ evas\_\-object\_\-from\_\-imlib\_\-image (Evas $\ast$ {\em evas}, void $\ast$ {\em im})}}
+\label{thumbnailer_2thumbnail_8c_a58}
+
+
+create a new evas image-object from a given Imlib2-image 
+
+\begin{Desc}
+\item[Returns:]the new evas image-object, or NULL for failure \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]the evas to create the image-object on \item[{\em im}]the Imlib2-image, or NULL for image currently in context\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a55}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evas_thumbnail_dead@{evas\_\-thumbnail\_\-dead}}
+\index{evas_thumbnail_dead@{evas\_\-thumbnail\_\-dead}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evas\_\-thumbnail\_\-dead]{\setlength{\rightskip}{0pt plus 5cm}Evas\_\-Object$\ast$ evas\_\-thumbnail\_\-dead (void $\ast$ {\em t}, Evas $\ast$ {\em evas}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})}}
+\label{thumbnailer_2thumbnail_8c_a55}
+
+
+load an existing thumbnail 
+
+this convenience function is intended to be called from icon-factories wishing to load an existing thumbnail. \begin{Desc}
+\item[Returns:]an Evas\_\-Image\_\-Object containing the properly sized thumbnail, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]- the current theme (needed for sizing info) \item[{\em evas}]- the Evas canvas to create the image-object on \item[{\em fi}]- the file we want a thumbnail for\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a57}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evas_thumbnail_dead_or_alive@{evas\_\-thumbnail\_\-dead\_\-or\_\-alive}}
+\index{evas_thumbnail_dead_or_alive@{evas\_\-thumbnail\_\-dead\_\-or\_\-alive}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evas\_\-thumbnail\_\-dead\_\-or\_\-alive]{\setlength{\rightskip}{0pt plus 5cm}Evas\_\-Object$\ast$ evas\_\-thumbnail\_\-dead\_\-or\_\-alive (void $\ast$ {\em t}, Evas $\ast$ {\em evas}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, int {\em w}, int {\em h})}}
+\label{thumbnailer_2thumbnail_8c_a57}
+
+
+create a \char`\"{}live\char`\"{} thumbnail if possible, otherwise return a static one 
+
+this convenience function is intended to be called from icon-factories wishing to create a \char`\"{}live\char`\"{} thumb, but settling for a static one if need be. \begin{Desc}
+\item[Returns:]an Evas\_\-Image\_\-Object containing the properly sized thumbnail, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]- the current theme (needed for sizing info) \item[{\em evas}]- the Evas canvas to create the image-object on \item[{\em fi}]- the file we want a thumbnail for \item[{\em w}]- the suggested width \item[{\em h}]- the suggested height\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a56}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evas_thumbnail_live@{evas\_\-thumbnail\_\-live}}
+\index{evas_thumbnail_live@{evas\_\-thumbnail\_\-live}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evas\_\-thumbnail\_\-live]{\setlength{\rightskip}{0pt plus 5cm}Evas\_\-Object$\ast$ evas\_\-thumbnail\_\-live (void $\ast$ {\em t}, Evas $\ast$ {\em evas}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, int {\em w}, int {\em h})}}
+\label{thumbnailer_2thumbnail_8c_a56}
+
+
+create a \char`\"{}live\char`\"{} thumbnail 
+
+this convenience function is intended to be called from icon-factories wishing to create a \char`\"{}live\char`\"{} thumbnail. \begin{Desc}
+\item[Returns:]an Evas\_\-Image\_\-Object containing the properly sized thumbnail, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]- the current theme (needed for sizing info) \item[{\em evas}]- the Evas canvas to create the image-object on \item[{\em fi}]- the file we want a thumbnail for \item[{\em w}]- the suggested width \item[{\em h}]- the suggested height\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a53}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_calc_size@{evidence\_\-thumb\_\-calc\_\-size}}
+\index{evidence_thumb_calc_size@{evidence\_\-thumb\_\-calc\_\-size}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-calc\_\-size]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-calc\_\-size (void $\ast$ {\em t}, int $\ast$ {\em w}, int $\ast$ {\em h})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a53}
+
+
+resize thumb-object to fit theme (after saving in standardized size). 
+
+\begin{Desc}
+\item[Returns:]theme-dependent on-screen size of thumbnail in w,h \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]- the theme (needed for icon-dimensions and resize-mode) \item[{\em w}]- source-width (of newly-created or read-from-cache thumbnail) \item[{\em h}]- source-height (of newly-created or read-from-cache thumbnail)\end{description}
+\end{Desc}
+useful values for icon-mode are \{w,h\}/h and \{w,h\}/w. \{w,h\} means that both width and height of the thumbnail are scaled. h as a divisor indicates that the thumbnail should be as high as a normal icon, no matter what width that will result in -- this is adequate for smaller icon-sets, as it tends to prevent the thumbnails from getting too small. w as a divisor indicates that the thumbnail should be as wide as a canonical icon, no matter what the height will be. the special value \char`\"{}auto\char`\"{} will scale the thumbnail to its maximum within the bounding-box of the icon while retaining the thumbnails aspect ratio, which in real terms means, \char`\"{}make thumbnail as wide as an icon, unless that would mean it's higher than an icon; in this case, make the thumbnail as high as an icon instead.\char`\"{}
+
+icon: 32x48
+
+icon-mode 640x480 picture 320x960 picture
+
+\{w,h\}/w 32x24 thumbnail 32x96 thumbnail
+
+\{w,h\}/h 64x48 thumbnail 16x48 thumbnail
+
+auto 32x24 thumbnail 16x48 thumbnail\hypertarget{thumbnailer_2thumbnail_8c_a54}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_evas_image_load@{evidence\_\-thumb\_\-evas\_\-image\_\-load}}
+\index{evidence_thumb_evas_image_load@{evidence\_\-thumb\_\-evas\_\-image\_\-load}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-evas\_\-image\_\-load]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ evidence\_\-thumb\_\-evas\_\-image\_\-load (Evas $\ast$ {\em evas}, const char $\ast$ {\em file})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a54}
+
+
+try to load the image (using Evas). 
+
+\begin{Desc}
+\item[Returns:]an Evas\_\-Image\_\-Object, or NULL for failure \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]- the evas to add the object to if the load succeeds \item[{\em file}]- the name of the image file on disk (\char`\"{}/home/me/foo.png\char`\"{})\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a24}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_find_cached@{evidence\_\-thumb\_\-find\_\-cached}}
+\index{evidence_thumb_find_cached@{evidence\_\-thumb\_\-find\_\-cached}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-find\_\-cached]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ evidence\_\-thumb\_\-find\_\-cached (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a24}
+
+
+find thumbnail in any of the cache-dirs. 
+
+only used from \hyperlink{thumbnailer_2thumbnail_8c_a26}{evidence\_\-thumb\_\-read\_\-file\_\-attributes()} \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- struct describing the thumbnail to look for\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a22}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_free@{evidence\_\-thumb\_\-free}}
+\index{evidence_thumb_free@{evidence\_\-thumb\_\-free}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-free]{\setlength{\rightskip}{0pt plus 5cm}static void evidence\_\-thumb\_\-free (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a22}
+
+
+free an Evidence\_\-Thumb. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the Evidence\_\-Thumb we want to free\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a21}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_free_attributes@{evidence\_\-thumb\_\-free\_\-attributes}}
+\index{evidence_thumb_free_attributes@{evidence\_\-thumb\_\-free\_\-attributes}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-free\_\-attributes]{\setlength{\rightskip}{0pt plus 5cm}static void evidence\_\-thumb\_\-free\_\-attributes (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a21}
+
+
+free the attributes of an Evidence\_\-Thumb. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the Evidence\_\-Thumb we want to free\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a18}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_get_tmpname@{evidence\_\-thumb\_\-get\_\-tmpname}}
+\index{evidence_thumb_get_tmpname@{evidence\_\-thumb\_\-get\_\-tmpname}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-get\_\-tmpname]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ evidence\_\-thumb\_\-get\_\-tmpname (const char $\ast$ {\em file}, const char $\ast$ {\em ext})}}
+\label{thumbnailer_2thumbnail_8c_a18}
+
+
+make a temporary file-name. 
+
+\begin{Desc}
+\item[Returns:]a newly-allocated buffer \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file}]- the file to make a temporary name for \item[{\em ext}]- the extension to give the temporary file\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a20}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_hash_name@{evidence\_\-thumb\_\-hash\_\-name}}
+\index{evidence_thumb_hash_name@{evidence\_\-thumb\_\-hash\_\-name}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-hash\_\-name]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-hash\_\-name (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a20}
+
+
+get the thumbnail name (hash) on disk. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the evidence thumb we're hashing\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a30}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_imlib_standardize@{evidence\_\-thumb\_\-imlib\_\-standardize}}
+\index{evidence_thumb_imlib_standardize@{evidence\_\-thumb\_\-imlib\_\-standardize}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-imlib\_\-standardize]{\setlength{\rightskip}{0pt plus 5cm}Imlib\_\-Image evidence\_\-thumb\_\-imlib\_\-standardize (Evidence\_\-Thumb $\ast$ {\em e})}}
+\label{thumbnailer_2thumbnail_8c_a30}
+
+
+resize thumbnail to standard-size (using Imlib2). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the thumbnail descriptor\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a23}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_new@{evidence\_\-thumb\_\-new}}
+\index{evidence_thumb_new@{evidence\_\-thumb\_\-new}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-new]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-new (Evidence\_\-Thumb $\ast$$\ast$ {\em thumb}, void $\ast$ {\em t}, const char $\ast$ {\em file}, const char $\ast$ {\em mime})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a23}
+
+
+Allocate a new Evas\_\-Thumb, setting up everything. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em thumb}]- where the address of the newly-allocated buffer is stored \item[{\em t}]- the noir theme, used in icon size calculation and more! \item[{\em file}]- the file on disk we want to make a thumbnail of \item[{\em mime}]- the MIME-type of 'file'\end{description}
+\end{Desc}
+called from \hyperlink{thumbnailer_2thumbnail_8c_a42}{thumbnail\_\-enqueue\_\-do()} only.\hypertarget{thumbnailer_2thumbnail_8c_a25}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_open_png@{evidence\_\-thumb\_\-open\_\-png}}
+\index{evidence_thumb_open_png@{evidence\_\-thumb\_\-open\_\-png}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-open\_\-png]{\setlength{\rightskip}{0pt plus 5cm}static FILE$\ast$ evidence\_\-thumb\_\-open\_\-png (char $\ast$ {\em filename})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a25}
+
+
+Open a PNG-image. 
+
+\begin{Desc}
+\item[Returns:]file-handle only if file exists and is PNG \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em filename}]- the file to open\end{description}
+\end{Desc}
+used by \hyperlink{thumbnailer_2thumbnail_8c_a26}{evidence\_\-thumb\_\-read\_\-file\_\-attributes()} only \hypertarget{thumbnailer_2thumbnail_8c_a26}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_read_file_attributes@{evidence\_\-thumb\_\-read\_\-file\_\-attributes}}
+\index{evidence_thumb_read_file_attributes@{evidence\_\-thumb\_\-read\_\-file\_\-attributes}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-read\_\-file\_\-attributes]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-read\_\-file\_\-attributes (Evidence\_\-Thumb $\ast$ {\em e}, int {\em f})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a26}
+
+
+read the attributes of an e\-PEG or PNG thumbnail. 
+
+\begin{Desc}
+\item[Returns:]if NOIR\_\-SUCC, the attributes were set on the thumbnail-descriptor \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the thumbnail desciptor \item[{\em f}]- force reading even on fail-infos\end{description}
+\end{Desc}
+used in \hyperlink{thumbnailer_2thumbnail_8c_a42}{thumbnail\_\-enqueue\_\-do()} and \hyperlink{thumbnailer_2thumbnail_8c_a48}{thumbnail\_\-disk\_\-gc()}.\hypertarget{thumbnailer_2thumbnail_8c_a28}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_save_png@{evidence\_\-thumb\_\-save\_\-png}}
+\index{evidence_thumb_save_png@{evidence\_\-thumb\_\-save\_\-png}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-save\_\-png]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-save\_\-png (Evidence\_\-Thumb $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a28}
+
+
+save thumbnail(s) for a file. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the thumbnail descriptor\end{description}
+\end{Desc}
+wrapper for \hyperlink{thumbnailer_2thumbnail_8c_a27}{evidence\_\-thumb\_\-write\_\-png()}.\hypertarget{thumbnailer_2thumbnail_8c_a27}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumb_write_png@{evidence\_\-thumb\_\-write\_\-png}}
+\index{evidence_thumb_write_png@{evidence\_\-thumb\_\-write\_\-png}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumb\_\-write\_\-png]{\setlength{\rightskip}{0pt plus 5cm}static int evidence\_\-thumb\_\-write\_\-png (char $\ast$ {\em file}, Evidence\_\-Thumb $\ast$ {\em e}, const char $\ast$ {\em software})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a27}
+
+
+write thumbnail (from e-$>$data) to a PNG image. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em file}]- the name for the image-file \item[{\em e}]- the thumbnail descriptor; e-$>$data must point to the thumbnail's image-data \item[{\em software}]- who generated the thumbnail\end{description}
+\end{Desc}
+used in \hyperlink{thumbnailer_2thumbnail_8c_a28}{evidence\_\-thumb\_\-save\_\-png()} only.\hypertarget{thumbnailer_2thumbnail_8c_a19}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!evidence_thumbnail_path@{evidence\_\-thumbnail\_\-path}}
+\index{evidence_thumbnail_path@{evidence\_\-thumbnail\_\-path}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[evidence\_\-thumbnail\_\-path]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ evidence\_\-thumbnail\_\-path (thumbnaildir {\em td}, const char $\ast$ {\em file}, const char $\ast$ {\em ext})}}
+\label{thumbnailer_2thumbnail_8c_a19}
+
+
+create path for a thumbnail. 
+
+\begin{Desc}
+\item[Returns:]the desired path, or NULL for failure \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em td}]- the directory the thumbnail will reside in \item[{\em file}]- the name for the thumbnail (a hash), or NULL \item[{\em ext}]- the extension for the thumbnail, or NULL\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a50}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_attribute_add@{thumbnail\_\-attribute\_\-add}}
+\index{thumbnail_attribute_add@{thumbnail\_\-attribute\_\-add}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-attribute\_\-add]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-attribute\_\-add (Evidence\_\-Thumb $\ast$ {\em e}, const char $\ast$ {\em key\_\-}, const char $\ast$ {\em val\_\-})}}
+\label{thumbnailer_2thumbnail_8c_a50}
+
+
+add an attribute to a thumbnail 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the thumbnail \item[{\em key\_\-}]the name of the attribute \item[{\em val\_\-}]the contents of the attribute\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a47}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_disk_gc_one@{thumbnail\_\-disk\_\-gc\_\-one}}
+\index{thumbnail_disk_gc_one@{thumbnail\_\-disk\_\-gc\_\-one}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-disk\_\-gc\_\-one]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-disk\_\-gc\_\-one (const char $\ast$ {\em tag})}}
+\label{thumbnailer_2thumbnail_8c_a47}
+
+
+delete all the thumbnails for the given source file. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tag}]the source-file\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a49}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_disk_op@{thumbnail\_\-disk\_\-op}}
+\index{thumbnail_disk_op@{thumbnail\_\-disk\_\-op}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-disk\_\-op]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-disk\_\-op (noir\_\-job\_\-type {\em t}, const char $\ast$ {\em src}, const char $\ast$ {\em dst})}}
+\label{thumbnailer_2thumbnail_8c_a49}
+
+
+react to a disk-op (copy, move (re-tag), delete thumbnail) 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the action-type \item[{\em src}]the source-file, or file to be deleted \item[{\em dst}]the destination file, or NULL\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a52}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_enqueue@{thumbnail\_\-enqueue}}
+\index{thumbnail_enqueue@{thumbnail\_\-enqueue}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-enqueue]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-enqueue (\hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})}}
+\label{thumbnailer_2thumbnail_8c_a52}
+
+
+enqueue a file for thumbnail-creation, if its format is supported. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fi}]- file\_\-info for the item we want a thumbnail for \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]If we don't know how to thumbnail a file of the given type, NOIR\_\-TYPEMISMATCH is returned. If THUMBNAIL\_\-IMAGES\_\-SMALLER\_\-THAN is set to a non-zero value and the original file's size exceeds that value, NOIR\_\-IGNORED is returned. If an error occurs, NOIR\_\-FAIL is returned. Otherwise, the response of \hyperlink{thumbnailer_2thumbnail_8c_a42}{thumbnail\_\-enqueue\_\-do()} is returned.\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a42}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_enqueue_do@{thumbnail\_\-enqueue\_\-do}}
+\index{thumbnail_enqueue_do@{thumbnail\_\-enqueue\_\-do}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-enqueue\_\-do]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-enqueue\_\-do (void $\ast$ {\em t}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, thumbnail\_\-plugin $\ast$ {\em tp})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a42}
+
+
+fetches or creates a new thumbnail. 
+
+\begin{Desc}
+\item[Returns:]If an up-to-date thumbnail is found, NOIR\_\-SUCC is returned and fi-$>$thumbfile holds the name of that thumbnail. Otherwise, NOIR\_\-PARTIAL is returned and the thumbnail is enqueued for generation. If an error occurs, fi-$>$thumbfile is NULL and an error-code is returned. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]- current theme \item[{\em fi}]- current file \item[{\em tp}]- what plugin to use to thumbnail this item\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a14}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_failinfo_save@{thumbnail\_\-failinfo\_\-save}}
+\index{thumbnail_failinfo_save@{thumbnail\_\-failinfo\_\-save}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-failinfo\_\-save]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-failinfo\_\-save (const char $\ast$ {\em fail}, const char $\ast$ {\em software}, char $\ast$$\ast$ {\em path})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a14}
+
+
+create an application-specific thumbnail-failure entry in thumbnail cache 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fail}]the item we failed on \item[{\em software}]a comment to save in the failure entry (e.g. the plugin that failed), or NULL \item[{\em path}]where to store the path to the newly-written item, or NULL\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a44}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_find_for@{thumbnail\_\-find\_\-for}}
+\index{thumbnail_find_for@{thumbnail\_\-find\_\-for}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-find\_\-for]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-find\_\-for (const char $\ast$ {\em tag}, char $\ast$$\ast$ {\em path})}}
+\label{thumbnailer_2thumbnail_8c_a44}
+
+
+find a thumbnail for a given file, if one exists 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC for thumbnail found, NOIR\_\-PARTIAL for \char`\"{}can't thumbnail this item\char`\"{}, or another error-code for \char`\"{}this should never happen\char`\"{} \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tag}]the item for which we want a thumbnail \item[{\em path}]where to store the path to the thumbnail (if any), NULL for don't\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a43}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_init@{thumbnail\_\-init}}
+\index{thumbnail_init@{thumbnail\_\-init}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-init (const char $\ast$ {\em setup})}}
+\label{thumbnailer_2thumbnail_8c_a43}
+
+
+creates the directories we need for thumbnailing. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em setup}]the directory containing the setup\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a46}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_lib_gc@{thumbnail\_\-lib\_\-gc}}
+\index{thumbnail_lib_gc@{thumbnail\_\-lib\_\-gc}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-lib\_\-gc]{\setlength{\rightskip}{0pt plus 5cm}int thumbnail\_\-lib\_\-gc (void)}}
+\label{thumbnailer_2thumbnail_8c_a46}
+
+
+garbage-collect plugins 
+
+\begin{Desc}
+\item[Returns:]an error-code\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a16}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_num_listener@{thumbnail\_\-num\_\-listener}}
+\index{thumbnail_num_listener@{thumbnail\_\-num\_\-listener}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a16}
+
+
+listener for numeric properties 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em e}]the property \item[{\em tag}]the numeric tag of the property \item[{\em data}]the icon-list\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a17}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnail_str_listener@{thumbnail\_\-str\_\-listener}}
+\index{thumbnail_str_listener@{thumbnail\_\-str\_\-listener}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnail\_\-str\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnail\_\-str\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a17}
+
+
+listener for string properties 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em e}]the property \item[{\em tag}]the numeric tag of the property \item[{\em data}]the icon-list\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a32}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_cxl@{thumbnailer\_\-cxl}}
+\index{thumbnailer_cxl@{thumbnailer\_\-cxl}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-cxl]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnailer\_\-cxl (Evidence\_\-Thumbnailer $\ast$ {\em t})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a32}
+
+
+stop a thumbnailer 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the thumbnailer to stop\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a36}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_dequeue@{thumbnailer\_\-dequeue}}
+\index{thumbnailer_dequeue@{thumbnailer\_\-dequeue}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-dequeue]{\setlength{\rightskip}{0pt plus 5cm}Evidence\_\-Thumb$\ast$ thumbnailer\_\-dequeue (Evidence\_\-Thumbnailer $\ast$ {\em t})}}
+\label{thumbnailer_2thumbnail_8c_a36}
+
+
+pop an item from the Q for a given thumbnailer 
+
+\begin{Desc}
+\item[Returns:]the tail item from the Q \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em the}]thumbnailer\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a34}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_dst@{thumbnailer\_\-dst}}
+\index{thumbnailer_dst@{thumbnailer\_\-dst}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}Evidence\_\-Thumbnailer$\ast$ thumbnailer\_\-dst (Evidence\_\-Thumbnailer $\ast$ {\em t})}}
+\label{thumbnailer_2thumbnail_8c_a34}
+
+
+destroy a thumbnailer (thread, struct, Q) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the thumbnailer\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a35}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_enqueue@{thumbnailer\_\-enqueue}}
+\index{thumbnailer_enqueue@{thumbnailer\_\-enqueue}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-enqueue]{\setlength{\rightskip}{0pt plus 5cm}int thumbnailer\_\-enqueue (Evidence\_\-Thumbnailer $\ast$ {\em t}, Evidence\_\-Thumb $\ast$ {\em thumb})}}
+\label{thumbnailer_2thumbnail_8c_a35}
+
+
+enqueue an item to be thumbnailed 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the thumbnailer to use \item[{\em thumb}]the item to thumbnail\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a33}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_gc@{thumbnailer\_\-gc}}
+\index{thumbnailer_gc@{thumbnailer\_\-gc}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-gc]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnailer\_\-gc (Evidence\_\-Thumbnailer $\ast$ {\em t})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a33}
+
+
+check whether a given thumbnailer has timed out. 
+
+if so, cancel it. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the thumbnailer to check\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a37}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_generate@{thumbnailer\_\-generate}}
+\index{thumbnailer_generate@{thumbnailer\_\-generate}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-generate]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnailer\_\-generate (Evidence\_\-Thumb $\ast$ {\em thumb})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a37}
+
+
+creates a new thumbnail (using a plugin, e\-PEG or Imlib2 or whatver). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em thumb}]- the thumbnail descriptor \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC for success, or NOIR\_\-NOTSUPP if the format can not be thumbnailed.\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a40}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_generator@{thumbnailer\_\-generator}}
+\index{thumbnailer_generator@{thumbnailer\_\-generator}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-generator]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ thumbnailer\_\-generator (void $\ast$ {\em q})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a40}
+
+
+the thumbnailing thread. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em q}]- the queue of items to create thumbnails for\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a31}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_new@{thumbnailer\_\-new}}
+\index{thumbnailer_new@{thumbnailer\_\-new}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-new]{\setlength{\rightskip}{0pt plus 5cm}Evidence\_\-Thumbnailer$\ast$ thumbnailer\_\-new (void)}}
+\label{thumbnailer_2thumbnail_8c_a31}
+
+
+create a new thumbnailer-struct 
+
+\begin{Desc}
+\item[Returns:]a new initialized struct\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a41}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_pending@{thumbnailer\_\-pending}}
+\index{thumbnailer_pending@{thumbnailer\_\-pending}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-pending]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__file__info}{file\_\-info}$\ast$ thumbnailer\_\-pending (void)}}
+\label{thumbnailer_2thumbnail_8c_a41}
+
+
+if any new thumbnails have arrived, dequeue the top one from the ready-Q, add the thumbfile to the file-info instance, and return fi to model. 
+
+called by the model to poll for new thumbnails. \begin{Desc}
+\item[Returns:]the file-info struct that now has a thumbnail\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a39}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_protected_generate@{thumbnailer\_\-protected\_\-generate}}
+\index{thumbnailer_protected_generate@{thumbnailer\_\-protected\_\-generate}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-protected\_\-generate]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnailer\_\-protected\_\-generate (Evidence\_\-Thumbnailer $\ast$ {\em t}, Evidence\_\-Thumb $\ast$ {\em thumb})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a39}
+
+
+execute thumbnailer in separate task so it won't take down evidence if it crashes. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the thumbnailer \item[{\em thumb}]the thumbnail struct to create a thumbnail file for\end{description}
+\end{Desc}
+\hypertarget{thumbnailer_2thumbnail_8c_a15}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!thumbnailer_start@{thumbnailer\_\-start}}
+\index{thumbnailer_start@{thumbnailer\_\-start}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[thumbnailer\_\-start]{\setlength{\rightskip}{0pt plus 5cm}static int thumbnailer\_\-start (Evidence\_\-Thumbnailer $\ast$ {\em t})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{thumbnailer_2thumbnail_8c_a15}
+
+
+start thumbnailing thread (unless already running). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]- instance to start\end{description}
+\end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{thumbnailer_2thumbnail_8c_a6}{
+\index{thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}!imlib_mutex@{imlib\_\-mutex}}
+\index{imlib_mutex@{imlib\_\-mutex}!thumbnailer/thumbnail.c@{thumbnailer/thumbnail.c}}
+\subsubsection[imlib\_\-mutex]{\setlength{\rightskip}{0pt plus 5cm}pthread\_\-mutex\_\-t \hyperlink{thumbnailer_2thumbnail_8c_a6}{imlib\_\-mutex}}}
+\label{thumbnailer_2thumbnail_8c_a6}
+
+
+frontend and backend shouldn't use imlib2 at the same time, it's not threadsafe. 
+
+we will always have the mutex, even if evidence proper is not compiled with imlib2 support. 

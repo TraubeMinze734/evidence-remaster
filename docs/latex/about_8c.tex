@@ -1,0 +1,49 @@
+\hypertarget{about_8c}{
+\section{about.c File Reference}
+\label{about_8c}\index{about.c@{about.c}}
+}
+the \char`\"{}about\char`\"{} (or credits-) tab. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static gboolean \hyperlink{about_8c_a0}{win\_\-clicked} (Gtk\-Widget $\ast$widget, Gdk\-Event\-Button $\ast$ev, gpointer data)
+\begin{CompactList}\small\item\em fallback callback for mouse-clicks that no better handler exists for. \item\end{CompactList}\item 
+Gtk\-Widget $\ast$ \hyperlink{about_8c_a1}{about\_\-init} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, char $\ast$about)
+\begin{CompactList}\small\item\em create \char`\"{}about\char`\"{} page in GTK note-book \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+the \char`\"{}about\char`\"{} (or credits-) tab. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{about_8c_a1}{
+\index{about.c@{about.c}!about_init@{about\_\-init}}
+\index{about_init@{about\_\-init}!about.c@{about.c}}
+\subsubsection[about\_\-init]{\setlength{\rightskip}{0pt plus 5cm}Gtk\-Widget$\ast$ about\_\-init (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, char $\ast$ {\em about})}}
+\label{about_8c_a1}
+
+
+create \char`\"{}about\char`\"{} page in GTK note-book 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session \item[{\em about}]- path and name of an image representing the current theme, or NULL\end{description}
+\end{Desc}
+\hypertarget{about_8c_a0}{
+\index{about.c@{about.c}!win_clicked@{win\_\-clicked}}
+\index{win_clicked@{win\_\-clicked}!about.c@{about.c}}
+\subsubsection[win\_\-clicked]{\setlength{\rightskip}{0pt plus 5cm}static gboolean win\_\-clicked (Gtk\-Widget $\ast$ {\em widget}, Gdk\-Event\-Button $\ast$ {\em ev}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{about_8c_a0}
+
+
+fallback callback for mouse-clicks that no better handler exists for. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]- the widget that received the event \item[{\em ev}]- the actual event \item[{\em data}]- the session\end{description}
+\end{Desc}

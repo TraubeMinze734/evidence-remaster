@@ -1,0 +1,123 @@
+.TH "ipc_dcop.cpp" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ipc_dcop.cpp \- DCOP IPC module for evidence. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "QCStringList \fBc2QCStringList\fP (char *i)"
+.br
+.RI "\fIconvert 
+.br
+ separated lines into a QCStringList \fP"
+.ti -1c
+.RI "QString \fBc2QString\fP (char *i)"
+.br
+.RI "\fIwrap a C-string in a QString \fP"
+.ti -1c
+.RI "int \fBipc_module_init\fP (void **data)"
+.br
+.RI "\fIinitialize DCOP IPC module \fP"
+.ti -1c
+.RI "int \fBipc_module_exit\fP (void **data)"
+.br
+.RI "\fIdeinitialize DBUS IPC (destall handlers, drop connection, release resources) \fP"
+.ti -1c
+.RI "int \fBipc_module_poll\fP (void **data)"
+.br
+.RI "\fIcheck for messages from DCOP \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+DCOP IPC module for evidence. 
+
+by Azundris
+.SH "Function Documentation"
+.PP 
+.SS "QCStringList c2QCStringList (char * i)"
+.PP
+convert 
+.br
+ separated lines into a QCStringList 
+.PP
+\fBReturns:\fP
+.RS 4
+a QCStringList 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP 
+.br
+ separated lines
+.RE
+.PP
+
+.SS "QString c2QString (char * i)"
+.PP
+wrap a C-string in a QString 
+.PP
+\fBReturns:\fP
+.RS 4
+a QString 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP a C-string to wrap and free()
+.RE
+.PP
+
+.SS "int ipc_module_exit (void ** data)"
+.PP
+deinitialize DBUS IPC (destall handlers, drop connection, release resources) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the connection to throw out
+.RE
+.PP
+
+.SS "int ipc_module_init (void ** data)"
+.PP
+initialize DCOP IPC module 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP where to store our connection handle
+.RE
+.PP
+
+.SS "int ipc_module_poll (void ** data)"
+.PP
+check for messages from DCOP 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the connection
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,30 @@
+\hypertarget{struct__q__head}{
+\section{\_\-q\_\-head Struct Reference}
+\label{struct__q__head}\index{_q_head@{\_\-q\_\-head}}
+}
+a queue  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__q__head_o0}{
+pthread\_\-mutex\_\-t \hyperlink{struct__q__head_o0}{qchg}}
+\label{struct__q__head_o0}
+
+\begin{CompactList}\small\item\em mutex - frontend and backend shouldn't modify the Q at the same time \item\end{CompactList}\item 
+\hypertarget{struct__q__head_o1}{
+\hyperlink{model_8h_a148}{queue\_\-flags} \hyperlink{struct__q__head_o1}{flags}}
+\label{struct__q__head_o1}
+
+\begin{CompactList}\small\item\em busy/idle/dead etc. \item\end{CompactList}\item 
+\hypertarget{struct__q__head_o2}{
+pthread\_\-t \hyperlink{struct__q__head_o2}{scanner}}
+\label{struct__q__head_o2}
+
+\begin{CompactList}\small\item\em the worker-thread associated with this queue \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+a queue 
+

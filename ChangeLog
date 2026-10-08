@@ -1,0 +1,2319 @@
+2005/07/28  Azundris                                 <evidence@azundris.com>
+
+* gevas_light: adjusted to match evas-API a/o 07/2005
+
+2005/06/26  Azundris                                 <evidence@azundris.com>
+
+* locale: use LC_ALL, LC_CTYPE, LANG (in this order of preference)
+          (r/b Stella Korakaki)
+
+2005/06/20  KainX                                       <evidence@eterm.org>
+
+* everywhere: .cvsignore files much needed.
+* build: Fixed spec to not require things that aren't built in and for
+         compatibility with rpm 4.4.
+
+2005/05/05  Azundris                                 <evidence@azundris.com>
+
+* backends: POSIX backend can write EAs now (but editing anything but text
+            is not a great idea!)
+* backends: POSIX backend displays EAs now even if no extended ACL is present
+
+2005/02/09  Azundris                                 <evidence@azundris.com>
+
+* icon-view: scrolling using the mouse-wheel would sometimes switch views
+             (r/b catalyst & mekius; fixed with mucho help from underdog)
+
+2005/02/07  Azundris                                 <evidence@azundris.com>
+
+* file-ops: operations with the .folder could be misleading; will
+            expand folder to its contents now for enhanced clarity --
+            there should be as little room for misunderstandings as
+            possible when files are on the line!!  (suggested by noDLL)
+
+            *** UPDATE STRONGLY SUGGESTED! ***
+
+2005/02/03  Azundris                                 <evidence@azundris.com>
+
+* thumbnailers: thumbnailers time out now, will no longer get stuck
+* providers: taglib provider added, reads/write MP3/ID3, Ogg-Vorbis, and more
+             allegedly faster than libvorbisfile, id3lib etc.
+             change "evidence.providers" to use this.
+             not used in MP3/ID3 *thumbnailing* (as opposed to meta-data) yet.
+
+2005/01/01  Azundris                                 <evidence@azundris.com>
+
+* playlist: will not include playlists in playlists
+* APE, Vorbis, MP3: better sort-keys ("Artist - Title" i/o "Title")
+* tag2name: - better support for APE
+            - new property "tag-to-name-mask"; describes the format for the
+              new file-name, printf-style, as per the grip program:
+              %a  artist
+              %n  name  (track-title)
+              %d  disc  (album-title)
+              %G  genre
+              %X  extension (the extension of the original file, "mp3", "ogg",
+                             or whatever)
+              %y  year  (4-digit Gregorian year)
+              %t  track-number (2-digit track-number on album)
+              %%  literal %
+              %[  literal [
+              %]  literal ]
+              [x] only include x if it actually expands to anything.
+                  For instance, the default-mask "[%t-]%a - %n.%X" will render
+                  "06-Le Tigre - TKO.ogg" if the tag contains a track-number,
+                  or "Le Tigre - TKO.ogg" if it does not -- no leading hyphen
+                  will be generated.  Nested [] are not guaranteed to work at
+                  this point.
+
+              Example:  [%t-]%a - %n ([%y's ]%G[ from "%d"]) %[keks%%dose%].%X
+                        06-Le Tigre - TKO (2004's electro-clash from "This
+                        Island") [keks%dose].ogg
+
+              [%t-]     track-number and dash, if track-number is available
+              %a - %n ( artist, space, dash, space, name, space, parenthese
+              [%y's ]   year-apostrophe-space, if year is available
+              %G        genre
+              [ from    " from "-
+	        "%d"]   album, if album is available
+              ) %[keks  ) [keks
+	      %%dose%]  %dose]
+              .%X       dot, original file-extension
+
+* Happy new year!
+
+2004/11/06  Azundris                                 <evidence@azundris.com>
+
+* typebuffer:  tab-completion for global as well as theme-local properties
+* typebuffer:  querying and setting global as well as theme-local properties
+* thumbnailer: new global property "thumbnail-protected-mode" (if prot-mode
+               is available, anyway) -- if 0, thumbnail in-process (for creepy)
+
+2004/11/30  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: additional smartness -- plugins are loaded on demand (and
+               garbage-collected) for faster startup and a much-improved
+               memory footprint!
+
+2004/11/28  Azundris                                 <evidence@azundris.com>
+
+* iconview: edjes!  Just say the word: evidence -T OtE
+
+    With edjes that send a lot of (timer-/animation-) signals, you will notice
+    a certain (CPU-) load.  This is believed to decrease noticably once we drop
+    GTK2.  The edje plugin is provided "early" in the hopes that it may
+    facilitate theming; load created by themes can only get lighter in future
+    versions.
+
+  The example "OtE" edje (which contains the expidition clock) is an example
+  of such a "noticable load" edje.
+
+2004/11/27  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: thumbnailers run in a separate task now by default.  this way
+               if one of those nasty 3rd party libs decides to crash, it won't
+               take my beautiful file-manager with it.
+* treeview: Yeah!  TreeView's back!  Even seems to work this time, monitors
+            and all.  Thank G-d for that!
+
+2004/11/20  Azundris                                 <evidence@azundris.com>
+
+* setup: supports ETC_HOME now.
+* typebuffer: /u/s/a/e expands to /usr/src/app/evidence (et al.), same
+              as /u*/s*/a*/e*.  if there are several matches, the first form
+              offers the first match -- further matches can be requested by
+              pressing tab --, while the second form appends all matches to
+              the contents of the typebuffer.
+
+2004/11/11  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: ^R works in typebuffer (as per shell)
+              press ^R in typebuffer.  if the typebuffer isn't empty, the
+              first entry in the history that contains the substring currently
+              in the typebuffer will be displayed.  if it's not the match you
+              were looking for, press ^R for the next matching history entry,
+              or simply type more letters.  these letters will be appended to
+              the end of the original search-term, not the end of the displayed
+              match, then the first match for resulting string will be shown.
+              note that consequently, you may press ^R in an empty typebuffer
+              and only then start entering a search-term, or press ^R in
+              typebuffer already containing a (partial?) search-term.
+* typebuffer: PageUp/PageDown scroll through typebuffer history now
+
+2004/10/27  Azundris                                 <evidence@azundris.com>
+
+* REFACTORING: the "selections" code that is used for context-menu plugins
+               is now also used for
+               - a session's selection (files chosen by user)
+               - pre-selected items (command-line, --select)
+               - directories to open (command-line)
+               selections are converted to string-form at the last possible
+               moment, and only when the need arises (basically, data leaves
+               ev -- primary selection, clipboard, sometimes drag'n'drop).
+               this will make ev more robust regarding pathological cases
+               (files with line-breaks (\n) in their names etc.).  it also
+               simplifies the code no end.  However!  This is a(nother) major
+               change that touches a lot of subsystems, so TESTERS please pay
+               extra attention whether "selectiony things" still work: do items
+               you click on get selected properly?  Does drag'n'drop still
+               work?  When you make or change a selection in one view, does
+               it also change in the other views?  Do you have the stuff you
+               expected in the context-menu?  As always, THANKS FOR YOUR HELP!
+
+2004/10/20  Azundris                                 <evidence@azundris.com>
+
+* SAFE TO CHECK OUT AGAIN, THANK YOU FOR YOUR PATIENCE!
+* file: "copying/moving on top of self, please give new name" dial works again
+* file: remove ugly spin in GUI-update of jobs
+* icon-engine: "nautilus" now has new property, "icon-font-size-minimum"
+               (requested by DarkSpecter)
+* thumbnails: avifile-thumbnailer temporarily didn't compile
+              (reported by vual)
+
+2004/10/14  creepy
+
+* Azundris is off until next wednesday, please hold your fire errm checkouts
+  until The Mighty is back. Thank you for your interest in evidence!
+
+2004/10/06  Azundris                                 <evidence@azundris.com>
+
+* themes/engine: adapted to new font-sizes (as per evas-cvs, see there)
+
+2004/09/30  Azundris                                 <evidence@azundris.com>
+
+* jobs: more detailed progress-indicator in copy/move/delete jobs.
+
+2004/09/28  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: xine-thumbnailer writes fail-info now
+
+2004/09/27  Azundris                                 <evidence@azundris.com>
+
+* icons: "indigo_128" icon-set added.  (indigo_64 generated for now.)
+
+2004/09/26  Azundris                                 <evidence@azundris.com>
+
+* iconview: edje background plugin now handles edje animations (like the
+            expedition clock).  bit kludgy, but it will do until we've dropped
+            the GTK.
+
+2004/09/24  Azundris                                 <evidence@azundris.com>
+
+* icons: now uses the first of the following to exist to indicate the current
+         user's $HOME:
+         - icon set specifically for that dir in icon-theme
+         - ~/.gnome2/photo
+         - ~/.gnome/photo
+         - ~/.gnome/photo
+         - gnome-who.png
+         - icon set for "/home" in icon-theme
+         - icon set for "folder" in icon-theme
+* tooltip: diagram tooltip now checks whether there still is an icon to reset
+           on exit
+* properties: now checks whether the file is still there before applying
+
+2004/09/23  Azundris                                 <evidence@azundris.com>
+
+* thumbnails: correct (re-) generation in "all known corner-cases",
+              taking into account evas- and imlib2-caches, on-disk thumbnail
+              cache, items appearing, disapping and changing, where changing
+              includes changes to zero-length.
+              NB  For this to work correctly in all cases, you'll need today's
+                  evas or better.
+
+2004/09/23  Azundris                                 <evidence@azundris.com>
+
+* search: builds with current doodle 0.4.0 (reported by creepy)
+
+2004/09/16  Azundris                                 <evidence@azundris.com>
+
+* mp3: fixed potential crash MP3/ID3 provider
+* themes: better compatibility with examine.  examine is a GUI configuration
+          tool for enlightened applications. it lives in the e17/EFL-repository
+          (e17/apps/examine) and requires the eCore-library.  it also comes
+          with a command-line configurator, exsh, which implements that subset
+          of evsh's commands that works across enlightened applications.
+
+            evidence &
+            examine evidence &
+
+          properties keep separators now ("icon-label-font-size") to facilitate
+          better layout in examine (which just so happens to work with
+          evidence again).  while the separators are visible "externally" (in
+          the typebuffer, in the theme-files, ...), all matching will be done
+          without them (meaning "u-f-o", "ufo" and "uf_o" are all folded into
+          the same property), lending the mechanism a certain robustness.
+
+2004/09/09  Azundris                                 <evidence@azundris.com>
+
+* icon-view: ("nautilus" icon-factory) normally, if we need extra-shrinkage
+             for the label to satisfy the constraints of the grid, we'd reset
+             the text-size to the original size here.  more specifically, we'd
+             reset to the user-defined text-size adjusted for number of lines.
+             however, as the last line is often the shortest (remaining
+             letters), this leads to shrinkage for all lines but the last,
+             which looks really weird.  hence, once we're forced to extra-
+             shrink for the label, we'll stick with the smaller size.  sounds
+             wonky, but does the right thing(TM).  (reported by Fletch)
+
+* icon-view: if compiled with PCRE, type-to-find matches regular expressions
+             or globs (default) now
+* icon-view: type-to-find highlights all matches now rather than the first one
+             only (requested by raster)
+             Control-Space toggles select-status of all matches
+* POSIX-backend: if ev was configured/built with libcurl and libcurl is present
+                 at run-time, the POSIX backend now accepts any URL curl can
+                 handle as the source for a "copy" operation.
+                 In real terms this means that you can copy images and stuff
+                 from the web now by dragging them from the web-browser to the
+                 file-browser.
+                 This isn't orthogonal yet and hence, not the Right Thing.
+                 It also doesn't have a fancy progress indicator yet.
+* XDND: handle konquie- and netscape/moz-style URLs correctly
+        ("_NETSCAPE_URL" and "text/uri-list")
+
+2004/08/29  Azundris                                 <evidence@azundris.com>
+
+* build: docs weren't included in dist : (   (reported by Erdferkel)
+
+2004/08/27  Azundris                                 <evidence@azundris.com>
+
+* browserview: last release broke browser-view : (
+
+2004/08/22  Azundris                                 <evidence@azundris.com>
+
+* views: display correctly for files that have UTF-8 names (as in, file-names
+         are in UTF-8 on-disk, rather than local encoding)
+* search: doodle now detected on debian
+* iconview: sort-by-name now correct
+
+2004/08/22  Azundris                                 <evidence@azundris.com>
+
+* build: various fixes, builds without a canvas again (no shelf, no iconview)
+         (reported by Lalufu)
+* search: a successful search will cd to the results dir
+
+2004/08/21  Azundris                                 <evidence@azundris.com>
+
+* textpath: right-clicking the text-path opens a context-menu containing all
+            operations for folders
+* textpath: middle-clicking the text-path opens a pop-up menu containing all
+            sub-directories contained in the clicked-on folder
+            (suggested by Lalufu)
+
+2004/08/20  Azundris                                 <evidence@azundris.com>
+
+* searches: searches added.  yay for me!  hooray for doodle.
+            to use, install libdoodle.  create a database like so:
+
+              doodle -b -d ~/.evidence/evidoodle -l libextractor_filename /
+
+            Now, you're set!  In evidence, you can now type things like
+
+              %my fancy keyword
+
+            Now, a new virtual folder /Searches will appear that contains
+            a sub-directory "my fancy keyword" that holds your search-results
+            (if any).  Since doodle uses the libextractor framework, you can't
+            just search for file-names, but for metadata as well. For instance,
+            you'll still find a wrongly-named MP3 if the data in the ID3 tag
+            are correct.
+
+            This is an experimental feature; it's under construction.
+            Expect the unexpected.
+
+* startup: possible fix for a crash that would sometimes occur on startup
+
+2004/08/19  Azundris                                 <evidence@azundris.com>
+
+* recent refactoring broke some plugins relying on the old API, please update!
+
+* run: fix for "unace" and friends
+* actions: set as backdrop -- tries to set an image as backdrop in icon-view
+           this will only work if the theme's backdrop-plugin supports the
+           format of the image.  (as in, the edb plugin will only accept edb-
+           files, the others should accept PNG and JPG files)
+           this achieves the same as setting the "iconview"-property from the
+           typebuffer.
+* actions: rename from sortkey -- will try to rename an item to its sortkey
+           (if it has one), keeping its path and extension.  this is useful
+           for normalizing font-names and the like; "/foo/DEB.TTF" might
+           become "/foo/Deborah Regular.ttf".
+           It is suggested you still use "rename from tag" for tagged
+           sound-files, as it does some extra magic specific to songs.
+
+2004/08/18  Azundris                                 <evidence@azundris.com>
+
+* desktop: forward mouse-click to desktop (by popular request)
+           when evidence handles a desktop, it can forward clicks to the
+           "original" background (to call up window-manager menus etc.)
+
+2004/08/13  Azundris                                 <evidence@azundris.com>
+
+* build: threw weird error-messages with old automake (1.4)
+         tested to build okay with automake 1.7 (by shaoid & RbdPngn)
+
+2004/08/02  Azundris                                 <evidence@azundris.com>
+
+* DND: can drop on extensions now.  for instance, dropping a file on the
+       textpath will copy it to that dir of the path that it was dropped on.
+       (same for moving, of course.)
+
+2004/08/02  Azundris                                 <evidence@azundris.com>
+
+* textpath: right click now opens new window for the clicked-on directory
+            (suggested (of sorts) by hobgoblin)
+
+2004/07/31  Azundris                                 <evidence@azundris.com>
+
+* tooltips: animated thumbnails for movies
+            kludgy prelim-version, doesn't work right with --enable-ecore (yet)
+
+2004/07/30  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: DragNDrop while xine-thumbnailing froze the GUI
+* monitors: F_NOTIFY monitors did not work eCore-IPC
+
+2004/07/13  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: towards "live" thumbnails
+
+2004/07/12  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: thumbnailing with libxine (for YV12)
+
+2004/07/11  Azundris                                 <evidence@azundris.com>
+
+* menus: per MIME-type sub-menus
+* thumbnails: failure of avi-thumbnailing no longer crashes ev
+
+2004/07/06  Azundris                                 <evidence@azundris.com>
+
+* providers: can have several providers per MIME-type now
+             (e.g. EXIF and Imlib2 for JPG)
+* setup: new file "mime.alii". translations may be set up here so evidence
+         knows that e.g. "image/jpg" and "image/jpeg" are the same.
+         this is useful for types that are "x-" prefixed, but because official
+         later on etc.  once an alias is in place, it is no longer necessary
+         to enumerate all forms in the other setup files (evidence.providers,
+         evidence.menu, ...) -- just use the canonical form. The first alias
+         in a list of alii is assumed to be the canonical form, so if the list
+         is image/x-dejavu image/x-djvu image/x.djvu image/djvu image/vnd.djvu,
+         evidence will translate any of the above to the first item in the
+         list, "image/x-dejavu".  end-users shouldn't need to edit this file;
+         it may however come in handy to look up MIME-types when writing a
+         context menu or somesuch ("so what's the type for dejavu?  always
+         first in the list, so 'image/x-dejavu'.").
+
+2004/07/06  Azundris                                 <evidence@azundris.com>
+
+* providers: EXIF metadata provider for creepy
+             (QND, but with no dependencies. read-only for now.)
+
+2004/06/23  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: extract and display images from ID3 tags
+
+2004/06/21  Azundris                                 <evidence@azundris.com>
+
+* themes: LCARS (by creepy) added
+* engines: LCARS-textpath added
+* properties: selection in ineditable fields allowed (requested by HandyAndE)
+
+2004/06/20  Azundris                                 <evidence@azundris.com>
+
+* emblems: nowrite by SethX (David Leonardi) added
+           (probably more intuitive than the "read-only" Eye of Horus)
+           used in "rephormed" (BlueMilk) icon-set now
+
+2004/06/19  Azundris                                 <evidence@azundris.com>
+
+* scrollbar: five new props for creepy: trough_alpha, bar_alpha,
+  trough_line_alpha, bar_line_alpha, trough_width
+
+2004/06/16  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: modular
+
+2004/06/11  Azundris                                 <evidence@azundris.com>
+
+* meta-data: pre-built plugins (in RPMs, debs, ...) against libraries
+             (libextractor, libid3, ...) that weren't on the target system
+             could cause problems (reported by Isotopp)
+
+2004/06/08  Azundris                                 <evidence@azundris.com>
+
+* file: file_fork() does things the right way, works with mplayer again;
+        file_system() cleaned up; file_run() still needs special attention
+* properties: show where the thumbnail lives
+* evas: OpenGL (-E gl_x11) no longer bombs (but isn't ready yet)
+* shelf: thumbnails work
+* shelf: loading and saving works(?)
+
+2004/06/06  Azundris                                 <evidence@azundris.com>
+
+* iconview: icon-grid (by popular request)
+            property "icon-list-grid":  0 - no grid
+                                       >0 - grid-width (pixels)
+                                       <0 - grid-width (multiples of the width
+                                                        of this theme's icons)
+
+* properties: fixes a problem with floats in non-anglo locales
+
+* tooltips: tooltips temporarily only showed JPG and PNG thumbnails, fixed
+
+2004/06/05  Azundris                                 <evidence@azundris.com>
+
+* annotations: evidence keeps an internal list of "special folders".
+               this can be used to mark folders "removable media"
+               (so we won't try to get a folder.jpg from them, amongst things),
+               rename them in the GUI ("/" => "My computer"), or add an
+               elaborate description for the tooltips
+
+2004/05/31  Azundris                                 <evidence@azundris.com>
+
+* thumbnails: AVI and MPEG movies
+
+* *** CLEANUP COMPLETED -- WE'RE BACK ONLINE!! ***
+
+2004/05/26  Azundris                                 <evidence@azundris.com>
+
+* *** MAJOR CLEANUP -- DO NOT CHECK THIS VERSION OUT, IT WON'T BUILD!! ***
+
+* providers: APE provider (for musepack .mpc files) added
+
+2004/05/18  Azundris                                 <evidence@azundris.com>
+
+* mp3/id3: ID3 tagging was too bloody slow!!
+
+2004/05/17  Azundris                                 <evidence@azundris.com>
+
+* actions: new action "make (m3u) playlist from selection"
+
+2004/05/15  Azundris                                 <evidence@azundris.com>
+
+* file_direct: better MIME-handler cascade (requested by creepy)
+               if file is of type "text/plain; charset=us-ascii", will look up
+               handlers in this order:
+               "text/plain; charset=us-ascii", "text/plain", "text/*", "*"
+
+2004/05/14  Azundris                                 <evidence@azundris.com>
+
+* 0.9.7-pre19
+
+* cp,mv,rm: failure in the backend will no longer lock the GUI
+            (feh, been wanting to fix this all week)
+
+2004/05/11  Azundris                                 <evidence@azundris.com>
+
+* mime.handlers: many more handlers by Pokey Templar!
+* mime.handlers: multi-word commands and templates allowed (r/b Pokey Templar)
+* mime.handlers: primitive variable substitution; TEXT=emacs; text/plain $TEXT
+
+2004/05/06  Azundris                                 <evidence@azundris.com>
+
+* thumbnails: expiry run caused Xlib error
+* evidence: all of ev's tmp-dirs are deleted on exit, not just the current one
+            (more or less requested by catalyst)
+
+2004/05/05  Azundris                                 <evidence@azundris.com>
+
+* alert: phased out bloody GTK bloody threads, just one GUI thread now.
+         this will also enable use to use evas-based progress indicators.
+
+2004/05/04  Azundris                                 <evidence@azundris.com>
+
+* iconview: clicks on icon were not recognized correctly for scaled thumbnails
+* startup: relative paths work again
+* model: sorting by meta-data. sortkey shown on icon. background meta-data scan
+
+2004/05/03  Azundris                                 <evidence@azundris.com>
+
+* model: experimental sorting by meta-data.
+
+2004/04/24  Azundris                                 <evidence@azundris.com>
+
+* file: visual feedback on progress of rm, cp, rm
+
+2004/04/23  Azundris                                 <evidence@azundris.com>
+
+* towards threaded GTK. report any weirdness with context-menus, cp, rm, mv!
+
+2004/04/21  Azundris                                 <evidence@azundris.com>
+
+* iconview: open-folder-animation, open-file-animation, open-app-animation
+            will actually change the animation when the property is modified
+
+2004/04/20  Azundris                                 <evidence@azundris.com>
+
+* monitors: fixed
+
+2004/04/19  Azundris                                 <evidence@azundris.com>
+
+* views: calling up actions using hotkeys more intuitive now.
+         when nothing is selected, nothing happens.
+         if multiple files are selected, this selection is used.
+         if a single icon was focused using the keyboard, this is used.
+         if there are both a selection and a focused icon, if the focused
+         icon is part of the selection, the selection will be used, otherwise,
+         only the focused icon will be used.
+         don't worry, this is a lot more intuitive than it sounds. : )
+* iconview: usability enhancements (suggested by creepy)
+* iconview: dragging an item which has a thumbnail now drags the actual
+            thumbnail rather than the generic MIME-icon
+            (suggested by fletch & creepy)
+* delete: shows remaining files (suggested by creepy)
+
+2004/04/18  Azundris                                 <evidence@azundris.com>
+
+* keys: ~ goes home (suggested by creepy)
+* keys: F2 opens rename dialog (cf. ^R, suggested by fletch)
+
+2004/04/03  Azundris                                 <evidence@azundris.com>
+
+* menu: chdir() to session's working-directory before firing a menu-action.
+        this will make certain things more intuitive (e.g. opening a terminal
+        from the menu will open it in the current directory etc.)
+
+* name2tag: would blow up when forcing tags on files that can't be tagged
+
+* There seems to be some breakage in current (late 5.3 - 6.0) versions
+  of gdb.  If evidence crashes in gdb, it bombs right out of the debugger
+  or as soon as you ask for a "bt" (backtrace).  This works fine in early
+  versions of gdb-5.3; later versions and gdb 6.0 seem to blow up on Linux.
+  gdb-6.0 also seems to crash when trying to debug itself ("gdb gdb"
+  in the gdb source-directory, or "gdb gdb", "(gdb) b internal_error").
+  If you can at all, use an earlier version of gdb until this issue is
+  resolved. : (
+
+* POSIX-backend: better detection for executables; come out type
+                 "application/x-executable" or "application/x-script" now
+
+2004/04/02  Azundris                                 <evidence@azundris.com>
+
+* browserview: when ev-window was all the way on the bottom of the screen
+               and a tooltip containing a thumbnail was called up, sometimes
+               the thumbnail-part would be located off-screen (r/b creepy)
+
+2004/04/02  Creepy
+
+* typebuffer: additional window title info
+
+2004/03/31  Azundris                                 <evidence@azundris.com>
+
+* iconview: XDS supported
+* credits: creepy and catalyst weren't on credits screen.
+           nobody ever tells me these things.
+
+2004/03/30  Azundris                                 <evidence@azundris.com>
+
+* iconview: clicking on transparent parts of icon no longer selects it
+            (need to click on icon, clicking in bounding box is not enough)
+* evsh:     "ls" erraneously called "info" instead
+* IPC:      get selection via IPC
+* iconview: sorting-keys exposed to context-menu
+* misc:     various fixes
+
+2004/03/28  Azundris                                 <evidence@azundris.com>
+
+* actions:  new action "set ID3-tag/Vorbis-tag from file-name"
+* metadata: try to not generate duplicate entries for song-tags when
+            both mp3 and extractor (or both vorbis and extractor) plugins
+            are loaded. (needs current libextractor to avoid dupes, but
+            will compile with older versions. current means > cvs20040328,
+            or > 0.2.6.)
+
+2004/03/12  Azundris                                 <evidence@azundris.com>
+
+* actions: new action "set file-name from ID3-tag/Vorbis-tag"
+* fileinfo: refactored
+* more docs
+
+2004/02/20  Azundris                                 <evidence@azundris.com>
+
+* FreeBSD: fixed some warnings
+* FreeBSD: builds again on FreeBSD (patch by torindel)
+* FreeBSD: FreeBSD crashes if you ask iconv() for UTF8 rather than UTF-8
+           fixed thanks to torindel
+
+* selections: should display "yes/no" but not "yes to all" etc. with only
+              one item in selection
+
+2004/02/11  Azundris                                 <evidence@azundris.com>
+
+* cvs: sends mail again
+* build: towards building with libpng12.pc i/o libpng-config (on RH9) --
+         for now, use --with-libpng=... and friends
+
+2004/02/09  Azundris                                 <evidence@azundris.com>
+
+* iconview: people are using --desktop, make it faster
+
+2004/02/08  Azundris                                 <evidence@azundris.com>
+
+* textpath: new property "textpath-alpha" (0..255)  (requested by fletch)
+* fileinfo: if n files are selected, there will still be one dial, not n --
+            #define SELECTION_PARALLEL in src/userconfig.h for the old
+            behaviour
+* IPC: modules use ipc_module_*() namespace now rather than ipc_*()
+* various: assorted cleanups, build-fixes etc.
+
+2004/02/02  Azundris                                 <evidence@azundris.com>
+
+* browserview: root-menu actions in columns are applied to directory in
+               column rather than to work-dir (requested by creepy)
+* assorted cleanup, fixes
+
+2004/02/01  Azundris                                 <evidence@azundris.com>
+
+* all: highly experimental (basic) eCore support; disabled by default
+
+2004/01/31  Azundris                                 <evidence@azundris.com>
+
+* monitors: monitors for non-existing files, will fire as they become available
+
+2004/01/30  Azundris                                 <evidence@azundris.com>
+
+* all: threads cleanup
+
+2004/01/25  Azundris                                 <evidence@azundris.com>
+
+* browser: context-menu didn't always show "apply to selection" -- apparently,
+           the "changed" signal isn't sent to selections as often as it used
+           to be. fixed. (reported by creepy)
+* more docs
+
+2004/01/23  Azundris                                 <evidence@azundris.com>
+
+* browser: double-clicking scroll-arrows opened menu (reported by creepy)
+* context-menus: major rewrite (should fix the mkdir issue, as well)
+
+2004/01/21  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: changing directory always switched to icon-view (r/b creepy)
+* backends: POSIX wouldn't compile without libacl after latest change
+            (reported by SpanKY)
+
+2004/01/12  Azundris                                 <evidence@azundris.com>
+
+* file: yesterday's commit broke file-execution (reported by catalyst)
+
+2004/01/11  Azundris                                 <evidence@azundris.com>
+
+* backends: if we get an ACL, but it's a minimal one, don't try to ACL-copy,
+            just try to chmod().  this will prevent spurious errors copying
+            from a file-system that supports ACLs to one that doesn't.
+            likewise for empty default-ACLs.  (default "POSIX" backend).
+* mp3/id3: did not show bitrate/frequency
+
+2004/01/01  Azundris                                 <evidence@azundris.com>
+
+* menu: some actions (with a lot of escapes) just wouldn't work (r/b creepy)
+* providers: image-plugin had dropped from build
+* icon-animations: "creepy" much faster when opening folders.
+* file: programs with no arguments would not be started, d'oh
+
+2003/12/30  Azundris                                 <evidence@azundris.com>
+
+* theme-engines: more docs (requested by Fletch)
+* autofoo: PCRE-fix (reported by Marc Tamsky)
+* RPM: requires-fix (reported by Marc Tamsky)
+
+2003/12/22  Azundris                                 <evidence@azundris.com>
+
+* autofoo: "pthread_cancel not found" on some platforms (Fletch et al.)
+
+2003/12/13  Azundris                                 <evidence@azundris.com>
+
+* menu: now works with quoted strings ("Eterm -e su - foo -c \"vi %f\"")
+        (for creepy)
+
+2003/12/08  Azundris                                 <evidence@azundris.com>
+
+* all: internal actions go through evidence.menu now; e.g. when ^P is pressed,
+       the (context-menu) action for "internal/properties" is looked up and
+       then executed with the current file as parameter. to rephrase, the user
+       can now configure evidence's "internal" actions to be external programs.
+* all: refactoring
+* evas2, evidence, ipc_main, ic_*, notebook: doxygenized
+
+2003/12/07  Azundris                                 <evidence@azundris.com>
+
+* about, alert, browser_view, cache, clipboard, dnd, info, options: doxygenized
+
+2003/12/05  Azundris                                 <evidence@azundris.com>
+
+* properties: sets permissions and uid/gid now (chmod/chown)
+* properties: setting icons was broken
+* alerts: work with locales now
+* monitors: new files were shown as being of unknown type (and consequently,
+            not thumbnailed)
+* all: better messages in dialog-boxes (thanks to varargs msgs)
+
+2003/12/04  Azundris                                 <evidence@azundris.com>
+
+* gevas_bind: only created scroll-bar for first window
+
+2003/12/03  Azundris                                 <evidence@azundris.com>
+
+* all: valground once more
+* ic_*: setting icon-font now forces immediate update
+* ic_*: setting icon-font sent evas into an endless loop
+* ia_creepy: streamlined
+
+2003/12/02  Azundris                                 <evidence@azundris.com>
+
+* thumbnailer: did not thumbnail everything it could
+* thumbnailer: when ePEG failed, a PNG was generated instead, but the view
+               tried to load the (never generated) ePEG anyway
+* thumbnailer: cleanup
+
+2003/11/21  Azundris                                 <evidence@azundris.com>
+
+* browserview: there was nasty black "flash" when redrawing the view,
+               e.g. when changing directories (reported by zoo)
+* model: file_info's "name" is in UTF8 now for more i18n
+* model: clean-up
+
+2003/11/18  Azundris                                 <evidence@azundris.com>
+
+* iconview, shelf: setting the background image with evsh didn't work.
+            echo "prop set iconview my.png" | evsh
+
+2003/11/17  Azundris                                 <evidence@azundris.com>
+
+* backends: POSIX backend broke when compiled with libacl and run without
+            it (found by zoo)
+* debian: debian packages were built without debian info (yuck)
+* epeg: JPEG thumbnailing was too verbose 
+
+2003/11/12  Azundris                                 <evidence@azundris.com>
+
+* epeg: even more robustness (issues reported by creepy)
+
+2003/11/10  Azundris                                 <evidence@azundris.com>
+
+* epeg: more robustness (issues reported by catalyst)
+* iconview: number of items in .folder was wrong (reported by creepy)
+
+2003/11/09  Azundris                                 <evidence@azundris.com>
+
+* debug: clean-up, towards a unified event model
+* iconview: advanced thumbnail replay magic
+
+2003/11/08  Azundris                                 <evidence@azundris.com>
+
+* iconview: more interactivity while creating thumbnails
+* iconview: "folder.jpg" works again
+* iconview: load & display dirs twice as fast
+* browserview: when failing to activate (start by double-click) an item,
+               the item would go into drag-mode (reported by creepy)
+* tooltips: "diagram" tooltip would sometimes crash in minimum-sized
+            windows (reported by creepy)
+* thumbnails: on-board ePEG now to cut down on dependencies
+* thumbnails: expires ePEGs now (only PNG-thumbnails before)
+* properties: could only find out the values of string-properties via IPC
+              (reported by HandyAndE)
+
+2003/11/03  Azundris                                 <evidence@azundris.com>
+
+* evsh: there was an OBO that broke setting properties (reported by HandyAndE)
+* gevas_bind: tooltips should not open while in type-buffer
+* thubmnails: support for ultra-fast jpeg thumbnailer, epeg.
+              interesting if you have a lot of very large jpeg images (from
+              a digital camera or somesuch).
+* iconview: speeding up scrolling broke page-up.
+
+2003/11/02  Azundris                                 <evidence@azundris.com>
+
+* properties: refactored. towards ecnf.
+
+2003/11/01  Azundris                                 <evidence@azundris.com>
+
+* context-menu: "Yes/No" upgraded to "Yes,All,Skip,Cancel"
+* iconview: when starting in evas icon-view, ".." was missing in the first
+            displayed dir (found by creepy)
+
+2003/10/30  Azundris                                 <evidence@azundris.com>
+
+* mp3: was temporarily broken
+* theme: theme-elements (float, integer) now have a step on top of a range
+         (idea by HandyAndE)
+
+2003/10/30  Azundris                                 <evidence@azundris.com>
+
+* iconview: mo faster scrolling
+
+2003/10/25  Azundris                                 <evidence@azundris.com>
+
+* build: enable-...=no heeded (patch by SpanKY!)
+* iconview: builds again with GNOME-icon-view (discouraged mucho)
+            (reported by SpanKY)
+
+2003/10/23  Azundris                                 <evidence@azundris.com>
+
+* iconview: "logical scrolling" -- when scrolling, make sure each row of icons
+            is shown fully once (rather than just scrolling in multiples of
+            the window's size and have some rows which are only partially
+            visible -- top half now, bottom half after page-down)  (reported
+            by atmos)
+* evidence: only default icon-set could be used after refactoring
+            (reported by atmos)
+
+2003/10/22  Azundris                                 <evidence@azundris.com>
+
+* iconfactory: properties for default factory: icon-text-colour,
+               icon-text-alpha, icon-shadow-colour, icon-shadow-alpha,
+               icon-shadow-x-offset, icon-shadow-y-offset
+
+2003/09/06  Azundris                                 <evidence@azundris.com>
+
+* configure: default path for Qt had a typo (reported by JeopardE)
+* mkdir: bombed (reported by JeopardE)
+
+2003/09/06  Azundris                                 <evidence@azundris.com>
+
+* major cleanup!  Let me know if I broke something.
+
+2003/09/29  Azundris                                 <evidence@azundris.com>
+
+* backends: more F_NOTIFY
+* properties: editable fields are more legible now
+* properties: info area is scrollable now (for those long TTF-licenses)
+* properties: read-only fields wrap now, requested by creepy
+
+2003/09/29  Azundris                                 <evidence@azundris.com>
+
+* model: BSD compat, thanks to vac
+
+2003/09/26  Azundris                                 <evidence@azundris.com>
+
+* iconview: fixed hints when running in desktop mode, no more accidental
+            raising
+
+2003/09/24  Azundris                                 <evidence@azundris.com>
+
+* iconview: sticky drag bug fixed
+* backends: towards automated unit tests
+* backends: GNOME-VFS2 compiles again.  ("compiles," not "works"!)
+* file: cleanup (using dl_multi() now)
+
+2003/09/22  Azundris                                 <evidence@azundris.com>
+
+* providers: providers can now have init and exit-functions that are called
+             at load/flush time.  this considerably speeds up plugins that
+             load further libraries or data-files (cf. extractor).  in real
+             terms, the properties dialog should open faster now.
+* IPC: evsh 2.0
+
+2003/09/19  Azundris                                 <evidence@azundris.com>
+
+* IPC: basic eCore!
+
+2003/09/16  Azundris                                 <evidence@azundris.com>
+
+* IPC: more DBUS
+* IPC: cleanup
+
+2003/09/14  Azundris                                 <evidence@azundris.com>
+
+* providers: extractor only worked once (workaround for possible bug in
+             extractor)
+* util: GLib-free string routines
+* IPC: basic DBUS!
+
+2003/09/12  Azundris                                 <evidence@azundris.com>
+
+* Packages: working Spec file!  Better RPMs, fewer dependencies!
+
+2003/09/11  Azundris                                 <evidence@azundris.com>
+
+* Packages: "real Debs" by Sytse Wielinga, many thanks!
+
+2003/09/10  Azundris                                 <evidence@azundris.com>
+
+* IPC: more DCOP
+* typebuffer: tab-completion (shell) heeds quoted strings (file-names/-paths
+              with spaces in them) now
+* typebuffer: /u/s/a/e expands to /usr/src/app/evidence (et al.) now, same
+              as /u*/s*/a*/e
+* typebuffer: tab-completion for programs and their files
+
+2003/09/09  Azundris                                 <evidence@azundris.com>
+
+* evidence: icon would become invisible in e16 when "show base" was disabled
+            in iconbox settings ("the xemacs-syndrome")  (reported by vinh)
+* themes: theme_el_val() handles NULL and "" correctly
+* themes: rubber-band and typebuffer-listeners initialized at start rather
+          than "on demand" (more consistent user-experience from the
+          properties side of things)
+* IPC: basic DCOP!!
+
+2003/09/07  Azundris                                 <evidence@azundris.com>
+
+* build: checks for libpng (though imlib2 and evas should more or less
+         guarantee it's there)  (reported by Silktrader)
+
+2003/09/05  Azundris                                 <evidence@azundris.com>
+
+* build: builds without imlib2 (but with evas) now.  not a good idea though.
+* build: builds without eet and edb now.
+
+2003/09/04  Azundris                                 <evidence@azundris.com>
+
+0.9.6-pre4
+* backends: Extended Attribute support detected at run-time (will support EAs
+            if libattr is present; will work without EA-support otherwise)
+* backends: FAM support detected at run-time (will support use FAM if libfam is
+            present and connecting is possible; will poll otherwise)
+* backends: libmagic MIME-detection support detected at run-time (will support
+            extende MIME-detection if libmagic is present; will do basic
+            MIME-detection otherwise)
+* backends: ACL support detected at run-time (will support ACLs if libacl is
+            present; will work without ACL-support otherwise)
+* thumbnail: now thumbnails to "normal" or "large" depending on icon-size of
+             current theme
+
+2003/09/03  Azundris                                 <evidence@azundris.com>
+
+* evas: mouse-events caught by extensions handled in a saner fashion
+
+2003/09/02  Azundris                                 <evidence@azundris.com>
+
+* file: new % sequences %q and %e in file_run(); %q inserts all the URL but
+        the protocol and the delimiter (http://); %e inserts the URL-encoded
+        equivalent of %q.  These are handy in typebuffer-handlers.
+* iconview, shelf: redraw is forced when background-property changes
+* iconview: dragging to colour (from GIMP etc.) to the icon-view now sets
+            iconview-background-tint-colour (ie, if you are using a background
+            plugin that listens for background-tint-colour, dragging a colour
+            to the icon-view will update the colour of its background!)
+* shelf: dragging to colour (from GIMP etc.) to the shelf now sets
+         shelf-background-tint-colour (ie, if you are using a background plugin
+         that listens for background-tint-colour, dragging a colour to the
+         shelf will update the colour of its background!)
+
+2003/09/01  Azundris                                 <evidence@azundris.com>
+
+* autofoo: "make deb"
+* themes: default values for properties (to be used by generic setup tool)
+* themes: bounds for properties (to be used by generic setup tool)
+
+2003/08/31  Azundris                                 <evidence@azundris.com>
+
+* autofoo: "make rpm" works
+* autofoo: "make dist" works (and includes basic data-files)
+* autofoo: applied Alex Murygin's $(DESTDIR) patch
+* website: refactored. building-instrx rewritten.
+
+2003/08/30  Azundris                                 <evidence@azundris.com>
+
+* sb_edb, bg_edb, bg_ebg, bg_ebg_trans: clearer error messages (if plugins
+          are there, and data-file is present, but load still fails, suggests
+          that maybe evas was built without support for edb)
+* Makefile: generated evidence-src-...tar.bz2 now "complete" (enough to
+            ./configure && make && make install correctly)
+* themes: new background factory "trans" (before, the only way to get a
+          pseudo-transparent background was to use bg_edb_trans, which in
+          turn depends on edb.  no reason you should need edb to get trans).
+          properties background-tint-alpha,  background-tint-colour
+* themes: new scrollbar "default" (needs no setup files, no point in having
+          sb_edb be the default when it relies on a legacy data file)
+* shelf: properties shelfpadx,shelfpady (offset of icons to upper left corner)
+         shelfpadw, shelfpadh (padding between icons)  (requested by fletch)
+* iconview: properties iconview-pad-x,iconview-pad-y (offset of icons to upper
+            left corner); iconview-pad-w, iconview-pad-h (padding 'tween icons)
+
+2003/08/29  Azundris                                 <evidence@azundris.com>
+
+* all: some more fixes implied by valgrind
+* actions: new action "open this dir in new window" (same as
+           Control-Double-click, really)  (inspired by fletch)
+* icons: gorilla themes were referring to non-existing item for bz2 files
+* evas2: shift-click with no previously selected icon crashed ev, d'oh
+         (reported by fletch)
+
+2003/08/28  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: tab-completion for properties (from active properties)
+* typebuffer: tab-completion for URLs (from history)
+* thumbnail: thumbnails were a bit blurry; saved as "large" thumbnails now
+* thumbnail: loaded as "large" (preferred) or normal
+* thumbnail: font-previews no longer exceed bounding box of on-disk thumb
+* thumbnail: "fail" entries are heeded now
+
+2003/08/27  Azundris                                 <evidence@azundris.com>
+
+* evas2: extensions were drawn to shelf rather than icon-view on resize
+         (reported by ZuluOne)
+* shelf: listener bombed out, fixed
+* Makefile: generated evidence-src-...tar.bz2 contained broken autofoo : (
+* Makefile: evidence-src-...tar.bz2 is now extracted into a sub-dir, d'oh
+            (reported by fletch)
+* iconsets: tosh_64 is default set again : )
+* docs: extensions documented
+* options: -M was not accepted (--desktop was, though)
+* all: various warnings fixed
+* all: ebg-less compile fixed
+
+2003/08/26  Azundris                                 <evidence@azundris.com>
+
+* theme: rubberbox "nautilus" now listens for rubberboxbordercolour,
+         rubberboxborderalpha, rubberboxinteriorcolour, rubberboxinterioralpha
+         and rubberboxborderwidth
+
+2003/08/25  Azundris                                 <evidence@azundris.com>
+
+* theme: if a new listener is registered, and the key it is registered for
+         already has a value, it gets an (synchroneous) event straight away
+         (makes init easier)
+* theme: typebuffer now listens for typebufferfont, typebufferfontsize,
+         typebuffertextcolour, typebuffertextalpha,
+         typebuffershadowcolour, typebuffershadowalpha
+         'typebuffertextcolour #ff00ff
+
+2003/08/24  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: "'property value" == "'property=value" == "property: value"
+* iconview, shelf: if non-absolute path is given as background property,
+                   will look in PATH, cwd and theme-dirs
+* iconview: listener for background property (e.g. 'iconview mybg.png)
+* shelf:    listener for background property (e.g. 'shelf mybg.png)
+* theme: property-listeners
+* theme: cleaned up plugin-framework
+
+2003/08/23  Azundris                                 <evidence@azundris.com>
+
+* themes: micro-ebg phased in (the part used in ev is tiny, ebg is frozen,
+          and this eliminates a dependency)
+* configure: evas_buffer test disabled for now
+* configure: ebits, ebg test disabled
+* configure: ao, audiofile, libmad tests removed (used in eplay only)
+* build: eplay phased out
+
+2003/08/11  Azundris                                 <evidence@azundris.com>
+
+* 0.9.6-pre1
+* homepage: updated
+* options: evidence now accepts multiple directories as arguments (will open
+           multiple windows).  (reported by twb)
+
+2003/08/08  Azundris                                 <evidence@azundris.com>
+
+* browser_view: more graceful resizing
+
+2003/07/16  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: URL arguments work again
+* typebuffer: enviroment no longer overrides internal variables (too confusing)
+* typebuffer: argument is current dir is preferred over argument in $PATH
+
+2003/07/01  Azundris                                 <evidence@azundris.com>
+
+* providers: new provider "extractor" that uses libextractor.  libextractor
+             provides basic support for a wide variety of file-types (HTML,
+             PDF, PS, MP3, OGG, JPEG, GIF, PNG, RPM, ZIP, REAL, QT, ASF).
+             Why won't we drop our own providers and switch to libextractor
+             completely?  Because metadata we get from libextractor are
+             read-only.
+* metadata:  wildcards allowed in mime-types (image/*, *).
+* iconview:  mouse-wheel + shift now scrolls by row/column, rather than page
+
+2003/06/27  Azundris                                 <evidence@azundris.com>
+
+* eplay: wouldn't work without libmad (reported by RbdPngn)
+* thumbnails: understands "foo/folder.jpg" holds thumbnail for folder "foo"
+
+2003/06/25  Azundris                                 <evidence@azundris.com>
+
+* iconview: DND works with new setup now (reported by creepy)
+* iconview: scrollbar works correctly with new scrolling layer
+* iconview: dragging icon-label could result in crash in certain cases
+            (reported by creepy)
+* thumbnails: truetype-thumbnails are no longer translucent -- the translucent
+              look was cool, but it introduced inconsistency into the GUI as
+              some icon factories use translucent icons to indicate symlinks
+
+2003/06/24  Azundris                                 <evidence@azundris.com>
+
+* iconview: optimized away pointless redraws of the toolbars etc.
+* util: customized quicksort. towards individually sorted views
+* themes: fixed tooltip factories to work with new scrolling
+* backends: if support for ACLs is provided, ACLs are not also listed in EAs
+* themes: tooltip "diagram" did not always size boxes correctly (reported by
+          creepy); various other corner cases handled
+
+2003/06/23  Azundris                                 <evidence@azundris.com>
+
+* iconview: new scrolling mechanism for evas icon-view, should eliminate
+            "choppy" flicker on slower machines.  feedback wanted.
+
+2003/06/20  Azundris                                 <evidence@azundris.com>
+
+* textpath: looked funny after start up in view other than icon-view
+* tooltips: umlauts etc. no longer break GTK tooltips
+* iconview: double-click on name (icon-label) edits it (prelim external vers.)
+* browser: many touches
+* options: new option --select (-Z) preselects a given file
+           evidence --select /foo/fonts --select /foo/src opens a view on foo
+           and preselects the items fonts and src.  one or many items may be
+           given.  until virtual folders are supported, all items must reside
+           in the same directory.
+           Example of use:  sagasu.  Set editor command to
+           evidence --select "%f"
+           http://www3.sympatico.ca/sarrazip/dev/sagasu.html
+* options: more legible help
+* AUTHORS: credit atmos for freedesktop-conforming thumbnails
+
+2003/06/18  Azundris                                 <evidence@azundris.com>
+
+* providers: new provider "TrueType info"
+* mp3: more intuitive field names (inspired by JeopardE)
+* themes: breakage in Makefile.am fixed (reported by JeopardE)
+* themes: more detailed error-messages
+
+2003/06/17  Azundris                                 <evidence@azundris.com>
+
+* browserview: files with umlauts get displayed correctly again.  If LC_CTYPE
+               is not set, will default to "de_DE".  This will get Europeans
+               umlauts.  For English, it doesn't matter either way, and people
+               from countries with beautiful letters will have a correct locale
+               setup anyway (one might assume).
+
+2003/06/11  Azundris                                 <evidence@azundris.com>
+
+* configure: overhaul
+* backends: POSIX backend will use FAM if present, but does not rely on it
+* themes: new theme "lain"  (hommage to "serial experiments: lain")
+
+2003/06/10  Azundris                                 <evidence@azundris.com>
+
+* thumbnails: aspect ratio was broken for some icon-modes
+* tt_diagram: did not compile with gcc 2.9x
+* backends: assorted cleanup
+
+2003/06/10  Atmos
+
+* thumbnails: thumbnails are now cached between sessions, mucho speedup for
+              large image-/font-directories. compliant with freedesktop.org
+              thumbnailing-standards!
+
+2003/06/09  Azundris                                 <evidence@azundris.com>
+
+* icons: text-related icons in "tosh" icon-set had extra pixels
+* icons: shadows in the "ento" icon-set were broken
+* icons: folder-shadows in the "tosh" icon-set were broken
+* util: hashes
+
+2003/06/08  Azundris                                 <evidence@azundris.com>
+
+* icons: some of the shadows in the "tosh" icon-set were broken or missing
+
+2003/06/07  Azundris                                 <evidence@azundris.com>
+
+* themes: new tooltip factory "tt_diagram" (now used in default theme "tosh")
+
+2003/06/06  Azundris                                 <evidence@azundris.com>
+
+* icon-view: icon-factory "nautilus" uses emblems defined in icon-set now
+* properties: Extended attributes are noted
+* browserview: did not notice delete/update-events, reported by creepy and
+               catalyst
+
+2003/06/05  Azundris                                 <evidence@azundris.com>
+
+* model: no .folder inside .folder
+* model: correct deferred stat for .folder
+
+2003/06/03  Azundris                                 <evidence@azundris.com>
+
+* docs: updated
+* typebuffer: . and .. get handled correctly again, reported by Alan Schmitt
+* model: dot-folder is back!
+* evas2: mouse-wheel for the imwheel-less is back again
+* model: code had a show-stopping bug that would only stop creepy's show --
+         thanks for letting me debug there!
+
+2003/06/02  Azundris                                 <evidence@azundris.com>
+
+* model/selections: deleted file will be removed from selection on delete-event
+* model: towards the return of the dot-folder
+* icon-view: automatic tooltips (option -W) are back (by repeated creepy vote)
+
+2003/06/01  Azundris                                 <evidence@azundris.com>
+
+* icon-view: --iconset works correctly again
+* icon-view: fixed annoying but harmless redraw-error on file updates/deletes
+* icon-view: no more resorts on re-entering a directory
+
+2003/05/31  Azundris                                 <evidence@azundris.com>
+
+* backend: "access"-replacement handles ACLs correctly
+* backend: POSIX-backend no longer declares a spurious error on recursive copy
+
+2003/05/30  Azundris                                 <evidence@azundris.com>
+
+* icon-view: no-modify and no-use states displayed
+* backend: POSIX-backend handles the pathological case (copies dirs that the
+           owner has no read/search perms for)
+* backend: POSIX-backend copies EAs correctly (rather than ACLs) only
+
+2003/05/27  Azundris                                 <evidence@azundris.com>
+
+* properties: new-and-improved layout for ACLs
+
+2003/05/26  Azundris                                 <evidence@azundris.com>
+
+* focus,iconview: evidence won't (visually) change into a dir it has no xs to
+* backend: POSIX-backend's "cp" copies ACLs now (if compiled with libacl and
+           supported by the target FS, obviously)
+
+2003/05/26  Azundris                                 <evidence@azundris.com>
+
+* bg-handler: pseudo-transparency now works with tiled backgrounds, multiple
+              desktops, and solid colour backgrounds (by popular request)
+
+2003/05/25  Azundris                                 <evidence@azundris.com>
+
+* icon-view: truetype thumbnails look better
+* icon-view: drag'n'drop uses actual icon now rather than the default
+* backend: POSIX-backend may be compiled against libmagic (MIME-type
+           determination of the file-command).  if it can't determine the MIME-
+           type by file-extension, it falls back on (the costlier) libmagic.
+* model: cd-events were always sent to all sessions, causing all windows to
+         show the same directories -- synchronized views, very pretty, but
+         also quite useless...
+
+2003/05/24  Azundris                                 <evidence@azundris.com>
+
+* image-provider: resize works again (reported by creepy)
+* properties-dial: can rename files again
+* properties-dial: renaming a file will not cause other ops (resize etc.)
+                   to fail
+
+2003/05/22  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: new variable $SEL ($SELECTION) contains current selection
+              (^V on the other hand would paste the *clipboard*'s contents)
+* thumbnails: thumbnails for truetype-fonts were disabled by mistake
+* animations: animations (folder opened, application opened, file opened) are
+              plugins now, same as everything else -- code away, Creepy!
+* icons: prelim emblems
+* tree: no longer acts strangely when adding files after files are deleted
+* tree: newly-added files have stat-info again
+* setup: actually looks for data in PACKAGE_DATA_DIR, thanks Francois Chenais
+* tooltips: font-previews look right again
+* cache: fixed nasty race condition that could crache evidence
+* iconview: newly added files would appear in top left corner
+* themes: only reference fonts we actually provide
+* fonts: provide some free (as in beer) fonts. debian will mind.
+
+2003/05/19  Azundris                                 <evidence@azundris.com>
+
+* file: file_is_same() smarter
+* file: more sensible lookup of primary backend
+* typebuffer: shadow's back
+* engines: icon-factory "nautilus" makes symlinks transparent
+* properties: symlink-destinations are shown again
+* all: a lot of NOIR_DEBUG cruft cleaned up (reported by Justus Schwartz)
+* setup: $PREFIX notation for position-independent setup files (JS)
+* configure: handles strange lib- and install-locations better (JS)
+* icons: having a empty "icons"-folder in startup dir confused evidence (JS)
+
+2003/05/19  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: multi-line typebuffer
+
+2003/05/18  Azundris                                 <evidence@azundris.com>
+
+* textpath: kept pointer to transient item on cd ~, discovered by creepy
+
+2003/05/14  Azundris                                 <evidence@azundris.com>
+
+* setup: uses PREFIX from configure now, reported by Justus Schwartz
+
+2003/05/13  Azundris                                 <evidence@azundris.com>
+
+* options: -W no longer leads to a crash (reported by creepy)
+* cache: persistent cache for quick-loading very large directories.
+         if nothing else, this shows that the file-backend isn't really
+         all that slow, the GTK2-tree is: compare the time needed for
+         replaying 1200 items into tree- or browser-view versus that needed
+         to replay the same items into the icon-view
+
+2003/05/12  Azundris                                 <evidence@azundris.com>
+
+* engines: ic_nautilus provides the icon_set_state() method now to modify
+           icons on the fly
+* engines: ic_nautilus now show how many sub-folders a folder contains
+* docs:    man-page and various docs updated
+* backend: monitor-fu
+
+2003/05/11  Azundris                                 <evidence@azundris.com>
+
+* tree-view: replays everything now
+* themes: "rephormed" text-path no longer relies on silly string-ops to
+          interprete the cwd when it can use the internal model instead
+* themes: "rephormed" text-path has optional drop-shadow now
+* mkdir: empty file-name aborts
+
+2003/05/10  Azundris                                 <evidence@azundris.com>
+
+* typebuffer: checks whether target font exists before changing font property
+* configure: evas option was confusing (reported by Fletch)
+* info: evidence wrongly accused you of not having made install
+* browser-view: / was not always replayed when changing views
+* icon-view: when changing into a "hidden" dir in root failed, the .. folder
+             would stop working.  can you say "corner case"?  : )
+
+2003/05/09  Azundris                                 <evidence@azundris.com>
+
+* properties: openfolderanimation openappanimation -- set to none in the
+              typebuffer when animations are slow in icon-view:
+              / to open typebuffer, then enter 'openfolderanimation none
+              (the ' is important!)  if it asks whether to create the prop,
+              answer yes.  inspired by atmos.
+* icon-view: would not display /
+* icon-view: dirs in root didn't get .. folder
+* icon-view: drag'n'drop would never stop once activated
+* themes: new engine-type (icon-view) "extensions": first engine is text-path
+
+2003/05/08  Azundris                                 <evidence@azundris.com>
+
+* text-path: can move back and forth in path now.  selects correct element.
+* user_config.h: new tunable CACHE_SLOWER_THAN
+* tree-view: magic
+
+2003/05/07  Azundris                                 <evidence@azundris.com>
+
+* icon-view: sorts correctly
+* tree_model: abstracted sort-fun
+* icon-view: text-path tests for rephorm
+* browser-view: fixed race
+
+2003/05/04  Azundris                                 <evidence@azundris.com>
+
+* icon-view: DND back on line
+* icon-view: reconnected
+* tree: tree_model.c is now really "tree-common" (for tree- and browser-views)
+* browser-view: sped up mucho
+* browser-view: usability
+* browser-view: text no longer drawn underneath "expand"-arrow
+
+2003/05/03  Azundris                                 <evidence@azundris.com>
+
+* tree-view: reconnected
+* browser-view: reconnected
+* browser-view: icon-path is actually the height of current icons
+
+2003/05/02  Azundris                                 <evidence@azundris.com>
+
+* model: major internal rewrite (I)            *** DO NOT CHECK THIS OUT ***
+* file: file.c and file_*.c (backend) tree-clean
+* info: split into alert.c, tooltip.c, and info.c (menu)
+* focus: clipboard/slection foo split out into clipboard.c
+
+2003/04/29  Azundris                                 <evidence@azundris.com>
+
+* info_dial: pop-ups for string-fields ("genre")
+* info_dial: tooltips
+* mp3: default fields, parsing of content-type ("genre") field
+* vorbis: default fields
+* meta: various extensions for the above
+
+2003/04/28  Azundris                                 <evidence@azundris.com>
+
+* mp3: writes both ID3v1 and ID3v2 tags, replacing existing tags (previous
+       versions kept a "history" of previous ID3v2 tags)
+* info_dial: properties dialog would sometimes crash on write-back (stupidly)
+
+2003/04/25  Azundris                                 <evidence@azundris.com>
+
+* misc: debug-level isn't really session-specific
+* traditional tooltip: zooms into thumbnail, if present (silly)
+
+2003/04/17  Azundris                                 <evidence@azundris.com>
+
+* tooltips: groups as "paragraphs" (inspired by creepy)
+* typebuffer: ~ ~/foo ~azundris ~azundris/foo work now (reported by creepy)
+* mp3: more debian fixes (reported by creepy)
+* theme: "missing fonts" fallback was temporarily broken (reported by catalyst)
+* theme: ~/.evidence/evidence.theme overrides theme "default" now
+* icon: lazy-cache for icon-paths
+* evas: smarter font-lookup
+* misc: various speedups
+
+2003/04/16  Azundris                                 <evidence@azundris.com>
+
+* theme: modify/save
+* typebuffer: magic comma operator, see docs/typebuffer.txt
+* theme: GTK/GDK includes only where needed
+* theme: extensible format, updatable fields
+
+2003/04/15  Azundris                                 <evidence@azundris.com>
+
+* views: clean-up (I)
+
+2003/04/14  Azundris                                 <evidence@azundris.com>
+
+* evas2: redraw bug on growing window fixed
+* info: context-menu sometimes would not pass absolute paths (since 04/11 only)
+* tooltips: improved legibility
+
+2003/04/13  Azundris                                 <evidence@azundris.com>
+
+* build: workaround for funkiness with Debian and gcc > 3
+
+2003/04/11  Azundris                                 <evidence@azundris.com>
+
+* build: must install icons before themes/engines so the latter can link
+         to the former (so till can borrow a fish : )
+* build: extra-themes do not get installed by default
+* build: extra-iconsets do not get installed by default
+* backends: much stuff generalized into file.c
+* backends: backends lose GTK-dependencies!
+* tooltips: when "traditional tooltip" was at top of icon-view, all lines
+            inside would be OBO (one line too far down); fixed
+* temp-dir: tempdir is now /tmp/evidence-tmp-...
+
+2003/04/10  Azundris                                 <evidence@azundris.com>
+
+* themes: if theme is unavailabe, will fall back to default.
+          if that is not available, will start in browser-view.
+* themes: themes can specify their preferred iconset now (at last)
+          if that is unavailable, will try to fall back to default
+* icons: new default icon-set "tosh" created by yours truly
+
+2003/03/26  Azundris                                 <evidence@azundris.com>
+
+* themes,icons: efm (prelim) added
+* engine: hotfix for monitors
+
+2003/03/24  Azundris                                 <evidence@azundris.com>
+
+* engine: treatment of files starting with a # can now be specified
+* posix: backend will always try MIME-lookups now rather than assume that if
+         something is flagged executable, it is in fact an executable (that
+         tends to fail horribly on file-systems (win, ...) that will render
+         a (virtual) X-flag for *everything*).  if you don't need this, you
+         may disable it in userconfig.h for an ever-so-slight speedup.
+
+2003/03/23  Azundris                                 <evidence@azundris.com>
+
+* focus: thumbnails got lost when sorting directory
+* evas2: threshold -- thumbnailer shouldn't look for images in very large
+         gz/bz2-compressed files (will still work in tooltips)
+* autofoo: requests GTK2.2 now to avoid some brokeness in 2.0.x -- compile
+           against 2.0 at your peril (selection-foo may act weirdly).
+           well, actually, compile and use at your peril *ALWAYS*, but you
+           know what we meant.  (reported by atmos)
+* tree_view: wrong message when trying to open empty directory,
+             reported by atmos
+* setup/: doc-strings added to setup files
+* file: supported added for applications whose names or paths contain spaces
+        (formerly only supported in parameters), reported by Andrew Elcock
+* evas2: thumbnails for fonts are generated at target size now, rather than
+         being generated in icon-sized and then magnified
+* evas2: icon-factories may now override the built-in icon_set_state() for
+         special effects, or to create icon-elements "on the fly"
+
+2003/02/24  Azundris                                 <evidence@azundris.com>
+
+* info: actions on selections, part II
+* focus: file-change event gave really bad mojo, sanctified
+
+2003/02/20  Azundris                                 <evidence@azundris.com>
+
+* info: actions on selections, part I
+* icon-view: fancy selection broke ".."-icon, fixed
+* docs: man-page updated
+* options: cleaned up
+
+2003/02/19  Azundris                                 <evidence@azundris.com>
+
+* selections: primary selection and clipboard C&P work in the traditional
+              manner now
+
+2003/02/13  Azundris                                 <evidence@azundris.com>
+
+* focus: icon-view is updated again when directory is changed elsewhere
+
+2003/02/12  Azundris                                 <evidence@azundris.com>
+
+* unified selections, part I
+* tree_model: all dirs but / were sorted, fixed
+* infodial: closing dial crash evidence due to changes in MD-handling
+
+2003/02/08  Azundris                                 <evidence@azundris.com>
+
+* icon_view: when all stat-data have arrived, we'll sort the icon-view
+             unless the user has scrolled the view.  If they have, they
+             can still force the sort using ^S.  (View will also we sorted
+             if they leave and re-enter the dir.)  Actual sorting sped ud.
+             Sorting no longer destroys previous thumbnails (duh).
+
+2003/02/07  Azundris                                 <evidence@azundris.com>
+
+* evas2: thumbnail true-type fonts
+
+2003/02/06  Azundris                                 <evidence@azundris.com>
+
+* evidence: fixed application icon
+* evidence: more fullscreen
+
+2003/02/05  Azundris                                 <evidence@azundris.com>
+
+* evidence: some fixes for --fullscreen mode (pretty useless before)
+
+2003/01/28  Azundris                                 <evidence@azundris.com>
+
+* 0.9.4
+* uGTK2_Evas2: throw out more gevas deadwood
+* file: cleanup
+* other: more comments
+
+2003/01/26  Azundris                                 <evidence@azundris.com>
+
+* multi-views: most stability!  : )
+* touches here and there
+
+2003/01/24  Azundris                                 <evidence@azundris.com>
+
+* multi-views: more stability
+* uGTK2_Evas2: adjusted to evas-API a/o 2003/01/23
+* evas2: wrong struct was passed at one point, caused really weird errors ;-S
+
+2003/01/24  tillsan                                  
+
+* backends: only POSIX enabled for compile by default as the others are
+            under reconstruction
+
+2003/01/16  Azundris                                 <evidence@azundris.com>
+
+* compiles with internal G-canvas again
+* compiles without canvas again (reported by LupusE)
+
+2003/01/11  Azundris                                 <evidence@azundris.com>
+
+* properties dial: readlink() added
+* file_posix, file_direct, info_dial: assorted fixes/additions
+
+2003/01/10  Azundris                                 <evidence@azundris.com>
+
+* fixed a crash on changing dirs (about 1 out of 25 cases)
+
+2003/01/02  Azundris                                 <evidence@azundris.com>
+
+* docs updated and extended
+* icon-list: word-wraps now
+* icon-factories: examples for handling wrap -- align-right does not wrap
+                  at all, align-below uses an ellipsis in labels that would
+                  otherwise be overly long, nautilus uses word-wrap (and
+                  decreases font-size for wrapped labels)
+* bg-engines: bg_tile, bg_scale (for JPG/PNG) added
+* themes: nautilusish theme added (rubber-band, icon-factory)
+* icons: Nautilus' icon-set "gorilla" included
+* small fixes here, there, and everywhere
+
+2002/12/29  Azundris                                 <evidence@azundris.com>
+
+* website: spell-checked
+* website: imlib2 and imlib2_loaders added to downloads page, issue with
+           imlib2 XCF-loader that evidence could trigger in rare cases fixed
+* options/focus: may give relative paths now
+* focus: thumbnailing happens (only) in deferred stat now
+* evas2: scrolling cleared selection
+* tree_view: focus() pre-checks dir, if we were to abort later, we might have
+             to leave the store in an undefined state
+* focus/file: DEFERRED STAT!  Evidence will start displaying a directory once
+              the opendir/readdir/closedir cycle has finished.  From then on,
+              items in that directory are accessible (as clicking on them reads
+              their meta-data immediately), even as meta-data (stat data, MIME-
+              types, icons, ...) are still coming in (with the view being
+              continuously updated).  This speeds up starting in/changing to
+              a large dir (~1ooo items) by about 1oo %!  (Much more for folders
+              with many images to thumbnail!)
+* 0.9.3 stuff erraneously did not link butterfly-images to metallo theme
+* refactoring: focus functionality went to separate file
+* all-around clean-up
+* what's focused in tree will be focused everywhere
+
+2002/12/28  Azundris                                 <evidence@azundris.com>
+
+* 0.9.3
+* TREE-STORE FIXED
+* tree_view_focus() actually opens the folders along the the focused path
+* monitors: file-monitors plugged in (but unrefined)
+* tree-view: passing ns->cwd to focus() is now allowed
+
+2002/12/26  Azundris                                 <evidence@azundris.com>
+
+* evidence: when switching to icon-view (using go2view()), the icon-list
+            automatically gets keyboard-focus
+* theme/icon_view/shelf: icon-lists have serial numbers now so that idle-
+                         handlers can easily find out when the view changes.
+                         See id_flutterby for an example.
+* icon_view: dragging rubber-band out of window activates scrolling now
+* icon_view: rubber-band positions are noted on icon-list now (hi till : ):
+             il->rx1,il->ry1 - il->rx2,il->ry2, where rx1<=rx2, ry1<=ry2.
+* themes: flutter-by, the clean way. looks better when scrolling view, too.
+
+2002/12/26  Azundris                                 <evidence@azundris.com>
+
+* themes: new idle-handler flutter-by
+
+2002/12/25  Azundris                                 <evidence@azundris.com>
+
+* icon_view: changing into an empty dir (or one with less files than the
+             previous one) sometimes left translucent ghost lieing around
+* icon_view: drop no longer adds icon, expects file-monitor to do that
+* file: opens rename-dial when trying to copy/move file on top of itself
+
+2002/12/24  Azundris                                 <evidence@azundris.com>
+
+* theme: idle-handlers are destalled when program ends (more useful for theme-
+	 switching, really)
+* configure: new option --disable-x: "do not use Xlib directly, always go
+             through GDK/Evas" (more compatibility for DirectFB and friends)
+* bg_edb_trans (compose edb elements over pseudo-transparent background) fails
+  gracefully if no wallpaper is set (and if e16 does strange strange things)
+* icon-view/shelf: resizing pane did not update scroll-bars
+
+2002/12/23  Azundris                                 <evidence@azundris.com>
+
+* actions: new action "Rename"
+* backends: file-direct (POSIX) completed
+* effigy: integer fields now spin-buttons for enhanced visual feedback
+* image MD: better error reports (d'oh, Imlib2 does write GIFs)
+
+2002/12/21  Azundris                                 <evidence@azundris.com>
+
+* browser: arrows are by default positioned in visible area now, even if
+           the directory's name exceeds the vis-area
+* actions: new action "New folder" (mkdir)
+* file_direct: mkdir() works
+* control-double_click on a folder opens the folder in a new window
+* providers: "image" provider added (image size and format, all writable
+             (hence evidence can do format-conversions and resizing of images)
+
+2002/12/19  Azundris                                 <evidence@azundris.com>
+
+* effigy: can assign icons to individual applications now, data are saved
+* configure: more foo
+* tt_*:  use thumbnailer now
+* evas2: ICON_EL_FOO() renamed to ICON_EL_PRE(); new macro ICON_EL_APP()
+* evas2: tooltips closed on any motion, not just on leaving the icon
+* tt_*:  bogus item order fixed
+
+2002/12/18  Azundris                                 <evidence@azundris.com>
+
+* theme: if a font breaks the odd version of freetype, evas won't tell us,
+         so we run some basic sanity checks at initialization time:  for each
+         font in the theme, we try to create a text-object.  if we can't, or
+         if the object has no extents, something went really wrong, and we'll
+         throw a warning.
+
+* info: "root-menu" (right click where no icon is) can now be added to,
+        MIME-type is internal/root3
+
+* new windows now come up with user-settings rather than the factory default
+
+* configure: libs belonging to providers (id3, vorbis, ...) were erraneously
+             linked to evidence proper rather than to the provider in question
+
+* theme: new config-option "icon-mode", sets variable of same name.
+         useful values are {w,h}/h and {w,h}/w. {w,h} means that both width
+         and height of the thumbnail are scaled.  h as a divisor indicates
+         that the thumbnail should be as high as a normal icon, no matter
+         what width that will result in -- this is adequate for smaller
+         icon-sets, as it tends to prevent the thumbnails from getting too
+         small.  w as a divisor indicates that the thumbnail should be as
+         wide as a canonical icon, no matter what the height will be.
+         the special value "auto" will scale the thumbnail to its maximum
+         within the bounding-box of the icon while retaining the thumbnails
+         aspect ratio, which in real terms means, "make thumbnail as wide
+         as an icon, unless that would mean it's higher than an icon; in
+         this case, make the thumbnail as high as an icon instead."
+
+         icon: 32x48
+
+         icon-mode    640x480 picture    320x960 picture
+         {w,h}/w      32x24 thumbnail    32x96 thumbnail
+         {w,h}/h      64x48 thumbnail    16x48 thumbnail
+         auto         32x24 thumbnail    16x48 thumbnail
+
+* evas2: thumb-nailing and resize-calculations moved from icon-factories
+         to evas2 as they're generic
+
+* evas2: thumb-nailing uses imlib2 now so we get all the funky formats that
+         there are imlib-loaders for (png, jpg, gif, xcf, ...), rather than
+         the measly jpg and png evas offers us.  the API was designed so we
+         can change the internals back to evas once that knows more formats
+         with the icon-factories being none the wiser
+
+2002/12/17  Azundris                                 <evidence@azundris.com>
+
+* actions: delete-action added
+* uGTK2_Evas2: gevas stuff further trimmed down
+* evas2: when changing into a folder with less icons than the current one,
+         stuff sometimes wasn't displayed
+* POSIX: last fix broke major type wild-card (image/*) MIME handlers
+* theme: idle-engine semantics changed so there are init/exit functions.
+         init is expected to return the desired frequency for the handler.
+         exit gives the idle-handler a chance to clean up on being destalled.
+* theme: additional theme-dir smartness
+* setup: mucho smartness added to theme_ms()  (theme-component finder)
+* theme: themes were not loaded when absolute path was given to -T
+* tree-view: erraneously listened not only for controlled, but also for
+             alternated keys, hence Alt-I gave both a switch to icon-view
+             *and* an info-dial
+* evidence crashed when theme could not be loaded
+* compiled GTK2 to just bomb out where the error occurs rather than printing
+  some meaningless drivel and denying me my backtrace.  makes debugging a
+  breeze; also speeds things up
+* browser_view: if no item is focused, we'll assume the first item, thereby
+                avoiding a GTK treepath-warning
+* tree_view: if no item is focused, we'll assume the first item, thereby
+             avoiding a GTK treepath-warning
+
+2002/12/16  Azundris                                 <evidence@azundris.com>
+
+* fishtank-theme and icons added:
+  evidence -iI -T fishtank --iconset fishtank_128
+* execution of executables didn't execute
+* CVS cleanup: properties dialog moved from "providers" to new dir "actions"
+* idle-marshaller added
+* themes: new tags idle-fun-shelf, idle-fun-icon-view
+* themes: new engine-type "idle" added
+* themes: new engine id_bubble (example idle-engine)
+* themes: new theme "fishtank"
+* menu: "garbage-collection" added, dlclose()s menu-actions that are not
+        used for "a long time"
+* meta: "garbage-collection" added, dlclose()s meta-data providers that are
+        not used for "a long time"
+
+2002/12/15  Azundris                                 <evidence@azundris.com>
+
+* docs updated
+* info: changed menu-done detection to the "right" way of doing it
+* info: basic root-menu (switches between the views for now)
+* info: context-menu temporarily did not show wildcard-entries
+* info: context-menu temporarily showed entries for special types twice
+* transparency: pseudo-transparency pixmap-creation went from evas2.c into the
+                background-handler that actually uses it -- bloat avoided.
+* transparency: updates properly when window is moved ("configure-event")
+* bg_edb_trans: draw a ebg data-base on top of a transparency pixmap.  yeah!
+                go go gadgetto eyecandy!!
+* more comments
+
+2002/12/14  Azundris                                 <evidence@azundris.com>
+
+* cleanup: comments for evidence.h; noir_file moved from evidence.h to effigy
+* info: if tooltip was activated by delay (rather than by click or by
+        keyboard), evidence will check again whether the mouse is still
+        on the icon just before opening the tooltip (reported by tillsan)
+* options: --with-tooltips
+* icon-view/shelf: tooltips are now off by default
+
+2002/12/13  Azundris                                 <evidence@azundris.com>
+
+* evas2: background redraw assumed use of ebg, calls bg_upd(...) in
+	 theme-plugin now instead
+* browser-view: more mouse
+* evas2: towards transparency (not workable yet)
+* evidence did not always terminate when last window was closed
+* root-menu: basics
+
+2002/12/09  Azundris                                 <evidence@azundris.com>
+
+* icon-view: tooltips did not pop-up (but could be forced by hotkey)
+* POSIX-backend: MIME handling improved
+* icon-view/shelf: MIME-type correct for dropped-in files
+* setup: file-search streamlined for case "icons"
+* icon-view: prelim icon-set added
+* options: new options -p (--icon-set) added
+
+2002/12/08  Azundris                                 <evidence@azundris.com>
+
+* tooltip: GTK2 tooltip now closes on keypress (useful if you forced it by
+           keyboard in the first place...)
+* browser-view: cursor-keys, ^I, ^M added
+* browser-view: path-menu, root-menu added
+* evas2: removed those ugly constants, using actual extents of canvas for
+         redraw now
+* icon-view: redraw error when using path-menu fixed
+* type-buffer: utilizes $PATH now (was somewhat useless without that)
+* tree-view: tree_view_focus() unfolds directories along the way again
+* shelf: only worked after icon-view was mapped
+* more robustness
+
+2002/12/06  Azundris                                 <evidence@azundris.com>
+
+* evidence broke on stale NFS-mounts; fixed
+
+2002/12/05  Azundris                                 <evidence@azundris.com>
+
+* context menu only contains programs that can actually be found now
+  (checked at startup)
+
+2002/12/04  Azundris                                 <evidence@azundris.com>
+
+* context menu failed to properly submit non-URL arguments with spaces
+
+2002/12/03  Azundris                                 <evidence@azundris.com>
+
+* configure: checks for version of id3lib now
+
+2002/11/30  Azundris                                 <evidence@azundris.com>
+
+* fix for Mandrake (declares requirement of autoconf 2.53 or better now)
+* fix for builds without canvas
+* icon-view: support for mouse-wheel
+* 0.9.2
+* icon-view: empty ".files" folders caused weirdness when opened
+* icon-view: FX for "open folder" and "execute"  (the obligatory zoom-in)
+
+2002/11/29  Azundris                                 <evidence@azundris.com>
+
+* Happy Chanukah!
+* icon-view: ^I opens tooltip
+* docs updated
+* file_efsd.c somehow dropped out of the repository, re-added
+* icon-view: typing closes tooltip now
+* icon-view: incremental search -- typing the beginning of a file-name will
+  assign key-focus to the first icon whose file-name starts with said letters
+* icon-view: smoother scrolling
+* removed unused scroll-area wrapping gevas
+* removed a lot of dead and should-be-dead code from uGTK2_Evas2.[ch]
+* minor beautifications in POSIX-backend
+
+2002/11/28  Azundris                                 <evidence@azundris.com>
+
+* previous version accidentally didn't compile with gcc < 3, fixed
+
+2002/11/24  Azundris                                 <evidence@azundris.com>
+
+* multi-view (stable?)
+* opening completely empty directories confused the tree in tree_getdir()
+* ^A selects all in icon-view, Shift-^A deselects all
+* API-cleanup
+* model/store-related stuff moved from tree_view.c to tree_model.c
+* file_get_meta() returns a MD list; file_get_info() sets store
+  => info()-requests are independent from the store now
+* gnome-vfs compiles again
+* gnome-vfs is properly detected again
+
+2002/11/20  Azundris                                 <evidence@azundris.com>
+
+* typebuffer.c tree-free
+* shelf.c tree-free
+* icon_view.c tree-free
+* SAVE_ITERS/RESTORE_ITERS dirt thrown out
+* API for info_action_menu() cleaned up
+
+2002/11/18  Azundris                                 <evidence@azundris.com>
+
+* multi-view (basics)
+
+2002/11/17  Azundris                                 <evidence@azundris.com>
+
+* rubber-band selected wrong items when view wasn't at pos0
+* new option --full-screen
+* new option --geometry
+* new option --efm (shortcut for --no-shelf --no-tabs --T essence)
+* new option --no-decorations (per tillsan)
+* new option --no-shelf
+* new option --no-tabs (views can still be switched using Alt-i, Alt-b, ...)
+
+2002/11/09  Azundris                                 <evidence@azundris.com>
+
+* 0.9.1
+* icon-view: return opens folder/executes application
+* themes: "essence"-type scrollbar added (sb_edb)
+* thumbnails were not shrunk if evas was used i/o gnome-canvas
+* icon-view:  default-state was erraneously display on top of selected state
+              when selected
+* evidence crashed on resizing the shelf : (
+
+2002/11/08  Azundris                                 <evidence@azundris.com>
+
+* menu: if action contains no %-substitution, it will be assumed that it is a
+        program that can be passed files as parameters.
+        Hence,
+	- foo.so is loaded and started as a shared object,
+        - "foo -xyz %f -v" will be started as "foo -xyz myfile.txt -v",
+        - "foo -xyz %u -v" will be started as "foo -xyz file://myfile.txt -v",
+        - "foo" will be started as "foo myfile.txt".
+        IOW, evidence should render the expected behaviour for all supported
+	formats.
+* options: -I -- show thumbnails in icon-view, -S -- show thumbnails in shelf
+* tooltips: pictures work okay now in traditional tooltip
+* themes: ic_alignbelow default colours adjusted to those of essence theme
+
+2002/11/07  Azundris                                 <evidence@azundris.com>
+
+* icon-view: recognizes colours DND'd from GIMP and friends now (does not
+             read to them yet, however)
+
+2002/11/06  Azundris                                 <evidence@azundris.com>
+
+* themes: rb_gradient2 added (rubber-band essence/efm-style)
+
+2002/11/05  Azundris                                 <evidence@azundris.com>
+
+* themes can set fonts and font-sizes from config-file now
+* themes fall back on system-fonts now
+* themes: tt_traditional added
+* themes: ic_alignbelow added
+* themes: sb_edb basics
+* tooltips: will not show if mouse has left icon since tooltip was enqueued
+
+2002/10/13  Azundris                                 <evidence@azundris.com>
+
+* effigy: reads and writes now!
+* fixes and updates in meta, info, and the vorbis and mp3 providers
+
+2002/10/12  Azundris                                 <evidence@azundris.com>
+
+* effigy: buttons fixed
+* effigy: table fixed
+* themes: icon for about-dial may be supplied as jpg, gif or png now
+* meta: the EA-list is guaranteed to be non-interleaved now, ie, all
+        items belonging to one group come after one another, then the
+        next group starts, no matter which order the EAs were added in
+
+2002/09/30  Azundris                                 <evidence@azundris.com>
+
+* icon-list: must click on one of the icon's elements to select, not just in
+             the bounding-box
+* effigy: complete rewrite, made it generic
+
+2002/09/22  Azundris                                 <evidence@azundris.com>
+
+* 0.9.0
+* made application execution (more) generic
+* build-process: ogg/vorbis and mp3 providers build again
+* disables canvas on broken theme now rather than not starting at all
+* MIME-groups fixed
+* start-up while not installed fixed (developers only!)
+* removed duplicate parsers, all setup files can have quotes now
+  (reported by glassy)
+* theme-format established
+* modular binary themes
+* some cleaning up
+* loads properly from new path layout now (reported by glassy)
+
+2002/09/21  Azundris                                 <evidence@azundris.com>
+
+* icon-list: click-through tooltips
+* icon-list: fadein to match fadeout
+* icon-list: evas2 tooltips (experimental)
+* switch -T takes absolute paths now
+* themes can bring their own fonts now
+* icon-list: when icon-view gets mapped, kbd-focus is grabbed
+* icon-list: dragging of scrollbar works now
+* icon-list: scrollbar page-up/page-down works correctly for compound-sbs
+
+2002/09/18  Azundris                                 <evidence@azundris.com>
+
+* icon-list: scroll-bar is initialized to correct size
+* icon-list: scroll-bar works, needs some fine-tuning
+
+2002/09/15  Azundris                                 <evidence@azundris.com>
+
+* icon-view: if a selection exists, dragging an icon that is not part of
+             said selection will make same icon the selection
+* my compiles will no longer pull in libiconv (reported by catalyst)
+
+2002/09/06  Azundris                                 <evidence@azundris.com>
+
+* icon-view: selections with shift + cursor-keys
+* icon-view: fixed the redraw issues!
+* icon-view: tooltips  (using the GTK ones for now, will add evas ones later)
+* icon-view: scrolling (via keyboard) works
+* icon-view: DND works
+* shelf:     DND works (testing)
+
+2002/09/05  tillsan                                  <evidence@azundris.com>
+
+* lots of autofoo -- conditionals for canvas, installs go to right places,
+  effigy (info_dial.so) is built again, ...
+
+2002/09/05  Azundris                                 <evidence@azundris.com>
+
+* setup.c:   more lenient about finding required stuff
+* icon-list: cleaned up namespace
+* icon-view: rubber-band works both ways now
+* icon-view: prelim keyboard-nav
+* HAVE_GNOMEUI -> HAVE_GNOMECANVAS
+* HAVE_GEVAS2  -> HAVE_EVAS2
+* canvas can be selected in configure
+* icon-view: rubber-band selection (incl. modifiers!)
+
+2002/09/04  Azundris                                 <evidence@azundris.com>
+
+* setup.c:   now makes amends for the changed dir-layout for backends
+* typebuf.c: hotfix for changing dirs while in icon-view. not pretty.
+* options.c: can choose initial view now
+* options.c: themes still work giving initial directory
+* ex-gevas2: "discontinuous" selections work correctly
+* ex-gevas2: fixed minor evas condition
+* icon-view: left button selections added (with modifiers et al.)
+* ex-gevas2: cleanup
+* icon-view: background themes handled correctly on resize
+* icon-view: gevas2 thrown out, using pure evas2 now.
+* icon-view: icon-list abstraction and icon-factory
+* icon-view: middle and right button connected
+* icon-view: TODO - DND, right scrollbar
+
+2002/09/02  Azundris                                 <evidence@azundris.com>
+
+* RPMs build correctly now
+
+2002/09/01  Azundris                                 <evidence@azundris.com>
+
+* GNUified by till
+* Ebg added
+
+2002/08/27  Azundris                                 <evidence@azundris.com>
+
+* fixed dependencies for target "eg"
+* gnome-i18n dep removed from cr_arrow.c (reported by till)
+
+2002/08/26  Azundris                                 <evidence@azundris.com>
+
+* gevas2 for icon-view (not operational, but there)
+* gevas2 for shelf (not operational, but there)
+* fixed the "disappearing fonts" problem with gevas2
+* icon-path in browser-view can now be double-, middle-, right clicked
+
+2002/08/25  Azundris                                 <evidence@azundris.com>
+
+* fixes for compiling with "built-in libgnomeui"
+* tentative gevas2 integration
+* more gevas2 work
+* binary shouldn't be stripped when plug-ins require its symbols : )
+  (reported by atmos)
+
+2002/08/20  Azundris                                 <evidence@azundris.com>
+
+* pixmaps can be overridden from ~/.evidence/pixmaps now
+* new make target "install-home" that will install existing binaries
+  in user's home-directory without trying to remake them
+* new make target "install-bin" that will install existing binaries
+  without trying to remake them (will install binary distribution)
+* FAQ added
+* some Makefile cleaning
+* new config-item HAVE_PCRE
+* pcre-config used (reported by glassy)
+* lingering libgnomeui-dependency killed (reported by glassy)
+
+2002/08/19  Azundris                                 <evidence@azundris.com>
+
+* release 0.8.7
+* about-info updated
+* icon-view broke on empty ".files"-folders (the ".. .. .." bug)
+  (reported by glassy)
+* bonobo dependy resolved (reported by glassy)
+
+2002/08/15  Azundris                                 <evidence@azundris.com>
+
+* tree-view fixed!!!
+
+2002/08/14  Azundris                                 <evidence@azundris.com>
+
+* actually starts programs now (activate as executable, activate as parameter
+  to dropped-on executable, activate using handler for MIME-type)
+* backends are dyna-loaded shared objects now
+* backends no longer all compiled in
+* backends now in separate folder
+
+2002/08/13  underDOG                            <k9underdog@sourceforge.net>
+
+* effigy split in dialog handler and basics dialog
+
+2002/08/13  Azundris                                 <evidence@azundris.com>
+
+* mime.types, mime.icons now user-overridable
+* providers/Makefile fixed
+
+2002/08/11  Azundris                                 <evidence@azundris.com>
+
+* Gnome-include dep in gnome-icon-item fixed, thanks to till
+* effigy's property-dialog works as first and archetypical file-action
+* menu-actions now dyna-loaded shared objects
+* action-menu for files added
+* effigy (standalone) now works correctly when more than one file is given
+* mp3-provider writes back data
+* new target "dist" creates a distribution (maintainer only)
+* vorbis-provider writes back data
+* providers in own directory
+
+2002/08/10  Azundris                                 <evidence@azundris.com>
+
+* effigy works standalone
+
+2002/08/09  Azundris                                 <evidence@azundris.com>
+
+* release 0.8.5
+* weeded out pointless columns in tree-view
+* reordered items in tooltips
+* integrated effigy
+* rewrote meta-code to suit needs of effigy (file-properties dialog)
+* designed effigy/tooltip/provider/layout architecture (docs/providers)
+
+2002/08/09  underDOG                            <k9underdog@sourceforge.net>
+
+* effigy basics
+
+2002/08/08  Azundris                                 <evidence@azundris.com>
+
+* evidence can now be built without GNOME; the missing bits will be filled
+  in.  this adds almost 100 KB to the binary, but enables us to drop 26(!)
+  shared objects from our dependency list (the ones libgnomeui sucks in).
+  in other words, it's worthwile if you're not using any GNOME-programs,
+  otherwise, build evidence to use libgnomeui.
+
+2002/08/07  Azundris                                 <evidence@azundris.com>
+
+* assorted touch-ups
+* if HAVE_GNOMEUI is not defined (in config.h), evidence will be built
+  without GNOME-support.  this means we can drop 26(!) shared objects
+  from our dependency list (the ones libgnomeui sucks in)...
+  it also means shelf and icon-view will not be compiled in, but we'll
+  rectify that in good time.
+* shelf: tooltips actually stay open now
+* shelf: removed silly demo-icons
+* added a few statics here and there
+* tooltips: now show file-size in appropriate unit (bytes, KB, MB, ...) --
+  suggested by underDOG
+* browser-view: gets scrolled to extreme right after selecting a dir;
+  suggested by underDOG
+
+2002/08/05  Azundris                                 <evidence@azundris.com>
+
+* release 0.8.3
+* POSIX file-backend completed: mv, ln, ln -s, rm, mkdir, rmdir, cp
+* POSIX file-backend connected
+* DND completed
+* icon_view:  tooltips will no longer pop up in the middle of dragging icons
+* icon_view:  delete callback erraneously was called twice
+* typebuffer: regular expressions for "ls" (basics)
+
+2002/08/03  Azundris                                 <evidence@azundris.com>
+
+* provider for MP3 metadata added
+* manual and docs updated
+* release 0.8.0
+* current directory is shown in window-title
+* handler for meta-data modules that determine the MD for a certain mime-type
+  and provide that to tooltips etc.
+* sample meta-data handler for Ogg-Vorbis files
+* user-configuration moved to config.h
+
+2002/08/01  Azundris                                 <evidence@azundris.com>
+
+* icon-view: dirs we don't have permissions for will not open, rather than
+  open and look empty
+
+2002/07/31  Azundris                                 <evidence@azundris.com>
+
+* DND almost completed
+* clipboard (cut/copy/paste primary selection) in typebuffer
+* clipboard (cut/copy/paste primary selection) basics for views
+* using stock dialogs now for consistent GTK look & feel
+
+2002/07/30  Azundris                                 <evidence@azundris.com>
+
+* monitors framework rewritten
+* direct (POSIX) monitors work
+
+2002/07/29  Azundris                                 <evidence@azundris.com>
+
+* problems with folders containing exactly one hidden file fixed
+* release 0.7.7
+* added dependencies to Makefile
+* mouse-button handlers re-written (more consistent, fixed a minor leak)
+* tooltips re-written (no more "click-thrus")
+* tooltips can be forced with middle button in browser/tree-view
+* some crashes fixed
+
+2002/07/28  Azundris                                 <evidence@azundris.com>
+
+* tree_view_focus() rewritten.  they all go through tree_get_iter() now,
+  which in turn now JIT-loads (using tree_view_expand()) where necessary.
+* dot-folders fixed?  work in browser-view now.
+* folders we cannot open (permissions etc.) are no longer listed as empty
+  (reported by omni)
+
+2002/07/25  Azundris                                 <evidence@azundris.com>
+
+* DND works in shelf
+* DND type popup if type is 'ask'
+* URL-handlers added in typebuffer
+* abstracted file/dir-monitoring
+* .. and . handled in type-buffer (reported by tillsan)
+* option "debug" added; all non-temporary fprintfs made conditional
+* DND crashed in icon-view and shelf when the same icon was dragged twice
+
+2002/07/25  Omni
+
+* added decent Makefile
+* added option-handler
+
+2002/07/24  Azundris                                 <evidence@azundris.com>
+
+* more work on DND
+* typebuffer works
+
+2002/07/23  Azundris                                 <evidence@azundris.com>
+
+* more work on DND
+* more work on tooltips
+* preliminary dot-file folders
+* Makefile fixed (reported by omni and catalyst)
+
+2002/07/21  Azundris                                 <evidence@azundris.com>
+
+* icon-view sort-order no longer reversed : )
+* icon-view sped up mucho
+* icon-view no longer shows thumbnails, they moved to the tooltips
+* tooltips added
+
+2002/07/19  Azundris                                 <evidence@azundris.com>
+
+* icons and thumbnails will only be loaded when icon-view is mapped.
+  => big speed-up for large dirs.
+* directories are recognizable as such in browser-view.
+* middle-click opens path-menu.
+
+2002/07/12  Azundris                                 <evidence@azundris.com>
+
+* handling of symlinks unbroken.
+* browser-view now resizes properly.
+* drag and drop basics added for icon-view.
+
+2002/07/11  Azundris                                 <evidence@azundris.com>
+
+* browser-view.
+* drag and drop basics added for tree-view and browser-view.
+* keyboard navigation added for tree-view.
+* views properly synchronized.
+* tumbnails in icon-view.
+* right-button hooks (will show file-info later).
+* type-buffer hooks.
+
+2002/07/03  Azundris                                 <evidence@azundris.com>
+
+* icon-view, shelf, dir-path.
+* backend abstracted, direct fs-access backend plugged back in.
+! It leaks memory.  Will fix.
+
+2002/07/01  Azundris                                 <evidence@azundris.com>
+
+* tree-view & store
+* backend for direct file-ops
+* Just In Time-loading of directories
+* searching, resizing and reordering of columns (GTK-builtins)
+! not bad considering that around this time yesterday, I didn't
+  know GTK, let alone GTK2.  : )

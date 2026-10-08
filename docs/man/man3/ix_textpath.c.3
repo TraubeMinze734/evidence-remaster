@@ -1,0 +1,57 @@
+.TH "ix_textpath.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ix_textpath.c \- common routines for 'text-path' plugins 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBext_evt\fP (\fBicon_list\fP *il, \fBicon\fP *i, int x, int y, int b, theme_area_event_type t, theme_area_event_modifiers m, void *data, void **rp)"
+.br
+.RI "\fIsomething happened in the area that is 'owned' by this extension. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+common routines for 'text-path' plugins 
+
+written by Azundris
+.SH "Function Documentation"
+.PP 
+.SS "int ext_evt (\fBicon_list\fP * il, \fBicon\fP * i, int x, int y, int b, theme_area_event_type t, theme_area_event_modifiers m, void * data, void ** rp)"
+.PP
+something happened in the area that is 'owned' by this extension. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC if we handled and 'swallowed' the event, NOIR_IGNORED otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list where the event happened 
+.br
+\fIi\fP - the instance of this extension 
+.br
+\fIx\fP - mouse/x 
+.br
+\fIy\fP - mouse/y 
+.br
+\fIb\fP - mouse/button 
+.br
+\fIt\fP - event-type (see theme.h) 
+.br
+\fIm\fP - modifiers (see theme.h) 
+.br
+\fIdata\fP - user-data (often the session) 
+.br
+\fIrp\fP - where the plugin can return a pointer
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

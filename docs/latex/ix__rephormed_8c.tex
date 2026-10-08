@@ -1,0 +1,165 @@
+\hypertarget{ix__rephormed_8c}{
+\section{ix\_\-rephormed.c File Reference}
+\label{ix__rephormed_8c}\index{ix_rephormed.c@{ix\_\-rephormed.c}}
+}
+plugin that creates and handles a \char`\"{}text-path\char`\"{} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{ix__rephormed_8c_a16}{ext\_\-upd} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$\hyperlink{struct__icon}{icon}, void $\ast$data)
+\begin{CompactList}\small\item\em create/update the area \char`\"{}owned\char`\"{} by the extension \item\end{CompactList}\item 
+static int \hyperlink{ix__rephormed_8c_a17}{ix\_\-expire\_\-visuals} (ix\_\-param $\ast$param)
+\begin{CompactList}\small\item\em a property (shadow, alpha, font, . \item\end{CompactList}\item 
+static int \hyperlink{ix__rephormed_8c_a18}{ix\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our numeric properties. \item\end{CompactList}\item 
+static int \hyperlink{ix__rephormed_8c_a19}{ix\_\-str\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our string-properties. \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{ix__rephormed_8c_a20}{evas\_\-path\_\-corner} (Evas $\ast$evas, int w, int h, int cw, int ch, int sel, int drop\_\-shadow, int alpha)
+\begin{CompactList}\small\item\em draw the right-most \char`\"{}rounded off\char`\"{} element of the text-path \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{ix__rephormed_8c_a21}{evas\_\-path\_\-shadow} (Evas $\ast$evas, int drop\_\-shadow, int alpha)
+\begin{CompactList}\small\item\em create an evas-object containing a drop-shadow. \item\end{CompactList}\item 
+int \hyperlink{ix__rephormed_8c_a22}{ext\_\-dst} (\hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em destruct user-data of this extension \item\end{CompactList}\item 
+int \hyperlink{ix__rephormed_8c_a23}{ext\_\-die} (noir\_\-theme $\ast$theme, \hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em destall factory -- unregister listeners, free any resources etc. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that creates and handles a \char`\"{}text-path\char`\"{} 
+
+written by Azundris, design idea by rephorm
+
+EXTENSIONS (icon $\ast$i)il-$>$theme-$>$areas anchors a list of all extensions for icon-list il. each of these \char`\"{}icon\char`\"{} entries describes a single extension. user1 of each of these \char`\"{}icon\char`\"{} entries contains a pointer to a theme\_\-area struct that contains function pointers, a shared object-handle, and space for extra user-data. each of these \char`\"{}icon\char`\"{} entries is likely to have one or more sub-entries of the \char`\"{}icon\_\-el\char`\"{} type that describe the rectangle-list of the extension. the user1 of each of these \char`\"{}icon\_\-el\char`\"{} entries is not used by evidence and may be used by the extensions to store pointers particular to the given rectangle. the nature of the data pointed to may vary from extension to extension.
+
+icon +- user1\{theme\_\-area $\ast$\} theme\_\-area object $|$ +- user1,user2,user3,user4 extension-specific pointers $|$ +- lib library-handle $|$ +- ext\_\-upd, ext\_\-dst, ext\_\-evt functions in extension +- user2\{void $\ast$\} extension-specific pointer +- els\{icon\_\-el $\ast$\} rectangle list of extension $|$ +- user1\{file\_\-info $\ast$\} extension-specific pointer $|$ +- xo,yo,w,h\{int\} position and area of rectangle $|$ +- ... $|$ +- next\{icon\_\-el $\ast$\} next rectangle +- next\{icon $\ast$\} next extension
+
+TEXTPATH each extension is described by an entry of the \char`\"{}icon\char`\"{} type. its \char`\"{}user1\char`\"{} element points to an object of the \char`\"{}theme\_\-area\char`\"{} type that contains function pointers etc. for the particular extension. a \char`\"{}textpath\char`\"{} extension will normally have a list of \char`\"{}icon\_\-el\char`\"{} elements attached to it, one for each element of the path to the current directory. each icon\_\-el will have its \char`\"{}user1\char`\"{} element pointing to the \char`\"{}file\_\-info\char`\"{} struct describing the directory referred to by the icon\_\-el in evidence's internal model of the file-system:
+
+icon +- user1\{theme\_\-area $\ast$\} theme\_\-area object $|$ +- user1,user2,user3\{Evas\_\-Object $\ast$\} light \char`\"{}corner\char`\"{} object, dark $|$ $|$ corner, drop shadow $|$ +- user4 properties-struct $|$ +- lib library-handle $|$ +- ext\_\-upd, ext\_\-dst, ext\_\-evt functions in extension +- user2\{file\_\-info $\ast$\} dir previously shown path for $|$ (in internal model of file-system) +- els\{icon\_\-el $\ast$\} rectangle list of extension $|$ +- user1\{file\_\-info $\ast$\} file-info of referred-to dir $|$ $|$ in internal model of file-system $|$ +- xo,yo,w,h\{int\} position and area of rectangle $|$ +- ... $|$ +- next\{icon\_\-el $\ast$\} next rectangle +- next\{icon $\ast$\} next extension
+
+\subsection{Function Documentation}
+\hypertarget{ix__rephormed_8c_a20}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!evas_path_corner@{evas\_\-path\_\-corner}}
+\index{evas_path_corner@{evas\_\-path\_\-corner}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[evas\_\-path\_\-corner]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ evas\_\-path\_\-corner (Evas $\ast$ {\em evas}, int {\em w}, int {\em h}, int {\em cw}, int {\em ch}, int {\em sel}, int {\em drop\_\-shadow}, int {\em alpha})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ix__rephormed_8c_a20}
+
+
+draw the right-most \char`\"{}rounded off\char`\"{} element of the text-path 
+
+\begin{Desc}
+\item[Returns:]an Evas-object containing the right-most \char`\"{}rounded off\char`\"{} element of the text-path, or NULL for failure \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]- the canvas to create the image-object on \item[{\em w}]- total width in pixels \item[{\em h}]- total height in pixels \item[{\em cw}]- width of rounded zone in pixels \item[{\em ch}]- height of rounded zone in pixels \item[{\em sel}]- selected (invert)? \item[{\em drop\_\-shadow}](0, none; 2, drop-shadow) \item[{\em alpha}](0, translucent; 255, solid)\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a21}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!evas_path_shadow@{evas\_\-path\_\-shadow}}
+\index{evas_path_shadow@{evas\_\-path\_\-shadow}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[evas\_\-path\_\-shadow]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ evas\_\-path\_\-shadow (Evas $\ast$ {\em evas}, int {\em drop\_\-shadow}, int {\em alpha})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ix__rephormed_8c_a21}
+
+
+create an evas-object containing a drop-shadow. 
+
+\begin{Desc}
+\item[Returns:]an Evas-object, or NULL for failure \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em evas}]- which canvas to create the new object on \item[{\em drop\_\-shadow}](0, none; 2, drop-shadow) \item[{\em alpha}](0, translucent; 255, solid)\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a23}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!ext_die@{ext\_\-die}}
+\index{ext_die@{ext\_\-die}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[ext\_\-die]{\setlength{\rightskip}{0pt plus 5cm}int ext\_\-die (noir\_\-theme $\ast$ {\em theme}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{ix__rephormed_8c_a23}
+
+
+destall factory -- unregister listeners, free any resources etc. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em theme}]the theme \item[{\em i}]the theme-area corresponding to this instance of the extension\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a22}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!ext_dst@{ext\_\-dst}}
+\index{ext_dst@{ext\_\-dst}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[ext\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}int ext\_\-dst (\hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{ix__rephormed_8c_a22}
+
+
+destruct user-data of this extension 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]- the instance of this extension\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a16}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!ext_upd@{ext\_\-upd}}
+\index{ext_upd@{ext\_\-upd}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[ext\_\-upd]{\setlength{\rightskip}{0pt plus 5cm}int ext\_\-upd (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em icon}, void $\ast$ {\em data})}}
+\label{ix__rephormed_8c_a16}
+
+
+create/update the area \char`\"{}owned\char`\"{} by the extension 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list that is extended by this plugin \item[{\em icon}]- the instance of this extension \item[{\em data}]- the file-info struct of the current working directory\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a17}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!ix_expire_visuals@{ix\_\-expire\_\-visuals}}
+\index{ix_expire_visuals@{ix\_\-expire\_\-visuals}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[ix\_\-expire\_\-visuals]{\setlength{\rightskip}{0pt plus 5cm}static int ix\_\-expire\_\-visuals (ix\_\-param $\ast$ {\em param})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ix__rephormed_8c_a17}
+
+
+a property (shadow, alpha, font, . 
+
+..) of the textpath was changed, throw out its representation so it gets regenerated. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em param}]- the parameter-block\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a18}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!ix_num_listener@{ix\_\-num\_\-listener}}
+\index{ix_num_listener@{ix\_\-num\_\-listener}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[ix\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int ix\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ix__rephormed_8c_a18}
+
+
+listen for changes in our numeric properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{ix__rephormed_8c_a19}{
+\index{ix_rephormed.c@{ix\_\-rephormed.c}!ix_str_listener@{ix\_\-str\_\-listener}}
+\index{ix_str_listener@{ix\_\-str\_\-listener}!ix_rephormed.c@{ix\_\-rephormed.c}}
+\subsubsection[ix\_\-str\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int ix\_\-str\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ix__rephormed_8c_a19}
+
+
+listen for changes in our string-properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}

@@ -1,0 +1,381 @@
+\hypertarget{evas__bind_8c}{
+\section{evas\_\-bind.c File Reference}
+\label{evas__bind_8c}\index{evas_bind.c@{evas\_\-bind.c}}
+}
+the parts of an icon-list specific to the evas canvas. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{evas__bind_8c_a0}{selection\_\-update} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, \hyperlink{struct__client__funs}{client\_\-funs} $\ast$skip)
+\begin{CompactList}\small\item\em copy selection to all views in a session. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{evas__bind_8c_a1}{evas\_\-get\_\-file\_\-from\_\-icon} (void $\ast$data, \hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em get file-tag from an icon. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a2}{pointer\_\-on\_\-iconlabel\_\-p} (\hyperlink{struct__icon}{icon} $\ast$i, int x, int y)
+\begin{CompactList}\small\item\em check whether mouse-pointer is over a given icon's label. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a3}{pointer\_\-on\_\-icon\_\-p} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, int x, int y)
+\begin{CompactList}\small\item\em check whether mouse-pointer is over a given icon. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a4}{evas\_\-rename\_\-icon} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, \hyperlink{struct__icon}{icon} $\ast$i)
+\begin{CompactList}\small\item\em rename the file represented by a given icon. \item\end{CompactList}\item 
+void \hyperlink{evas__bind_8c_a5}{evas\_\-keyed\_\-icon} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int new)
+\begin{CompactList}\small\item\em focus new icon by keyboard. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a6}{evas\_\-find\_\-icon\_\-by\_\-string\_\-chk} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, size\_\-t $\ast$l)
+\begin{CompactList}\small\item\em got key in evas. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a7}{evas\_\-find\_\-icon\_\-by\_\-string} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em find first icon whose name matches il-$>$find. \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{evas__bind_8c_a8}{evas\_\-find\_\-first\_\-selected} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em find first selected icon. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a9}{sb\_\-chk} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, int x, int y)
+\begin{CompactList}\small\item\em check whether mouse is over scrollbar. \item\end{CompactList}\item 
+void \hyperlink{evas__bind_8c_a10}{sb\_\-update} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int scrolled)
+\begin{CompactList}\small\item\em update scroll-bar and icon-list. \item\end{CompactList}\item 
+void \hyperlink{evas__bind_8c_a11}{icon\_\-el\_\-data\_\-dst} (void $\ast$data)
+\begin{CompactList}\small\item\em destruct data (Evas-Object) of an icon-element. \item\end{CompactList}\item 
+void \hyperlink{evas__bind_8c_a12}{icon\_\-move} (\hyperlink{struct__icon}{icon} $\ast$i, int x, int y)
+\begin{CompactList}\small\item\em move an icon. \item\end{CompactList}\item 
+void \hyperlink{evas__bind_8c_a13}{evas\_\-icon\_\-set\_\-state} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, icon\_\-state s)
+\begin{CompactList}\small\item\em set state (selected, normal, . \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a14}{evas\_\-icon\_\-chg\_\-event} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em update the pictogram/thumbnail of an icon. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a15}{evas\_\-ext\_\-evt} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int x, int y, int b, theme\_\-area\_\-event\_\-type t, theme\_\-area\_\-event\_\-modifiers m, void $\ast$data, \hyperlink{struct__icon}{icon} $\ast$$\ast$ext, void $\ast$$\ast$rp)
+\begin{CompactList}\small\item\em propagate mouse-clicks to concerned extension plug-ins \item\end{CompactList}\item 
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{evas__bind_8c_a16}{evas\_\-ext\_\-find} (\hyperlink{struct__icon}{icon} $\ast$$\ast$areas, const char $\ast$name)
+\begin{CompactList}\small\item\em find extension plugin by name. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a17}{evas\_\-ext\_\-upd} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em redraw all extensions in icon-list \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a18}{icon\_\-list\_\-get\_\-selection} (void $\ast$data, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em return current selection of icon-list \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a19}{icon\_\-list\_\-set\_\-selection} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em set selection in icon-view. \item\end{CompactList}\item 
+void \hyperlink{evas__bind_8c_a20}{evas\_\-open\_\-folder} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, Evas $\ast$evas)
+\begin{CompactList}\small\item\em open-folder animation. \item\end{CompactList}\item 
+int \hyperlink{evas__bind_8c_a21}{evas\_\-file\_\-activate} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i, Evas $\ast$evas)
+\begin{CompactList}\small\item\em open-file animation. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+the parts of an icon-list specific to the evas canvas. 
+
+generic parts are in icon\_\-list. gevas-specific parts are in gevas\_\-bind.
+
+\subsection{Function Documentation}
+\hypertarget{evas__bind_8c_a15}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_ext_evt@{evas\_\-ext\_\-evt}}
+\index{evas_ext_evt@{evas\_\-ext\_\-evt}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-ext\_\-evt]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-ext\_\-evt (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em x}, int {\em y}, int {\em b}, theme\_\-area\_\-event\_\-type {\em t}, theme\_\-area\_\-event\_\-modifiers {\em m}, void $\ast$ {\em data}, \hyperlink{struct__icon}{icon} $\ast$$\ast$ {\em ext}, void $\ast$$\ast$ {\em rp})}}
+\label{evas__bind_8c_a15}
+
+
+propagate mouse-clicks to concerned extension plug-ins 
+
+\begin{Desc}
+\item[Returns:]what the extension said (or NOIR\_\-NOTFOUND \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em x}]- window-relative x-position of click \item[{\em y}]- window-relative y-position of click \item[{\em b}]- mouse-buttons \item[{\em t}]- the event-type (press, release, double-click, ...) \item[{\em m}]- modifiers \item[{\em data}]- the session \item[{\em ext}]- where to return the extension that consumed the event, or NULL \item[{\em rp}]- where the extension can store a return value (pointer)\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a16}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_ext_find@{evas\_\-ext\_\-find}}
+\index{evas_ext_find@{evas\_\-ext\_\-find}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-ext\_\-find]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ evas\_\-ext\_\-find (\hyperlink{struct__icon}{icon} $\ast$$\ast$ {\em areas}, const char $\ast$ {\em name})}}
+\label{evas__bind_8c_a16}
+
+
+find extension plugin by name. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em areas}]- the linked list of extensions \item[{\em name}]- the name of the extension we're looking for\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a17}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_ext_upd@{evas\_\-ext\_\-upd}}
+\index{evas_ext_upd@{evas\_\-ext\_\-upd}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-ext\_\-upd]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-ext\_\-upd (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})}}
+\label{evas__bind_8c_a17}
+
+
+redraw all extensions in icon-list 
+
+\begin{Desc}
+\item[Returns:]an error-code $<$ 0, or a count of queried extensions \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]icon-list \item[{\em fi}]the file-info of the current directory\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a21}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_file_activate@{evas\_\-file\_\-activate}}
+\index{evas_file_activate@{evas\_\-file\_\-activate}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-file\_\-activate]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-file\_\-activate (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, Evas $\ast$ {\em evas})}}
+\label{evas__bind_8c_a21}
+
+
+open-file animation. 
+
+will determine whether to run t-$>$ani\_\-open\_\-file() or t-$>$ani\_\-open\_\-app(). will return result of \hyperlink{file_8c_a55}{file\_\-activate()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- icon-list \item[{\em i}]- icon \item[{\em evas}]- evas, or NULL for auto\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a8}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_find_first_selected@{evas\_\-find\_\-first\_\-selected}}
+\index{evas_find_first_selected@{evas\_\-find\_\-first\_\-selected}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-find\_\-first\_\-selected]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__icon}{icon}$\ast$ evas\_\-find\_\-first\_\-selected (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{evas__bind_8c_a8}
+
+
+find first selected icon. 
+
+called from \hyperlink{gevas__bind_8c_a24}{gevas\_\-bind::gevas\_\-keyed()}. used as a fallback when an icon should be selected via keyboard, but isn't. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a7}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_find_icon_by_string@{evas\_\-find\_\-icon\_\-by\_\-string}}
+\index{evas_find_icon_by_string@{evas\_\-find\_\-icon\_\-by\_\-string}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-find\_\-icon\_\-by\_\-string]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-find\_\-icon\_\-by\_\-string (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{evas__bind_8c_a7}
+
+
+find first icon whose name matches il-$>$find. 
+
+called from \hyperlink{gevas__bind_8c_a24}{gevas\_\-bind::gevas\_\-keyed()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a6}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_find_icon_by_string_chk@{evas\_\-find\_\-icon\_\-by\_\-string\_\-chk}}
+\index{evas_find_icon_by_string_chk@{evas\_\-find\_\-icon\_\-by\_\-string\_\-chk}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-find\_\-icon\_\-by\_\-string\_\-chk]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-find\_\-icon\_\-by\_\-string\_\-chk (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, size\_\-t $\ast$ {\em l})}}
+\label{evas__bind_8c_a6}
+
+
+got key in evas. 
+
+check whether find-string has timed out. if so, start a new one, else add to existing one. called from \hyperlink{gevas__bind_8c_a24}{gevas\_\-bind::gevas\_\-keyed()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em l}]- where length of the find-string (il-$>$find) lives\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a1}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_get_file_from_icon@{evas\_\-get\_\-file\_\-from\_\-icon}}
+\index{evas_get_file_from_icon@{evas\_\-get\_\-file\_\-from\_\-icon}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-get\_\-file\_\-from\_\-icon]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ evas\_\-get\_\-file\_\-from\_\-icon (void $\ast$ {\em data}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{evas__bind_8c_a1}
+
+
+get file-tag from an icon. 
+
+called from \hyperlink{gevas__bind_8c_a24}{gevas\_\-bind::gevas\_\-keyed()}, \hyperlink{gevas__bind_8c_a27}{gevas\_\-bind::gevas\_\-clicked()} and \hyperlink{evas__bind_8c_a20}{evas\_\-open\_\-folder()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the session \item[{\em i}]- the icon to get the file from\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a14}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_icon_chg_event@{evas\_\-icon\_\-chg\_\-event}}
+\index{evas_icon_chg_event@{evas\_\-icon\_\-chg\_\-event}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-icon\_\-chg\_\-event]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-icon\_\-chg\_\-event (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})}}
+\label{evas__bind_8c_a14}
+
+
+update the pictogram/thumbnail of an icon. 
+
+called from \hyperlink{icon__view_8c_a21}{icon\_\-view::icon\_\-view\_\-evt()}. \begin{Desc}
+\item[Returns:]an error-code. anything but NOIR\_\-FAIL should be regarded as a suggestion to redraw the icon-view. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list to update \item[{\em i}]- the icon to update \item[{\em fi}]- the file to update\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a13}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_icon_set_state@{evas\_\-icon\_\-set\_\-state}}
+\index{evas_icon_set_state@{evas\_\-icon\_\-set\_\-state}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-icon\_\-set\_\-state]{\setlength{\rightskip}{0pt plus 5cm}void evas\_\-icon\_\-set\_\-state (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, icon\_\-state {\em s})}}
+\label{evas__bind_8c_a13}
+
+
+set state (selected, normal, . 
+
+..) of an icon. if the icon-factory provides a function \hyperlink{ic__nautilus_8c_a22}{icon\_\-set\_\-state()}, that function will be called. if it returns TRUE (or there is no such function), all elements suitable for the desired state will be shown; all others will be hidden. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em i}]- the icon \item[{\em s}]- the desired state\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a5}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_keyed_icon@{evas\_\-keyed\_\-icon}}
+\index{evas_keyed_icon@{evas\_\-keyed\_\-icon}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-keyed\_\-icon]{\setlength{\rightskip}{0pt plus 5cm}void evas\_\-keyed\_\-icon (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em new})}}
+\label{evas__bind_8c_a5}
+
+
+focus new icon by keyboard. 
+
+called from \hyperlink{evas__bind_8c_a7}{evas\_\-find\_\-icon\_\-by\_\-string()} and by \hyperlink{gevas__bind_8c_a24}{gevas\_\-bind::gevas\_\-keyed()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em new}]- the icon that should now be selected, or -1 for none\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a20}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_open_folder@{evas\_\-open\_\-folder}}
+\index{evas_open_folder@{evas\_\-open\_\-folder}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-open\_\-folder]{\setlength{\rightskip}{0pt plus 5cm}void evas\_\-open\_\-folder (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, Evas $\ast$ {\em evas})}}
+\label{evas__bind_8c_a20}
+
+
+open-folder animation. 
+
+will run theme-$>$ani\_\-open\_\-folder() for the given icon. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- session \item[{\em il}]- icon-list \item[{\em i}]- icon \item[{\em evas}]- evas, or NULL for auto\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a4}{
+\index{evas_bind.c@{evas\_\-bind.c}!evas_rename_icon@{evas\_\-rename\_\-icon}}
+\index{evas_rename_icon@{evas\_\-rename\_\-icon}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[evas\_\-rename\_\-icon]{\setlength{\rightskip}{0pt plus 5cm}int evas\_\-rename\_\-icon (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{evas__bind_8c_a4}
+
+
+rename the file represented by a given icon. 
+
+normally called when the label is double-clicked. called from \hyperlink{gevas__bind_8c_a27}{gevas\_\-bind::gevas\_\-clicked()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session \item[{\em i}]- the icon\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a11}{
+\index{evas_bind.c@{evas\_\-bind.c}!icon_el_data_dst@{icon\_\-el\_\-data\_\-dst}}
+\index{icon_el_data_dst@{icon\_\-el\_\-data\_\-dst}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[icon\_\-el\_\-data\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-el\_\-data\_\-dst (void $\ast$ {\em data})}}
+\label{evas__bind_8c_a11}
+
+
+destruct data (Evas-Object) of an icon-element. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the Evas-Object\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a18}{
+\index{evas_bind.c@{evas\_\-bind.c}!icon_list_get_selection@{icon\_\-list\_\-get\_\-selection}}
+\index{icon_list_get_selection@{icon\_\-list\_\-get\_\-selection}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[icon\_\-list\_\-get\_\-selection]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-get\_\-selection (void $\ast$ {\em data}, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{evas__bind_8c_a18}
+
+
+return current selection of icon-list 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the session \item[{\em il}]- the icon-list\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a19}{
+\index{evas_bind.c@{evas\_\-bind.c}!icon_list_set_selection@{icon\_\-list\_\-set\_\-selection}}
+\index{icon_list_set_selection@{icon\_\-list\_\-set\_\-selection}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[icon\_\-list\_\-set\_\-selection]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-list\_\-set\_\-selection (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{evas__bind_8c_a19}
+
+
+set selection in icon-view. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- icon-list\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a12}{
+\index{evas_bind.c@{evas\_\-bind.c}!icon_move@{icon\_\-move}}
+\index{icon_move@{icon\_\-move}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[icon\_\-move]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-move (\hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em x}, int {\em y})}}
+\label{evas__bind_8c_a12}
+
+
+move an icon. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]- the icon to be moved \item[{\em x}]- new x-position \item[{\em y}]- new y-position\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a3}{
+\index{evas_bind.c@{evas\_\-bind.c}!pointer_on_icon_p@{pointer\_\-on\_\-icon\_\-p}}
+\index{pointer_on_icon_p@{pointer\_\-on\_\-icon\_\-p}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[pointer\_\-on\_\-icon\_\-p]{\setlength{\rightskip}{0pt plus 5cm}int pointer\_\-on\_\-icon\_\-p (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em x}, int {\em y})\hspace{0.3cm}{\tt  \mbox{[}inline\mbox{]}}}}
+\label{evas__bind_8c_a3}
+
+
+check whether mouse-pointer is over a given icon. 
+
+this means \char`\"{}within the icon's bounding box, within an element's bounding box, on a non-transparent pixel\char`\"{}. called from \hyperlink{icon__list_8c_a23}{icon\_\-list::icon\_\-list\_\-get\_\-icon\_\-at()}. \begin{Desc}
+\item[Returns:]TRUE or FALSE. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em i}]- the icon \item[{\em x}]- mouse-x, window-relative \item[{\em y}]- mouse-y, window-relative\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a2}{
+\index{evas_bind.c@{evas\_\-bind.c}!pointer_on_iconlabel_p@{pointer\_\-on\_\-iconlabel\_\-p}}
+\index{pointer_on_iconlabel_p@{pointer\_\-on\_\-iconlabel\_\-p}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[pointer\_\-on\_\-iconlabel\_\-p]{\setlength{\rightskip}{0pt plus 5cm}int pointer\_\-on\_\-iconlabel\_\-p (\hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em x}, int {\em y})}}
+\label{evas__bind_8c_a2}
+
+
+check whether mouse-pointer is over a given icon's label. 
+
+called from \hyperlink{gevas__bind_8c_a27}{gevas\_\-bind::gevas\_\-clicked()}. \begin{Desc}
+\item[Returns:]TRUE or FALSE. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]- the icon \item[{\em x}]- mouse-x, window-relative \item[{\em y}]- mouse-y, window-relative\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a9}{
+\index{evas_bind.c@{evas\_\-bind.c}!sb_chk@{sb\_\-chk}}
+\index{sb_chk@{sb\_\-chk}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[sb\_\-chk]{\setlength{\rightskip}{0pt plus 5cm}int sb\_\-chk (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i}, int {\em x}, int {\em y})}}
+\label{evas__bind_8c_a9}
+
+
+check whether mouse is over scrollbar. 
+
+\begin{Desc}
+\item[Returns:]SB\_\-BAR for \char`\"{}over bar\char`\"{}, SB\_\-PGUP for \char`\"{}above\char`\"{}, SB\_\-PGDN for \char`\"{}below bar\char`\"{}. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em i}]- the scroll-bar \item[{\em x}]- mouse-x (icon-list relative) \item[{\em y}]- mouse-y (icon-list relative)\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a10}{
+\index{evas_bind.c@{evas\_\-bind.c}!sb_update@{sb\_\-update}}
+\index{sb_update@{sb\_\-update}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[sb\_\-update]{\setlength{\rightskip}{0pt plus 5cm}void sb\_\-update (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em scrolled})}}
+\label{evas__bind_8c_a10}
+
+
+update scroll-bar and icon-list. 
+
+called from icon-list and \hyperlink{gevas__bind_8c_a18}{gevas\_\-bind::gevas\_\-icon\_\-list\_\-resized()}. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list \item[{\em scrolled}]- was the region damaged only (FALSE), or scrolled as well (TRUE)?\end{description}
+\end{Desc}
+\hypertarget{evas__bind_8c_a0}{
+\index{evas_bind.c@{evas\_\-bind.c}!selection_update@{selection\_\-update}}
+\index{selection_update@{selection\_\-update}!evas_bind.c@{evas\_\-bind.c}}
+\subsubsection[selection\_\-update]{\setlength{\rightskip}{0pt plus 5cm}int selection\_\-update (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, \hyperlink{struct__client__funs}{client\_\-funs} $\ast$ {\em skip})}}
+\label{evas__bind_8c_a0}
+
+
+copy selection to all views in a session. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session \item[{\em skip}]- the calling client (don't call setter on that, it already knows)\end{description}
+\end{Desc}

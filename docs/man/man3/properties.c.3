@@ -1,0 +1,723 @@
+.TH "properties.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+properties.c \- handle properties (theme-elements) 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBlong_to_rgb\fP (long rgb, int *r, int *g, int *b)"
+.br
+.RI "\fIsplit an RGB-value contained in a long into three ints \fP"
+.ti -1c
+.RI "char * \fBprop_canonize_key\fP (char *pn, int modify, int compress)"
+.br
+.RI "\fIcanonize property name -- convert to lower case, weed out _-. \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_remove\fP (noir_prop_bag *b, noir_prop *e)"
+.br
+.RI "\fIremove a property from a list (if list is given and element present therein) \fP"
+.ti -1c
+.RI "static noir_prop * \fBprop_dst\fP (noir_prop *e)"
+.br
+.RI "\fIdestruct a theme-element \fP"
+.ti -1c
+.RI "noir_prop * \fBprop_bag_prop_dst\fP (noir_prop_bag *b, noir_prop *e)"
+.br
+.RI "\fIdestruct a theme-element and remove it from a list (if list is given and element present therein) \fP"
+.ti -1c
+.RI "noir_prop_bag * \fBprop_bag_dst\fP (noir_prop_bag *bag)"
+.br
+.RI "\fIdestroy a bag \fP"
+.ti -1c
+.RI "noir_prop_bag * \fBprop_bag_new\fP (void)"
+.br
+.RI "\fIcreate a bag \fP"
+.ti -1c
+.RI "noir_prop * \fBprop_bag_prop_get\fP (noir_prop_bag *b, const char *key)"
+.br
+.RI "\fIfind theme-element with property-name 'key' \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_walk\fP (noir_prop_bag *b, prop_bag_walker fun, void *data)"
+.br
+.RI "\fIiterate over each element in a property bag \fP"
+.ti -1c
+.RI "noir_prop * \fBprop_bag_prop_get_1st\fP (noir_prop_bag *b)"
+.br
+.RI "\fIget 1st property in bag \fP"
+.ti -1c
+.RI "noir_prop * \fBprop_bags_prop_get\fP (int cnt, noir_prop_bag **bag_ret, const char *key,...)"
+.br
+.RI "\fIget prop from either of a list of bags \fP"
+.ti -1c
+.RI "noir_prop_type \fBprop_get_type\fP (noir_prop *e)"
+.br
+.RI "\fIget the type of a theme-element \fP"
+.ti -1c
+.RI "noir_prop_flags \fBprop_get_flags\fP (noir_prop *e)"
+.br
+.RI "\fIget the flags of a theme-element \fP"
+.ti -1c
+.RI "const char * \fBprop_get_type_as_string\fP (noir_prop *e)"
+.br
+.RI "\fIget the type of a theme-element as string \fP"
+.ti -1c
+.RI "const char * \fBprop_type_to_string\fP (noir_prop_type t)"
+.br
+.RI "\fIdescribe a given theme-element type \fP"
+.ti -1c
+.RI "noir_prop * \fBprop_get_next\fP (noir_prop *e)"
+.br
+.RI "\fIreturn next prop in list \fP"
+.ti -1c
+.RI "const char * \fBprop_get_key\fP (noir_prop *e)"
+.br
+.RI "\fIreturn key of current prop \fP"
+.ti -1c
+.RI "void * \fBprop_get_data\fP (noir_prop *e)"
+.br
+.RI "\fIget pointer at the value of a theme-element \fP"
+.ti -1c
+.RI "char * \fBprop_get_string\fP (noir_prop *e)"
+.br
+.RI "\fIget character-string value from theme-element \fP"
+.ti -1c
+.RI "char * \fBprop_desc\fP (noir_prop *e)"
+.br
+.RI "\fIget a description of a given prop \fP"
+.ti -1c
+.RI "long \fBprop_get_int\fP (noir_prop *e)"
+.br
+.RI "\fIget long integer value from theme-element \fP"
+.ti -1c
+.RI "float \fBprop_get_float\fP (noir_prop *e)"
+.br
+.RI "\fIget floating-point value from theme-element \fP"
+.ti -1c
+.RI "int \fBprop_get_float_int\fP (noir_prop *e)"
+.br
+.RI "\fIget integer-part of a floating-point value from theme-element \fP"
+.ti -1c
+.RI "int \fBprop_get_float_decimals\fP (noir_prop *e)"
+.br
+.RI "\fIget decimal places of a floating-point value from theme-element \fP"
+.ti -1c
+.RI "int \fBprop_get_rgb\fP (noir_prop *e, int *r, int *g, int *b)"
+.br
+.RI "\fIget individual R, G and B values from theme-element \fP"
+.ti -1c
+.RI "char * \fBprop_get_as_string\fP (noir_prop *e)"
+.br
+.RI "\fIget textual representation of the value of a theme-element \fP"
+.ti -1c
+.RI "static int \fBprop_bound\fP (noir_prop *e)"
+.br
+.RI "\fIensure that if a property has a range and/or a step-setting, the value adheres to this called from \fBprop_val()\fP and prop_default() \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_const\fP (noir_prop_bag *b, const char *k, const char *v)"
+.br
+.RI "\fImake a property read-only (const). \fP"
+.ti -1c
+.RI "static int \fBprop_val\fP (noir_prop *e, const char *val)"
+.br
+.RI "\fIset a property from a string. \fP"
+.ti -1c
+.RI "static int \fBprop_bag_prop_add\fP (noir_prop_bag *b, const char *key, const char *val)"
+.br
+.RI "\fIadd a property to a list. \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_set\fP (noir_prop_bag *b, const char *k, const char *val)"
+.br
+.RI "\fIadd a property to a list, or modify it if it already exists. \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_default\fP (noir_prop_bag *b, const char *key, const char *val, float lo, float hi, float step)"
+.br
+.RI "\fIset a default value for a property. \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_listen\fP (noir_prop_bag *b, const char *name, const char *key, property_listener listener, int tag, void *data)"
+.br
+.RI "\fIinstall a listener \fP"
+.ti -1c
+.RI "int \fBprop_bag_prop_deaf\fP (noir_prop_bag *b, const char *name, const char *key, property_listener listener)"
+.br
+.RI "\fIdestall a listener (by name, or by listener-struct) \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+handle properties (theme-elements) 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "void long_to_rgb (long rgb, int * r, int * g, int * b)"
+.PP
+split an RGB-value contained in a long into three ints 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIrgb\fP the RGB value combined into a long integer 
+.br
+\fIr\fP where to store the red fraction of the colour 
+.br
+\fIg\fP where to store the green fraction of the colour 
+.br
+\fIb\fP where to store the blue fraction of the colour
+.RE
+.PP
+
+.SS "noir_prop_bag* prop_bag_dst (noir_prop_bag * bag)"
+.PP
+destroy a bag 
+.PP
+\fBReturns:\fP
+.RS 4
+NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbag\fP the bag to destroy
+.RE
+.PP
+
+.SS "noir_prop_bag* prop_bag_new (void)"
+.PP
+create a bag 
+.PP
+\fBReturns:\fP
+.RS 4
+the new bag, or NULL
+.RE
+.PP
+
+.SS "static int prop_bag_prop_add (noir_prop_bag * b, const char * key, const char * val)\fC [static]\fP"
+.PP
+add a property to a list. 
+.PP
+will not check if property already present. called from \fBprop_bag_prop_set()\fP, \fBprop_bag_prop_default()\fP and \fBprop_bag_prop_listen()\fP. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIkey\fP the name of the property to add 
+.br
+\fIval\fP the value of the property to set using \fBprop_val()\fP magic
+.RE
+.PP
+
+.SS "int prop_bag_prop_const (noir_prop_bag * b, const char * k, const char * v)"
+.PP
+make a property read-only (const). 
+.PP
+if key and value are not NULL, create new prop, then make it read-only. otherwise, find key in bag, then make the prop read-only. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag in which property to set read-only 
+.br
+\fIk\fP the key 
+.br
+\fIv\fP the value
+.RE
+.PP
+
+.SS "int prop_bag_prop_deaf (noir_prop_bag * b, const char * name, const char * key, property_listener listener)"
+.PP
+destall a listener (by name, or by listener-struct) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIname\fP name of the listener, or NULL if listener-function is given 
+.br
+\fIkey\fP the property the listener was for, or NULL for any 
+.br
+\fIlistener\fP the listener-function, or NULL if name is given
+.RE
+.PP
+
+.SS "int prop_bag_prop_default (noir_prop_bag * b, const char * key, const char * val, float lo, float hi, float step)"
+.PP
+set a default value for a property. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag of theme-elements 
+.br
+\fIkey\fP the name of the property to add 
+.br
+\fIval\fP the value of the property to set using \fBprop_val()\fP magic 
+.br
+\fIlo\fP if the type warrants this: the minimum value 
+.br
+\fIhi\fP if the type warrants this: the maximum value 
+.br
+\fIstep\fP if the type warrants this: a step-value, 0 for default (1)
+.RE
+.PP
+
+.SS "noir_prop* prop_bag_prop_dst (noir_prop_bag * b, noir_prop * e)"
+.PP
+destruct a theme-element and remove it from a list (if list is given and element present therein) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag of theme-elements, or NULL 
+.br
+\fIe\fP the element to destroy
+.RE
+.PP
+
+.SS "noir_prop* prop_bag_prop_get (noir_prop_bag * b, const char * key)"
+.PP
+find theme-element with property-name 'key' 
+.PP
+\fBReturns:\fP
+.RS 4
+a theme-element 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIkey\fP the name of the property to look for
+.RE
+.PP
+
+.SS "noir_prop* prop_bag_prop_get_1st (noir_prop_bag * b)"
+.PP
+get 1st property in bag 
+.PP
+\fBReturns:\fP
+.RS 4
+a property, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag
+.RE
+.PP
+
+.SS "int prop_bag_prop_listen (noir_prop_bag * b, const char * name, const char * key, property_listener listener, int tag, void * data)"
+.PP
+install a listener 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIname\fP the name of the listener (usually that of the plugin the listener lives in) 
+.br
+\fIkey\fP the name of the property the listener is for 
+.br
+\fIlistener\fP the function to call back 
+.br
+\fItag\fP an arbitrary tag -- when one listener listens for changes on several properties, this helps distinguishing them (without having to resort to strcmp()) 
+.br
+\fIdata\fP some user-data (often the session) to give the listener when called back
+.RE
+.PP
+
+.SS "int prop_bag_prop_remove (noir_prop_bag * b, noir_prop * e)"
+.PP
+remove a property from a list (if list is given and element present therein) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag of theme-elements 
+.br
+\fIe\fP the element to destroy
+.RE
+.PP
+
+.SS "int prop_bag_prop_set (noir_prop_bag * b, const char * k, const char * val)"
+.PP
+add a property to a list, or modify it if it already exists. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIk\fP the name of the property to add 
+.br
+\fIval\fP the value of the property to set using \fBprop_val()\fP magic
+.RE
+.PP
+
+.SS "int prop_bag_prop_walk (noir_prop_bag * b, prop_bag_walker fun, void * data)"
+.PP
+iterate over each element in a property bag 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIfun\fP the function to apply to each property 
+.br
+\fIdata\fP user-supplied data for the function
+.RE
+.PP
+
+.SS "noir_prop* prop_bags_prop_get (int cnt, noir_prop_bag ** bag_ret, const char * key,  ...)"
+.PP
+get prop from either of a list of bags 
+.PP
+\fBReturns:\fP
+.RS 4
+the property, if found anywhere 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcnt\fP the number of bags 
+.br
+\fIbag_ret\fP where to store the (first) bag the property is found in, or NULL for don't 
+.br
+\fIkey\fP the key of the property 
+.br
+\fI...\fP 'cnt' pointers to bags (which may be NULL)
+.RE
+.PP
+
+.SS "static int prop_bound (noir_prop * e)\fC [static]\fP"
+.PP
+ensure that if a property has a range and/or a step-setting, the value adheres to this called from \fBprop_val()\fP and prop_default() 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the theme-element
+.RE
+.PP
+
+.SS "char* prop_canonize_key (char * pn, int modify, int compress)"
+.PP
+canonize property name -- convert to lower case, weed out _-. 
+.PP
+/ 
+.PP
+\fBReturns:\fP
+.RS 4
+the canonized name 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpn\fP a buffer holding the property's name 
+.br
+\fImodify\fP if FALSE, new memory will be allocated for the canonized name, otherwise, the handed-in buffer will be modified 
+.br
+\fIcompress\fP TRUE to eliminate separators, FALSE to normalize them
+.RE
+.PP
+
+.SS "char* prop_desc (noir_prop * e)"
+.PP
+get a description of a given prop 
+.PP
+\fBReturns:\fP
+.RS 4
+a buffer the caller must free() 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the propr to describe
+.RE
+.PP
+
+.SS "static noir_prop* prop_dst (noir_prop * e)\fC [static]\fP"
+.PP
+destruct a theme-element 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the element to destroy
+.RE
+.PP
+
+.SS "char* prop_get_as_string (noir_prop * e)"
+.PP
+get textual representation of the value of a theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+a newly allocated buffer containing the textual represenation of the property's value, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop
+.RE
+.PP
+
+.SS "void* prop_get_data (noir_prop * e)"
+.PP
+get pointer at the value of a theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+a pointer to either a pointer (types string, pointer) or a value 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop
+.RE
+.PP
+
+.SS "noir_prop_flags prop_get_flags (noir_prop * e)"
+.PP
+get the flags of a theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+flags 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the theme-element we want the flags of
+.RE
+.PP
+
+.SS "float prop_get_float (noir_prop * e)"
+.PP
+get floating-point value from theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+a floating-point value 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop
+.RE
+.PP
+
+.SS "int prop_get_float_decimals (noir_prop * e)"
+.PP
+get decimal places of a floating-point value from theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+an integer value 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the theme-element
+.RE
+.PP
+
+.SS "int prop_get_float_int (noir_prop * e)"
+.PP
+get integer-part of a floating-point value from theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+an integer value 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop
+.RE
+.PP
+
+.SS "long prop_get_int (noir_prop * e)"
+.PP
+get long integer value from theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+a long integer value 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop
+.RE
+.PP
+
+.SS "const char* prop_get_key (noir_prop * e)"
+.PP
+return key of current prop 
+.PP
+\fBReturns:\fP
+.RS 4
+next prop, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the current prop
+.RE
+.PP
+
+.SS "noir_prop* prop_get_next (noir_prop * e)"
+.PP
+return next prop in list 
+.PP
+\fBReturns:\fP
+.RS 4
+next prop, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the current prop
+.RE
+.PP
+
+.SS "int prop_get_rgb (noir_prop * e, int * r, int * g, int * b)"
+.PP
+get individual R, G and B values from theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop 
+.br
+\fIr\fP where to store the red fraction of the colour 
+.br
+\fIg\fP where to store the green fraction of the colour 
+.br
+\fIb\fP where to store the blue fraction of the colour
+.RE
+.PP
+
+.SS "char* prop_get_string (noir_prop * e)"
+.PP
+get character-string value from theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+a pointer to a C-string 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the prop
+.RE
+.PP
+
+.SS "noir_prop_type prop_get_type (noir_prop * e)"
+.PP
+get the type of a theme-element 
+.PP
+\fBReturns:\fP
+.RS 4
+type 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the theme-element we want to know the type of
+.RE
+.PP
+
+.SS "const char* prop_get_type_as_string (noir_prop * e)"
+.PP
+get the type of a theme-element as string 
+.PP
+\fBReturns:\fP
+.RS 4
+description for the type, this must not be free()d 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the theme-element we want to know the type of
+.RE
+.PP
+
+.SS "const char* prop_type_to_string (noir_prop_type t)"
+.PP
+describe a given theme-element type 
+.PP
+\fBReturns:\fP
+.RS 4
+textual description of the type (static memory caller mustn't free()) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the type we want explained
+.RE
+.PP
+
+.SS "static int prop_val (noir_prop * e, const char * val)\fC [static]\fP"
+.PP
+set a property from a string. 
+.PP
+will guess type from value. called from \fBprop_bag_prop_add()\fP and prop_bag_prop_set_set(). 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the theme-element to set 
+.br
+\fIval\fP the value (as C-string) to set the element to
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,97 @@
+.TH "bg_scale.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+bg_scale.c \- background-handler that uses a wallpaper (stretched to fit the window) 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBbg_scroll\fP (void *il)"
+.br
+.RI "\fIcallback: view was scrolled, update background \fP"
+.ti -1c
+.RI "void \fBbg_upd\fP (void *i, int x, int y, int w, int h)"
+.br
+.RI "\fIcallback: update background (window resized or moved, backdrop changed, . \fP"
+.ti -1c
+.RI "void * \fBbg_new\fP (void *t, \fBicon_list\fP *il, char *bg_pic)"
+.br
+.RI "\fIset a background on a view \fP"
+.ti -1c
+.RI "void \fBbg_dst\fP (void **data)"
+.br
+.RI "\fIdestruct background \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+background-handler that uses a wallpaper (stretched to fit the window) 
+
+loads whatever evas loads (.png and .jpg for now)
+.SH "Function Documentation"
+.PP 
+.SS "void bg_dst (void ** data)"
+.PP
+destruct background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the background to dest
+.RE
+.PP
+
+.SS "void* bg_new (void * t, \fBicon_list\fP * il, char * bg_pic)"
+.PP
+set a background on a view 
+.PP
+\fBReturns:\fP
+.RS 4
+the newly set background object (il->bg) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the current theme in this session 
+.br
+\fIil\fP the icon-list 
+.br
+\fIbg_pic\fP the name of the image for the background (any format evas loads)
+.RE
+.PP
+
+.SS "void bg_scroll (void * il)"
+.PP
+callback: view was scrolled, update background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list (contains coordinates and pointer to background)
+.RE
+.PP
+
+.SS "void bg_upd (void * i, int x, int y, int w, int h)"
+.PP
+callback: update background (window resized or moved, backdrop changed, . 
+.PP
+..) moving is relevant since the plugin uses pseudo-transparency! 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP the icon-list (contains pointer to background) 
+.br
+\fIx\fP horizontal position 
+.br
+\fIy\fP vertical position 
+.br
+\fIw\fP width 
+.br
+\fIh\fP height
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

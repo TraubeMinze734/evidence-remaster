@@ -1,0 +1,10 @@
+const char *file_name(const char *tag);
+const char *file_if_local(const char *);
+char       *file_to_URL(const char *);
+const char *file_if_absolute(const char *);
+const char *file_if_relative(const char *);
+const char *file_if_nested(const char *);
+const char *file_if_dotdir(const char *file);
+char       *file_dirname(const char *);
+char       *file_basename(const char *,const char *);
+char       *file_compose_path(const char *,...);

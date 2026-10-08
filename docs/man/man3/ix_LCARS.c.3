@@ -1,0 +1,138 @@
+.TH "ix_LCARS.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ix_LCARS.c \- plugin that creates and handles a 'text-path' 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBext_upd\fP (\fBicon_list\fP *il, \fBicon\fP *\fBicon\fP, void *data)"
+.br
+.RI "\fIcreate/update the area 'owned' by the extension \fP"
+.ti -1c
+.RI "static int \fBix_num_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our numeric properties. \fP"
+.ti -1c
+.RI "static int \fBix_str_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlisten for changes in our string-properties. \fP"
+.ti -1c
+.RI "int \fBext_dst\fP (\fBicon\fP *i)"
+.br
+.RI "\fIdestruct user-data of this extension \fP"
+.ti -1c
+.RI "int \fBext_die\fP (noir_theme *theme, \fBicon\fP *i)"
+.br
+.RI "\fIdestall factory -- unregister listeners, free any resources etc. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+plugin that creates and handles a 'text-path' 
+
+written by Azundris
+.PP
+EXTENSIONS (icon *i)il->theme->areas anchors a list of all extensions for icon-list il. each of these 'icon' entries describes a single extension. user1 of each of these 'icon' entries contains a pointer to a theme_area struct that contains function pointers, a shared object-handle, and space for extra user-data. each of these 'icon' entries is likely to have one or more sub-entries of the 'icon_el' type that describe the rectangle-list of the extension. the user1 of each of these 'icon_el' entries is not used by evidence and may be used by the extensions to store pointers particular to the given rectangle. the nature of the data pointed to may vary from extension to extension.
+.PP
+icon +- user1{theme_area *} theme_area object | +- user1,user2,user3,user4 extension-specific pointers | +- lib library-handle | +- ext_upd, ext_dst, ext_evt functions in extension +- user2{void *} extension-specific pointer +- els{icon_el *} rectangle list of extension | +- user1{file_info *} extension-specific pointer | +- xo,yo,w,h{int} position and area of rectangle | +- ... | +- next{icon_el *} next rectangle +- next{icon *} next extension
+.PP
+TEXTPATH each extension is described by an entry of the 'icon' type. its 'user1' element points to an object of the 'theme_area' type that contains function pointers etc. for the particular extension. a 'textpath' extension will normally have a list of 'icon_el' elements attached to it, one for each element of the path to the current directory. each icon_el will have its 'user1' element pointing to the 'file_info' struct describing the directory referred to by the icon_el in evidence's internal model of the file-system:
+.PP
+icon +- user1{theme_area *} theme_area object | +- user1,user2,user3 reserved | +- user4 properties-struct | +- lib library-handle | +- ext_upd, ext_dst, ext_evt functions in extension +- user2{file_info *} dir previously shown path for | (in internal model of file-system) +- els{icon_el *} rectangle list of extension | +- user1{file_info *} file-info of referred-to dir | | in internal model of file-system | +- xo,yo,w,h{int} position and area of rectangle | +- ... | +- next{icon_el *} next rectangle +- next{icon *} next extension
+.SH "Function Documentation"
+.PP 
+.SS "int ext_die (noir_theme * theme, \fBicon\fP * i)"
+.PP
+destall factory -- unregister listeners, free any resources etc. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItheme\fP the theme 
+.br
+\fIi\fP the theme-area corresponding to this instance of the extension
+.RE
+.PP
+
+.SS "int ext_dst (\fBicon\fP * i)"
+.PP
+destruct user-data of this extension 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP - the instance of this extension
+.RE
+.PP
+
+.SS "int ext_upd (\fBicon_list\fP * il, \fBicon\fP * icon, void * data)"
+.PP
+create/update the area 'owned' by the extension 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP - the icon-list that is extended by this plugin 
+.br
+\fIicon\fP - the instance of this extension 
+.br
+\fIdata\fP - the file-info struct of the current working directory
+.RE
+.PP
+
+.SS "static int ix_num_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our numeric properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SS "static int ix_str_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listen for changes in our string-properties. 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC, or an error-code. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP - the bag 
+.br
+\fIe\fP - the property 
+.br
+\fItag\fP - our index/tag for the property that has changed 
+.br
+\fIdata\fP - our parameter-struct for this plugin, for faster access to the properties' values
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

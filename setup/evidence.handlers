@@ -1,0 +1,11 @@
+# if an URL is entered in the typebuffer, what do we use to open a given
+# protocol?
+
+http "galeon --new-tab %s"
+escreen "Eterm -U screen://%f"
+etwin "Eterm -U twin://%f"
+screen "screen %f"
+# these will only work in mplayer v1 or better
+dvd "mplayer %u"
+vcd "mplayer %u"
+tv "mplayer %u"

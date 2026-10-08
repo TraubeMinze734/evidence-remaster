@@ -1,0 +1,365 @@
+\hypertarget{ipc__dbus_8c}{
+\section{ipc\_\-dbus.c File Reference}
+\label{ipc__dbus_8c}\index{ipc_dbus.c@{ipc\_\-dbus.c}}
+}
+DBUS IPC module for evidence. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{ipc__dbus_8c_a11}{ipc\_\-module\_\-exit} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em deinitialize DBUS IPC (destall handlers, drop connection, release resources) \item\end{CompactList}\item 
+static ipc\_\-watch $\ast$ \hyperlink{ipc__dbus_8c_a12}{watch\_\-find} (DBus\-Watch $\ast$watch)
+\begin{CompactList}\small\item\em helper function: find DBUS-watch in our list -- do we already have this one? \item\end{CompactList}\item 
+static dbus\_\-bool\_\-t \hyperlink{ipc__dbus_8c_a13}{watch\_\-add} (DBus\-Watch $\ast$watch, void $\ast$data)
+\begin{CompactList}\small\item\em callback: tell main-loop that there's a new file-descriptor to watch dbus\_\-watch\_\-get\_\-fd() gets the fd from the watch, dbus\_\-watch\_\-get\_\-flags() gets the \char`\"{}flags\char`\"{} (DBUS\_\-WATCH\_\-READABLE/DBUS\_\-WATCH\_\-WRITABLE). \item\end{CompactList}\item 
+static void \hyperlink{ipc__dbus_8c_a14}{watch\_\-toggle} (DBus\-Watch $\ast$watch, void $\ast$data)
+\begin{CompactList}\small\item\em callback: tell main-loop to \char`\"{}pause\char`\"{} watched file-descriptor \item\end{CompactList}\item 
+static void \hyperlink{ipc__dbus_8c_a15}{watch\_\-del} (DBus\-Watch $\ast$watch, void $\ast$data)
+\begin{CompactList}\small\item\em callback: tell main-loop to forget about a file-descriptor \item\end{CompactList}\item 
+static void \hyperlink{ipc__dbus_8c_a16}{dispatch\_\-status} (DBus\-Connection $\ast$connection, DBus\-Dispatch\-Status status, void $\ast$data)
+\item 
+static dbus\_\-bool\_\-t \hyperlink{ipc__dbus_8c_a17}{timeout\_\-add} (DBus\-Timeout $\ast$timeout, void $\ast$data)
+\begin{CompactList}\small\item\em callback: tell the main-loop to add a timeout \href{http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a37}{\tt http://freedesktop.org/Software/dbus/doc/api/html/group\_\-\_\-DBus\-Connection.html\#a37} \item\end{CompactList}\item 
+static void \hyperlink{ipc__dbus_8c_a18}{timeout\_\-del} (DBus\-Timeout $\ast$timeout, void $\ast$data)
+\begin{CompactList}\small\item\em callback: tell the main-loop to delete a timeout \item\end{CompactList}\item 
+static void \hyperlink{ipc__dbus_8c_a19}{timeout\_\-toggle} (DBus\-Timeout $\ast$timeout, void $\ast$data)
+\begin{CompactList}\small\item\em callback: enable/disable a timeout main-loop can do this \char`\"{}bookkeeping\char`\"{}, or just query dbus\_\-timeout\_\-get\_\-enabled() every time the timeout fires \item\end{CompactList}\item 
+int \hyperlink{ipc__dbus_8c_a20}{reply\_\-err} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, DBus\-Error $\ast$error)
+\begin{CompactList}\small\item\em reply with an error-code \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a21}{reply\_\-str} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, char $\ast$plaintext)
+\begin{CompactList}\small\item\em reply with a string \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a22}{reply\_\-int} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, int rep)
+\begin{CompactList}\small\item\em reply with an integer \item\end{CompactList}\item 
+static void \hyperlink{ipc__dbus_8c_a23}{handle\_\-generic} (DBus\-Message $\ast$message)
+\begin{CompactList}\small\item\em print DBUS message (debug) \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a24}{handle\_\-echo} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message)
+\begin{CompactList}\small\item\em echo -- send back a string we were sent \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a25}{handle\_\-prop} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, char $\ast$m)
+\begin{CompactList}\small\item\em get/set properties in evidence \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a26}{handle\_\-win} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, char $\ast$m)
+\begin{CompactList}\small\item\em call window functions in evidence \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a27}{handle\_\-cmd} (DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, char $\ast$m)
+\begin{CompactList}\small\item\em call a command (ls, file-info, . \item\end{CompactList}\item 
+static DBus\-Handler\-Result \hyperlink{ipc__dbus_8c_a28}{client\_\-sent} (DBus\-Message\-Handler $\ast$handler, DBus\-Connection $\ast$connection, DBus\-Message $\ast$message, void $\ast$user\_\-data)
+\begin{CompactList}\small\item\em callback: DBUS sent us stuff \item\end{CompactList}\item 
+int \hyperlink{ipc__dbus_8c_a29}{ipc\_\-module\_\-init} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em initialize DBUS IPC module \item\end{CompactList}\item 
+int \hyperlink{ipc__dbus_8c_a30}{ipc\_\-module\_\-poll} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em check for messages from DBUS this should be integrated with e\-Core at some point (don't do our own select() etc. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+DBUS IPC module for evidence. 
+
+this implements a service (with defined messages), but can be changed into a generic filter with little effort.
+
+tested with DBUS 0.12 -- deprecated
+
+by Azundris
+
+\subsection{Function Documentation}
+\hypertarget{ipc__dbus_8c_a28}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!client_sent@{client\_\-sent}}
+\index{client_sent@{client\_\-sent}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[client\_\-sent]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result client\_\-sent (DBus\-Message\-Handler $\ast$ {\em handler}, DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, void $\ast$ {\em user\_\-data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a28}
+
+
+callback: DBUS sent us stuff 
+
+\begin{Desc}
+\item[Returns:]DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em handler}]the handle of this DBUS-handler \item[{\em connection}]the connection \item[{\em message}]the message we were sent \item[{\em user\_\-data}]\&connection (in case we need to call \hyperlink{ipc__dbus_8c_a11}{ipc\_\-module\_\-exit()})\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a16}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!dispatch_status@{dispatch\_\-status}}
+\index{dispatch_status@{dispatch\_\-status}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[dispatch\_\-status]{\setlength{\rightskip}{0pt plus 5cm}static void dispatch\_\-status (DBus\-Connection $\ast$ {\em connection}, DBus\-Dispatch\-Status {\em status}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a16}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection on which the dispatch-status changed \item[{\em status}]the new status \item[{\em data}]unused If the dispatch status is DBUS\_\-DISPATCH\_\-DATA\_\-REMAINS, then dbus\_\-connection\_\-dispatch() needs to be called to process incoming messages, BUT NOT from inside this function! It should simply set flag indicating that messages should be dispatched in the next iteration of the main-loop. \href{http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a39}{\tt http://freedesktop.org/Software/dbus/doc/api/html/group\_\-\_\-DBus\-Connection.html\#a39}\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a27}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!handle_cmd@{handle\_\-cmd}}
+\index{handle_cmd@{handle\_\-cmd}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[handle\_\-cmd]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result handle\_\-cmd (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, char $\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a27}
+
+
+call a command (ls, file-info, . 
+
+..) within evidence \begin{Desc}
+\item[Returns:]the result of any of the reply\_\-$\ast$() functions (DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection the request was sent on \item[{\em message}]the request \item[{\em m}]the sub-command (\char`\"{}minor\char`\"{})\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a24}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!handle_echo@{handle\_\-echo}}
+\index{handle_echo@{handle\_\-echo}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[handle\_\-echo]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result handle\_\-echo (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a24}
+
+
+echo -- send back a string we were sent 
+
+\begin{Desc}
+\item[Returns:]DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection this came in on \item[{\em message}]the message we were sent\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a23}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!handle_generic@{handle\_\-generic}}
+\index{handle_generic@{handle\_\-generic}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[handle\_\-generic]{\setlength{\rightskip}{0pt plus 5cm}static void handle\_\-generic (DBus\-Message $\ast$ {\em message})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a23}
+
+
+print DBUS message (debug) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em message}]the DBUS message to print\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a25}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!handle_prop@{handle\_\-prop}}
+\index{handle_prop@{handle\_\-prop}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[handle\_\-prop]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result handle\_\-prop (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, char $\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a25}
+
+
+get/set properties in evidence 
+
+\begin{Desc}
+\item[Returns:]the result of any of the reply\_\-$\ast$() functions (DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection the request was sent on \item[{\em message}]the request \item[{\em m}]the sub-command (\char`\"{}minor\char`\"{})\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a26}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!handle_win@{handle\_\-win}}
+\index{handle_win@{handle\_\-win}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[handle\_\-win]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result handle\_\-win (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, char $\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a26}
+
+
+call window functions in evidence 
+
+\begin{Desc}
+\item[Returns:]the result of any of the reply\_\-$\ast$() functions (DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection the request was sent on \item[{\em message}]the request \item[{\em m}]the sub-command (\char`\"{}minor\char`\"{})\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a11}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!ipc_module_exit@{ipc\_\-module\_\-exit}}
+\index{ipc_module_exit@{ipc\_\-module\_\-exit}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[ipc\_\-module\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-exit (void $\ast$$\ast$ {\em data})}}
+\label{ipc__dbus_8c_a11}
+
+
+deinitialize DBUS IPC (destall handlers, drop connection, release resources) 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the connection to throw out\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a29}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!ipc_module_init@{ipc\_\-module\_\-init}}
+\index{ipc_module_init@{ipc\_\-module\_\-init}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[ipc\_\-module\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-init (void $\ast$$\ast$ {\em data})}}
+\label{ipc__dbus_8c_a29}
+
+
+initialize DBUS IPC module 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]where to store our connection handle\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a30}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!ipc_module_poll@{ipc\_\-module\_\-poll}}
+\index{ipc_module_poll@{ipc\_\-module\_\-poll}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[ipc\_\-module\_\-poll]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-poll (void $\ast$$\ast$ {\em data})}}
+\label{ipc__dbus_8c_a30}
+
+
+check for messages from DBUS this should be integrated with e\-Core at some point (don't do our own select() etc. 
+
+) \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the connection\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a20}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!reply_err@{reply\_\-err}}
+\index{reply_err@{reply\_\-err}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[reply\_\-err]{\setlength{\rightskip}{0pt plus 5cm}int reply\_\-err (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, DBus\-Error $\ast$ {\em error})}}
+\label{ipc__dbus_8c_a20}
+
+
+reply with an error-code 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC if we could send our reply, NOIR\_\-FAIL otherwise \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection to use to send the reply \item[{\em message}]the message to reply to \item[{\em error}]a DBUS-error to send in reply\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a22}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!reply_int@{reply\_\-int}}
+\index{reply_int@{reply\_\-int}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[reply\_\-int]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result reply\_\-int (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, int {\em rep})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a22}
+
+
+reply with an integer 
+
+\begin{Desc}
+\item[Returns:]DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection to use to send the reply \item[{\em message}]the message to reply to \item[{\em rep}]the integer to send in reply\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a21}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!reply_str@{reply\_\-str}}
+\index{reply_str@{reply\_\-str}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[reply\_\-str]{\setlength{\rightskip}{0pt plus 5cm}static DBus\-Handler\-Result reply\_\-str (DBus\-Connection $\ast$ {\em connection}, DBus\-Message $\ast$ {\em message}, char $\ast$ {\em plaintext})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a21}
+
+
+reply with a string 
+
+\begin{Desc}
+\item[Returns:]DBUS\_\-HANDLER\_\-RESULT\_\-ALLOW\_\-MORE\_\-HANDLERS \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em connection}]the connection to use to send the reply \item[{\em message}]the message to reply to \item[{\em plaintext}]the string to send in reply\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a17}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!timeout_add@{timeout\_\-add}}
+\index{timeout_add@{timeout\_\-add}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[timeout\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static dbus\_\-bool\_\-t timeout\_\-add (DBus\-Timeout $\ast$ {\em timeout}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a17}
+
+
+callback: tell the main-loop to add a timeout \href{http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a37}{\tt http://freedesktop.org/Software/dbus/doc/api/html/group\_\-\_\-DBus\-Connection.html\#a37} 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em timeout}]the timeout to remove \item[{\em data}]unused\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a18}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!timeout_del@{timeout\_\-del}}
+\index{timeout_del@{timeout\_\-del}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[timeout\_\-del]{\setlength{\rightskip}{0pt plus 5cm}static void timeout\_\-del (DBus\-Timeout $\ast$ {\em timeout}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a18}
+
+
+callback: tell the main-loop to delete a timeout 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em timeout}]the timeout to remove \item[{\em data}]unused\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a19}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!timeout_toggle@{timeout\_\-toggle}}
+\index{timeout_toggle@{timeout\_\-toggle}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[timeout\_\-toggle]{\setlength{\rightskip}{0pt plus 5cm}static void timeout\_\-toggle (DBus\-Timeout $\ast$ {\em timeout}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a19}
+
+
+callback: enable/disable a timeout main-loop can do this \char`\"{}bookkeeping\char`\"{}, or just query dbus\_\-timeout\_\-get\_\-enabled() every time the timeout fires 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em timeout}]the timeout to toggle \item[{\em data}]reserved\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a13}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!watch_add@{watch\_\-add}}
+\index{watch_add@{watch\_\-add}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[watch\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static dbus\_\-bool\_\-t watch\_\-add (DBus\-Watch $\ast$ {\em watch}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a13}
+
+
+callback: tell main-loop that there's a new file-descriptor to watch dbus\_\-watch\_\-get\_\-fd() gets the fd from the watch, dbus\_\-watch\_\-get\_\-flags() gets the \char`\"{}flags\char`\"{} (DBUS\_\-WATCH\_\-READABLE/DBUS\_\-WATCH\_\-WRITABLE). 
+
+cf \href{http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a36}{\tt http://freedesktop.org/Software/dbus/doc/api/html/group\_\-\_\-DBus\-Connection.html\#a36} \begin{Desc}
+\item[Returns:]TRUE \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em watch}]the DBUS-watch (from which we can get the fd) \item[{\em data}]reserved\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a15}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!watch_del@{watch\_\-del}}
+\index{watch_del@{watch\_\-del}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[watch\_\-del]{\setlength{\rightskip}{0pt plus 5cm}static void watch\_\-del (DBus\-Watch $\ast$ {\em watch}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a15}
+
+
+callback: tell main-loop to forget about a file-descriptor 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em watch}]the DBUS-watch (from which we can get the fd) \item[{\em data}]reserved\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a12}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!watch_find@{watch\_\-find}}
+\index{watch_find@{watch\_\-find}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[watch\_\-find]{\setlength{\rightskip}{0pt plus 5cm}static ipc\_\-watch$\ast$ watch\_\-find (DBus\-Watch $\ast$ {\em watch})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a12}
+
+
+helper function: find DBUS-watch in our list -- do we already have this one? 
+
+\begin{Desc}
+\item[Returns:]an ipc\_\-watch struct, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em watch}]the DBUS-watch to look for\end{description}
+\end{Desc}
+\hypertarget{ipc__dbus_8c_a14}{
+\index{ipc_dbus.c@{ipc\_\-dbus.c}!watch_toggle@{watch\_\-toggle}}
+\index{watch_toggle@{watch\_\-toggle}!ipc_dbus.c@{ipc\_\-dbus.c}}
+\subsubsection[watch\_\-toggle]{\setlength{\rightskip}{0pt plus 5cm}static void watch\_\-toggle (DBus\-Watch $\ast$ {\em watch}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__dbus_8c_a14}
+
+
+callback: tell main-loop to \char`\"{}pause\char`\"{} watched file-descriptor 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em watch}]the DBUS-watch (from which we can get the fd) \item[{\em data}]reserved\end{description}
+\end{Desc}

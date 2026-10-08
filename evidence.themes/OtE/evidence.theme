@@ -1,0 +1,46 @@
+logo:				jpg
+author:				Azundris
+
+typebuffer_factory:		default
+scrollbar_factory:		default
+icon_factory:			nautilus
+background_factory:		edje
+tooltip_factory:		diagram
+rubberband_factory:		nautilus
+
+idle_fun_icon_view:		flutterby
+
+extensions:			rephormed
+
+# open_folder_animation:	growfade
+# open_app_animation:		grey
+# open_file_animation:		basic
+
+# open_folder_animation:	growfade
+# open_folder_animation:	creepology
+open_folder_animation:		none
+open_app_animation:		creepy
+open_file_animation:		throb
+
+shelf:				default.eet
+icon_view:			default.eet
+icon_view_pad_y:		26
+icon_view_pad_h:		8
+
+typebuffer_font:		aircut3
+typebuffer_font_size:		60
+icon_font:			aircut3
+icon_font_size:			20
+icon_meta_label_x_offset:	17
+icon_meta_label_y_offset:	1
+icon_meta_label_width:		92
+tooltip_font:			vera
+tooltip_font_size:		18
+
+textpath_font:			vera
+textpath_font_size:		18
+textpath_dropshadow:    	2
+textpath_alpha:			240
+
+icon_set:			tosh_128
+icon_mode:			auto

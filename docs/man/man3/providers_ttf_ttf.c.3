@@ -1,0 +1,82 @@
+.TH "ttf.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ttf.c \- meta-data provider plug-in 'ttf' (TrueType Fonts, using freetype) 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBmeta_set_for_file\fP (noir_md *met, char *filename, noir_provider *prov)"
+.br
+.RI "\fIwrite meta-data for this file extractor framework cannot write meta-data, only read it \fP"
+.ti -1c
+.RI "int \fBmeta_get_for_file\fP (noir_md *ret, char *file, noir_provider *prov)"
+.br
+.RI "\fIget meta-data for this file \fP"
+.ti -1c
+.RI "int \fBlayoutp\fP (void)"
+.br
+.RI "\fIlet info-dialog do the layout for us \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+meta-data provider plug-in 'ttf' (TrueType Fonts, using freetype) 
+
+get TrueType Font info
+.SH "Function Documentation"
+.PP 
+.SS "int layoutp (void)"
+.PP
+let info-dialog do the layout for us 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC to do our own layout, NOIR_FAIL to have the caller do it
+.RE
+.PP
+
+.SS "int meta_get_for_file (noir_md * ret, char * file, noir_provider * prov)"
+.PP
+get meta-data for this file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIret\fP the list of (all) meta-data 
+.br
+\fIfile\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SS "int meta_set_for_file (noir_md * met, char * filename, noir_provider * prov)"
+.PP
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImet\fP the list of (all) meta-data 
+.br
+\fIfilename\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

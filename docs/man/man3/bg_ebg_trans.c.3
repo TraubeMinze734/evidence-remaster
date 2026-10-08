@@ -1,0 +1,166 @@
+.TH "bg_ebg_trans.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+bg_ebg_trans.c \- background-handler using the (deprecated) e-bg format 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "Window \fBget_desk\fP (Window app)"
+.br
+.RI "\fIfind root-window our application window lives in \fP"
+.ti -1c
+.RI "static Evas_Object * \fBtransparency_get_pixmap\fP (\fBicon_list\fP *il, Evas_Object *old, int x, int y, int w, int h)"
+.br
+.RI "\fIget pixmap for pseudo-transparency \fP"
+.ti -1c
+.RI "void \fBbg_scroll\fP (void *data)"
+.br
+.RI "\fIcallback: view was scrolled, update background \fP"
+.ti -1c
+.RI "void \fBbg_upd\fP (void *il, int x, int y, int w, int h)"
+.br
+.RI "\fIcallback: update background (window resized or moved, backdrop changed, . \fP"
+.ti -1c
+.RI "static E_Background \fBset_ebg\fP (Evas *evas, char *edbname)"
+.br
+.RI "\fIset an ebg on an evas-canvas \fP"
+.ti -1c
+.RI "void * \fBbg_new\fP (struct _noir_theme *t, \fBicon_list\fP *il, char *fp)"
+.br
+.RI "\fIset a background on a view \fP"
+.ti -1c
+.RI "void \fBbg_dst\fP (void **data)"
+.br
+.RI "\fIdestruct background \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+background-handler using the (deprecated) e-bg format 
+
+ebg was the format used by the first prototype of enlightenment DR17. it lets you compose a background out of individual items such as gradients, images etc. each item can be placed/resized to fit the current resolution. this version of the plugin provides pseudo-transparency, so the items of the ebg will be laid out on a seemingly transparent window. (PT means that you will see the 'root-window' -- the desktop -- shining through, but not other windows.) to compile this plugin, only edb is required, but to create your own ebgs (.bg.db), you'll need ebony, the graphical ebg-editor.
+.SH "Function Documentation"
+.PP 
+.SS "void bg_dst (void ** data)"
+.PP
+destruct background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the background to dest
+.RE
+.PP
+
+.SS "void* bg_new (struct _noir_theme * t, \fBicon_list\fP * il, char * fp)"
+.PP
+set a background on a view 
+.PP
+\fBReturns:\fP
+.RS 4
+the newly set background object (il->bg) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the current theme in this session 
+.br
+\fIil\fP the icon-list 
+.br
+\fIfp\fP the name of the ebg-file
+.RE
+.PP
+
+.SS "void bg_scroll (void * data)"
+.PP
+callback: view was scrolled, update background 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the icon-list (contains coordinates and pointer to background)
+.RE
+.PP
+
+.SS "void bg_upd (void * il, int x, int y, int w, int h)"
+.PP
+callback: update background (window resized or moved, backdrop changed, . 
+.PP
+..) moving is relevant since the plugin uses pseudo-transparency! 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list (contains pointer to background) 
+.br
+\fIx\fP horizontal position 
+.br
+\fIy\fP vertical position 
+.br
+\fIw\fP width 
+.br
+\fIh\fP height
+.RE
+.PP
+
+.SS "Window get_desk (Window app)"
+.PP
+find root-window our application window lives in 
+.PP
+\fBReturns:\fP
+.RS 4
+the 'desktop' 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIapp\fP our application-window
+.RE
+.PP
+
+.SS "static E_Background set_ebg (Evas * evas, char * edbname)\fC [static]\fP"
+.PP
+set an ebg on an evas-canvas 
+.PP
+\fBReturns:\fP
+.RS 4
+the newly set E_Background 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevas\fP the canvas to set the background on 
+.br
+\fIedbname\fP the name of the file containing the ebg db
+.RE
+.PP
+
+.SS "static Evas_Object* transparency_get_pixmap (\fBicon_list\fP * il, Evas_Object * old, int x, int y, int w, int h)\fC [static]\fP"
+.PP
+get pixmap for pseudo-transparency 
+.PP
+\fBReturns:\fP
+.RS 4
+an evas image-object 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIil\fP the icon-list 
+.br
+\fIold\fP the previous PT pixmap 
+.br
+\fIx\fP position of the application-window 
+.br
+\fIy\fP position of the application-window 
+.br
+\fIw\fP width of the application-window 
+.br
+\fIh\fP height of the application-window
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

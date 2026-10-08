@@ -1,0 +1,129 @@
+\hypertarget{evcfg_8c}{
+\section{evcfg.c File Reference}
+\label{evcfg_8c}\index{evcfg.c@{evcfg.c}}
+}
+evidence setup tool generic client library in \hyperlink{evclient_8c}{evclient.c} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{evcfg_8c_a6}{ev\_\-ipc\_\-server\_\-con} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: connected \item\end{CompactList}\item 
+int \hyperlink{evcfg_8c_a7}{ev\_\-ipc\_\-server\_\-dis} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: disconnected \item\end{CompactList}\item 
+int \hyperlink{evcfg_8c_a8}{ev\_\-ipc\_\-server\_\-sent} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: connected \item\end{CompactList}\item 
+static void \hyperlink{evcfg_8c_a9}{dial\_\-colour\_\-closed} (Gtk\-Widget $\ast$w, void $\ast$data)
+\begin{CompactList}\small\item\em callback: dial was closed, end program \item\end{CompactList}\item 
+static void \hyperlink{evcfg_8c_a10}{dial\_\-colour\_\-activate} (Gtk\-Widget $\ast$widget, col $\ast$c)
+\begin{CompactList}\small\item\em callback: colour was changed \item\end{CompactList}\item 
+void \hyperlink{evcfg_8c_a11}{dial\_\-colour\_\-open} (char $\ast$prop)
+\begin{CompactList}\small\item\em open a GTK colour-selection dialog \item\end{CompactList}\item 
+int \hyperlink{evcfg_8c_a12}{main} (int argc, char $\ast$$\ast$argv)
+\begin{CompactList}\small\item\em evidence configuration tool (mainloop). \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+evidence setup tool generic client library in \hyperlink{evclient_8c}{evclient.c} 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{evcfg_8c_a10}{
+\index{evcfg.c@{evcfg.c}!dial_colour_activate@{dial\_\-colour\_\-activate}}
+\index{dial_colour_activate@{dial\_\-colour\_\-activate}!evcfg.c@{evcfg.c}}
+\subsubsection[dial\_\-colour\_\-activate]{\setlength{\rightskip}{0pt plus 5cm}static void dial\_\-colour\_\-activate (Gtk\-Widget $\ast$ {\em widget}, col $\ast$ {\em c})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evcfg_8c_a10}
+
+
+callback: colour was changed 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]the widget that received the event \item[{\em c}]our colour struct\end{description}
+\end{Desc}
+\hypertarget{evcfg_8c_a9}{
+\index{evcfg.c@{evcfg.c}!dial_colour_closed@{dial\_\-colour\_\-closed}}
+\index{dial_colour_closed@{dial\_\-colour\_\-closed}!evcfg.c@{evcfg.c}}
+\subsubsection[dial\_\-colour\_\-closed]{\setlength{\rightskip}{0pt plus 5cm}static void dial\_\-colour\_\-closed (Gtk\-Widget $\ast$ {\em w}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evcfg_8c_a9}
+
+
+callback: dial was closed, end program 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em w}]the window that was closed \item[{\em data}]reserved\end{description}
+\end{Desc}
+\hypertarget{evcfg_8c_a11}{
+\index{evcfg.c@{evcfg.c}!dial_colour_open@{dial\_\-colour\_\-open}}
+\index{dial_colour_open@{dial\_\-colour\_\-open}!evcfg.c@{evcfg.c}}
+\subsubsection[dial\_\-colour\_\-open]{\setlength{\rightskip}{0pt plus 5cm}void dial\_\-colour\_\-open (char $\ast$ {\em prop})}}
+\label{evcfg_8c_a11}
+
+
+open a GTK colour-selection dialog 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em prop}]the name of the evidence-property we want to change the colour for\end{description}
+\end{Desc}
+\hypertarget{evcfg_8c_a6}{
+\index{evcfg.c@{evcfg.c}!ev_ipc_server_con@{ev\_\-ipc\_\-server\_\-con}}
+\index{ev_ipc_server_con@{ev\_\-ipc\_\-server\_\-con}!evcfg.c@{evcfg.c}}
+\subsubsection[ev\_\-ipc\_\-server\_\-con]{\setlength{\rightskip}{0pt plus 5cm}int ev\_\-ipc\_\-server\_\-con (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})}}
+\label{evcfg_8c_a6}
+
+
+callback: connected 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]connstate variable \item[{\em type}]event-type \item[{\em event}]the event\end{description}
+\end{Desc}
+\hypertarget{evcfg_8c_a7}{
+\index{evcfg.c@{evcfg.c}!ev_ipc_server_dis@{ev\_\-ipc\_\-server\_\-dis}}
+\index{ev_ipc_server_dis@{ev\_\-ipc\_\-server\_\-dis}!evcfg.c@{evcfg.c}}
+\subsubsection[ev\_\-ipc\_\-server\_\-dis]{\setlength{\rightskip}{0pt plus 5cm}int ev\_\-ipc\_\-server\_\-dis (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})}}
+\label{evcfg_8c_a7}
+
+
+callback: disconnected 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]connstate variable \item[{\em type}]event-type \item[{\em event}]the event\end{description}
+\end{Desc}
+\hypertarget{evcfg_8c_a8}{
+\index{evcfg.c@{evcfg.c}!ev_ipc_server_sent@{ev\_\-ipc\_\-server\_\-sent}}
+\index{ev_ipc_server_sent@{ev\_\-ipc\_\-server\_\-sent}!evcfg.c@{evcfg.c}}
+\subsubsection[ev\_\-ipc\_\-server\_\-sent]{\setlength{\rightskip}{0pt plus 5cm}int ev\_\-ipc\_\-server\_\-sent (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})}}
+\label{evcfg_8c_a8}
+
+
+callback: connected 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]reserved \item[{\em type}]event-type \item[{\em event}]the event\end{description}
+\end{Desc}
+\hypertarget{evcfg_8c_a12}{
+\index{evcfg.c@{evcfg.c}!main@{main}}
+\index{main@{main}!evcfg.c@{evcfg.c}}
+\subsubsection[main]{\setlength{\rightskip}{0pt plus 5cm}int main (int {\em argc}, char $\ast$$\ast$ {\em argv})}}
+\label{evcfg_8c_a12}
+
+
+evidence configuration tool (mainloop). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em argc}]number of command-line arguments \item[{\em argv}]command-line arguments\end{description}
+\end{Desc}

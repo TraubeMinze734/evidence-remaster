@@ -1,0 +1,422 @@
+.TH "ipc_dbus.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ipc_dbus.c \- DBUS IPC module for evidence. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBipc_module_exit\fP (void **data)"
+.br
+.RI "\fIdeinitialize DBUS IPC (destall handlers, drop connection, release resources) \fP"
+.ti -1c
+.RI "static ipc_watch * \fBwatch_find\fP (DBusWatch *watch)"
+.br
+.RI "\fIhelper function: find DBUS-watch in our list -- do we already have this one? \fP"
+.ti -1c
+.RI "static dbus_bool_t \fBwatch_add\fP (DBusWatch *watch, void *data)"
+.br
+.RI "\fIcallback: tell main-loop that there's a new file-descriptor to watch dbus_watch_get_fd() gets the fd from the watch, dbus_watch_get_flags() gets the 'flags' (DBUS_WATCH_READABLE/DBUS_WATCH_WRITABLE). \fP"
+.ti -1c
+.RI "static void \fBwatch_toggle\fP (DBusWatch *watch, void *data)"
+.br
+.RI "\fIcallback: tell main-loop to 'pause' watched file-descriptor \fP"
+.ti -1c
+.RI "static void \fBwatch_del\fP (DBusWatch *watch, void *data)"
+.br
+.RI "\fIcallback: tell main-loop to forget about a file-descriptor \fP"
+.ti -1c
+.RI "static void \fBdispatch_status\fP (DBusConnection *connection, DBusDispatchStatus status, void *data)"
+.br
+.ti -1c
+.RI "static dbus_bool_t \fBtimeout_add\fP (DBusTimeout *timeout, void *data)"
+.br
+.RI "\fIcallback: tell the main-loop to add a timeout http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a37 \fP"
+.ti -1c
+.RI "static void \fBtimeout_del\fP (DBusTimeout *timeout, void *data)"
+.br
+.RI "\fIcallback: tell the main-loop to delete a timeout \fP"
+.ti -1c
+.RI "static void \fBtimeout_toggle\fP (DBusTimeout *timeout, void *data)"
+.br
+.RI "\fIcallback: enable/disable a timeout main-loop can do this 'bookkeeping', or just query dbus_timeout_get_enabled() every time the timeout fires \fP"
+.ti -1c
+.RI "int \fBreply_err\fP (DBusConnection *connection, DBusMessage *message, DBusError *error)"
+.br
+.RI "\fIreply with an error-code \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBreply_str\fP (DBusConnection *connection, DBusMessage *message, char *plaintext)"
+.br
+.RI "\fIreply with a string \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBreply_int\fP (DBusConnection *connection, DBusMessage *message, int rep)"
+.br
+.RI "\fIreply with an integer \fP"
+.ti -1c
+.RI "static void \fBhandle_generic\fP (DBusMessage *message)"
+.br
+.RI "\fIprint DBUS message (debug) \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBhandle_echo\fP (DBusConnection *connection, DBusMessage *message)"
+.br
+.RI "\fIecho -- send back a string we were sent \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBhandle_prop\fP (DBusConnection *connection, DBusMessage *message, char *m)"
+.br
+.RI "\fIget/set properties in evidence \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBhandle_win\fP (DBusConnection *connection, DBusMessage *message, char *m)"
+.br
+.RI "\fIcall window functions in evidence \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBhandle_cmd\fP (DBusConnection *connection, DBusMessage *message, char *m)"
+.br
+.RI "\fIcall a command (ls, file-info, . \fP"
+.ti -1c
+.RI "static DBusHandlerResult \fBclient_sent\fP (DBusMessageHandler *handler, DBusConnection *connection, DBusMessage *message, void *user_data)"
+.br
+.RI "\fIcallback: DBUS sent us stuff \fP"
+.ti -1c
+.RI "int \fBipc_module_init\fP (void **data)"
+.br
+.RI "\fIinitialize DBUS IPC module \fP"
+.ti -1c
+.RI "int \fBipc_module_poll\fP (void **data)"
+.br
+.RI "\fIcheck for messages from DBUS this should be integrated with eCore at some point (don't do our own select() etc. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+DBUS IPC module for evidence. 
+
+this implements a service (with defined messages), but can be changed into a generic filter with little effort.
+.PP
+tested with DBUS 0.12 -- deprecated
+.PP
+by Azundris
+.SH "Function Documentation"
+.PP 
+.SS "static DBusHandlerResult client_sent (DBusMessageHandler * handler, DBusConnection * connection, DBusMessage * message, void * user_data)\fC [static]\fP"
+.PP
+callback: DBUS sent us stuff 
+.PP
+\fBReturns:\fP
+.RS 4
+DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIhandler\fP the handle of this DBUS-handler 
+.br
+\fIconnection\fP the connection 
+.br
+\fImessage\fP the message we were sent 
+.br
+\fIuser_data\fP &connection (in case we need to call \fBipc_module_exit()\fP)
+.RE
+.PP
+
+.SS "static void dispatch_status (DBusConnection * connection, DBusDispatchStatus status, void * data)\fC [static]\fP"
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection on which the dispatch-status changed 
+.br
+\fIstatus\fP the new status 
+.br
+\fIdata\fP unused If the dispatch status is DBUS_DISPATCH_DATA_REMAINS, then dbus_connection_dispatch() needs to be called to process incoming messages, BUT NOT from inside this function! It should simply set flag indicating that messages should be dispatched in the next iteration of the main-loop. http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a39
+.RE
+.PP
+
+.SS "static DBusHandlerResult handle_cmd (DBusConnection * connection, DBusMessage * message, char * m)\fC [static]\fP"
+.PP
+call a command (ls, file-info, . 
+.PP
+..) within evidence 
+.PP
+\fBReturns:\fP
+.RS 4
+the result of any of the reply_*() functions (DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection the request was sent on 
+.br
+\fImessage\fP the request 
+.br
+\fIm\fP the sub-command ('minor')
+.RE
+.PP
+
+.SS "static DBusHandlerResult handle_echo (DBusConnection * connection, DBusMessage * message)\fC [static]\fP"
+.PP
+echo -- send back a string we were sent 
+.PP
+\fBReturns:\fP
+.RS 4
+DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection this came in on 
+.br
+\fImessage\fP the message we were sent
+.RE
+.PP
+
+.SS "static void handle_generic (DBusMessage * message)\fC [static]\fP"
+.PP
+print DBUS message (debug) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImessage\fP the DBUS message to print
+.RE
+.PP
+
+.SS "static DBusHandlerResult handle_prop (DBusConnection * connection, DBusMessage * message, char * m)\fC [static]\fP"
+.PP
+get/set properties in evidence 
+.PP
+\fBReturns:\fP
+.RS 4
+the result of any of the reply_*() functions (DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection the request was sent on 
+.br
+\fImessage\fP the request 
+.br
+\fIm\fP the sub-command ('minor')
+.RE
+.PP
+
+.SS "static DBusHandlerResult handle_win (DBusConnection * connection, DBusMessage * message, char * m)\fC [static]\fP"
+.PP
+call window functions in evidence 
+.PP
+\fBReturns:\fP
+.RS 4
+the result of any of the reply_*() functions (DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection the request was sent on 
+.br
+\fImessage\fP the request 
+.br
+\fIm\fP the sub-command ('minor')
+.RE
+.PP
+
+.SS "int ipc_module_exit (void ** data)"
+.PP
+deinitialize DBUS IPC (destall handlers, drop connection, release resources) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the connection to throw out
+.RE
+.PP
+
+.SS "int ipc_module_init (void ** data)"
+.PP
+initialize DBUS IPC module 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP where to store our connection handle
+.RE
+.PP
+
+.SS "int ipc_module_poll (void ** data)"
+.PP
+check for messages from DBUS this should be integrated with eCore at some point (don't do our own select() etc. 
+.PP
+) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the connection
+.RE
+.PP
+
+.SS "int reply_err (DBusConnection * connection, DBusMessage * message, DBusError * error)"
+.PP
+reply with an error-code 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC if we could send our reply, NOIR_FAIL otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection to use to send the reply 
+.br
+\fImessage\fP the message to reply to 
+.br
+\fIerror\fP a DBUS-error to send in reply
+.RE
+.PP
+
+.SS "static DBusHandlerResult reply_int (DBusConnection * connection, DBusMessage * message, int rep)\fC [static]\fP"
+.PP
+reply with an integer 
+.PP
+\fBReturns:\fP
+.RS 4
+DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection to use to send the reply 
+.br
+\fImessage\fP the message to reply to 
+.br
+\fIrep\fP the integer to send in reply
+.RE
+.PP
+
+.SS "static DBusHandlerResult reply_str (DBusConnection * connection, DBusMessage * message, char * plaintext)\fC [static]\fP"
+.PP
+reply with a string 
+.PP
+\fBReturns:\fP
+.RS 4
+DBUS_HANDLER_RESULT_ALLOW_MORE_HANDLERS 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIconnection\fP the connection to use to send the reply 
+.br
+\fImessage\fP the message to reply to 
+.br
+\fIplaintext\fP the string to send in reply
+.RE
+.PP
+
+.SS "static dbus_bool_t timeout_add (DBusTimeout * timeout, void * data)\fC [static]\fP"
+.PP
+callback: tell the main-loop to add a timeout http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a37 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItimeout\fP the timeout to remove 
+.br
+\fIdata\fP unused
+.RE
+.PP
+
+.SS "static void timeout_del (DBusTimeout * timeout, void * data)\fC [static]\fP"
+.PP
+callback: tell the main-loop to delete a timeout 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItimeout\fP the timeout to remove 
+.br
+\fIdata\fP unused
+.RE
+.PP
+
+.SS "static void timeout_toggle (DBusTimeout * timeout, void * data)\fC [static]\fP"
+.PP
+callback: enable/disable a timeout main-loop can do this 'bookkeeping', or just query dbus_timeout_get_enabled() every time the timeout fires 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItimeout\fP the timeout to toggle 
+.br
+\fIdata\fP reserved
+.RE
+.PP
+
+.SS "static dbus_bool_t watch_add (DBusWatch * watch, void * data)\fC [static]\fP"
+.PP
+callback: tell main-loop that there's a new file-descriptor to watch dbus_watch_get_fd() gets the fd from the watch, dbus_watch_get_flags() gets the 'flags' (DBUS_WATCH_READABLE/DBUS_WATCH_WRITABLE). 
+.PP
+cf http://freedesktop.org/Software/dbus/doc/api/html/group__DBusConnection.html#a36 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwatch\fP the DBUS-watch (from which we can get the fd) 
+.br
+\fIdata\fP reserved
+.RE
+.PP
+
+.SS "static void watch_del (DBusWatch * watch, void * data)\fC [static]\fP"
+.PP
+callback: tell main-loop to forget about a file-descriptor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwatch\fP the DBUS-watch (from which we can get the fd) 
+.br
+\fIdata\fP reserved
+.RE
+.PP
+
+.SS "static ipc_watch* watch_find (DBusWatch * watch)\fC [static]\fP"
+.PP
+helper function: find DBUS-watch in our list -- do we already have this one? 
+.PP
+\fBReturns:\fP
+.RS 4
+an ipc_watch struct, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwatch\fP the DBUS-watch to look for
+.RE
+.PP
+
+.SS "static void watch_toggle (DBusWatch * watch, void * data)\fC [static]\fP"
+.PP
+callback: tell main-loop to 'pause' watched file-descriptor 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwatch\fP the DBUS-watch (from which we can get the fd) 
+.br
+\fIdata\fP reserved
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

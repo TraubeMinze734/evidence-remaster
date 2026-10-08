@@ -1,0 +1,671 @@
+\hypertarget{util_8c}{
+\section{util.c File Reference}
+\label{util_8c}\index{util.c@{util.c}}
+}
+handy helpers - ADT, asprintf, dlopen()-wrapper, . 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{util_8c_a9}{dlmulti} (char $\ast$name, char $\ast$file, int flag, void $\ast$$\ast$libr, const char $\ast$fmt,...)
+\begin{CompactList}\small\item\em satisfy symbols from a shared object. \item\end{CompactList}\item 
+ulong \hyperlink{util_8c_a10}{now} (long delay)
+\begin{CompactList}\small\item\em return current time, plus an optional offset. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a11}{util\_\-replace\_\-variables} (char $\ast$in, const char $\ast$cwd, const char $\ast$sel)
+\begin{CompactList}\small\item\em replace \$VARIABLES in a string. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a12}{util\_\-get\_\-token} (char $\ast$$\ast$begin, int cook, const char $\ast$cwd, const char $\ast$sel)
+\begin{CompactList}\small\item\em get token \item\end{CompactList}\item 
+int \hyperlink{util_8c_a13}{util\_\-parse\_\-line} (char $\ast$in, char $\ast$$\ast$o1, char $\ast$$\ast$o2, char $\ast$$\ast$o3, char $\ast$$\ast$o4)
+\begin{CompactList}\small\item\em split a line into tokens, weeding out comments etc. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a14}{unit\_\-size} (char $\ast$size)
+\begin{CompactList}\small\item\em rewrite a C-string containing a number of bytes to a more readable format. \item\end{CompactList}\item 
+void \hyperlink{util_8c_a15}{qsrt} (void $\ast$a\mbox{[}$\,$\mbox{]}, void $\ast$data, int lo, int hi, int($\ast$compare)(const void $\ast$, const void $\ast$, const void $\ast$))
+\begin{CompactList}\small\item\em generic quick-sort algorithm that hands user-data (sort-order, . \item\end{CompactList}\item 
+int \hyperlink{util_8c_a16}{events\_\-pending} (void)
+\begin{CompactList}\small\item\em check whether there are events in the Q \item\end{CompactList}\item 
+void $\ast$ \hyperlink{util_8c_a17}{timeout\_\-add} (uint f, int($\ast$fun)(void $\ast$), void $\ast$data)
+\begin{CompactList}\small\item\em delayed execution of a function. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a18}{timeout\_\-remove} (void $\ast$$\ast$h)
+\begin{CompactList}\small\item\em cancel delayed execution of a function enqueued with \hyperlink{ipc__dbus_8c_a17}{timeout\_\-add()}. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a23}{eslist\_\-free} (eslist $\ast$$\ast$l, void($\ast$free\_\-payload)(void $\ast$))
+\begin{CompactList}\small\item\em free a list. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a24}{eslist\_\-next} (eslist $\ast$$\ast$e)
+\begin{CompactList}\small\item\em get next element in list the ESLIST\_\-NEXT() macro may be used in the main-program (not in plugins). \item\end{CompactList}\item 
+void $\ast$ \hyperlink{util_8c_a25}{eslist\_\-payload} (eslist $\ast$$\ast$e)
+\begin{CompactList}\small\item\em get the payload of a list-element. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a26}{eslist\_\-prepend} (eslist $\ast$$\ast$e, void $\ast$p)
+\begin{CompactList}\small\item\em prepend an element to a list. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a27}{eslist\_\-append} (eslist $\ast$$\ast$e, void $\ast$p)
+\begin{CompactList}\small\item\em append an element to a list. \item\end{CompactList}\item 
+void $\ast$ \hyperlink{util_8c_a28}{hash\_\-table\_\-new} (void($\ast$freekey)(void $\ast$), void($\ast$freeval)(void $\ast$))
+\begin{CompactList}\small\item\em create a hash-table. \item\end{CompactList}\item 
+void $\ast$ \hyperlink{util_8c_a29}{hash\_\-table\_\-fetch} (void $\ast$hashtable, const char $\ast$key)
+\begin{CompactList}\small\item\em find an element in hash-table. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a30}{hash\_\-table\_\-insert} (void $\ast$hashtable, const char $\ast$key, void $\ast$value)
+\begin{CompactList}\small\item\em insert a new element into a hash-table. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a31}{hash\_\-table\_\-replace} (void $\ast$hashtable, const char $\ast$key, void $\ast$value)
+\begin{CompactList}\small\item\em change the value of a hash-table entry. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a32}{hash\_\-table\_\-remove} (void $\ast$hashtable, char $\ast$key)
+\begin{CompactList}\small\item\em remove an element from a hash-table. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a33}{hash\_\-table\_\-dst} (void $\ast$$\ast$hashtable)
+\begin{CompactList}\small\item\em free hashtable (administrative data as well as payload). \item\end{CompactList}\item 
+int \hyperlink{util_8c_a34}{hash\_\-table\_\-walk} (void $\ast$hashtable, hash\_\-walker fun, void $\ast$data)
+\begin{CompactList}\small\item\em apply a function to all entries of a hash-table. \item\end{CompactList}\item 
+estring $\ast$ \hyperlink{util_8c_a35}{estring\_\-new} (int size)
+\begin{CompactList}\small\item\em create a string. \item\end{CompactList}\item 
+estring $\ast$ \hyperlink{util_8c_a36}{estring\_\-dst} (estring $\ast$e)
+\begin{CompactList}\small\item\em destruct an estring, both payload and administrative data. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a37}{estring\_\-disown} (estring $\ast$e)
+\begin{CompactList}\small\item\em throw away administrative data of estring, keep C-string. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a38}{estring\_\-free} (estring $\ast$e, int release\_\-payload)
+\begin{CompactList}\small\item\em release an estring, optionally leaving a C-string. \item\end{CompactList}\item 
+size\_\-t \hyperlink{util_8c_a39}{estring\_\-length} (estring $\ast$e)
+\begin{CompactList}\small\item\em the length of an e-string \item\end{CompactList}\item 
+int \hyperlink{util_8c_a40}{estring\_\-truncate} (estring $\ast$e, int size)
+\begin{CompactList}\small\item\em truncate estring at a given byte-index. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a41}{estring\_\-printf} (estring $\ast$e, char $\ast$fmt,...)
+\begin{CompactList}\small\item\em sprintf() to an auto-resizing estring. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a42}{estring\_\-appendf} (estring $\ast$e, char $\ast$fmt,...)
+\begin{CompactList}\small\item\em sprintf() to the end of an auto-resizing estring. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a43}{estring\_\-appendb} (estring $\ast$e, size\_\-t len, char $\ast$bytes)
+\begin{CompactList}\small\item\em concatenate bytes to the end of an auto-resizing estring. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a44}{esprintf} (char $\ast$$\ast$result, char $\ast$fmt,...)
+\begin{CompactList}\small\item\em sprintf() with automatic buffer allocation. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a45}{eappendf} (char $\ast$$\ast$result, char $\ast$fmt,...)
+\begin{CompactList}\small\item\em sprintf() with automatic buffer allocation. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a46}{ejoin} (char $\ast$$\ast$result, char $\ast$delim,...)
+\begin{CompactList}\small\item\em join strings separated by a delimiter keep in mind that result must have a sane value (NULL, or an existing string that will be released). \item\end{CompactList}\item 
+int \hyperlink{util_8c_a47}{ecat} (char $\ast$$\ast$result,...)
+\begin{CompactList}\small\item\em join strings keep in mind that result must have a sane value (NULL, or an existing string that the other arguments will be appended to). \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a48}{eiconv} (const char $\ast$src, const char $\ast$enc\_\-src, const char $\ast$enc\_\-dst)
+\begin{CompactList}\small\item\em convert text-buffer from one encoding to another, using iconv. \item\end{CompactList}\item 
+\hypertarget{util_8c_a49}{
+const char $\ast$ \hyperlink{util_8c_a49}{elocale} (void)}
+\label{util_8c_a49}
+
+\begin{CompactList}\small\item\em determine locale. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a50}{e2utf8} (const char $\ast$ascii)
+\begin{CompactList}\small\item\em convert C-string in locale-dependent encoding to UTF8. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{util_8c_a51}{e2locale} (const char $\ast$utf8)
+\begin{CompactList}\small\item\em convert C-string in UTF8 encoding to locale-dependent encoding. \item\end{CompactList}\item 
+int \hyperlink{util_8c_a54}{thread\_\-sleep} (float seconds)
+\begin{CompactList}\small\item\em portable sleep() for threads \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+handy helpers - ADT, asprintf, dlopen()-wrapper, . 
+
+..
+
+\subsection{Function Documentation}
+\hypertarget{util_8c_a9}{
+\index{util.c@{util.c}!dlmulti@{dlmulti}}
+\index{dlmulti@{dlmulti}!util.c@{util.c}}
+\subsubsection[dlmulti]{\setlength{\rightskip}{0pt plus 5cm}int dlmulti (char $\ast$ {\em name}, char $\ast$ {\em file}, int {\em flag}, void $\ast$$\ast$ {\em libr}, const char $\ast$ {\em fmt},  {\em ...})}}
+\label{util_8c_a9}
+
+
+satisfy symbols from a shared object. 
+
+dlopen() on steroids. NOIR\_\-SUCC: got all symbols NOIR\_\-PARTIAL: got all required symbols, but not all optional symbols NOIR\_\-NOTFOUND: didn't get all of the required symbols NOIR\_\-FAIL: invalid parameters NOIR\_\-NODATA: caller asked for empty symbol name NOIR\_\-NOFILE: couldn't open shared object NOIR\_\-OOM: out of memory, symbol name too long
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em name}]- a logical name for the library, or NULL \item[{\em file}]- the shared object; will be dlopen()ed and hence looked for in the usual places for shared objects (defined by ld.so.conf on linux) \item[{\em flag}]- dlopen()-flags (RTLD\_\-$\ast$) \item[{\em libr}]- where to store the handle for the library \item[{\em fmt}]- a space-separated list of symbols to try and load. symbols prefixed by '?' are optional, symbols prefixed by '!' are required. \item[{\em ...}]- where to store the function-pointers we get (or NULL for failure on an optional symbol)\end{description}
+\end{Desc}
+\hypertarget{util_8c_a51}{
+\index{util.c@{util.c}!e2locale@{e2locale}}
+\index{e2locale@{e2locale}!util.c@{util.c}}
+\subsubsection[e2locale]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ e2locale (const char $\ast$ {\em utf8})}}
+\label{util_8c_a51}
+
+
+convert C-string in UTF8 encoding to locale-dependent encoding. 
+
+\begin{Desc}
+\item[Returns:]a locale-dependent string that must be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em utf8}]- C-string in UTF8 encoding\end{description}
+\end{Desc}
+\hypertarget{util_8c_a50}{
+\index{util.c@{util.c}!e2utf8@{e2utf8}}
+\index{e2utf8@{e2utf8}!util.c@{util.c}}
+\subsubsection[e2utf8]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ e2utf8 (const char $\ast$ {\em ascii})}}
+\label{util_8c_a50}
+
+
+convert C-string in locale-dependent encoding to UTF8. 
+
+\begin{Desc}
+\item[Returns:]a UTF8-string that must be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ascii}]- C-string in locale-dependent encoding\end{description}
+\end{Desc}
+\hypertarget{util_8c_a45}{
+\index{util.c@{util.c}!eappendf@{eappendf}}
+\index{eappendf@{eappendf}!util.c@{util.c}}
+\subsubsection[eappendf]{\setlength{\rightskip}{0pt plus 5cm}int eappendf (char $\ast$$\ast$ {\em result}, char $\ast$ {\em fmt},  {\em ...})}}
+\label{util_8c_a45}
+
+
+sprintf() with automatic buffer allocation. 
+
+(asprintf-clone) keep in mind that result must have a sane value (NULL, or an existing string that the arguments will be appended to). address of string may change. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em result}]- where to store the address of the composed string \item[{\em fmt}]- the format-string to use in composition, see printf() \item[{\em ...}]- the parameters for the -substitutions in the format-string, see printf()\end{description}
+\end{Desc}
+\hypertarget{util_8c_a47}{
+\index{util.c@{util.c}!ecat@{ecat}}
+\index{ecat@{ecat}!util.c@{util.c}}
+\subsubsection[ecat]{\setlength{\rightskip}{0pt plus 5cm}int ecat (char $\ast$$\ast$ {\em result},  {\em ...})}}
+\label{util_8c_a47}
+
+
+join strings keep in mind that result must have a sane value (NULL, or an existing string that the other arguments will be appended to). 
+
+address of string may change. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em result}]where to store the resulting string \item[{\em ...}]a list of char $\ast$, NULL marks end of list\end{description}
+\end{Desc}
+\hypertarget{util_8c_a48}{
+\index{util.c@{util.c}!eiconv@{eiconv}}
+\index{eiconv@{eiconv}!util.c@{util.c}}
+\subsubsection[eiconv]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ eiconv (const char $\ast$ {\em src}, const char $\ast$ {\em enc\_\-src}, const char $\ast$ {\em enc\_\-dst})}}
+\label{util_8c_a48}
+
+
+convert text-buffer from one encoding to another, using iconv. 
+
+\begin{Desc}
+\item[Returns:]a destination buffer that must be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em src}]- the source-text \item[{\em enc\_\-src}]- a C-string describing the source-encoding (\char`\"{}ISO\_\-8859-1\char`\"{}) \item[{\em enc\_\-dst}]- a C-string describing the destination-encoding (\char`\"{}UTF8\char`\"{})\end{description}
+\end{Desc}
+\hypertarget{util_8c_a46}{
+\index{util.c@{util.c}!ejoin@{ejoin}}
+\index{ejoin@{ejoin}!util.c@{util.c}}
+\subsubsection[ejoin]{\setlength{\rightskip}{0pt plus 5cm}int ejoin (char $\ast$$\ast$ {\em result}, char $\ast$ {\em delim},  {\em ...})}}
+\label{util_8c_a46}
+
+
+join strings separated by a delimiter keep in mind that result must have a sane value (NULL, or an existing string that will be released). 
+
+address of string may change. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em result}]where to store the resulting string \item[{\em delim}]a delimiter (C-string) \item[{\em ...}]a list of char $\ast$, NULL marks end of list\end{description}
+\end{Desc}
+\hypertarget{util_8c_a27}{
+\index{util.c@{util.c}!eslist_append@{eslist\_\-append}}
+\index{eslist_append@{eslist\_\-append}!util.c@{util.c}}
+\subsubsection[eslist\_\-append]{\setlength{\rightskip}{0pt plus 5cm}int eslist\_\-append (eslist $\ast$$\ast$ {\em e}, void $\ast$ {\em p})}}
+\label{util_8c_a27}
+
+
+append an element to a list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the element \item[{\em p}]- the list\end{description}
+\end{Desc}
+\hypertarget{util_8c_a23}{
+\index{util.c@{util.c}!eslist_free@{eslist\_\-free}}
+\index{eslist_free@{eslist\_\-free}!util.c@{util.c}}
+\subsubsection[eslist\_\-free]{\setlength{\rightskip}{0pt plus 5cm}int eslist\_\-free (eslist $\ast$$\ast$ {\em l}, void($\ast$)(void $\ast$) {\em free\_\-payload})}}
+\label{util_8c_a23}
+
+
+free a list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em l}]- first element to free \item[{\em free\_\-payload}]- function that free()s an element's payload, or NULL for none.\end{description}
+\end{Desc}
+\hypertarget{util_8c_a24}{
+\index{util.c@{util.c}!eslist_next@{eslist\_\-next}}
+\index{eslist_next@{eslist\_\-next}!util.c@{util.c}}
+\subsubsection[eslist\_\-next]{\setlength{\rightskip}{0pt plus 5cm}int eslist\_\-next (eslist $\ast$$\ast$ {\em e})}}
+\label{util_8c_a24}
+
+
+get next element in list the ESLIST\_\-NEXT() macro may be used in the main-program (not in plugins). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- current element in list\end{description}
+\end{Desc}
+\hypertarget{util_8c_a25}{
+\index{util.c@{util.c}!eslist_payload@{eslist\_\-payload}}
+\index{eslist_payload@{eslist\_\-payload}!util.c@{util.c}}
+\subsubsection[eslist\_\-payload]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ eslist\_\-payload (eslist $\ast$$\ast$ {\em e})}}
+\label{util_8c_a25}
+
+
+get the payload of a list-element. 
+
+the ESLIST\_\-PAYLOAD() macro may be used in the main-program (not in plugins). \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- list-element\end{description}
+\end{Desc}
+\hypertarget{util_8c_a26}{
+\index{util.c@{util.c}!eslist_prepend@{eslist\_\-prepend}}
+\index{eslist_prepend@{eslist\_\-prepend}!util.c@{util.c}}
+\subsubsection[eslist\_\-prepend]{\setlength{\rightskip}{0pt plus 5cm}int eslist\_\-prepend (eslist $\ast$$\ast$ {\em e}, void $\ast$ {\em p})}}
+\label{util_8c_a26}
+
+
+prepend an element to a list. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the element \item[{\em p}]- the list\end{description}
+\end{Desc}
+\hypertarget{util_8c_a44}{
+\index{util.c@{util.c}!esprintf@{esprintf}}
+\index{esprintf@{esprintf}!util.c@{util.c}}
+\subsubsection[esprintf]{\setlength{\rightskip}{0pt plus 5cm}int esprintf (char $\ast$$\ast$ {\em result}, char $\ast$ {\em fmt},  {\em ...})}}
+\label{util_8c_a44}
+
+
+sprintf() with automatic buffer allocation. 
+
+(asprintf-clone) keep in mind that result must have a sane value (NULL, or an existing string that will be freed). address of string may change. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em result}]- where to store the address of the composed string \item[{\em fmt}]- the format-string to use in composition, see printf() \item[{\em ...}]- the parameters for the -substitutions in the format-string, see printf()\end{description}
+\end{Desc}
+\hypertarget{util_8c_a43}{
+\index{util.c@{util.c}!estring_appendb@{estring\_\-appendb}}
+\index{estring_appendb@{estring\_\-appendb}!util.c@{util.c}}
+\subsubsection[estring\_\-appendb]{\setlength{\rightskip}{0pt plus 5cm}int estring\_\-appendb (estring $\ast$ {\em e}, size\_\-t {\em len}, char $\ast$ {\em bytes})}}
+\label{util_8c_a43}
+
+
+concatenate bytes to the end of an auto-resizing estring. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring \item[{\em len}]- number of bytes to append \item[{\em bytes}]- the bytes to append\end{description}
+\end{Desc}
+\hypertarget{util_8c_a42}{
+\index{util.c@{util.c}!estring_appendf@{estring\_\-appendf}}
+\index{estring_appendf@{estring\_\-appendf}!util.c@{util.c}}
+\subsubsection[estring\_\-appendf]{\setlength{\rightskip}{0pt plus 5cm}int estring\_\-appendf (estring $\ast$ {\em e}, char $\ast$ {\em fmt},  {\em ...})}}
+\label{util_8c_a42}
+
+
+sprintf() to the end of an auto-resizing estring. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring \item[{\em fmt}]- the format-string, as per printf() \item[{\em ...}]- the variables for the -substitutions in the format-string\end{description}
+\end{Desc}
+\hypertarget{util_8c_a37}{
+\index{util.c@{util.c}!estring_disown@{estring\_\-disown}}
+\index{estring_disown@{estring\_\-disown}!util.c@{util.c}}
+\subsubsection[estring\_\-disown]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ estring\_\-disown (estring $\ast$ {\em e})}}
+\label{util_8c_a37}
+
+
+throw away administrative data of estring, keep C-string. 
+
+\begin{Desc}
+\item[Returns:]the address of the C-string, which must later be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring to disown\end{description}
+\end{Desc}
+\hypertarget{util_8c_a36}{
+\index{util.c@{util.c}!estring_dst@{estring\_\-dst}}
+\index{estring_dst@{estring\_\-dst}!util.c@{util.c}}
+\subsubsection[estring\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}estring$\ast$ estring\_\-dst (estring $\ast$ {\em e})}}
+\label{util_8c_a36}
+
+
+destruct an estring, both payload and administrative data. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring to destruct\end{description}
+\end{Desc}
+\hypertarget{util_8c_a38}{
+\index{util.c@{util.c}!estring_free@{estring\_\-free}}
+\index{estring_free@{estring\_\-free}!util.c@{util.c}}
+\subsubsection[estring\_\-free]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ estring\_\-free (estring $\ast$ {\em e}, int {\em release\_\-payload})}}
+\label{util_8c_a38}
+
+
+release an estring, optionally leaving a C-string. 
+
+for glib2 compatibility. \begin{Desc}
+\item[Returns:]the remaining C-string (which must be free()d later), or NULL. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring \item[{\em release\_\-payload}]- if TRUE, the payload will be free()d. otherwise, it will be returned to the caller.\end{description}
+\end{Desc}
+\hypertarget{util_8c_a39}{
+\index{util.c@{util.c}!estring_length@{estring\_\-length}}
+\index{estring_length@{estring\_\-length}!util.c@{util.c}}
+\subsubsection[estring\_\-length]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t estring\_\-length (estring $\ast$ {\em e})}}
+\label{util_8c_a39}
+
+
+the length of an e-string 
+
+\begin{Desc}
+\item[Returns:]the length (including $\backslash$0) of an e-string, or 0 for failure \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the e-string\end{description}
+\end{Desc}
+\hypertarget{util_8c_a35}{
+\index{util.c@{util.c}!estring_new@{estring\_\-new}}
+\index{estring_new@{estring\_\-new}!util.c@{util.c}}
+\subsubsection[estring\_\-new]{\setlength{\rightskip}{0pt plus 5cm}estring$\ast$ estring\_\-new (int {\em size})}}
+\label{util_8c_a35}
+
+
+create a string. 
+
+pre-allocate the estimated size. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]- the estimated size. (string can grow larger or smaller than that.)\end{description}
+\end{Desc}
+\hypertarget{util_8c_a41}{
+\index{util.c@{util.c}!estring_printf@{estring\_\-printf}}
+\index{estring_printf@{estring\_\-printf}!util.c@{util.c}}
+\subsubsection[estring\_\-printf]{\setlength{\rightskip}{0pt plus 5cm}int estring\_\-printf (estring $\ast$ {\em e}, char $\ast$ {\em fmt},  {\em ...})}}
+\label{util_8c_a41}
+
+
+sprintf() to an auto-resizing estring. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring \item[{\em fmt}]- the format-string, as per printf() \item[{\em ...}]- the variables for the -substitutions in the format-string\end{description}
+\end{Desc}
+\hypertarget{util_8c_a40}{
+\index{util.c@{util.c}!estring_truncate@{estring\_\-truncate}}
+\index{estring_truncate@{estring\_\-truncate}!util.c@{util.c}}
+\subsubsection[estring\_\-truncate]{\setlength{\rightskip}{0pt plus 5cm}int estring\_\-truncate (estring $\ast$ {\em e}, int {\em size})}}
+\label{util_8c_a40}
+
+
+truncate estring at a given byte-index. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]- the estring \item[{\em size}]- the byte-index (careful when using UTF8/multi-byte characters!)\end{description}
+\end{Desc}
+\hypertarget{util_8c_a16}{
+\index{util.c@{util.c}!events_pending@{events\_\-pending}}
+\index{events_pending@{events\_\-pending}!util.c@{util.c}}
+\subsubsection[events\_\-pending]{\setlength{\rightskip}{0pt plus 5cm}int events\_\-pending (void)}}
+\label{util_8c_a16}
+
+
+check whether there are events in the Q 
+
+\begin{Desc}
+\item[Returns:]0 for no, !0 for yes\end{Desc}
+\hypertarget{util_8c_a33}{
+\index{util.c@{util.c}!hash_table_dst@{hash\_\-table\_\-dst}}
+\index{hash_table_dst@{hash\_\-table\_\-dst}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}int hash\_\-table\_\-dst (void $\ast$$\ast$ {\em hashtable})}}
+\label{util_8c_a33}
+
+
+free hashtable (administrative data as well as payload). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em hashtable}]- the hashtable about to die\end{description}
+\end{Desc}
+\hypertarget{util_8c_a29}{
+\index{util.c@{util.c}!hash_table_fetch@{hash\_\-table\_\-fetch}}
+\index{hash_table_fetch@{hash\_\-table\_\-fetch}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-fetch]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ hash\_\-table\_\-fetch (void $\ast$ {\em hashtable}, const char $\ast$ {\em key})}}
+\label{util_8c_a29}
+
+
+find an element in hash-table. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em hashtable}]- the hash-table to search in \item[{\em key}]- the key of the element to look for\end{description}
+\end{Desc}
+\hypertarget{util_8c_a30}{
+\index{util.c@{util.c}!hash_table_insert@{hash\_\-table\_\-insert}}
+\index{hash_table_insert@{hash\_\-table\_\-insert}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-insert]{\setlength{\rightskip}{0pt plus 5cm}int hash\_\-table\_\-insert (void $\ast$ {\em hashtable}, const char $\ast$ {\em key}, void $\ast$ {\em value})}}
+\label{util_8c_a30}
+
+
+insert a new element into a hash-table. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em hashtable}]- the hash-table \item[{\em key}]- the key for the new element \item[{\em value}]- the payload of the new element\end{description}
+\end{Desc}
+\hypertarget{util_8c_a28}{
+\index{util.c@{util.c}!hash_table_new@{hash\_\-table\_\-new}}
+\index{hash_table_new@{hash\_\-table\_\-new}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-new]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ hash\_\-table\_\-new (void($\ast$)(void $\ast$) {\em freekey}, void($\ast$)(void $\ast$) {\em freeval})}}
+\label{util_8c_a28}
+
+
+create a hash-table. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em freekey}]- when a hash-element is destroyed, call this to free the key \item[{\em freeval}]- when a hash-element is destroyed, call this to free the payload\end{description}
+\end{Desc}
+\hypertarget{util_8c_a32}{
+\index{util.c@{util.c}!hash_table_remove@{hash\_\-table\_\-remove}}
+\index{hash_table_remove@{hash\_\-table\_\-remove}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}int hash\_\-table\_\-remove (void $\ast$ {\em hashtable}, char $\ast$ {\em key})}}
+\label{util_8c_a32}
+
+
+remove an element from a hash-table. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em hashtable}]- the hash-table \item[{\em key}]- the key of element to discard\end{description}
+\end{Desc}
+\hypertarget{util_8c_a31}{
+\index{util.c@{util.c}!hash_table_replace@{hash\_\-table\_\-replace}}
+\index{hash_table_replace@{hash\_\-table\_\-replace}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-replace]{\setlength{\rightskip}{0pt plus 5cm}int hash\_\-table\_\-replace (void $\ast$ {\em hashtable}, const char $\ast$ {\em key}, void $\ast$ {\em value})}}
+\label{util_8c_a31}
+
+
+change the value of a hash-table entry. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em hashtable}]- the hash-table \item[{\em key}]- the key for the new element \item[{\em value}]- the new payload of element\end{description}
+\end{Desc}
+\hypertarget{util_8c_a34}{
+\index{util.c@{util.c}!hash_table_walk@{hash\_\-table\_\-walk}}
+\index{hash_table_walk@{hash\_\-table\_\-walk}!util.c@{util.c}}
+\subsubsection[hash\_\-table\_\-walk]{\setlength{\rightskip}{0pt plus 5cm}int hash\_\-table\_\-walk (void $\ast$ {\em hashtable}, hash\_\-walker {\em fun}, void $\ast$ {\em data})}}
+\label{util_8c_a34}
+
+
+apply a function to all entries of a hash-table. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em hashtable}]- the table to walk \item[{\em fun}]- the function to apply to all elements (cf. \char`\"{}map\char`\"{}) \item[{\em data}]- user-data to pass to the walker\end{description}
+\end{Desc}
+\hypertarget{util_8c_a10}{
+\index{util.c@{util.c}!now@{now}}
+\index{now@{now}!util.c@{util.c}}
+\subsubsection[now]{\setlength{\rightskip}{0pt plus 5cm}ulong now (long {\em delay})}}
+\label{util_8c_a10}
+
+
+return current time, plus an optional offset. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em delay}]- offset (\char`\"{}what time is it ten seconds from now?\char`\"{})\end{description}
+\end{Desc}
+\hypertarget{util_8c_a15}{
+\index{util.c@{util.c}!qsrt@{qsrt}}
+\index{qsrt@{qsrt}!util.c@{util.c}}
+\subsubsection[qsrt]{\setlength{\rightskip}{0pt plus 5cm}void qsrt (void $\ast$ {\em a}\mbox{[}$\,$\mbox{]}, void $\ast$ {\em data}, int {\em lo}, int {\em hi}, int($\ast$)(const void $\ast$, const void $\ast$, const void $\ast$) {\em compare})}}
+\label{util_8c_a15}
+
+
+generic quick-sort algorithm that hands user-data (sort-order, . 
+
+..) to the compare function and sorts pointers to the data rather than the data. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}]- array of pointers to the data \item[{\em data}]- user-data \item[{\em lo}]- index of first element (0) \item[{\em hi}]- index of last element (n-1) \item[{\em compare}]- compare-function that takes pointers to user-data, first and second element and returns -1, 0, 1 for first element is \char`\"{}less than\char`\"{}, \char`\"{}equal to\char`\"{}, \char`\"{}greater than\char`\"{} the second element\end{description}
+\end{Desc}
+\hypertarget{util_8c_a54}{
+\index{util.c@{util.c}!thread_sleep@{thread\_\-sleep}}
+\index{thread_sleep@{thread\_\-sleep}!util.c@{util.c}}
+\subsubsection[thread\_\-sleep]{\setlength{\rightskip}{0pt plus 5cm}int thread\_\-sleep (float {\em seconds})}}
+\label{util_8c_a54}
+
+
+portable sleep() for threads 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em seconds}]how long to nap\end{description}
+\end{Desc}
+\hypertarget{util_8c_a17}{
+\index{util.c@{util.c}!timeout_add@{timeout\_\-add}}
+\index{timeout_add@{timeout\_\-add}!util.c@{util.c}}
+\subsubsection[timeout\_\-add]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ timeout\_\-add (uint {\em f}, int($\ast$)(void $\ast$) {\em fun}, void $\ast$ {\em data})}}
+\label{util_8c_a17}
+
+
+delayed execution of a function. 
+
+the function will be executed every 'f' ms until it returns FALSE or is dequeued. \begin{Desc}
+\item[Returns:]a handle for the scheduled entry. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em f}]- how long to wait before execution the function (ms) \item[{\em fun}]- the function to call \item[{\em data}]- user-data to hand to \char`\"{}fun\char`\"{} when it is called\end{description}
+\end{Desc}
+\hypertarget{util_8c_a18}{
+\index{util.c@{util.c}!timeout_remove@{timeout\_\-remove}}
+\index{timeout_remove@{timeout\_\-remove}!util.c@{util.c}}
+\subsubsection[timeout\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}int timeout\_\-remove (void $\ast$$\ast$ {\em h})}}
+\label{util_8c_a18}
+
+
+cancel delayed execution of a function enqueued with \hyperlink{ipc__dbus_8c_a17}{timeout\_\-add()}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em h}]- the handle of the function to dequeue (from \hyperlink{ipc__dbus_8c_a17}{timeout\_\-add()})\end{description}
+\end{Desc}
+\hypertarget{util_8c_a14}{
+\index{util.c@{util.c}!unit_size@{unit\_\-size}}
+\index{unit_size@{unit\_\-size}!util.c@{util.c}}
+\subsubsection[unit\_\-size]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ unit\_\-size (char $\ast$ {\em size})}}
+\label{util_8c_a14}
+
+
+rewrite a C-string containing a number of bytes to a more readable format. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]- the buffer to rewrite\end{description}
+\end{Desc}
+\hypertarget{util_8c_a12}{
+\index{util.c@{util.c}!util_get_token@{util\_\-get\_\-token}}
+\index{util_get_token@{util\_\-get\_\-token}!util.c@{util.c}}
+\subsubsection[util\_\-get\_\-token]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ util\_\-get\_\-token (char $\ast$$\ast$ {\em begin}, int {\em cook}, const char $\ast$ {\em cwd}, const char $\ast$ {\em sel})}}
+\label{util_8c_a12}
+
+
+get token 
+
+\begin{Desc}
+\item[Returns:]a buffer containing the current token. this must be free()d by the caller. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em begin}]start of current token \item[{\em cook}]resolve \$VARIABLES in input? \item[{\em cwd}]current working directory (for \$PWD), or NULL \item[{\em sel}]current selection (for \$SEL), or NULL\end{description}
+\end{Desc}
+\hypertarget{util_8c_a13}{
+\index{util.c@{util.c}!util_parse_line@{util\_\-parse\_\-line}}
+\index{util_parse_line@{util\_\-parse\_\-line}!util.c@{util.c}}
+\subsubsection[util\_\-parse\_\-line]{\setlength{\rightskip}{0pt plus 5cm}int util\_\-parse\_\-line (char $\ast$ {\em in}, char $\ast$$\ast$ {\em o1}, char $\ast$$\ast$ {\em o2}, char $\ast$$\ast$ {\em o3}, char $\ast$$\ast$ {\em o4})}}
+\label{util_8c_a13}
+
+
+split a line into tokens, weeding out comments etc. 
+
+\begin{Desc}
+\item[Returns:]number of tokens it found. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em in}]- the line to split \item[{\em o1}]- where to store the address of the first token \item[{\em o2}]- where to store the address of the second token \item[{\em o3}]- where to store the address of the third token \item[{\em o4}]- where to store the address of the fourth token\end{description}
+\end{Desc}
+(could arguably be turned into a varargs function at some point)\hypertarget{util_8c_a11}{
+\index{util.c@{util.c}!util_replace_variables@{util\_\-replace\_\-variables}}
+\index{util_replace_variables@{util\_\-replace\_\-variables}!util.c@{util.c}}
+\subsubsection[util\_\-replace\_\-variables]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ util\_\-replace\_\-variables (char $\ast$ {\em in}, const char $\ast$ {\em cwd}, const char $\ast$ {\em sel})}}
+\label{util_8c_a11}
+
+
+replace \$VARIABLES in a string. 
+
+\{\} recognized. \begin{Desc}
+\item[Returns:]a buffer that must be free()d. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em in}]- the string to replace variables in \item[{\em cwd}]- current working directory (for \$PWD), or NULL \item[{\em sel}]- current selection (for \$SEL), or NULL\end{description}
+\end{Desc}

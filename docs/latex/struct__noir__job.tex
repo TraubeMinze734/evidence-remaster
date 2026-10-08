@@ -1,0 +1,220 @@
+\hypertarget{struct__noir__job}{
+\section{\_\-noir\_\-job Struct Reference}
+\label{struct__noir__job}\index{_noir_job@{\_\-noir\_\-job}}
+}
+a (copy, move, delete, .  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__noir__job_o0}{
+void $\ast$ \hyperlink{struct__noir__job_o0}{session}}
+\label{struct__noir__job_o0}
+
+\begin{CompactList}\small\item\em the session that created this job \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o1}{
+int \hyperlink{struct__noir__job_o1}{async}}
+\label{struct__noir__job_o1}
+
+\begin{CompactList}\small\item\em operation is async, need GUI locks \item\end{CompactList}\item 
+noir\_\-job\_\-type \hyperlink{struct__noir__job_o2}{type}
+\begin{CompactList}\small\item\em job-type: copy/move/delete/. \item\end{CompactList}\item 
+int \hyperlink{struct__noir__job_o3}{status}
+\begin{CompactList}\small\item\em job asks: show progress/ask/. \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o4}{
+int \hyperlink{struct__noir__job_o4}{err}}
+\label{struct__noir__job_o4}
+
+\begin{CompactList}\small\item\em error-code \item\end{CompactList}\item 
+\hyperlink{action_8h_a42}{action\_\-flags} \hyperlink{struct__noir__job_o5}{flags}
+\begin{CompactList}\small\item\em UI flags: yes-to-all, cancel-all, . \item\end{CompactList}\item 
+int \hyperlink{struct__noir__job_o6}{reply}
+\begin{CompactList}\small\item\em UI says: skip/cancel/. \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o7}{
+job\_\-ui \hyperlink{struct__noir__job_o7}{callback}}
+\label{struct__noir__job_o7}
+
+\begin{CompactList}\small\item\em progress indicator \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o8}{
+off\_\-t \hyperlink{struct__noir__job_o8}{file\_\-bytes}}
+\label{struct__noir__job_o8}
+
+\begin{CompactList}\small\item\em total bytes in file \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o9}{
+off\_\-t \hyperlink{struct__noir__job_o9}{file\_\-bytes\_\-copied}}
+\label{struct__noir__job_o9}
+
+\begin{CompactList}\small\item\em of which x have been copied \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o10}{
+ulong \hyperlink{struct__noir__job_o10}{file\_\-index}}
+\label{struct__noir__job_o10}
+
+\begin{CompactList}\small\item\em nth file of m \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o11}{
+off\_\-t \hyperlink{struct__noir__job_o11}{total\_\-bytes}}
+\label{struct__noir__job_o11}
+
+\begin{CompactList}\small\item\em total bytes in job \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o12}{
+off\_\-t \hyperlink{struct__noir__job_o12}{total\_\-bytes\_\-copied}}
+\label{struct__noir__job_o12}
+
+\begin{CompactList}\small\item\em of which y have been processed \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o13}{
+ulong \hyperlink{struct__noir__job_o13}{total\_\-files}}
+\label{struct__noir__job_o13}
+
+\begin{CompactList}\small\item\em total number of items in job \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o14}{
+ulong \hyperlink{struct__noir__job_o14}{pits}}
+\label{struct__noir__job_o14}
+
+\begin{CompactList}\small\item\em process indicator timestamp \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o15}{
+action\_\-context $\ast$ \hyperlink{struct__noir__job_o15}{ac}}
+\label{struct__noir__job_o15}
+
+\begin{CompactList}\small\item\em all source-items (selection) \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o16}{
+char $\ast$ \hyperlink{struct__noir__job_o16}{src\_\-path}}
+\label{struct__noir__job_o16}
+
+\begin{CompactList}\small\item\em current source-item \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o17}{
+char $\ast$ \hyperlink{struct__noir__job_o17}{dst\_\-path}}
+\label{struct__noir__job_o17}
+
+\begin{CompactList}\small\item\em target-dir or target name \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o18}{
+char $\ast$ \hyperlink{struct__noir__job_o18}{src}}
+\label{struct__noir__job_o18}
+
+\begin{CompactList}\small\item\em current source-name (below src\_\-path) \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o19}{
+char $\ast$ \hyperlink{struct__noir__job_o19}{dst}}
+\label{struct__noir__job_o19}
+
+\begin{CompactList}\small\item\em current target-name (below dst\_\-path) \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o20}{
+\hyperlink{struct__dir__entry}{dir\_\-entry} $\ast$ \hyperlink{struct__noir__job_o20}{tree}}
+\label{struct__noir__job_o20}
+
+\begin{CompactList}\small\item\em source-tree \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o21}{
+ulong \hyperlink{struct__noir__job_o21}{id}}
+\label{struct__noir__job_o21}
+
+\begin{CompactList}\small\item\em a ticket for the caller \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o22}{
+pthread\_\-t \hyperlink{struct__noir__job_o22}{thread}}
+\label{struct__noir__job_o22}
+
+\begin{CompactList}\small\item\em the thread that handles this job \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o23}{
+pthread\_\-mutex\_\-t \hyperlink{struct__noir__job_o23}{datalock}}
+\label{struct__noir__job_o23}
+
+\begin{CompactList}\small\item\em pull while changing this struct \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o24}{
+pthread\_\-cond\_\-t \hyperlink{struct__noir__job_o24}{backendpause}}
+\label{struct__noir__job_o24}
+
+\begin{CompactList}\small\item\em backend cond-var \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o25}{
+void $\ast$ \hyperlink{struct__noir__job_o25}{data}}
+\label{struct__noir__job_o25}
+
+\begin{CompactList}\small\item\em data the caller wants the progress indicator to have \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o26}{
+void $\ast$ \hyperlink{struct__noir__job_o26}{user1}}
+\label{struct__noir__job_o26}
+
+\begin{CompactList}\small\item\em the progress indicator plugin can save state here, default GTK2 PI: window \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o27}{
+void $\ast$ \hyperlink{struct__noir__job_o27}{user2}}
+\label{struct__noir__job_o27}
+
+\begin{CompactList}\small\item\em the progress indicator plugin can save state here, default GTK2 PI: container \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o28}{
+void $\ast$ \hyperlink{struct__noir__job_o28}{user3}}
+\label{struct__noir__job_o28}
+
+\begin{CompactList}\small\item\em the progress indicator plugin can save state here, default GTK2 PI: label \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o29}{
+void $\ast$ \hyperlink{struct__noir__job_o29}{user4}}
+\label{struct__noir__job_o29}
+
+\begin{CompactList}\small\item\em the progress indicator plugin can save state here, default GTK2 PI: progress-bar 1, bytes in file \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o30}{
+void $\ast$ \hyperlink{struct__noir__job_o30}{user5}}
+\label{struct__noir__job_o30}
+
+\begin{CompactList}\small\item\em the progress indicator plugin can save state here, default GTK2 PI: progress-bar 2, bytes in job \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o31}{
+void $\ast$ \hyperlink{struct__noir__job_o31}{user6}}
+\label{struct__noir__job_o31}
+
+\begin{CompactList}\small\item\em the progress indicator plugin can save state here, default GTK2 PI: progress-bar 3, files in job \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o32}{
+char $\ast$ \hyperlink{struct__noir__job_o32}{challenge}}
+\label{struct__noir__job_o32}
+
+\begin{CompactList}\small\item\em challenge text (\char`\"{}this file-name is taken!\char`\"{}) \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o33}{
+const char $\ast$ \hyperlink{struct__noir__job_o33}{buttons}}
+\label{struct__noir__job_o33}
+
+\begin{CompactList}\small\item\em buttons for dialog box (NOIR\_\-JOB\_\-QUESTION only) \item\end{CompactList}\item 
+\hypertarget{struct__noir__job_o34}{
+char $\ast$$\ast$ \hyperlink{struct__noir__job_o34}{edit}}
+\label{struct__noir__job_o34}
+
+\begin{CompactList}\small\item\em a file-name to edit (NOIR\_\-JOB\_\-EDIT only) \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+a (copy, move, delete, . 
+
+..) job 
+
+
+
+\subsection{Field Documentation}
+\hypertarget{struct__noir__job_o5}{
+\index{_noir_job@{\_\-noir\_\-job}!flags@{flags}}
+\index{flags@{flags}!_noir_job@{\_\-noir\_\-job}}
+\subsubsection[flags]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{action_8h_a42}{action\_\-flags} \hyperlink{struct__noir__job_o5}{\_\-noir\_\-job::flags}}}
+\label{struct__noir__job_o5}
+
+
+UI flags: yes-to-all, cancel-all, . 
+
+.. \hypertarget{struct__noir__job_o6}{
+\index{_noir_job@{\_\-noir\_\-job}!reply@{reply}}
+\index{reply@{reply}!_noir_job@{\_\-noir\_\-job}}
+\subsubsection[reply]{\setlength{\rightskip}{0pt plus 5cm}int \hyperlink{struct__noir__job_o6}{\_\-noir\_\-job::reply}}}
+\label{struct__noir__job_o6}
+
+
+UI says: skip/cancel/. 
+
+.. \hypertarget{struct__noir__job_o3}{
+\index{_noir_job@{\_\-noir\_\-job}!status@{status}}
+\index{status@{status}!_noir_job@{\_\-noir\_\-job}}
+\subsubsection[status]{\setlength{\rightskip}{0pt plus 5cm}int \hyperlink{struct__noir__job_o3}{\_\-noir\_\-job::status}}}
+\label{struct__noir__job_o3}
+
+
+job asks: show progress/ask/. 
+
+.. \hypertarget{struct__noir__job_o2}{
+\index{_noir_job@{\_\-noir\_\-job}!type@{type}}
+\index{type@{type}!_noir_job@{\_\-noir\_\-job}}
+\subsubsection[type]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-job\_\-type \hyperlink{struct__noir__job_o2}{\_\-noir\_\-job::type}}}
+\label{struct__noir__job_o2}
+
+
+job-type: copy/move/delete/. 
+
+.. 

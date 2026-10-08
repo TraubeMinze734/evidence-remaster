@@ -1,0 +1,103 @@
+\hypertarget{rename_8c}{
+\section{rename.c File Reference}
+\label{rename_8c}\index{rename.c@{rename.c}}
+}
+context-menu action \char`\"{}rename item\char`\"{} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+ren\_\-ctx $\ast$ \hyperlink{rename_8c_a1}{ren\_\-ctx\_\-dst} (ren\_\-ctx $\ast$$\ast$ctx)
+\begin{CompactList}\small\item\em destruct a rename context \item\end{CompactList}\item 
+ren\_\-ctx $\ast$ \hyperlink{rename_8c_a2}{ren\_\-ctx\_\-new} (const char $\ast$old, const char $\ast$cwd)
+\begin{CompactList}\small\item\em create a rename context \item\end{CompactList}\item 
+static void \hyperlink{rename_8c_a3}{rename\_\-cxl} (Gtk\-Window $\ast$win, gpointer data)
+\begin{CompactList}\small\item\em release data \item\end{CompactList}\item 
+static void \hyperlink{rename_8c_a4}{rename\_\-do} (Gtk\-Widget $\ast$ent, gpointer data)
+\begin{CompactList}\small\item\em callback: dial was activated, rename file \item\end{CompactList}\item 
+int \hyperlink{rename_8c_a5}{efun} (long serial, char $\ast$filename, noir\_\-md $\ast$md, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em context-menu action: rename item \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+context-menu action \char`\"{}rename item\char`\"{} 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{rename_8c_a5}{
+\index{rename.c@{rename.c}!efun@{efun}}
+\index{efun@{efun}!rename.c@{rename.c}}
+\subsubsection[efun]{\setlength{\rightskip}{0pt plus 5cm}int efun (long {\em serial}, char $\ast$ {\em filename}, noir\_\-md $\ast$ {\em md}, action\_\-context $\ast$ {\em ac})}}
+\label{rename_8c_a5}
+
+
+context-menu action: rename item 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the serial number of the session that called us \item[{\em filename}]the file to act on \item[{\em md}]the file's meta-data \item[{\em ac}]the context of this action (selection et al.)\end{description}
+\end{Desc}
+\hypertarget{rename_8c_a1}{
+\index{rename.c@{rename.c}!ren_ctx_dst@{ren\_\-ctx\_\-dst}}
+\index{ren_ctx_dst@{ren\_\-ctx\_\-dst}!rename.c@{rename.c}}
+\subsubsection[ren\_\-ctx\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}ren\_\-ctx$\ast$ ren\_\-ctx\_\-dst (ren\_\-ctx $\ast$$\ast$ {\em ctx})}}
+\label{rename_8c_a1}
+
+
+destruct a rename context 
+
+\begin{Desc}
+\item[Returns:]NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ctx}]the context to destroy\end{description}
+\end{Desc}
+\hypertarget{rename_8c_a2}{
+\index{rename.c@{rename.c}!ren_ctx_new@{ren\_\-ctx\_\-new}}
+\index{ren_ctx_new@{ren\_\-ctx\_\-new}!rename.c@{rename.c}}
+\subsubsection[ren\_\-ctx\_\-new]{\setlength{\rightskip}{0pt plus 5cm}ren\_\-ctx$\ast$ ren\_\-ctx\_\-new (const char $\ast$ {\em old}, const char $\ast$ {\em cwd})}}
+\label{rename_8c_a2}
+
+
+create a rename context 
+
+\begin{Desc}
+\item[Returns:]the new context, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em old}]the old name \item[{\em cwd}]the current work-directory\end{description}
+\end{Desc}
+\hypertarget{rename_8c_a3}{
+\index{rename.c@{rename.c}!rename_cxl@{rename\_\-cxl}}
+\index{rename_cxl@{rename\_\-cxl}!rename.c@{rename.c}}
+\subsubsection[rename\_\-cxl]{\setlength{\rightskip}{0pt plus 5cm}static void rename\_\-cxl (Gtk\-Window $\ast$ {\em win}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{rename_8c_a3}
+
+
+release data 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em win}]the window that was destroyed \item[{\em data}]the context to release\end{description}
+\end{Desc}
+\hypertarget{rename_8c_a4}{
+\index{rename.c@{rename.c}!rename_do@{rename\_\-do}}
+\index{rename_do@{rename\_\-do}!rename.c@{rename.c}}
+\subsubsection[rename\_\-do]{\setlength{\rightskip}{0pt plus 5cm}static void rename\_\-do (Gtk\-Widget $\ast$ {\em ent}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{rename_8c_a4}
+
+
+callback: dial was activated, rename file 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ent}]the entry-field \item[{\em data}]the window 'ent' lives in\end{description}
+\end{Desc}

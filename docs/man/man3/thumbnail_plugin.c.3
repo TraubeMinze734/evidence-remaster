@@ -1,0 +1,247 @@
+.TH "thumbnail_plugin.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+thumbnail_plugin.c \- plugin-API of the threaded modular thumbnailer. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static thumbnail_plugin * \fBthumbnail_plugin_new\fP (const char *file)"
+.br
+.RI "\fIcreate a thumbnailer record \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_load\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIload a thumbnailer-plugin \fP"
+.ti -1c
+.RI "static int \fBthumbnail_plugin_unload\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIunload a thumbnailer-plugin \fP"
+.ti -1c
+.RI "static void \fBthumbnail_plugins_gc_one\fP (char *key, void *value, void *data)"
+.br
+.RI "\fIgarbage-collect a plugin. \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugins_gc\fP (void)"
+.br
+.RI "\fIgarbage-collect plugins \fP"
+.ti -1c
+.RI "static int \fBthumbnail_plugin_dst\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIdiscard a thumbnailer-plugin and dst its entry \fP"
+.ti -1c
+.RI "static void \fBtnp_register_dst\fP (void *f)"
+.br
+.RI "\fIdiscard a MIME-type / thumbnailer assignment and \fP"
+.ti -1c
+.RI "static int \fBthumbnail_plugins_setup_regenerate\fP (const char *setup)"
+.br
+.RI "\fIload all plugins from plugin dir and work out what they can do \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugins_init\fP (const char *setup)"
+.br
+.RI "\fItry to load all available thumbnailer-plugins \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugins_exit\fP (void)"
+.br
+.RI "\fIdiscard all thumbnailer-plugins \fP"
+.ti -1c
+.RI "_thumbnail_plugin * \fBthumbnail_plugin_find_by_mime\fP (const char *mime, thumbnail_plugin_register_for type)"
+.br
+.RI "\fIfind a thumbnailer-plugin that handles the given MIME-type \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_register_mime\fP (thumbnail_plugin *tp, const char *mime, thumbnail_plugin_prio prio, thumbnail_plugin_register_for type)"
+.br
+.RI "\fIlets thumbnailer-plugins announce they know how to thumbnail files of this MIME-type \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_data_set\fP (thumbnail_plugin *tp, void *data)"
+.br
+.RI "\fIlets a thumbnailer-plugin set private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_data_get\fP (thumbnail_plugin *tp, void **data)"
+.br
+.RI "\fIlets a thumbnailer-plugin get its private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+plugin-API of the threaded modular thumbnailer. 
+
+plugin-cache.
+.PP
+by Azundris.
+.SH "Function Documentation"
+.PP 
+.SS "int thumbnail_plugin_data_get (thumbnail_plugin * tp, void ** data)"
+.PP
+lets a thumbnailer-plugin get its private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP the plugin 
+.br
+\fIdata\fP where to store from the plugin-struct
+.RE
+.PP
+
+.SS "int thumbnail_plugin_data_set (thumbnail_plugin * tp, void * data)"
+.PP
+lets a thumbnailer-plugin set private data this data persists from call to call, but not from session to session and is normally used to store a pointer to memory allocated when the plugin was initialized, so it may be free()d when the plugin is unloaded 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP the plugin 
+.br
+\fIdata\fP the data to store on the plugin-struct
+.RE
+.PP
+
+.SS "static int thumbnail_plugin_dst (thumbnail_plugin * tp)\fC [static]\fP"
+.PP
+discard a thumbnailer-plugin and dst its entry 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP the plugin
+.RE
+.PP
+
+.SS "struct _thumbnail_plugin* thumbnail_plugin_find_by_mime (const char * mime, thumbnail_plugin_register_for type)"
+.PP
+find a thumbnailer-plugin that handles the given MIME-type 
+.PP
+\fBReturns:\fP
+.RS 4
+the plugin, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImime\fP the MIME-type 
+.br
+\fItype\fP icons/mouseover/live
+.RE
+.PP
+
+.SS "int thumbnail_plugin_load (thumbnail_plugin * tp)"
+.PP
+load a thumbnailer-plugin 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP the plugin to load (plugin-struct)
+.RE
+.PP
+
+.SS "static thumbnail_plugin* thumbnail_plugin_new (const char * file)\fC [static]\fP"
+.PP
+create a thumbnailer record 
+.PP
+\fBReturns:\fP
+.RS 4
+the newly-created record, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP the plugin (path+file) this is for (or NULL)
+.RE
+.PP
+
+.SS "int thumbnail_plugin_register_mime (thumbnail_plugin * tp, const char * mime, thumbnail_plugin_prio prio, thumbnail_plugin_register_for type)"
+.PP
+lets thumbnailer-plugins announce they know how to thumbnail files of this MIME-type 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP the plugin 
+.br
+\fImime\fP the MIME-type 
+.br
+\fIprio\fP priority 
+.br
+\fItype\fP can provide icon-size thumbs, quality previews, and/or live thumbs
+.RE
+.PP
+
+.SS "static int thumbnail_plugin_unload (thumbnail_plugin * tp)\fC [static]\fP"
+.PP
+unload a thumbnailer-plugin 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP the plugin
+.RE
+.PP
+
+.SS "static void thumbnail_plugins_gc_one (char * key, void * value, void * data)\fC [static]\fP"
+.PP
+garbage-collect a plugin. 
+.PP
+maybe.
+.SS "int thumbnail_plugins_init (const char * setup)"
+.PP
+try to load all available thumbnailer-plugins 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsetup\fP the directory containing the setup
+.RE
+.PP
+
+.SS "static int thumbnail_plugins_setup_regenerate (const char * setup)\fC [static]\fP"
+.PP
+load all plugins from plugin dir and work out what they can do 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsetup\fP the setup (not the plugins-!) dir
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

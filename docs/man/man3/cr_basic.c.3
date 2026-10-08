@@ -1,0 +1,31 @@
+.TH "cr_basic.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+cr_basic.c \- common routines for cell-renderers in cr_*.c 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "PangoLayout * \fBcr_text_get_size\fP (GtkCellRenderer *cell, GtkWidget *widget, GdkRectangle *cell_area, gint *x_offset, gint *y_offset, gint *width, gint *height)"
+.br
+.RI "\fIget extents of a string. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+common routines for cell-renderers in cr_*.c 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "PangoLayout* cr_text_get_size (GtkCellRenderer * cell, GtkWidget * widget, GdkRectangle * cell_area, gint * x_offset, gint * y_offset, gint * width, gint * height)"
+.PP
+get extents of a string. 
+.PP
+used in \fBcr_date_render()\fP and \fBcr_size_render()\fP.
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,100 @@
+.TH "setup.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+setup.c \- find data-files. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "char * \fBget_path_file\fP (const char *cwd, const char *file)"
+.br
+.RI "\fIfind 'file' in $PATH. \fP"
+.ti -1c
+.RI "char * \fBget_setup_file\fP (const char *url)"
+.br
+.RI "\fIfind 'url' in one of the setup-dirs. \fP"
+.ti -1c
+.RI "int \fBpaths_add\fP (char *p)"
+.br
+.RI "\fIadd a path to search-paths for setup-files. \fP"
+.ti -1c
+.RI "void \fBpaths_exit\fP (void)"
+.br
+.RI "\fIdeinitialize paths sub-system. \fP"
+.ti -1c
+.RI "void \fBpaths_init\fP (const char *cwd, const char *argv0)"
+.br
+.RI "\fIinitialize paths sub-system. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+find data-files. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "char* get_path_file (const char * cwd, const char * file)"
+.PP
+find 'file' in $PATH. 
+.PP
+\fBReturns:\fP
+.RS 4
+a buffer that must be free()d, or NULL for failure. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcwd\fP - current working directory of session 
+.br
+\fIfile\fP - name of file to find
+.RE
+.PP
+
+.SS "char* get_setup_file (const char * url)"
+.PP
+find 'url' in one of the setup-dirs. 
+.PP
+\fBReturns:\fP
+.RS 4
+a buffer that must be free()d, or NULL for failure. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIurl\fP - name of file to find
+.RE
+.PP
+
+.SS "int paths_add (char * p)"
+.PP
+add a path to search-paths for setup-files. 
+.PP
+called e.g. from \fBtheme.c\fP to add theme->path. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIp\fP - path to add
+.RE
+.PP
+
+.SS "void paths_init (const char * cwd, const char * argv0)"
+.PP
+initialize paths sub-system. 
+.PP
+determine and set search-paths. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcwd\fP - the current working-directory 
+.br
+\fIargv0\fP - the name the program was invoked under
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

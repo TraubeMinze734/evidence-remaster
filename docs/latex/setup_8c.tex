@@ -1,0 +1,90 @@
+\hypertarget{setup_8c}{
+\section{setup.c File Reference}
+\label{setup_8c}\index{setup.c@{setup.c}}
+}
+find data-files. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+char $\ast$ \hyperlink{setup_8c_a5}{get\_\-path\_\-file} (const char $\ast$cwd, const char $\ast$file)
+\begin{CompactList}\small\item\em find 'file' in \$PATH. \item\end{CompactList}\item 
+char $\ast$ \hyperlink{setup_8c_a6}{get\_\-setup\_\-file} (const char $\ast$url)
+\begin{CompactList}\small\item\em find 'url' in one of the setup-dirs. \item\end{CompactList}\item 
+int \hyperlink{setup_8c_a7}{paths\_\-add} (char $\ast$p)
+\begin{CompactList}\small\item\em add a path to search-paths for setup-files. \item\end{CompactList}\item 
+\hypertarget{setup_8c_a8}{
+void \hyperlink{setup_8c_a8}{paths\_\-exit} (void)}
+\label{setup_8c_a8}
+
+\begin{CompactList}\small\item\em deinitialize paths sub-system. \item\end{CompactList}\item 
+void \hyperlink{setup_8c_a9}{paths\_\-init} (const char $\ast$cwd, const char $\ast$argv0)
+\begin{CompactList}\small\item\em initialize paths sub-system. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+find data-files. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{setup_8c_a5}{
+\index{setup.c@{setup.c}!get_path_file@{get\_\-path\_\-file}}
+\index{get_path_file@{get\_\-path\_\-file}!setup.c@{setup.c}}
+\subsubsection[get\_\-path\_\-file]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ get\_\-path\_\-file (const char $\ast$ {\em cwd}, const char $\ast$ {\em file})}}
+\label{setup_8c_a5}
+
+
+find 'file' in \$PATH. 
+
+\begin{Desc}
+\item[Returns:]a buffer that must be free()d, or NULL for failure. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em cwd}]- current working directory of session \item[{\em file}]- name of file to find\end{description}
+\end{Desc}
+\hypertarget{setup_8c_a6}{
+\index{setup.c@{setup.c}!get_setup_file@{get\_\-setup\_\-file}}
+\index{get_setup_file@{get\_\-setup\_\-file}!setup.c@{setup.c}}
+\subsubsection[get\_\-setup\_\-file]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ get\_\-setup\_\-file (const char $\ast$ {\em url})}}
+\label{setup_8c_a6}
+
+
+find 'url' in one of the setup-dirs. 
+
+\begin{Desc}
+\item[Returns:]a buffer that must be free()d, or NULL for failure. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em url}]- name of file to find\end{description}
+\end{Desc}
+\hypertarget{setup_8c_a7}{
+\index{setup.c@{setup.c}!paths_add@{paths\_\-add}}
+\index{paths_add@{paths\_\-add}!setup.c@{setup.c}}
+\subsubsection[paths\_\-add]{\setlength{\rightskip}{0pt plus 5cm}int paths\_\-add (char $\ast$ {\em p})}}
+\label{setup_8c_a7}
+
+
+add a path to search-paths for setup-files. 
+
+called e.g. from \hyperlink{theme_8c}{theme.c} to add theme-$>$path. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em p}]- path to add\end{description}
+\end{Desc}
+\hypertarget{setup_8c_a9}{
+\index{setup.c@{setup.c}!paths_init@{paths\_\-init}}
+\index{paths_init@{paths\_\-init}!setup.c@{setup.c}}
+\subsubsection[paths\_\-init]{\setlength{\rightskip}{0pt plus 5cm}void paths\_\-init (const char $\ast$ {\em cwd}, const char $\ast$ {\em argv0})}}
+\label{setup_8c_a9}
+
+
+initialize paths sub-system. 
+
+determine and set search-paths. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em cwd}]- the current working-directory \item[{\em argv0}]- the name the program was invoked under\end{description}
+\end{Desc}

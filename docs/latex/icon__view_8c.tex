@@ -1,0 +1,309 @@
+\hypertarget{icon__view_8c}{
+\section{icon\_\-view.c File Reference}
+\label{icon__view_8c}\index{icon_view.c@{icon\_\-view.c}}
+}
+implements icon-view (shelf in \hyperlink{shelf_8c}{shelf.c}) independent of the actual icon-list (evas/icon\_\-list or gnome-icon-list) used. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{icon__view_8c_a10}{icon\_\-view\_\-set\_\-selection} (void $\ast$data)
+\begin{CompactList}\small\item\em set session's selection in icon-view \item\end{CompactList}\item 
+gboolean \hyperlink{icon__view_8c_a11}{icon\_\-view\_\-exposed} (Gtk\-Widget $\ast$widget, Gdk\-Event\-Expose $\ast$ev, gpointer data)
+\begin{CompactList}\small\item\em callback for \char`\"{}exposed\char`\"{}-event the other views don't update our thumbnails for reasons of speed, so if the directory-focus was changed in another view, we'll have to get the thumbnails NOW. \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{icon__view_8c_a12}{icon\_\-path\_\-at} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns, int x, int y)
+\begin{CompactList}\small\item\em get path at given position \item\end{CompactList}\item 
+gboolean \hyperlink{icon__view_8c_a13}{icon\_\-drag\_\-drop} (Gtk\-Widget $\ast$widget, Gdk\-Drag\-Context $\ast$dc, gint x, gint y, guint timestamp, gpointer data)
+\begin{CompactList}\small\item\em DND: drag completed, negotiate content-type. \item\end{CompactList}\item 
+static void \hyperlink{icon__view_8c_a14}{icon\_\-drag\_\-data\_\-received} (Gtk\-Widget $\ast$widget, Gdk\-Drag\-Context $\ast$dc, gint x, gint y, Gtk\-Selection\-Data $\ast$selection, guint info, guint timestamp, gpointer data)
+\begin{CompactList}\small\item\em DND: drop source sent data. \item\end{CompactList}\item 
+static void \hyperlink{icon__view_8c_a15}{icon\_\-drag\_\-data\_\-get} (Gtk\-Widget $\ast$widget, Gdk\-Drag\-Context $\ast$dc, Gtk\-Selection\-Data $\ast$selection\-Data, guint info, guint timestamp, gpointer data)
+\begin{CompactList}\small\item\em DND: drop target asks for data. \item\end{CompactList}\item 
+void \hyperlink{icon__view_8c_a16}{icon\_\-view\_\-connect} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em set callbacks for icon-view \item\end{CompactList}\item 
+static void \hyperlink{icon__view_8c_a17}{icon\_\-view\_\-rerender} (noir\_\-iconview $\ast$iv, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, const char $\ast$caller)
+\begin{CompactList}\small\item\em rerender icon-view (should be inline'd once debugged) \item\end{CompactList}\item 
+static void \hyperlink{icon__view_8c_a18}{icon\_\-view\_\-rerender\_\-maybe} (noir\_\-iconview $\ast$iv, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em voluntary rerender? \item\end{CompactList}\item 
+int \hyperlink{icon__view_8c_a19}{icon\_\-view\_\-render\_\-updates} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em let plugins request an update of the visual \item\end{CompactList}\item 
+static int \hyperlink{icon__view_8c_a20}{icon\_\-view\_\-evt\_\-do} (\hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} type, \hyperlink{model_8h_a151}{file\_\-flags} changed, noir\_\-iconview $\ast$iv, \hyperlink{struct__file__info}{file\_\-info} $\ast$pa, \hyperlink{struct__client__funs}{client\_\-funs} $\ast$cf)
+\begin{CompactList}\small\item\em handle model-event -- any locks must be handled outside of this \item\end{CompactList}\item 
+static int \hyperlink{icon__view_8c_a21}{icon\_\-view\_\-evt} (\hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} type, \hyperlink{model_8h_a151}{file\_\-flags} changed, void $\ast$data)
+\begin{CompactList}\small\item\em take care of locks, then handle model-event \item\end{CompactList}\item 
+static int \hyperlink{icon__view_8c_a22}{icon\_\-view\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct icon-view \item\end{CompactList}\item 
+static int \hyperlink{icon__view_8c_a23}{icon\_\-view\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our numeric properties. \item\end{CompactList}\item 
+static int \hyperlink{icon__view_8c_a24}{icon\_\-view\_\-str\_\-listener} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our string-properties. \item\end{CompactList}\item 
+int \hyperlink{icon__view_8c_a25}{icon\_\-view\_\-init} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em create icon-view in given session \item\end{CompactList}\item 
+int \hyperlink{icon__view_8c_a26}{icon\_\-view\_\-exit} (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ns)
+\begin{CompactList}\small\item\em drop icon-view in given session \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+implements icon-view (shelf in \hyperlink{shelf_8c}{shelf.c}) independent of the actual icon-list (evas/icon\_\-list or gnome-icon-list) used. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{icon__view_8c_a15}{
+\index{icon_view.c@{icon\_\-view.c}!icon_drag_data_get@{icon\_\-drag\_\-data\_\-get}}
+\index{icon_drag_data_get@{icon\_\-drag\_\-data\_\-get}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-drag\_\-data\_\-get]{\setlength{\rightskip}{0pt plus 5cm}static void icon\_\-drag\_\-data\_\-get (Gtk\-Widget $\ast$ {\em widget}, Gdk\-Drag\-Context $\ast$ {\em dc}, Gtk\-Selection\-Data $\ast$ {\em selection\-Data}, guint {\em info}, guint {\em timestamp}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a15}
+
+
+DND: drop target asks for data. 
+
+collect and send. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]the widget that was dragged from, or NULL \item[{\em dc}]the drag-context \item[{\em selection\-Data}]the selection we're to set the data on \item[{\em info}]type of the data as per Gtk\-Target\-List \item[{\em timestamp}]when the event happened \item[{\em data}]session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a14}{
+\index{icon_view.c@{icon\_\-view.c}!icon_drag_data_received@{icon\_\-drag\_\-data\_\-received}}
+\index{icon_drag_data_received@{icon\_\-drag\_\-data\_\-received}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-drag\_\-data\_\-received]{\setlength{\rightskip}{0pt plus 5cm}static void icon\_\-drag\_\-data\_\-received (Gtk\-Widget $\ast$ {\em widget}, Gdk\-Drag\-Context $\ast$ {\em dc}, gint {\em x}, gint {\em y}, Gtk\-Selection\-Data $\ast$ {\em selection}, guint {\em info}, guint {\em timestamp}, gpointer {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a14}
+
+
+DND: drop source sent data. 
+
+act upon them. \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]the widget \item[{\em dc}]the drag-context \item[{\em x}]where the data was dropped \item[{\em y}]where the data was dropped \item[{\em selection}]the received data \item[{\em info}]type of the data as per Gtk\-Target\-List \item[{\em timestamp}]when the event happened \item[{\em data}]session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a13}{
+\index{icon_view.c@{icon\_\-view.c}!icon_drag_drop@{icon\_\-drag\_\-drop}}
+\index{icon_drag_drop@{icon\_\-drag\_\-drop}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-drag\_\-drop]{\setlength{\rightskip}{0pt plus 5cm}gboolean icon\_\-drag\_\-drop (Gtk\-Widget $\ast$ {\em widget}, Gdk\-Drag\-Context $\ast$ {\em dc}, gint {\em x}, gint {\em y}, guint {\em timestamp}, gpointer {\em data})}}
+\label{icon__view_8c_a13}
+
+
+DND: drag completed, negotiate content-type. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]the widget \item[{\em dc}]the drag-context \item[{\em x}]where the data was dropped \item[{\em y}]where the data was dropped \item[{\em timestamp}]when the event happened \item[{\em data}]session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a12}{
+\index{icon_view.c@{icon\_\-view.c}!icon_path_at@{icon\_\-path\_\-at}}
+\index{icon_path_at@{icon\_\-path\_\-at}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-path\_\-at]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ icon\_\-path\_\-at (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns}, int {\em x}, int {\em y})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a12}
+
+
+get path at given position 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session \item[{\em x}]mouse-x \item[{\em y}]mouse-y\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a16}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_connect@{icon\_\-view\_\-connect}}
+\index{icon_view_connect@{icon\_\-view\_\-connect}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-connect]{\setlength{\rightskip}{0pt plus 5cm}void icon\_\-view\_\-connect (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{icon__view_8c_a16}
+
+
+set callbacks for icon-view 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a22}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_dst@{icon\_\-view\_\-dst}}
+\index{icon_view_dst@{icon\_\-view\_\-dst}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-view\_\-dst (void $\ast$$\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a22}
+
+
+destruct icon-view 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the icon-view\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a21}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_evt@{icon\_\-view\_\-evt}}
+\index{icon_view_evt@{icon\_\-view\_\-evt}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-evt]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-view\_\-evt (\hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, \hyperlink{model_8h_a154}{model\_\-event} {\em type}, \hyperlink{model_8h_a151}{file\_\-flags} {\em changed}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a21}
+
+
+take care of locks, then handle model-event 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fi}]the fs object this event is about \item[{\em type}]event-type \item[{\em changed}]what parts of 'fi' changed \item[{\em data}]the icon-view\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a20}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_evt_do@{icon\_\-view\_\-evt\_\-do}}
+\index{icon_view_evt_do@{icon\_\-view\_\-evt\_\-do}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-evt\_\-do]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-view\_\-evt\_\-do (\hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, \hyperlink{model_8h_a154}{model\_\-event} {\em type}, \hyperlink{model_8h_a151}{file\_\-flags} {\em changed}, noir\_\-iconview $\ast$ {\em iv}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em pa}, \hyperlink{struct__client__funs}{client\_\-funs} $\ast$ {\em cf})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a20}
+
+
+handle model-event -- any locks must be handled outside of this 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fi}]the fs object this event is about \item[{\em type}]event-type \item[{\em changed}]what parts of 'fi' changed \item[{\em iv}]the icon-view \item[{\em pa}]parent of 'fi' \item[{\em cf}]client\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a26}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_exit@{icon\_\-view\_\-exit}}
+\index{icon_view_exit@{icon\_\-view\_\-exit}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-view\_\-exit (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{icon__view_8c_a26}
+
+
+drop icon-view in given session 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a11}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_exposed@{icon\_\-view\_\-exposed}}
+\index{icon_view_exposed@{icon\_\-view\_\-exposed}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-exposed]{\setlength{\rightskip}{0pt plus 5cm}gboolean icon\_\-view\_\-exposed (Gtk\-Widget $\ast$ {\em widget}, Gdk\-Event\-Expose $\ast$ {\em ev}, gpointer {\em data})}}
+\label{icon__view_8c_a11}
+
+
+callback for \char`\"{}exposed\char`\"{}-event the other views don't update our thumbnails for reasons of speed, so if the directory-focus was changed in another view, we'll have to get the thumbnails NOW. 
+
+\begin{Desc}
+\item[Returns:]FALSE \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em widget}]the g\-Evas \item[{\em ev}]the GDK expose-event \item[{\em data}]the session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a25}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_init@{icon\_\-view\_\-init}}
+\index{icon_view_init@{icon\_\-view\_\-init}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-view\_\-init (\hyperlink{struct__noir__sess}{noir\_\-sess} $\ast$ {\em ns})}}
+\label{icon__view_8c_a25}
+
+
+create icon-view in given session 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a23}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_num_listener@{icon\_\-view\_\-num\_\-listener}}
+\index{icon_view_num_listener@{icon\_\-view\_\-num\_\-listener}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-view\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a23}
+
+
+listen for changes in our numeric properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a19}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_render_updates@{icon\_\-view\_\-render\_\-updates}}
+\index{icon_view_render_updates@{icon\_\-view\_\-render\_\-updates}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-render\_\-updates]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-view\_\-render\_\-updates (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{icon__view_8c_a19}
+
+
+let plugins request an update of the visual 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]the icon-list to update\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a17}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_rerender@{icon\_\-view\_\-rerender}}
+\index{icon_view_rerender@{icon\_\-view\_\-rerender}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-rerender]{\setlength{\rightskip}{0pt plus 5cm}static void icon\_\-view\_\-rerender (noir\_\-iconview $\ast$ {\em iv}, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, const char $\ast$ {\em caller})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{icon__view_8c_a17}
+
+
+rerender icon-view (should be inline'd once debugged) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em iv}]the icon-view \item[{\em il}]the icon-list \item[{\em caller}]debug-info\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a18}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_rerender_maybe@{icon\_\-view\_\-rerender\_\-maybe}}
+\index{icon_view_rerender_maybe@{icon\_\-view\_\-rerender\_\-maybe}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-rerender\_\-maybe]{\setlength{\rightskip}{0pt plus 5cm}static void icon\_\-view\_\-rerender\_\-maybe (noir\_\-iconview $\ast$ {\em iv}, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{icon__view_8c_a18}
+
+
+voluntary rerender? 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em iv}]icon-view \item[{\em il}]icon-list\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a10}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_set_selection@{icon\_\-view\_\-set\_\-selection}}
+\index{icon_view_set_selection@{icon\_\-view\_\-set\_\-selection}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-set\_\-selection]{\setlength{\rightskip}{0pt plus 5cm}int icon\_\-view\_\-set\_\-selection (void $\ast$ {\em data})}}
+\label{icon__view_8c_a10}
+
+
+set session's selection in icon-view 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the session\end{description}
+\end{Desc}
+\hypertarget{icon__view_8c_a24}{
+\index{icon_view.c@{icon\_\-view.c}!icon_view_str_listener@{icon\_\-view\_\-str\_\-listener}}
+\index{icon_view_str_listener@{icon\_\-view\_\-str\_\-listener}!icon_view.c@{icon\_\-view.c}}
+\subsubsection[icon\_\-view\_\-str\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int icon\_\-view\_\-str\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{icon__view_8c_a24}
+
+
+listen for changes in our string-properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}

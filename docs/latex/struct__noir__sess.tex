@@ -1,0 +1,160 @@
+\hypertarget{struct__noir__sess}{
+\section{\_\-noir\_\-sess Struct Reference}
+\label{struct__noir__sess}\index{_noir_sess@{\_\-noir\_\-sess}}
+}
+a session  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__noir__sess_o0}{
+long \hyperlink{struct__noir__sess_o0}{serial}}
+\label{struct__noir__sess_o0}
+
+\begin{CompactList}\small\item\em \char`\"{}primary key\char`\"{} : ) \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o1}{
+unsigned long \hyperlink{struct__noir__sess_o1}{focused}}
+\label{struct__noir__sess_o1}
+
+\begin{CompactList}\small\item\em when was this window last focused? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o2}{
+\hyperlink{struct__client__funs}{client\_\-funs} $\ast$ \hyperlink{struct__noir__sess_o2}{clients}}
+\label{struct__noir__sess_o2}
+
+\begin{CompactList}\small\item\em list of views in this window \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o3}{
+\hyperlink{struct__client__funs}{client\_\-funs} $\ast$ \hyperlink{struct__noir__sess_o3}{client}}
+\label{struct__noir__sess_o3}
+
+\begin{CompactList}\small\item\em current view in this window \item\end{CompactList}\item 
+int \hyperlink{struct__noir__sess_o5}{sortflags}
+\begin{CompactList}\small\item\em sort-hints: unsorted, folders first, . \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o6}{
+int \hyperlink{struct__noir__sess_o6}{thumbnails\_\-in\_\-iconlist}}
+\label{struct__noir__sess_o6}
+
+\begin{CompactList}\small\item\em show thumbnails rather than icons in icon-view? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o7}{
+int \hyperlink{struct__noir__sess_o7}{thumbnails\_\-in\_\-shelf}}
+\label{struct__noir__sess_o7}
+
+\begin{CompactList}\small\item\em show thumbnails rather than icons in shelf? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o8}{
+int \hyperlink{struct__noir__sess_o8}{without\_\-notebook}}
+\label{struct__noir__sess_o8}
+
+\begin{CompactList}\small\item\em hide notebook-tabs? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o9}{
+int \hyperlink{struct__noir__sess_o9}{without\_\-shelf}}
+\label{struct__noir__sess_o9}
+
+\begin{CompactList}\small\item\em disable \char`\"{}shelf\char`\"{}? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o10}{
+int \hyperlink{struct__noir__sess_o10}{without\_\-decorations}}
+\label{struct__noir__sess_o10}
+
+\begin{CompactList}\small\item\em disable window-borders? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o11}{
+int \hyperlink{struct__noir__sess_o11}{sema\_\-focus}}
+\label{struct__noir__sess_o11}
+
+\begin{CompactList}\small\item\em \char`\"{}semaphore\char`\"{} \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o12}{
+int \hyperlink{struct__noir__sess_o12}{start\_\-in}}
+\label{struct__noir__sess_o12}
+
+\begin{CompactList}\small\item\em which view to show first \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o13}{
+int \hyperlink{struct__noir__sess_o13}{fullscreen}}
+\label{struct__noir__sess_o13}
+
+\begin{CompactList}\small\item\em maximize window? \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o14}{
+int \hyperlink{struct__noir__sess_o14}{icon\_\-view\_\-last\_\-tooltip}}
+\label{struct__noir__sess_o14}
+
+\begin{CompactList}\small\item\em GTK: index of last icon we made a tooltip for. \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o15}{
+noir\_\-tooltip $\ast$ \hyperlink{struct__noir__sess_o15}{tooltip}}
+\label{struct__noir__sess_o15}
+
+\begin{CompactList}\small\item\em tooltip, if any \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o16}{
+tooltip\_\-flags \hyperlink{struct__noir__sess_o16}{with\_\-tooltips}}
+\label{struct__noir__sess_o16}
+
+\begin{CompactList}\small\item\em mouse-over + delay tooltips? (can still be activated by key-press/mouse-clicke otherwise) \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o17}{
+char $\ast$ \hyperlink{struct__noir__sess_o17}{geometry}}
+\label{struct__noir__sess_o17}
+
+\begin{CompactList}\small\item\em geometry string \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o18}{
+char $\ast$ \hyperlink{struct__noir__sess_o18}{cwd}}
+\label{struct__noir__sess_o18}
+
+\begin{CompactList}\small\item\em current work-dir \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o19}{
+char $\ast$ \hyperlink{struct__noir__sess_o19}{pwd}}
+\label{struct__noir__sess_o19}
+
+\begin{CompactList}\small\item\em previous work-dir \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o20}{
+char $\ast$ \hyperlink{struct__noir__sess_o20}{cfg\_\-file}}
+\label{struct__noir__sess_o20}
+
+\begin{CompactList}\small\item\em setup-file (forthcoming) \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o21}{
+action\_\-context $\ast$ \hyperlink{struct__noir__sess_o21}{selection}}
+\label{struct__noir__sess_o21}
+
+\begin{CompactList}\small\item\em currently selected files \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o22}{
+action\_\-context $\ast$ \hyperlink{struct__noir__sess_o22}{drag\_\-files}}
+\label{struct__noir__sess_o22}
+
+\begin{CompactList}\small\item\em which files were last dragged $\ast$from$\ast$ ev \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o23}{
+\hyperlink{struct__file__info}{file\_\-info} $\ast$ \hyperlink{struct__noir__sess_o23}{cd}}
+\label{struct__noir__sess_o23}
+
+\begin{CompactList}\small\item\em current dir (file-info) \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o24}{
+char $\ast$ \hyperlink{struct__noir__sess_o24}{iconset}}
+\label{struct__noir__sess_o24}
+
+\begin{CompactList}\small\item\em option takes path or name, will set path+file \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o25}{
+void $\ast$ \hyperlink{struct__noir__sess_o25}{theme}}
+\label{struct__noir__sess_o25}
+
+\begin{CompactList}\small\item\em theme data \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o26}{
+void $\ast$ \hyperlink{struct__noir__sess_o26}{uidata}}
+\label{struct__noir__sess_o26}
+
+\begin{CompactList}\small\item\em widgets \item\end{CompactList}\item 
+\hypertarget{struct__noir__sess_o27}{
+\hyperlink{struct__noir__sess}{\_\-noir\_\-sess} $\ast$ \hyperlink{struct__noir__sess_o27}{next}}
+\label{struct__noir__sess_o27}
+
+\begin{CompactList}\small\item\em next session in list \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+a session 
+
+
+
+\subsection{Field Documentation}
+\hypertarget{struct__noir__sess_o5}{
+\index{_noir_sess@{\_\-noir\_\-sess}!sortflags@{sortflags}}
+\index{sortflags@{sortflags}!_noir_sess@{\_\-noir\_\-sess}}
+\subsubsection[sortflags]{\setlength{\rightskip}{0pt plus 5cm}int \hyperlink{struct__noir__sess_o5}{\_\-noir\_\-sess::sortflags}}}
+\label{struct__noir__sess_o5}
+
+
+sort-hints: unsorted, folders first, . 
+
+.. 

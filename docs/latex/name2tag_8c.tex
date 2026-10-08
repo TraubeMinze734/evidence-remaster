@@ -1,0 +1,71 @@
+\hypertarget{name2tag_8c}{
+\section{name2tag.c File Reference}
+\label{name2tag_8c}\index{name2tag.c@{name2tag.c}}
+}
+context-menu action \char`\"{}name2tag\char`\"{} set ID3 or Ogg-tag from file-name TODO \#\#\# should get template for file-name from properties 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+char $\ast$ \hyperlink{name2tag_8c_a1}{skip} (char $\ast$$\ast$x, char $\ast$end)
+\begin{CompactList}\small\item\em skip a delimiter \item\end{CompactList}\item 
+int \hyperlink{name2tag_8c_a2}{is\_\-reasonable\_\-album\_\-title} (char $\ast$at)
+\begin{CompactList}\small\item\em check whether path is generic or a potential album-title \item\end{CompactList}\item 
+int \hyperlink{name2tag_8c_a3}{efun} (long serial, char $\ast$filename, noir\_\-md $\ast$md, action\_\-context $\ast$ac)
+\begin{CompactList}\small\item\em context-menu action: derive file-name from ID3/Vorbis-tag \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+context-menu action \char`\"{}name2tag\char`\"{} set ID3 or Ogg-tag from file-name TODO \#\#\# should get template for file-name from properties 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{name2tag_8c_a3}{
+\index{name2tag.c@{name2tag.c}!efun@{efun}}
+\index{efun@{efun}!name2tag.c@{name2tag.c}}
+\subsubsection[efun]{\setlength{\rightskip}{0pt plus 5cm}int efun (long {\em serial}, char $\ast$ {\em filename}, noir\_\-md $\ast$ {\em md}, action\_\-context $\ast$ {\em ac})}}
+\label{name2tag_8c_a3}
+
+
+context-menu action: derive file-name from ID3/Vorbis-tag 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em serial}]the serial number of the session that called us \item[{\em filename}]the file to act on \item[{\em md}]the file's meta-data \item[{\em ac}]the context of this action (selection et al.)\end{description}
+\end{Desc}
+\hypertarget{name2tag_8c_a2}{
+\index{name2tag.c@{name2tag.c}!is_reasonable_album_title@{is\_\-reasonable\_\-album\_\-title}}
+\index{is_reasonable_album_title@{is\_\-reasonable\_\-album\_\-title}!name2tag.c@{name2tag.c}}
+\subsubsection[is\_\-reasonable\_\-album\_\-title]{\setlength{\rightskip}{0pt plus 5cm}int is\_\-reasonable\_\-album\_\-title (char $\ast$ {\em at})}}
+\label{name2tag_8c_a2}
+
+
+check whether path is generic or a potential album-title 
+
+\begin{Desc}
+\item[Returns:]TRUE or FALSE \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em at}]the potential album-title\end{description}
+\end{Desc}
+\hypertarget{name2tag_8c_a1}{
+\index{name2tag.c@{name2tag.c}!skip@{skip}}
+\index{skip@{skip}!name2tag.c@{name2tag.c}}
+\subsubsection[skip]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ skip (char $\ast$$\ast$ {\em x}, char $\ast$ {\em end})}}
+\label{name2tag_8c_a1}
+
+
+skip a delimiter 
+
+\begin{Desc}
+\item[Returns:]the first character after the delimiter (or $\backslash$0 for $\ast$x==end) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em x}]the current position (updated) \item[{\em end}]the end of the string\end{description}
+\end{Desc}

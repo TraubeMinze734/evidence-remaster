@@ -1,0 +1,119 @@
+.TH "rename.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+rename.c \- context-menu action 'rename item' 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "ren_ctx * \fBren_ctx_dst\fP (ren_ctx **ctx)"
+.br
+.RI "\fIdestruct a rename context \fP"
+.ti -1c
+.RI "ren_ctx * \fBren_ctx_new\fP (const char *old, const char *cwd)"
+.br
+.RI "\fIcreate a rename context \fP"
+.ti -1c
+.RI "static void \fBrename_cxl\fP (GtkWindow *win, gpointer data)"
+.br
+.RI "\fIrelease data \fP"
+.ti -1c
+.RI "static void \fBrename_do\fP (GtkWidget *ent, gpointer data)"
+.br
+.RI "\fIcallback: dial was activated, rename file \fP"
+.ti -1c
+.RI "int \fBefun\fP (long serial, char *filename, noir_md *md, action_context *ac)"
+.br
+.RI "\fIcontext-menu action: rename item \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+context-menu action 'rename item' 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "int efun (long serial, char * filename, noir_md * md, action_context * ac)"
+.PP
+context-menu action: rename item 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the serial number of the session that called us 
+.br
+\fIfilename\fP the file to act on 
+.br
+\fImd\fP the file's meta-data 
+.br
+\fIac\fP the context of this action (selection et al.)
+.RE
+.PP
+
+.SS "ren_ctx* ren_ctx_dst (ren_ctx ** ctx)"
+.PP
+destruct a rename context 
+.PP
+\fBReturns:\fP
+.RS 4
+NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIctx\fP the context to destroy
+.RE
+.PP
+
+.SS "ren_ctx* ren_ctx_new (const char * old, const char * cwd)"
+.PP
+create a rename context 
+.PP
+\fBReturns:\fP
+.RS 4
+the new context, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIold\fP the old name 
+.br
+\fIcwd\fP the current work-directory
+.RE
+.PP
+
+.SS "static void rename_cxl (GtkWindow * win, gpointer data)\fC [static]\fP"
+.PP
+release data 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwin\fP the window that was destroyed 
+.br
+\fIdata\fP the context to release
+.RE
+.PP
+
+.SS "static void rename_do (GtkWidget * ent, gpointer data)\fC [static]\fP"
+.PP
+callback: dial was activated, rename file 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIent\fP the entry-field 
+.br
+\fIdata\fP the window 'ent' lives in
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

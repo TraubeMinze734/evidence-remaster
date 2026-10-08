@@ -1,0 +1,55 @@
+\hypertarget{tt__wholewindow_8c}{
+\section{tt\_\-wholewindow.c File Reference}
+\label{tt__wholewindow_8c}\index{tt_wholewindow.c@{tt\_\-wholewindow.c}}
+}
+plugin that creates a file-info \char`\"{}tooltip\char`\"{} 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{tt__wholewindow_8c_a2}{tt\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct a tooltip. \item\end{CompactList}\item 
+void $\ast$ \hyperlink{tt__wholewindow_8c_a3}{tt\_\-new} (void $\ast$data, int x, int y, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi)
+\begin{CompactList}\small\item\em create a tooltip. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that creates a file-info \char`\"{}tooltip\char`\"{} 
+
+this plugin creates tooltips that fill the whole window.
+
+some tunables exist as defines and should be turned into properties at some point. \#\#\#
+
+\subsection{Function Documentation}
+\hypertarget{tt__wholewindow_8c_a2}{
+\index{tt_wholewindow.c@{tt\_\-wholewindow.c}!tt_dst@{tt\_\-dst}}
+\index{tt_dst@{tt\_\-dst}!tt_wholewindow.c@{tt\_\-wholewindow.c}}
+\subsubsection[tt\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void tt\_\-dst (void $\ast$$\ast$ {\em data})}}
+\label{tt__wholewindow_8c_a2}
+
+
+destruct a tooltip. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the tooltip-handle \hyperlink{tt__centre_8c_a4}{tt\_\-new()} gave us\end{description}
+\end{Desc}
+\hypertarget{tt__wholewindow_8c_a3}{
+\index{tt_wholewindow.c@{tt\_\-wholewindow.c}!tt_new@{tt\_\-new}}
+\index{tt_new@{tt\_\-new}!tt_wholewindow.c@{tt\_\-wholewindow.c}}
+\subsubsection[tt\_\-new]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ tt\_\-new (void $\ast$ {\em data}, int {\em x}, int {\em y}, \hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi})}}
+\label{tt__wholewindow_8c_a3}
+
+
+create a tooltip. 
+
+no assumptions about the nature of the tooltip are made; for all the main application knows, the plugin might read the info to the user aloud.
+
+\begin{Desc}
+\item[Returns:]a handle to pass to \hyperlink{tt__centre_8c_a3}{tt\_\-dst()} when destroy the tooltip. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the icon-list the tooltip is related to \item[{\em x}]- x-position of the icon the info is for \item[{\em y}]- y-position of the icon the info is for \item[{\em fi}]- the file we're displaying info for\end{description}
+\end{Desc}

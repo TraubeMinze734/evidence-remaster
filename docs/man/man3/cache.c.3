@@ -1,0 +1,191 @@
+.TH "cache.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+cache.c \- On-disk cache for directory-info (to speed up large dirs over NFS etc. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static char * \fBhash_name\fP (char *name)"
+.br
+.RI "\fIhash_name - for a submitted path, created a hashed name in ~/DIR_CACHE. \fP"
+.ti -1c
+.RI "static ulong \fBcache_save_el\fP (int fd, char *tag, ulong len, void *data)"
+.br
+.RI "\fIcache_save_el - save a single entry in cache. \fP"
+.ti -1c
+.RI "static ulong \fBcache_save_fi\fP (int fd, \fBfile_info\fP *fi)"
+.br
+.RI "\fIcache_save_fi - save a single file-entry in a cache (convenience function) \fP"
+.ti -1c
+.RI "static ulong \fBcache_save_th\fP (int fd, \fBfile_info\fP *fi)"
+.br
+.RI "\fIcache_save_th - save a single thumbnail in a cache (convenience function) \fP"
+.ti -1c
+.RI "static int \fBcache_save\fP (\fBfile_info\fP *dir, char *name)"
+.br
+.RI "\fIcache_save - save a cache-file for a folder \fP"
+.ti -1c
+.RI "cache_el * \fBcache_load_el\fP (int fd, ulong *len)"
+.br
+.RI "\fIcache_load_el - load a single cache-element from a cache-file. \fP"
+.ti -1c
+.RI "int \fBcache_load\fP (\fBq_element\fP *q, char *fn)"
+.br
+.RI "\fIcache_load - load a file containing the cache for a folder do not call \fBmodel_evt()\fP from within; we're called by the scanner rather than the GUI thread! \fP"
+.ti -1c
+.RI "int \fBfile_save_cache\fP (\fBfile_info\fP *dir)"
+.br
+.RI "\fIfile_save_cache - save a cache-file for a folder. \fP"
+.ti -1c
+.RI "int \fBfile_load_cache\fP (\fBq_element\fP *q)"
+.br
+.RI "\fIfile_load_cache - load a cache-file for a folder. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+On-disk cache for directory-info (to speed up large dirs over NFS etc. 
+
+)
+.SH "Function Documentation"
+.PP 
+.SS "int cache_load (\fBq_element\fP * q, char * fn)"
+.PP
+cache_load - load a file containing the cache for a folder do not call \fBmodel_evt()\fP from within; we're called by the scanner rather than the GUI thread! 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIq\fP - the directory the contents of which are to be loaded 
+.br
+\fIfn\fP - the path and name of the file to load
+.RE
+.PP
+
+.SS "cache_el* cache_load_el (int fd, ulong * len)"
+.PP
+cache_load_el - load a single cache-element from a cache-file. 
+.PP
+\fBReturns:\fP
+.RS 4
+the address of the new cache-element's header (which must be freed). the data begin directly after the returned header (and will be free()d along with the header). 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfd\fP - the file-descriptor for the cache-file to save in 
+.br
+\fIlen\fP - where (if non-NULL) the number of data-bytes read will be stored, excluding the length of the header
+.RE
+.PP
+
+.SS "static int cache_save (\fBfile_info\fP * dir, char * name)\fC [static]\fP"
+.PP
+cache_save - save a cache-file for a folder 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdir\fP - the directory to save a cache-file for 
+.br
+\fIname\fP - the (hashed) name and path of the cache-file
+.RE
+.PP
+
+.SS "static ulong cache_save_el (int fd, char * tag, ulong len, void * data)\fC [static]\fP"
+.PP
+cache_save_el - save a single entry in cache. 
+.PP
+\fBReturns:\fP
+.RS 4
+the number of characters written (length_of_data + length_of_header) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfd\fP - the file-descriptor for the cache-file to save in 
+.br
+\fItag\fP - tag describing the type of the entry 
+.br
+\fIlen\fP - the size of the entry (excluding its header) 
+.br
+\fIdata\fP - the data to write (len bytes)
+.RE
+.PP
+
+.SS "static ulong cache_save_fi (int fd, \fBfile_info\fP * fi)\fC [inline, static]\fP"
+.PP
+cache_save_fi - save a single file-entry in a cache (convenience function) 
+.PP
+\fBReturns:\fP
+.RS 4
+the number of characters written (length_of_data + length_of_header) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfd\fP - the file-descriptor for the cache-file to save in 
+.br
+\fIfi\fP - file-info to save
+.RE
+.PP
+
+.SS "static ulong cache_save_th (int fd, \fBfile_info\fP * fi)\fC [inline, static]\fP"
+.PP
+cache_save_th - save a single thumbnail in a cache (convenience function) 
+.PP
+\fBReturns:\fP
+.RS 4
+the number of characters written (length_of_data + length_of_header) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfd\fP - the file-descriptor for the cache-file to save in 
+.br
+\fIfi\fP - file-info for thumbnail to save
+.RE
+.PP
+
+.SS "int file_load_cache (\fBq_element\fP * q)"
+.PP
+file_load_cache - load a cache-file for a folder. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIq\fP - a queue-element denoting the directory to load (in its 'dir' element)
+.RE
+.PP
+
+.SS "int file_save_cache (\fBfile_info\fP * dir)"
+.PP
+file_save_cache - save a cache-file for a folder. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdir\fP - the folder to save a cache for
+.RE
+.PP
+
+.SS "static char* hash_name (char * name)\fC [static]\fP"
+.PP
+hash_name - for a submitted path, created a hashed name in ~/DIR_CACHE. 
+.PP
+called from file_load_cach() and \fBfile_save_cache()\fP. 
+.PP
+\fBReturns:\fP
+.RS 4
+a buffer containing a file-name in ~/DIR_CACHE that must be free()d. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIname\fP - the path and name of the directory we'll cache
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,252 @@
+\hypertarget{monitors_8c}{
+\section{monitors.c File Reference}
+\label{monitors_8c}\index{monitors.c@{monitors.c}}
+}
+file-monitors (notice new/changed/deleted items in file-system) 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+\hypertarget{monitors_8c_a2}{
+\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ \hyperlink{monitors_8c_a2}{file\_\-monitor\_\-get\_\-1st} (void)}
+\label{monitors_8c_a2}
+
+\begin{CompactList}\small\item\em get anchor of monitor-chain \item\end{CompactList}\item 
+static int \hyperlink{monitors_8c_a3}{file\_\-monitor\_\-update\_\-fi} (\hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} etype, void $\ast$session)
+\begin{CompactList}\small\item\em something changed in the real world, update our model of it! \item\end{CompactList}\item 
+static int \hyperlink{monitors_8c_a4}{file\_\-monitor\_\-selection\_\-remove} (\hyperlink{struct__file__info}{file\_\-info} $\ast$fi, void $\ast$session)
+\begin{CompactList}\small\item\em remove 'file' from all sessions' selections. \item\end{CompactList}\item 
+\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ \hyperlink{monitors_8c_a5}{file\_\-monitor\_\-exists} (void $\ast$ns, char $\ast$file, \hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$$\ast$prv)
+\begin{CompactList}\small\item\em check whether a monitor for this file already exists in list \item\end{CompactList}\item 
+static \hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ \hyperlink{monitors_8c_a6}{noir\_\-monitor\_\-dst} (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$g)
+\begin{CompactList}\small\item\em release struct for an abstract monitor \item\end{CompactList}\item 
+int \hyperlink{monitors_8c_a7}{file\_\-monitor\_\-remove} (void $\ast$ns, char $\ast$file)
+\begin{CompactList}\small\item\em remove all monitors for a given file in a given session, or in all sessions \item\end{CompactList}\item 
+static int \hyperlink{monitors_8c_a8}{file\_\-monitor\_\-remove\_\-one} (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$m)
+\begin{CompactList}\small\item\em remove a given monitor \item\end{CompactList}\item 
+int \hyperlink{monitors_8c_a9}{file\_\-monitor\_\-remove\_\-all} (void $\ast$ns)
+\begin{CompactList}\small\item\em remove all monitors (for a given session, or all sessions). \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{monitors_8c_a10}{file\_\-monitor\_\-find\_\-real} (char $\ast$want)
+\begin{CompactList}\small\item\em find deepest existing element in given path \item\end{CompactList}\item 
+int \hyperlink{monitors_8c_a11}{file\_\-monitor\_\-add\_\-with\_\-handler} (void $\ast$ns, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} type, char $\ast$file, int($\ast$file\_\-event\_\-handler)(void $\ast$session, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} ev, \hyperlink{model_8h_a151}{file\_\-flags} fc, void $\ast$data), void $\ast$data)
+\begin{CompactList}\small\item\em add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. \item\end{CompactList}\item 
+int \hyperlink{monitors_8c_a12}{file\_\-monitor\_\-add} (void $\ast$ns, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} type, char $\ast$file)
+\begin{CompactList}\small\item\em add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. \item\end{CompactList}\item 
+static int \hyperlink{monitors_8c_a13}{file\_\-monitor\_\-reload\_\-maybe} (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$m, char $\ast$tag)
+\begin{CompactList}\small\item\em create per-file events from dir-update event. \item\end{CompactList}\item 
+static int \hyperlink{monitors_8c_a14}{file\_\-monitor\_\-update} (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$m, \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event} etype)
+\begin{CompactList}\small\item\em something along the path of a not-yet-existing item we're waiting for has changed update monitor accordingly \item\end{CompactList}\item 
+int \hyperlink{monitors_8c_a15}{file\_\-monitor\_\-event} (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$m, \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event} type, char $\ast$tag)
+\begin{CompactList}\small\item\em the backend detected a change on an item we were monitoring. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+file-monitors (notice new/changed/deleted items in file-system) 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{monitors_8c_a12}{
+\index{monitors.c@{monitors.c}!file_monitor_add@{file\_\-monitor\_\-add}}
+\index{file_monitor_add@{file\_\-monitor\_\-add}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-add]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-add (void $\ast$ {\em ns}, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} {\em type}, char $\ast$ {\em file})}}
+\label{monitors_8c_a12}
+
+
+add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session that wants to register this monitor \item[{\em type}]the type of the monitor (file, dir, ...) \item[{\em file}]the tag of the item to monitor\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a11}{
+\index{monitors.c@{monitors.c}!file_monitor_add_with_handler@{file\_\-monitor\_\-add\_\-with\_\-handler}}
+\index{file_monitor_add_with_handler@{file\_\-monitor\_\-add\_\-with\_\-handler}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-add\_\-with\_\-handler]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-add\_\-with\_\-handler (void $\ast$ {\em ns}, \hyperlink{monitors_8h_a21}{noir\_\-file\_\-monitor} {\em type}, char $\ast$ {\em file}, int($\ast$)(void $\ast$session, \hyperlink{struct__file__info}{file\_\-info} $\ast$fi, \hyperlink{model_8h_a154}{model\_\-event} ev, \hyperlink{model_8h_a151}{file\_\-flags} fc, void $\ast$data) {\em file\_\-event\_\-handler}, void $\ast$ {\em data})}}
+\label{monitors_8c_a11}
+
+
+add a monitor for a file/directory calls \hyperlink{file__direct_8c_a63}{backend\_\-monitor\_\-add()} in backend to add \char`\"{}real\char`\"{} monitor. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session that wants to register this monitor \item[{\em type}]the type of the monitor (file, dir, ...) \item[{\em file}]the tag of the item to monitor \item[{\em file\_\-event\_\-handler}]a callback, or NULL for model only \item[{\em data}]additional data to hand to the callback\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a15}{
+\index{monitors.c@{monitors.c}!file_monitor_event@{file\_\-monitor\_\-event}}
+\index{file_monitor_event@{file\_\-monitor\_\-event}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-event]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-event (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ {\em m}, \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event} {\em type}, char $\ast$ {\em tag})}}
+\label{monitors_8c_a15}
+
+
+the backend detected a change on an item we were monitoring. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the monitor the event is for \item[{\em type}]the type of the event (item deleted, added, modified...) \item[{\em tag}]the tag of the file we got an event for\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a5}{
+\index{monitors.c@{monitors.c}!file_monitor_exists@{file\_\-monitor\_\-exists}}
+\index{file_monitor_exists@{file\_\-monitor\_\-exists}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-exists]{\setlength{\rightskip}{0pt plus 5cm}\hyperlink{struct__noir__monitor}{noir\_\-monitor}$\ast$ file\_\-monitor\_\-exists (void $\ast$ {\em ns}, char $\ast$ {\em file}, \hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$$\ast$ {\em prv})}}
+\label{monitors_8c_a5}
+
+
+check whether a monitor for this file already exists in list 
+
+\begin{Desc}
+\item[Returns:]monitor-struct if it already exists, or NULL otherwise \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session the monitor should be part of, or NULL for any \item[{\em file}]the file the monitor is for \item[{\em prv}]location where a pointer to the preceeding list-element will be stored, or NULL (so caller can remove found element)\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a10}{
+\index{monitors.c@{monitors.c}!file_monitor_find_real@{file\_\-monitor\_\-find\_\-real}}
+\index{file_monitor_find_real@{file\_\-monitor\_\-find\_\-real}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-find\_\-real]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ file\_\-monitor\_\-find\_\-real (char $\ast$ {\em want})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{monitors_8c_a10}
+
+
+find deepest existing element in given path 
+
+\begin{Desc}
+\item[Returns:]a newly-allocated buffer containing the deepest existing element, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em want}]the path to look in\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a13}{
+\index{monitors.c@{monitors.c}!file_monitor_reload_maybe@{file\_\-monitor\_\-reload\_\-maybe}}
+\index{file_monitor_reload_maybe@{file\_\-monitor\_\-reload\_\-maybe}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-reload\_\-maybe]{\setlength{\rightskip}{0pt plus 5cm}static int file\_\-monitor\_\-reload\_\-maybe (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ {\em m}, char $\ast$ {\em tag})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{monitors_8c_a13}
+
+
+create per-file events from dir-update event. 
+
+this is a helper function. ideally, if a directory is monitored, the backend should send us individual events for each added, deleted modified item. some backends cannot do this; all they send is a change event for the directory itself. if this happens, this routine finds out what really changed and sends more specific events accordingly. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the monitor that the unspecified directory-event occurred on \item[{\em tag}]the tag of the directory that changed\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a7}{
+\index{monitors.c@{monitors.c}!file_monitor_remove@{file\_\-monitor\_\-remove}}
+\index{file_monitor_remove@{file\_\-monitor\_\-remove}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-remove (void $\ast$ {\em ns}, char $\ast$ {\em file})}}
+\label{monitors_8c_a7}
+
+
+remove all monitors for a given file in a given session, or in all sessions 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session to remove the monitors in, or NULL for all sessions \item[{\em file}]the file the monitors are for\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a9}{
+\index{monitors.c@{monitors.c}!file_monitor_remove_all@{file\_\-monitor\_\-remove\_\-all}}
+\index{file_monitor_remove_all@{file\_\-monitor\_\-remove\_\-all}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-remove\_\-all]{\setlength{\rightskip}{0pt plus 5cm}int file\_\-monitor\_\-remove\_\-all (void $\ast$ {\em ns})}}
+\label{monitors_8c_a9}
+
+
+remove all monitors (for a given session, or all sessions). 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]the session whose monitors to remove, or NULL for all sessions\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a8}{
+\index{monitors.c@{monitors.c}!file_monitor_remove_one@{file\_\-monitor\_\-remove\_\-one}}
+\index{file_monitor_remove_one@{file\_\-monitor\_\-remove\_\-one}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-remove\_\-one]{\setlength{\rightskip}{0pt plus 5cm}static int file\_\-monitor\_\-remove\_\-one (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{monitors_8c_a8}
+
+
+remove a given monitor 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the monitor to remove\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a4}{
+\index{monitors.c@{monitors.c}!file_monitor_selection_remove@{file\_\-monitor\_\-selection\_\-remove}}
+\index{file_monitor_selection_remove@{file\_\-monitor\_\-selection\_\-remove}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-selection\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}static int file\_\-monitor\_\-selection\_\-remove (\hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, void $\ast$ {\em session})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{monitors_8c_a4}
+
+
+remove 'file' from all sessions' selections. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fi}]the file-info \item[{\em session}]the session, or NULL\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a14}{
+\index{monitors.c@{monitors.c}!file_monitor_update@{file\_\-monitor\_\-update}}
+\index{file_monitor_update@{file\_\-monitor\_\-update}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-update]{\setlength{\rightskip}{0pt plus 5cm}static int file\_\-monitor\_\-update (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ {\em m}, \hyperlink{monitors_8h_a20}{noir\_\-file\_\-event} {\em etype})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{monitors_8c_a14}
+
+
+something along the path of a not-yet-existing item we're waiting for has changed update monitor accordingly 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the monitor in question \item[{\em etype}]the event that was received for this monitor\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a3}{
+\index{monitors.c@{monitors.c}!file_monitor_update_fi@{file\_\-monitor\_\-update\_\-fi}}
+\index{file_monitor_update_fi@{file\_\-monitor\_\-update\_\-fi}!monitors.c@{monitors.c}}
+\subsubsection[file\_\-monitor\_\-update\_\-fi]{\setlength{\rightskip}{0pt plus 5cm}static int file\_\-monitor\_\-update\_\-fi (\hyperlink{struct__file__info}{file\_\-info} $\ast$ {\em fi}, \hyperlink{model_8h_a154}{model\_\-event} {\em etype}, void $\ast$ {\em session})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{monitors_8c_a3}
+
+
+something changed in the real world, update our model of it! 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fi}]the file-system item this event is about \item[{\em etype}]the kind of event we talk about (added, deleted, ...) \item[{\em session}]what session\end{description}
+\end{Desc}
+\hypertarget{monitors_8c_a6}{
+\index{monitors.c@{monitors.c}!noir_monitor_dst@{noir\_\-monitor\_\-dst}}
+\index{noir_monitor_dst@{noir\_\-monitor\_\-dst}!monitors.c@{monitors.c}}
+\subsubsection[noir\_\-monitor\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}static \hyperlink{struct__noir__monitor}{noir\_\-monitor}$\ast$ noir\_\-monitor\_\-dst (\hyperlink{struct__noir__monitor}{noir\_\-monitor} $\ast$ {\em g})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{monitors_8c_a6}
+
+
+release struct for an abstract monitor 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em g}]the monitor to release\end{description}
+\end{Desc}

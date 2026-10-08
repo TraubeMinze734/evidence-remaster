@@ -1,0 +1,61 @@
+EVIDENCE ICON-SETS
+
+INSTALLATION
+
+  evidence icon-sets go in a directory below $PREFIX/share/evidence/icons;
+  if the default prefix /usr/local is used, the "tosh" theme (128x128 pixels)
+  would hence be expected in a folder /usr/local/share/evidence/icons/tosh_128
+
+  If you got evidence from CVS, the icons will be generated and installed
+  as part of the normal ./configure, make, checkinstall cycle.
+
+USE
+
+  If the --iconset command-line option is not given, evidence will try to
+  load the iconset suggested by the active theme.  If no such suggestion was
+  made, evidence will try find an iconset called "default" -- usually a symlink
+  to one of the supplied sets.  Failing that, shelf and icon-view will be
+  disabled.
+
+TERMS OF USE
+
+  Every iconset should contain a notice on which artist kindly made them
+  available, and what the conditions of use, if any, are.
+
+DESCRIPTION
+
+emblems
+
+  This is a special directory containing "emblems" -- labels to go
+  on top of an icon to indicate "read-only" state and similar things.
+  Icon-themes can reference these default emblems if they don't bring
+  their own.
+
+ento_48/ento_64
+
+  Various insects and arachnoids in the popular "aquatic" style
+
+fishtank_48/fishtank_128
+
+  Various fish, for use by the fishtank theme
+
+gfilerunner
+
+  Default iconset for GNOME 1 (presumably)
+
+gorilla_36/gorilla_48/gorilla_72
+
+  Iconset used by the Nautilus file-manager, rendered from SVG to PNG
+
+icosx
+
+  OS X-like icons; mapping provided by Andrew Elcock.
+
+efm
+
+  Original efm icons (with some quick hacks on gfilerunner icons added
+  for good measure).
+
+tosh
+
+  Original evidence icons by Azundris.

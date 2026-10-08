@@ -1,0 +1,37 @@
+
+RECENT CHANGES                                                  (2003/09/26)
+- if libmagic, libacl, libattr are present at compile-time, support
+  will be built in.  if they are available at run-time, they will be
+  used, but they are not required.
+- desktop automation -- speaks eCore, DCOP and DBUS IPC.  See evsh.
+- compiled without GTK2 tree by default now
+- properties -- configuration may be adjusted at run-time using IPC,
+  evsh, or typebuffer.
+- tab-completion for files, properties and URLs.  zsh-style for files
+  (/u/l/b == /u*/l*/b*, expands to /usr/local/bin).
+
+
+
+RECENT CHANGES                                                  (2003/06/03)
+- .folder is back
+- automatic tooltips (-W) are back
+- ACLs and EAs copied/moved correctly
+- ACLs displayed in properties dialog (ACL-editing on shortlist)
+- emblems (read-only/no-access)
+- pseudo-transparency now works with tiled backgrounds, multiple desktops,
+  and solid colour backgrounds (by popular request)
+- truetype thumbnails look better
+- drag'n'drop uses actual icon now rather than the default
+- POSIX-backend may be compiled against libmagic (MIME-type determination of
+  the file-command).  if it can't determine the MIME-type by file-extension,
+  it falls back on (the costlier) libmagic.
+- typebuffer has new variable $SEL ($SELECTION) which contains the current
+  selection (^V on the other hand would paste the *clipboard*'s contents)
+- animations (folder opened, application opened, file opened) are plugins now
+- switched to own internal model, added much stability and speed
+- new/delete items in displayed dir handled much more gracefully
+- can be installed wherever (prefix foo fixed in configure),
+  and reportedly on whatever, incl. SunOS and Mac OS X
+- multi-line typebuffer
+- optional toolbars ("textpath" for now)
+- "genre" pop-up menu for MP3/ID3

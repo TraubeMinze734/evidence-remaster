@@ -1,0 +1,79 @@
+.TH "_file_info" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+_file_info \- a file-info entry  
+
+.PP
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char * \fBtag\fP"
+.br
+.RI "\fIfile name, full path/UUID/URL \fP"
+.ti -1c
+.RI "char * \fBlinkee\fP"
+.br
+.RI "\fIMIME-type, indirection (for virtuals). \fP"
+.ti -1c
+.RI "char * \fBsortkey\fP"
+.br
+.RI "\fIsort key \fP"
+.ti -1c
+.RI "\fBfile_flags\fP \fBhave\fP"
+.br
+.RI "\fIwhat info is already set on f/i \fP"
+.ti -1c
+.RI "\fBitem_flags\fP \fBflags\fP"
+.br
+.RI "\fI'read-only' etc. \fP"
+.ti -1c
+.RI "\fB_posixmd\fP * \fBintrinsic\fP"
+.br
+.RI "\fIstat()-info \fP"
+.ti -1c
+.RI "_noir_md * \fBmeta\fP"
+.br
+.RI "\fImeta-data \fP"
+.ti -1c
+.RI "char * \fBthumbfile\fP"
+.br
+.RI "\fIthumbnail (name and path) \fP"
+.ti -1c
+.RI "\fB_dcd\fP * \fBclientdata\fP"
+.br
+.RI "\fIlist of client-data items \fP"
+.ti -1c
+.RI "int \fBchildren\fP"
+.br
+.RI "\fIchildren (count) \fP"
+.ti -1c
+.RI "int \fBrefcount\fP"
+.br
+.RI "\fIreferences to this item \fP"
+.ti -1c
+.RI "\fB_file_info\fP * \fBparent\fP"
+.br
+.RI "\fIthe parent file_info \fP"
+.ti -1c
+.RI "\fB_file_info\fP * \fBchild\fP"
+.br
+.RI "\fIthe first child's file_info \fP"
+.ti -1c
+.RI "\fB_file_info\fP * \fBnext\fP"
+.br
+.RI "\fInext sibling (in same folder) \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+a file-info entry 
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

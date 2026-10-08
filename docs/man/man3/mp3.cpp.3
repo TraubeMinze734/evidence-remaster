@@ -1,0 +1,283 @@
+.TH "mp3.cpp" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+mp3.cpp \- meta-data provider plug-in 'MP3/ID3' 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "noir_meta * \fBmeta_init_mp3\fP (noir_md *a, meta_flags flags, meta_type type, const char *k, const char *d, const char *g, const char *v, noir_provider *p, long u2)"
+.br
+.RI "\fIconvenience function for setting meta-data defaults \fP"
+.ti -1c
+.RI "static int \fBmeta_make_sortkey\fP (noir_md *ret, noir_provider *prov)"
+.br
+.RI "\fImake sort-key from artist and title \fP"
+.ti -1c
+.RI "static char * \fBgenre_name_normalize\fP (char *c)"
+.br
+.RI "\fIremove all non-alpha characters from genre-name and convert to lowercase called from \fBgenre_name_cmp()\fP, \fBgenre_name_to_index()\fP \fP"
+.ti -1c
+.RI "static int \fBgenre_name_cmp\fP (char *pre, char *now)"
+.br
+.RI "\fIcompare two genre-names called by \fBgenre_name_to_index()\fP \fP"
+.ti -1c
+.RI "static char * \fBgenre_name_to_index\fP (char *i)"
+.br
+.RI "\fIhave genre-name, want index if there is any text after the genre-name, it will be preserved \fP"
+.ti -1c
+.RI "static char * \fBgenre_index_to_name\fP (char *t)"
+.br
+.RI "\fIhave genre index, want name. \fP"
+.ti -1c
+.RI "static char * \fBkey_xlate\fP (int id)"
+.br
+.RI "\fItranslate ID3v2 field-name into something human readable \fP"
+.ti -1c
+.RI "int \fBcpp_meta_set_for_file\fP (noir_md *ret, char *file, noir_provider *prov)"
+.br
+.RI "\fIwrite meta-data for this file extractor framework cannot write meta-data, only read it \fP"
+.ti -1c
+.RI "int \fBcpp_meta_get_for_file\fP (noir_md *ret, char *file, noir_provider *prov)"
+.br
+.RI "\fIget meta-data for this file \fP"
+.ti -1c
+.RI "int \fBlayoutp\fP (void)"
+.br
+.RI "\fIlet info-dialog do the layout for us \fP"
+.ti -1c
+.RI "int \fBmeta_set_for_file\fP (noir_md *ret, char *file, noir_provider *prov)"
+.br
+.RI "\fIwrite meta-data for this file extractor framework cannot write meta-data, only read it \fP"
+.ti -1c
+.RI "int \fBmeta_get_for_file\fP (noir_md *ret, char *file, noir_provider *prov)"
+.br
+.RI "\fIget meta-data for this file \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+meta-data provider plug-in 'MP3/ID3' 
+
+get/set MP3 ID3 tags using id3lib
+.SH "Function Documentation"
+.PP 
+.SS "int cpp_meta_get_for_file (noir_md * ret, char * file, noir_provider * prov)"
+.PP
+get meta-data for this file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIret\fP the list of (all) meta-data 
+.br
+\fIfile\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SS "int cpp_meta_set_for_file (noir_md * ret, char * file, noir_provider * prov)"
+.PP
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIret\fP the list of (all) meta-data 
+.br
+\fIfile\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SS "static char* genre_index_to_name (char * t)\fC [static]\fP"
+.PP
+have genre index, want name. 
+.PP
+if there is any text after the index, it will be preserved 
+.PP
+\fBReturns:\fP
+.RS 4
+the textual description of the genre. caller must free() 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the index, as a C-string
+.RE
+.PP
+
+.SS "static int genre_name_cmp (char * pre, char * now)\fC [static]\fP"
+.PP
+compare two genre-names called by \fBgenre_name_to_index()\fP 
+.PP
+\fBReturns:\fP
+.RS 4
+-1,0,1 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpre\fP pre-normalized 1st name 
+.br
+\fInow\fP not normalized 2nd name (not modified)
+.RE
+.PP
+
+.SS "static char* genre_name_normalize (char * c)\fC [static]\fP"
+.PP
+remove all non-alpha characters from genre-name and convert to lowercase called from \fBgenre_name_cmp()\fP, \fBgenre_name_to_index()\fP 
+.PP
+\fBReturns:\fP
+.RS 4
+the cleaned-up genre-name 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP the potentially non-normal genre-name. modified.
+.RE
+.PP
+
+.SS "static char* genre_name_to_index (char * i)\fC [static]\fP"
+.PP
+have genre-name, want index if there is any text after the genre-name, it will be preserved 
+.PP
+\fBReturns:\fP
+.RS 4
+the textual description of the genre. caller must free() 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi\fP the genre-name, as a C-string
+.RE
+.PP
+
+.SS "static char* key_xlate (int id)\fC [inline, static]\fP"
+.PP
+translate ID3v2 field-name into something human readable 
+.PP
+\fBReturns:\fP
+.RS 4
+the 'better' name 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIid\fP the ID of the field
+.RE
+.PP
+
+.SS "int layoutp (void)"
+.PP
+let info-dialog do the layout for us 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC to do our own layout, NOIR_FAIL to have the caller do it
+.RE
+.PP
+
+.SS "int meta_get_for_file (noir_md * ret, char * file, noir_provider * prov)"
+.PP
+get meta-data for this file 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIret\fP the list of (all) meta-data 
+.br
+\fIfile\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SS "noir_meta* meta_init_mp3 (noir_md * a, meta_flags flags, meta_type type, const char * k, const char * d, const char * g, const char * v, noir_provider * p, long u2)"
+.PP
+convenience function for setting meta-data defaults 
+.PP
+\fBReturns:\fP
+.RS 4
+a meta-data entry 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIa\fP the list of meta-data 
+.br
+\fIflags\fP flags (META_RW) 
+.br
+\fItype\fP type (META_STR) 
+.br
+\fIk\fP name 
+.br
+\fId\fP description 
+.br
+\fIg\fP group (MY_NAME) 
+.br
+\fIv\fP default-value 
+.br
+\fIp\fP provider (caller's 'prov') 
+.br
+\fIu2\fP ID3lib field-ID
+.RE
+.PP
+
+.SS "static int meta_make_sortkey (noir_md * ret, noir_provider * prov)\fC [static]\fP"
+.PP
+make sort-key from artist and title 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIret\fP the meta-data list 
+.br
+\fIprov\fP the provider (us)
+.RE
+.PP
+
+.SS "int meta_set_for_file (noir_md * ret, char * file, noir_provider * prov)"
+.PP
+write meta-data for this file extractor framework cannot write meta-data, only read it 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIret\fP the list of (all) meta-data 
+.br
+\fIfile\fP the file to set the meta-data on 
+.br
+\fIprov\fP the provider-entry for this plugin
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,85 @@
+\hypertarget{struct__file__info}{
+\section{\_\-file\_\-info Struct Reference}
+\label{struct__file__info}\index{_file_info@{\_\-file\_\-info}}
+}
+a file-info entry  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__file__info_o1}{
+char $\ast$ \hyperlink{struct__file__info_o1}{tag}}
+\label{struct__file__info_o1}
+
+\begin{CompactList}\small\item\em file name, full path/UUID/URL \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o3}{
+char $\ast$ \hyperlink{struct__file__info_o3}{linkee}}
+\label{struct__file__info_o3}
+
+\begin{CompactList}\small\item\em MIME-type, indirection (for virtuals). \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o4}{
+char $\ast$ \hyperlink{struct__file__info_o4}{sortkey}}
+\label{struct__file__info_o4}
+
+\begin{CompactList}\small\item\em sort key \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o5}{
+\hyperlink{model_8h_a151}{file\_\-flags} \hyperlink{struct__file__info_o5}{have}}
+\label{struct__file__info_o5}
+
+\begin{CompactList}\small\item\em what info is already set on f/i \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o6}{
+\hyperlink{model_8h_a152}{item\_\-flags} \hyperlink{struct__file__info_o6}{flags}}
+\label{struct__file__info_o6}
+
+\begin{CompactList}\small\item\em \char`\"{}read-only\char`\"{} etc. \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o7}{
+\hyperlink{struct__posixmd}{\_\-posixmd} $\ast$ \hyperlink{struct__file__info_o7}{intrinsic}}
+\label{struct__file__info_o7}
+
+\begin{CompactList}\small\item\em stat()-info \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o8}{
+\_\-noir\_\-md $\ast$ \hyperlink{struct__file__info_o8}{meta}}
+\label{struct__file__info_o8}
+
+\begin{CompactList}\small\item\em meta-data \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o9}{
+char $\ast$ \hyperlink{struct__file__info_o9}{thumbfile}}
+\label{struct__file__info_o9}
+
+\begin{CompactList}\small\item\em thumbnail (name and path) \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o10}{
+\hyperlink{struct__dcd}{\_\-dcd} $\ast$ \hyperlink{struct__file__info_o10}{clientdata}}
+\label{struct__file__info_o10}
+
+\begin{CompactList}\small\item\em list of client-data items \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o11}{
+int \hyperlink{struct__file__info_o11}{children}}
+\label{struct__file__info_o11}
+
+\begin{CompactList}\small\item\em children (count) \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o12}{
+int \hyperlink{struct__file__info_o12}{refcount}}
+\label{struct__file__info_o12}
+
+\begin{CompactList}\small\item\em references to this item \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o13}{
+\hyperlink{struct__file__info}{\_\-file\_\-info} $\ast$ \hyperlink{struct__file__info_o13}{parent}}
+\label{struct__file__info_o13}
+
+\begin{CompactList}\small\item\em the parent file\_\-info \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o14}{
+\hyperlink{struct__file__info}{\_\-file\_\-info} $\ast$ \hyperlink{struct__file__info_o14}{child}}
+\label{struct__file__info_o14}
+
+\begin{CompactList}\small\item\em the first child's file\_\-info \item\end{CompactList}\item 
+\hypertarget{struct__file__info_o15}{
+\hyperlink{struct__file__info}{\_\-file\_\-info} $\ast$ \hyperlink{struct__file__info_o15}{next}}
+\label{struct__file__info_o15}
+
+\begin{CompactList}\small\item\em next sibling (in same folder) \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+a file-info entry 
+

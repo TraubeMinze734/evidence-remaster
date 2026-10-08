@@ -1,0 +1,48 @@
+\hypertarget{ia__growfade_8c}{
+\section{ia\_\-growfade.c File Reference}
+\label{ia__growfade_8c}\index{ia_growfade.c@{ia\_\-growfade.c}}
+}
+plugin that animates an icon (when starting a program, opening a folder, or somesuch). 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static void \hyperlink{ia__growfade_8c_a0}{ani\_\-icon\_\-fade} (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$el, float alpha, icon\_\-state s)
+\begin{CompactList}\small\item\em fade out a single icon. \item\end{CompactList}\item 
+void \hyperlink{ia__growfade_8c_a1}{animation} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, \hyperlink{struct__icon}{icon} $\ast$i)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that animates an icon (when starting a program, opening a folder, or somesuch). 
+
+which action is assigned which animation is decided in the theme.
+
+\subsection{Function Documentation}
+\hypertarget{ia__growfade_8c_a0}{
+\index{ia_growfade.c@{ia\_\-growfade.c}!ani_icon_fade@{ani\_\-icon\_\-fade}}
+\index{ani_icon_fade@{ani\_\-icon\_\-fade}!ia_growfade.c@{ia\_\-growfade.c}}
+\subsubsection[ani\_\-icon\_\-fade]{\setlength{\rightskip}{0pt plus 5cm}static void ani\_\-icon\_\-fade (\hyperlink{struct__icon__el}{icon\_\-el} $\ast$ {\em el}, float {\em alpha}, icon\_\-state {\em s})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{ia__growfade_8c_a0}
+
+
+fade out a single icon. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em el}]- the icon-element to fade \item[{\em alpha}]- the opaqueness (0.0..1.0) \item[{\em s}]- affect only elements that have one of the states in s\end{description}
+\end{Desc}
+\hypertarget{ia__growfade_8c_a1}{
+\index{ia_growfade.c@{ia\_\-growfade.c}!animation@{animation}}
+\index{animation@{animation}!ia_growfade.c@{ia\_\-growfade.c}}
+\subsubsection[animation]{\setlength{\rightskip}{0pt plus 5cm}void animation (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, \hyperlink{struct__icon}{icon} $\ast$ {\em i})}}
+\label{ia__growfade_8c_a1}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the list that's affected \item[{\em i}]- the icon we have to highlight\end{description}
+\end{Desc}
+we can get the evas in question from the icon\_\-list; also, this allows us to mess with icons other than the one selected (fade them out, or somesuch).

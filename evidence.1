@@ -1,0 +1,476 @@
+.\"                              hey, Emacs:   -*- nroff -*-
+.\" evidence is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; see the file COPYING.  If not, write to
+.\" the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.TH EVIDENCE 1 "December 23, 2002 - January 13, 2005"
+.\" Please update the above date whenever this man page is modified.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins (default)
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+
+.SH NAME
+ evidence \- Evidence is a GTK2/evas2 file manager.
+.SH REQUIRES
+.nf
+ gtk2            (to run)
+ gtk2-devel      (to build)
+.SH SYNOPSIS
+.B
+  evidence
+.RI [ options ]
+.RI [ <directory> ]
+.SH DESCRIPTION
+.nf
+
+  evidence sports a tree-view (like fm), a browser-view (a la NeXT),
+  and, if compiled against a canvas, an icon-view and shelf. If evas
+  rather than GNOME-canvas is used as a canvas, the icon-view can be
+  themed in rather extreme ways (like efm and beyond).
+
+  evidence gets its information about the file-system from a pluggable
+  backend, making the use of abstraction layers like efsd or GNOME-vfs
+  a simple matter of adding a suitable plug-in.  Furthermore, plugins
+  for individual file-types are supported; sample plugins for ID3 (MP3
+  labels containing year, artist, songname etc.) and Ogg/Vorbis-tags
+  are provided, enriching "tooltips" and transforming the file-info
+  dialog into a tag-editor for song-files.  Plugins for other data-types
+  are straightforward to write.
+
+  All backends, theme-engines and meta-data providers are pluggable
+  and will only be loaded if and when they are used, keeping memory
+  consumption low and avoiding "bloat."
+
+  At startup, the file-manager's window is divided in two sections,
+  a view on a directory, and the shelf.
+
+  Views
+
+    Tree-view
+
+      The usual tree-view.  Columns can be resized an re-ordered.
+      Clicking on the tiny triangles folds/unfolds a single directory.
+
+      Keyboard Controls
+
+      * Control-F to search a file by name
+
+      * Control-I (or right button) to show info on a file
+
+      * Cursor-Keys
+        Unshifted
+        - Up/Down      previous/next row
+        - Left/Right   previous/next column
+
+        While Shift is depressed
+        - Up/Down      add previous/next row to selection
+        - Left/Right   fold/unfold level
+
+        While Control is depressed
+        - Up/Down      move focus without resetting selection
+        - Space        add focussed row to selection
+
+    Icon-view
+
+      The normal mode of operation for most current file-browsers.
+      Each file is represented by an icon or, in the case of an
+      image file, by a "thumbnail" version of said image.  As
+      thumb-nailing may take a moment for very large directories,
+      the mode is more suited for viewing directories and working
+      in them than for navigation.
+      A middle-click will bring up a path-menu.
+      A right-click (or Control-I) will bring up the info-dialog.
+      Typing a letter will focus on the first while whose name
+      begins with that letter.
+
+    Browser-view
+
+      The browser-view consists of a number of columns -- one for
+      each directory in the path -- that list the file-names of
+      those directories.  If in /home/azundris, three columns would
+      be shown, listing the items in "/", in "home" and in "azundris",
+      respectively.  On top of each column, an icon representing
+      the respective directory is displayed.  These icons can be
+      hidden if desired.  Clicking on a directory will select it
+      to be displayed (or "opened"), hiding the previously shown
+      subsequent directories of the one the newly-selected folder
+      is located in.  The contents of the newly-chosen folder will
+      be displayed instead.  This is more intuitive than it sounds,
+      and according to NeXT-afficionados, it's also something you
+      might really fall in love with.
+
+      As in default operations mode a single click suffices to open
+      a directory, it is necessary to depress the Control-key to
+      make or extend a selection or to Drag & Drop a directory.
+
+      A right-click will bring up the info-dialog.
+
+      Control-F will open dialog to search for a file in the current
+      column.  It might be necessary to select a column using the
+      tab-key first.
+
+    Keyboard controls in all views
+
+      Control-D ("duplicate") will open a new window showing the same
+      directory as the current window.
+
+      Control-Q ("quit") will terminate evidence.
+
+      Control-W will cycle to the next evidence-window.
+
+      Control-U will close the current window.
+
+      Control-S will re-sort the current window's contents.  This
+      is for power-users: evidence will sort the icon-view once it
+      has all information (not only an item's name, but also whether
+      it is a folder etc.) it needs to do so.  If you scroll the icon-
+      view while these data are still being loaded (icons are turning
+      from question marks into other icons or into thumbnails), evidence
+      assumes that you have started working in the icon-view and will
+      try not to interfere (it will not move the entirety of the icons
+      around by sorted them).
+
+      Control-I will get information (in the guise of a "tooltip") for
+      the highlighted file; ^M will open a context-menu for it; ^P will
+      go directly to the properties-dialog ("file-info"), ^R will rename.
+
+      Alt-T, Alt-B, Alt-I and Alt-A select tree-view, browser-view,
+      icon-view and credits, respectively.  The tabs of the "notebook"
+      need not be visible for this to work.
+
+    File-operations in views
+
+      An item -- file, application or directory -- can be passed to
+      another application by "dragging" it there.  To drag a file,
+      move the pointer over it and press the first mouse-button.
+      This will select the file. If the mouse is now moved while
+      keeping the button depressed, the item will follow the
+      movement of the mouse-pointer:  you are dragging it.
+
+      To "drop" the item on a target, simply release the mouse-button.
+      Normally, the shape of the mouse-pointer will change while it
+      is passing over a target that accepts drops; this makes it easy
+      to find out whether an application accepts files and other items
+      this way.
+
+      What will happen as a result of this "drag and drop" operation
+      (DND) depends on the target -- dragging an item onto
+
+      * on the shelf -- the bottom area of the window -- will place a
+        reference to that file on the shelf.  You can now access the
+        file even if you select another directory to be displayed in
+        the view.  The file 
+
+      * another application will normally cause that application to
+        try and open the item (normally some sort of data file);
+
+      * an application item in evidence will start that program and
+        ask it to open the item as data to work on.  The application
+        may be located in the view or on the shelf.  What the
+        application will do with the data will depend on both the
+        application and the type of data you drag onto it; dragging
+        an MP3 or OGG file on a music player would likely get the
+        song(?) played, trying to drop it on a text editor instead
+        will likely not produce satisfactory results;
+
+      * a directory folder in evidence will  copy the item into that
+        directory; the target folder may be located in the view or
+        on the shelf; alternatively, you may move the file into the
+        target folder (by depressing Shift while dropping, watch the
+        mouse-pointer change), or place a link to the file there (by
+        depressing both Shift and Control);
+
+      * a directory folder in the browser-view's icon-path will move
+        the item into that directory; alternatively, you may move the
+        file into the target folder, or place a link to the file there.
+
+    Mouse-operation in all views
+
+      Left mouse-button
+
+        Left-clicking on an icon or a list-entry selects that entry.
+
+        Left-clicking on an icon or a list-entry and then moving around
+        while keeping the button pressed activates "Drag & Drop" -- see
+        previous entry, "File-operations in views."
+
+        Left-clicking between icons opens a "rubberband" selector in
+        iconview.
+
+      Midde mouse-button
+
+        Middle-clicking on an icon or a list-entry shows information on
+        that entry (a "tooltip"-bubble).
+
+        Middle-clicking on something other than an icon or a list-entry
+        will open a pop-menu showing the "path-history" -- one item for
+        each directory in the path to the current one.  Selecting an
+        entry will "jump" to that folder and display it.  To close the
+        menu without jumping elsewhere, simply click outside the menu.
+
+      Right mouse-button
+
+        Right-clicking on an icon or a list-entry shows a pop-up menu
+        with (hopefully) sensible things to do with that kind of file.
+        This menu can be edited (PREFIX/share/evidence/evidence.menu)
+        or overridden (~/.evidence/evidence.menu).
+
+        Right-clicking on something other than an icon or a list-entry
+        will open a menu with general evidence-related options
+        (including the option to switch to another view, which is
+        helpful if one turns off the "tabs").
+
+        Since almost all space is occupied by list-items in tree-view,
+        the evidence-related menu can also always be brought up by
+        holding the Control-key while right-clicking, no matter
+        whether or not an icon or list-item is under the mouse-arrow.
+
+.SH ADVANCED USES
+
+.nf
+
+  Shelf
+
+    The shelf is the area at the bottom of the window.  Files can
+    be dragged onto the shelf from the view above.  Once on the shelf,
+    the the file can be subjected to the same operations as files in
+    one of the above views, so the shelf can be used as launchpad
+    and as temporary storage.
+
+    To use the shelf as a launchpad, simply place something you
+    often use on the shelf by dragging it there, then activate it
+    with a double-click when desired.  The action then taken depends
+    on the nature of the item:
+
+    * a directory folder will be displayed in the above view
+
+    * an application will be started
+
+    * a file will be passed to a suitable application if such an
+      application is known; otherwise, the user is offered to select
+      an application from a list
+
+    The shelf can be resized to whatever the user deems appropriate,
+    up to hiding it completely to use all of the window's estate for
+    one of the above file-views.
+
+  Primary Selection
+
+    When you select text (in a terminal, chat program, browser, ...)
+    with the left mouse-button and it is highlighted, this is known
+    as the "primary selection" in X speak.  This text then can be
+    "pasted" into many applications using the middle mouse-button.
+
+    The primary selection may be pasted into evidence's "typebuffer"
+    (a "micro-shell" described in the next section).
+
+    Also, whenever you (de-) select files in evidence, the list of
+    selected files will be set as the primary selection.  Hence,
+    you may select files in evidence and then "paste" the list of
+    those files into a terminal/shell of your choice.
+
+  Typebuffer
+
+    The typebuffer is like a "micro-shell."  The type-buffer can be
+    opened using ^O, ^L, Alt-O, Alt-L, <, / or the Escape key, in
+    other words, with anything that remotely makes sense.  Once the
+    typebuffer is active, you may enter
+
+    * an URL that will be dealt with according to the entry in
+      "evidence.handlers" which normally resides in
+      /usr/local/share/evidence/;
+
+    * a directory the contents of which should be displayed;
+
+    * a command to be executed.  Its textual output, if any, will go
+      to the shell that called evidence.
+
+    * a property ("config variable") to be modified.  This will change
+      evidence's behaviour at run-time.  There are several of built-in
+      properties; the user may also set all properties settable in
+      themes.
+
+        'iconfont eraser
+        Display icon-labels using the "eraser" TrueType font
+        (which must reside in one of the well-known font-directories)
+
+        'openfolderanimation none
+        No animation when opening folders
+
+      The ' is mandatory -- it tells the typebuffer that it should
+      modify a property.  If you miss the ', the typebuffer will
+      mistake your property for a program to run and the property's
+      value as a parameter for that program.
+
+    The following special keys are available while entering something
+    into the typebuffer:
+
+    * Backspace deletes the rightmost character in the buffer;
+
+    * Escape aborts entry; the line will be discarded;
+
+    * Return ends entry; the line will be processed.
+
+    * Control-X: cut the typebuffer (move it to the clipboard)
+
+    * Control-C: copy the typebuffer to the clipboard
+
+    * Control-V: paste clipboard's contents into typebuffer
+
+    * Control-B: paste primary selection into typebuffer (same as
+                 middle-click)
+
+    While the typebuffer is active, its contents will be visible in
+    the title-bar of evidence's window.
+
+.SH OPTIONS
+\fBevidence\fP accepts at least the following options:
+.TP
+.B \-h, \-\-help
+Show summary of options.
+.TP
+.B \-\-efm
+Look like the efm/essence design studies. This is a shortcut for
+"evidence --no-shelf --no-notebook --no-border -T essence".
+.TP
+.B \-M, \-\-desktop
+Start with window covering the entire screen and scrollbars disabled.  This
+will effectively make evidence draw the desktop.
+.TP
+.B \-T mytheme, \-\-theme=mytheme
+Use theme "mytheme".  Note that for themes to work, evidence needs to be
+build against evas, the enlightened canvas.
+.TP
+.B \-P myicons, \-\-iconset=myicons
+Override icon-set given in theme with "myicons".
+.TP
+.B \-s, \-\-without-shelf
+Do not create a "shelf" area (temporary work area beneath the actual view).
+.TP
+.B \-S, \-\-with-shelf
+Do create a "shelf" area (temporary work area beneath the actual view).
+.TP
+.B \-W, \-\-with-tooltips
+When mouse rests on a file-icon, open info box without waiting for a click
+of the middle mouse-button.
+.TP
+.B \-Z, \-\-select
+Preselect a given file.  "evidence --select /foo/fonts --select /foo/src" will
+open a view on directory foo and preselects the items fonts and src.  This
+option may be used several times.  Unless virtual folders are supported, all
+items must reside in the same directory.
+Example of use:  sagasu (http://www3.sympatico.ca/sarrazip/dev/sagasu.html).
+Set editor command to evidence --select "%f"
+
+.SH NOTES
+.nf
+HOME representation
+
+    If a file "photo" is located in the user's ~/.gnome2 or ~/.gnome,
+    this image will be used to represent the user's (home-) directory.
+
+File-access backends
+
+    evidence can be compiled to access the file-system "directly"
+    (using the standard glibc functions present on every system),
+    via Gnome-VFS, via efsd (the enlightened file system daemon), ...
+
+    If the UNIX-fs backend is used, the appropriate icon to use for a
+    file is determined using "mime.types" which assigns a MIME-type to
+    a file extension (what comes after the dot in the name) and
+    "mime.icons" which assigns an icon to a MIME-type.  These files live
+    in PREFIX/share/evidence (/usr/local/share/evidence by default).
+
+    The "direct"/POSIX backend contains code written for efsd by cK.
+
+Meta-data providers
+
+    The image provider can save to all formats known by imlib2.  This
+    specifically means that you can *not* save GIF-pictures at this
+    time, as Imlib2 has no support for that yet.  : (
+
+    The MP3 provider will read an ID3v2 tag, an ID3v1 tag, or provide
+    an empty basic label, in order of preference.  It will save both
+    ID3v1 and ID3v2 tags, with identical data (to the extent that
+    those are supported by ID3v1).  Genres can be selected in a
+    pop-up menu, or entered as text ("Blues") or index ("(0)").
+    Text-entry is somewhat lenient -- "Acid Jazz" will be recognized
+    if given as "acIDJAzZ").  If a genre "foo" is not recognized,
+    it will be saved as "Other: foo" ("(12) foo" internally).
+    By the same token, you can enter random qualifiers to a genre
+    after a colon:  "Blues: 12-bar" (aka "(0): 12-bar").  Only the
+    first part (the actual genre, "Blues") will be visible in ID3v1
+    tags; ID3v2 will show both.
+
+.SH CUSTOMIZATION
+
+All files in "$PREFIX/share/evidence" can be overridden with
+equivalents in "$HOME/.evidence".  Aside from icons, in particular
+the following may be overridden:
+.nf
+
+  mime.types           assign MIME-types to file-extensions
+  mime.icons           assign icons to MIME-types
+  evidence.menu        entries in right-click menu for each MIME-type
+  evidence.providers   meta-data providers (ID3-tags, ogg-infos, etc.)
+  evidence.handlers    protocol-handlers for typebuffer (http, ftp, ...)
+
+  Themes go in $PREFIX/share/evidence/themes (by default, this means
+  /usr/local/share/evidence/themes).  A theme can be selected by
+  supplying its directory to the -T switch.  If no -T option is
+  given on the command line, evidence will look for a symlink
+  "default" in the themes folder that references the theme you want.
+
+  evidence can be tuned at source-level by editing the userconfig.h file.
+
+.SH TUNING
+
+  Icon-view
+
+  When opening folders is very slow, this may actually be
+  a problem with the animation being slow.  Disable the
+  animation by setting the openfolderanimation property
+  to none ("'openfolderanimation none" in the typebuffer,
+  the theme, or the evidence.theme in ~/.evidence).
+
+  Likewise, "'openappanimation none" inhibits the
+  animation that normally denotes the start of a
+  program.
+
+  Tree-view / Browser-view
+
+  Let's face it, working with a (GTK2) tree-view with many entries
+  is not pretty. It's 3rd party code, so there isn't a lot I can do.
+  Except for recreate the tree- and browser-views with EWL, which I
+  intend to do.
+
+  General
+
+  The backend and store should be self-tuning; when a
+  folder takes too long to process, evidence will create
+  a persistant cache of that folder so it will be loaded
+  faster the next time around. ("too long" is defined in
+  userconfig.h::CACHE_SLOWER_THAN as 3s.)
+
+.SH SCREENSHOT
+http://evidence.sourceforge.net/screenshots/
+.SH AUTHOR
+Azundris <evidence@azundris.com>.

@@ -1,0 +1,616 @@
+\hypertarget{properties_8c}{
+\section{properties.c File Reference}
+\label{properties_8c}\index{properties.c@{properties.c}}
+}
+handle properties (theme-elements) 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void \hyperlink{properties_8c_a2}{long\_\-to\_\-rgb} (long rgb, int $\ast$r, int $\ast$g, int $\ast$b)
+\begin{CompactList}\small\item\em split an RGB-value contained in a long into three ints \item\end{CompactList}\item 
+char $\ast$ \hyperlink{properties_8c_a3}{prop\_\-canonize\_\-key} (char $\ast$pn, int modify, int compress)
+\begin{CompactList}\small\item\em canonize property name -- convert to lower case, weed out \_\--. \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a4}{prop\_\-bag\_\-prop\_\-remove} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em remove a property from a list (if list is given and element present therein) \item\end{CompactList}\item 
+static noir\_\-prop $\ast$ \hyperlink{properties_8c_a5}{prop\_\-dst} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em destruct a theme-element \item\end{CompactList}\item 
+noir\_\-prop $\ast$ \hyperlink{properties_8c_a6}{prop\_\-bag\_\-prop\_\-dst} (noir\_\-prop\_\-bag $\ast$b, noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em destruct a theme-element and remove it from a list (if list is given and element present therein) \item\end{CompactList}\item 
+noir\_\-prop\_\-bag $\ast$ \hyperlink{properties_8c_a7}{prop\_\-bag\_\-dst} (noir\_\-prop\_\-bag $\ast$bag)
+\begin{CompactList}\small\item\em destroy a bag \item\end{CompactList}\item 
+noir\_\-prop\_\-bag $\ast$ \hyperlink{properties_8c_a8}{prop\_\-bag\_\-new} (void)
+\begin{CompactList}\small\item\em create a bag \item\end{CompactList}\item 
+noir\_\-prop $\ast$ \hyperlink{properties_8c_a9}{prop\_\-bag\_\-prop\_\-get} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$key)
+\begin{CompactList}\small\item\em find theme-element with property-name \char`\"{}key\char`\"{} \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a10}{prop\_\-bag\_\-prop\_\-walk} (noir\_\-prop\_\-bag $\ast$b, prop\_\-bag\_\-walker fun, void $\ast$data)
+\begin{CompactList}\small\item\em iterate over each element in a property bag \item\end{CompactList}\item 
+noir\_\-prop $\ast$ \hyperlink{properties_8c_a11}{prop\_\-bag\_\-prop\_\-get\_\-1st} (noir\_\-prop\_\-bag $\ast$b)
+\begin{CompactList}\small\item\em get 1st property in bag \item\end{CompactList}\item 
+noir\_\-prop $\ast$ \hyperlink{properties_8c_a12}{prop\_\-bags\_\-prop\_\-get} (int cnt, noir\_\-prop\_\-bag $\ast$$\ast$bag\_\-ret, const char $\ast$key,...)
+\begin{CompactList}\small\item\em get prop from either of a list of bags \item\end{CompactList}\item 
+noir\_\-prop\_\-type \hyperlink{properties_8c_a13}{prop\_\-get\_\-type} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get the type of a theme-element \item\end{CompactList}\item 
+noir\_\-prop\_\-flags \hyperlink{properties_8c_a14}{prop\_\-get\_\-flags} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get the flags of a theme-element \item\end{CompactList}\item 
+const char $\ast$ \hyperlink{properties_8c_a15}{prop\_\-get\_\-type\_\-as\_\-string} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get the type of a theme-element as string \item\end{CompactList}\item 
+const char $\ast$ \hyperlink{properties_8c_a16}{prop\_\-type\_\-to\_\-string} (noir\_\-prop\_\-type t)
+\begin{CompactList}\small\item\em describe a given theme-element type \item\end{CompactList}\item 
+noir\_\-prop $\ast$ \hyperlink{properties_8c_a17}{prop\_\-get\_\-next} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em return next prop in list \item\end{CompactList}\item 
+const char $\ast$ \hyperlink{properties_8c_a18}{prop\_\-get\_\-key} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em return key of current prop \item\end{CompactList}\item 
+void $\ast$ \hyperlink{properties_8c_a19}{prop\_\-get\_\-data} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get pointer at the value of a theme-element \item\end{CompactList}\item 
+char $\ast$ \hyperlink{properties_8c_a20}{prop\_\-get\_\-string} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get character-string value from theme-element \item\end{CompactList}\item 
+char $\ast$ \hyperlink{properties_8c_a21}{prop\_\-desc} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get a description of a given prop \item\end{CompactList}\item 
+long \hyperlink{properties_8c_a22}{prop\_\-get\_\-int} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get long integer value from theme-element \item\end{CompactList}\item 
+float \hyperlink{properties_8c_a23}{prop\_\-get\_\-float} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get floating-point value from theme-element \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a24}{prop\_\-get\_\-float\_\-int} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get integer-part of a floating-point value from theme-element \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a25}{prop\_\-get\_\-float\_\-decimals} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get decimal places of a floating-point value from theme-element \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a26}{prop\_\-get\_\-rgb} (noir\_\-prop $\ast$e, int $\ast$r, int $\ast$g, int $\ast$b)
+\begin{CompactList}\small\item\em get individual R, G and B values from theme-element \item\end{CompactList}\item 
+char $\ast$ \hyperlink{properties_8c_a27}{prop\_\-get\_\-as\_\-string} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em get textual representation of the value of a theme-element \item\end{CompactList}\item 
+static int \hyperlink{properties_8c_a28}{prop\_\-bound} (noir\_\-prop $\ast$e)
+\begin{CompactList}\small\item\em ensure that if a property has a range and/or a step-setting, the value adheres to this called from \hyperlink{properties_8c_a30}{prop\_\-val()} and prop\_\-default() \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a29}{prop\_\-bag\_\-prop\_\-const} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$k, const char $\ast$v)
+\begin{CompactList}\small\item\em make a property read-only (const). \item\end{CompactList}\item 
+static int \hyperlink{properties_8c_a30}{prop\_\-val} (noir\_\-prop $\ast$e, const char $\ast$val)
+\begin{CompactList}\small\item\em set a property from a string. \item\end{CompactList}\item 
+static int \hyperlink{properties_8c_a31}{prop\_\-bag\_\-prop\_\-add} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$key, const char $\ast$val)
+\begin{CompactList}\small\item\em add a property to a list. \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a32}{prop\_\-bag\_\-prop\_\-set} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$k, const char $\ast$val)
+\begin{CompactList}\small\item\em add a property to a list, or modify it if it already exists. \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a33}{prop\_\-bag\_\-prop\_\-default} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$key, const char $\ast$val, float lo, float hi, float step)
+\begin{CompactList}\small\item\em set a default value for a property. \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a34}{prop\_\-bag\_\-prop\_\-listen} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$name, const char $\ast$key, property\_\-listener listener, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em install a listener \item\end{CompactList}\item 
+int \hyperlink{properties_8c_a35}{prop\_\-bag\_\-prop\_\-deaf} (noir\_\-prop\_\-bag $\ast$b, const char $\ast$name, const char $\ast$key, property\_\-listener listener)
+\begin{CompactList}\small\item\em destall a listener (by name, or by listener-struct) \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+handle properties (theme-elements) 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{properties_8c_a2}{
+\index{properties.c@{properties.c}!long_to_rgb@{long\_\-to\_\-rgb}}
+\index{long_to_rgb@{long\_\-to\_\-rgb}!properties.c@{properties.c}}
+\subsubsection[long\_\-to\_\-rgb]{\setlength{\rightskip}{0pt plus 5cm}void long\_\-to\_\-rgb (long {\em rgb}, int $\ast$ {\em r}, int $\ast$ {\em g}, int $\ast$ {\em b})}}
+\label{properties_8c_a2}
+
+
+split an RGB-value contained in a long into three ints 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em rgb}]the RGB value combined into a long integer \item[{\em r}]where to store the red fraction of the colour \item[{\em g}]where to store the green fraction of the colour \item[{\em b}]where to store the blue fraction of the colour\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a7}{
+\index{properties.c@{properties.c}!prop_bag_dst@{prop\_\-bag\_\-dst}}
+\index{prop_bag_dst@{prop\_\-bag\_\-dst}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop\_\-bag$\ast$ prop\_\-bag\_\-dst (noir\_\-prop\_\-bag $\ast$ {\em bag})}}
+\label{properties_8c_a7}
+
+
+destroy a bag 
+
+\begin{Desc}
+\item[Returns:]NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bag}]the bag to destroy\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a8}{
+\index{properties.c@{properties.c}!prop_bag_new@{prop\_\-bag\_\-new}}
+\index{prop_bag_new@{prop\_\-bag\_\-new}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-new]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop\_\-bag$\ast$ prop\_\-bag\_\-new (void)}}
+\label{properties_8c_a8}
+
+
+create a bag 
+
+\begin{Desc}
+\item[Returns:]the new bag, or NULL\end{Desc}
+\hypertarget{properties_8c_a31}{
+\index{properties.c@{properties.c}!prop_bag_prop_add@{prop\_\-bag\_\-prop\_\-add}}
+\index{prop_bag_prop_add@{prop\_\-bag\_\-prop\_\-add}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static int prop\_\-bag\_\-prop\_\-add (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em key}, const char $\ast$ {\em val})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{properties_8c_a31}
+
+
+add a property to a list. 
+
+will not check if property already present. called from \hyperlink{properties_8c_a32}{prop\_\-bag\_\-prop\_\-set()}, \hyperlink{properties_8c_a33}{prop\_\-bag\_\-prop\_\-default()} and \hyperlink{properties_8c_a34}{prop\_\-bag\_\-prop\_\-listen()}. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em key}]the name of the property to add \item[{\em val}]the value of the property to set using \hyperlink{properties_8c_a30}{prop\_\-val()} magic\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a29}{
+\index{properties.c@{properties.c}!prop_bag_prop_const@{prop\_\-bag\_\-prop\_\-const}}
+\index{prop_bag_prop_const@{prop\_\-bag\_\-prop\_\-const}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-const]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-const (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em k}, const char $\ast$ {\em v})}}
+\label{properties_8c_a29}
+
+
+make a property read-only (const). 
+
+if key and value are not NULL, create new prop, then make it read-only. otherwise, find key in bag, then make the prop read-only. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag in which property to set read-only \item[{\em k}]the key \item[{\em v}]the value\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a35}{
+\index{properties.c@{properties.c}!prop_bag_prop_deaf@{prop\_\-bag\_\-prop\_\-deaf}}
+\index{prop_bag_prop_deaf@{prop\_\-bag\_\-prop\_\-deaf}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-deaf]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-deaf (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em name}, const char $\ast$ {\em key}, property\_\-listener {\em listener})}}
+\label{properties_8c_a35}
+
+
+destall a listener (by name, or by listener-struct) 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em name}]name of the listener, or NULL if listener-function is given \item[{\em key}]the property the listener was for, or NULL for any \item[{\em listener}]the listener-function, or NULL if name is given\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a33}{
+\index{properties.c@{properties.c}!prop_bag_prop_default@{prop\_\-bag\_\-prop\_\-default}}
+\index{prop_bag_prop_default@{prop\_\-bag\_\-prop\_\-default}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-default]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-default (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em key}, const char $\ast$ {\em val}, float {\em lo}, float {\em hi}, float {\em step})}}
+\label{properties_8c_a33}
+
+
+set a default value for a property. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag of theme-elements \item[{\em key}]the name of the property to add \item[{\em val}]the value of the property to set using \hyperlink{properties_8c_a30}{prop\_\-val()} magic \item[{\em lo}]if the type warrants this: the minimum value \item[{\em hi}]if the type warrants this: the maximum value \item[{\em step}]if the type warrants this: a step-value, 0 for default (1)\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a6}{
+\index{properties.c@{properties.c}!prop_bag_prop_dst@{prop\_\-bag\_\-prop\_\-dst}}
+\index{prop_bag_prop_dst@{prop\_\-bag\_\-prop\_\-dst}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop$\ast$ prop\_\-bag\_\-prop\_\-dst (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a6}
+
+
+destruct a theme-element and remove it from a list (if list is given and element present therein) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag of theme-elements, or NULL \item[{\em e}]the element to destroy\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a9}{
+\index{properties.c@{properties.c}!prop_bag_prop_get@{prop\_\-bag\_\-prop\_\-get}}
+\index{prop_bag_prop_get@{prop\_\-bag\_\-prop\_\-get}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-get]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop$\ast$ prop\_\-bag\_\-prop\_\-get (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em key})}}
+\label{properties_8c_a9}
+
+
+find theme-element with property-name \char`\"{}key\char`\"{} 
+
+\begin{Desc}
+\item[Returns:]a theme-element \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em key}]the name of the property to look for\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a11}{
+\index{properties.c@{properties.c}!prop_bag_prop_get_1st@{prop\_\-bag\_\-prop\_\-get\_\-1st}}
+\index{prop_bag_prop_get_1st@{prop\_\-bag\_\-prop\_\-get\_\-1st}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-get\_\-1st]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop$\ast$ prop\_\-bag\_\-prop\_\-get\_\-1st (noir\_\-prop\_\-bag $\ast$ {\em b})}}
+\label{properties_8c_a11}
+
+
+get 1st property in bag 
+
+\begin{Desc}
+\item[Returns:]a property, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a34}{
+\index{properties.c@{properties.c}!prop_bag_prop_listen@{prop\_\-bag\_\-prop\_\-listen}}
+\index{prop_bag_prop_listen@{prop\_\-bag\_\-prop\_\-listen}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-listen]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-listen (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em name}, const char $\ast$ {\em key}, property\_\-listener {\em listener}, int {\em tag}, void $\ast$ {\em data})}}
+\label{properties_8c_a34}
+
+
+install a listener 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em name}]the name of the listener (usually that of the plugin the listener lives in) \item[{\em key}]the name of the property the listener is for \item[{\em listener}]the function to call back \item[{\em tag}]an arbitrary tag -- when one listener listens for changes on several properties, this helps distinguishing them (without having to resort to strcmp()) \item[{\em data}]some user-data (often the session) to give the listener when called back\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a4}{
+\index{properties.c@{properties.c}!prop_bag_prop_remove@{prop\_\-bag\_\-prop\_\-remove}}
+\index{prop_bag_prop_remove@{prop\_\-bag\_\-prop\_\-remove}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-remove]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-remove (noir\_\-prop\_\-bag $\ast$ {\em b}, noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a4}
+
+
+remove a property from a list (if list is given and element present therein) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag of theme-elements \item[{\em e}]the element to destroy\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a32}{
+\index{properties.c@{properties.c}!prop_bag_prop_set@{prop\_\-bag\_\-prop\_\-set}}
+\index{prop_bag_prop_set@{prop\_\-bag\_\-prop\_\-set}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-set]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-set (noir\_\-prop\_\-bag $\ast$ {\em b}, const char $\ast$ {\em k}, const char $\ast$ {\em val})}}
+\label{properties_8c_a32}
+
+
+add a property to a list, or modify it if it already exists. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em k}]the name of the property to add \item[{\em val}]the value of the property to set using \hyperlink{properties_8c_a30}{prop\_\-val()} magic\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a10}{
+\index{properties.c@{properties.c}!prop_bag_prop_walk@{prop\_\-bag\_\-prop\_\-walk}}
+\index{prop_bag_prop_walk@{prop\_\-bag\_\-prop\_\-walk}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bag\_\-prop\_\-walk]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-bag\_\-prop\_\-walk (noir\_\-prop\_\-bag $\ast$ {\em b}, prop\_\-bag\_\-walker {\em fun}, void $\ast$ {\em data})}}
+\label{properties_8c_a10}
+
+
+iterate over each element in a property bag 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the bag \item[{\em fun}]the function to apply to each property \item[{\em data}]user-supplied data for the function\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a12}{
+\index{properties.c@{properties.c}!prop_bags_prop_get@{prop\_\-bags\_\-prop\_\-get}}
+\index{prop_bags_prop_get@{prop\_\-bags\_\-prop\_\-get}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bags\_\-prop\_\-get]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop$\ast$ prop\_\-bags\_\-prop\_\-get (int {\em cnt}, noir\_\-prop\_\-bag $\ast$$\ast$ {\em bag\_\-ret}, const char $\ast$ {\em key},  {\em ...})}}
+\label{properties_8c_a12}
+
+
+get prop from either of a list of bags 
+
+\begin{Desc}
+\item[Returns:]the property, if found anywhere \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em cnt}]the number of bags \item[{\em bag\_\-ret}]where to store the (first) bag the property is found in, or NULL for don't \item[{\em key}]the key of the property \item[{\em ...}]'cnt' pointers to bags (which may be NULL)\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a28}{
+\index{properties.c@{properties.c}!prop_bound@{prop\_\-bound}}
+\index{prop_bound@{prop\_\-bound}!properties.c@{properties.c}}
+\subsubsection[prop\_\-bound]{\setlength{\rightskip}{0pt plus 5cm}static int prop\_\-bound (noir\_\-prop $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{properties_8c_a28}
+
+
+ensure that if a property has a range and/or a step-setting, the value adheres to this called from \hyperlink{properties_8c_a30}{prop\_\-val()} and prop\_\-default() 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the theme-element\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a3}{
+\index{properties.c@{properties.c}!prop_canonize_key@{prop\_\-canonize\_\-key}}
+\index{prop_canonize_key@{prop\_\-canonize\_\-key}!properties.c@{properties.c}}
+\subsubsection[prop\_\-canonize\_\-key]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ prop\_\-canonize\_\-key (char $\ast$ {\em pn}, int {\em modify}, int {\em compress})}}
+\label{properties_8c_a3}
+
+
+canonize property name -- convert to lower case, weed out \_\--. 
+
+/ \begin{Desc}
+\item[Returns:]the canonized name \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em pn}]a buffer holding the property's name \item[{\em modify}]if FALSE, new memory will be allocated for the canonized name, otherwise, the handed-in buffer will be modified \item[{\em compress}]TRUE to eliminate separators, FALSE to normalize them\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a21}{
+\index{properties.c@{properties.c}!prop_desc@{prop\_\-desc}}
+\index{prop_desc@{prop\_\-desc}!properties.c@{properties.c}}
+\subsubsection[prop\_\-desc]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ prop\_\-desc (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a21}
+
+
+get a description of a given prop 
+
+\begin{Desc}
+\item[Returns:]a buffer the caller must free() \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the propr to describe\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a5}{
+\index{properties.c@{properties.c}!prop_dst@{prop\_\-dst}}
+\index{prop_dst@{prop\_\-dst}!properties.c@{properties.c}}
+\subsubsection[prop\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}static noir\_\-prop$\ast$ prop\_\-dst (noir\_\-prop $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{properties_8c_a5}
+
+
+destruct a theme-element 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the element to destroy\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a27}{
+\index{properties.c@{properties.c}!prop_get_as_string@{prop\_\-get\_\-as\_\-string}}
+\index{prop_get_as_string@{prop\_\-get\_\-as\_\-string}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-as\_\-string]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ prop\_\-get\_\-as\_\-string (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a27}
+
+
+get textual representation of the value of a theme-element 
+
+\begin{Desc}
+\item[Returns:]a newly allocated buffer containing the textual represenation of the property's value, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a19}{
+\index{properties.c@{properties.c}!prop_get_data@{prop\_\-get\_\-data}}
+\index{prop_get_data@{prop\_\-get\_\-data}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-data]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ prop\_\-get\_\-data (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a19}
+
+
+get pointer at the value of a theme-element 
+
+\begin{Desc}
+\item[Returns:]a pointer to either a pointer (types string, pointer) or a value \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a14}{
+\index{properties.c@{properties.c}!prop_get_flags@{prop\_\-get\_\-flags}}
+\index{prop_get_flags@{prop\_\-get\_\-flags}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-flags]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop\_\-flags prop\_\-get\_\-flags (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a14}
+
+
+get the flags of a theme-element 
+
+\begin{Desc}
+\item[Returns:]flags \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the theme-element we want the flags of\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a23}{
+\index{properties.c@{properties.c}!prop_get_float@{prop\_\-get\_\-float}}
+\index{prop_get_float@{prop\_\-get\_\-float}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-float]{\setlength{\rightskip}{0pt plus 5cm}float prop\_\-get\_\-float (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a23}
+
+
+get floating-point value from theme-element 
+
+\begin{Desc}
+\item[Returns:]a floating-point value \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a25}{
+\index{properties.c@{properties.c}!prop_get_float_decimals@{prop\_\-get\_\-float\_\-decimals}}
+\index{prop_get_float_decimals@{prop\_\-get\_\-float\_\-decimals}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-float\_\-decimals]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-get\_\-float\_\-decimals (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a25}
+
+
+get decimal places of a floating-point value from theme-element 
+
+\begin{Desc}
+\item[Returns:]an integer value \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the theme-element\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a24}{
+\index{properties.c@{properties.c}!prop_get_float_int@{prop\_\-get\_\-float\_\-int}}
+\index{prop_get_float_int@{prop\_\-get\_\-float\_\-int}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-float\_\-int]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-get\_\-float\_\-int (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a24}
+
+
+get integer-part of a floating-point value from theme-element 
+
+\begin{Desc}
+\item[Returns:]an integer value \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a22}{
+\index{properties.c@{properties.c}!prop_get_int@{prop\_\-get\_\-int}}
+\index{prop_get_int@{prop\_\-get\_\-int}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-int]{\setlength{\rightskip}{0pt plus 5cm}long prop\_\-get\_\-int (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a22}
+
+
+get long integer value from theme-element 
+
+\begin{Desc}
+\item[Returns:]a long integer value \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a18}{
+\index{properties.c@{properties.c}!prop_get_key@{prop\_\-get\_\-key}}
+\index{prop_get_key@{prop\_\-get\_\-key}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-key]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ prop\_\-get\_\-key (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a18}
+
+
+return key of current prop 
+
+\begin{Desc}
+\item[Returns:]next prop, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the current prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a17}{
+\index{properties.c@{properties.c}!prop_get_next@{prop\_\-get\_\-next}}
+\index{prop_get_next@{prop\_\-get\_\-next}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-next]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop$\ast$ prop\_\-get\_\-next (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a17}
+
+
+return next prop in list 
+
+\begin{Desc}
+\item[Returns:]next prop, or NULL \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the current prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a26}{
+\index{properties.c@{properties.c}!prop_get_rgb@{prop\_\-get\_\-rgb}}
+\index{prop_get_rgb@{prop\_\-get\_\-rgb}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-rgb]{\setlength{\rightskip}{0pt plus 5cm}int prop\_\-get\_\-rgb (noir\_\-prop $\ast$ {\em e}, int $\ast$ {\em r}, int $\ast$ {\em g}, int $\ast$ {\em b})}}
+\label{properties_8c_a26}
+
+
+get individual R, G and B values from theme-element 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop \item[{\em r}]where to store the red fraction of the colour \item[{\em g}]where to store the green fraction of the colour \item[{\em b}]where to store the blue fraction of the colour\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a20}{
+\index{properties.c@{properties.c}!prop_get_string@{prop\_\-get\_\-string}}
+\index{prop_get_string@{prop\_\-get\_\-string}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-string]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ prop\_\-get\_\-string (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a20}
+
+
+get character-string value from theme-element 
+
+\begin{Desc}
+\item[Returns:]a pointer to a C-string \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the prop\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a13}{
+\index{properties.c@{properties.c}!prop_get_type@{prop\_\-get\_\-type}}
+\index{prop_get_type@{prop\_\-get\_\-type}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-type]{\setlength{\rightskip}{0pt plus 5cm}noir\_\-prop\_\-type prop\_\-get\_\-type (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a13}
+
+
+get the type of a theme-element 
+
+\begin{Desc}
+\item[Returns:]type \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the theme-element we want to know the type of\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a15}{
+\index{properties.c@{properties.c}!prop_get_type_as_string@{prop\_\-get\_\-type\_\-as\_\-string}}
+\index{prop_get_type_as_string@{prop\_\-get\_\-type\_\-as\_\-string}!properties.c@{properties.c}}
+\subsubsection[prop\_\-get\_\-type\_\-as\_\-string]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ prop\_\-get\_\-type\_\-as\_\-string (noir\_\-prop $\ast$ {\em e})}}
+\label{properties_8c_a15}
+
+
+get the type of a theme-element as string 
+
+\begin{Desc}
+\item[Returns:]description for the type, this must not be free()d \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the theme-element we want to know the type of\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a16}{
+\index{properties.c@{properties.c}!prop_type_to_string@{prop\_\-type\_\-to\_\-string}}
+\index{prop_type_to_string@{prop\_\-type\_\-to\_\-string}!properties.c@{properties.c}}
+\subsubsection[prop\_\-type\_\-to\_\-string]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ prop\_\-type\_\-to\_\-string (noir\_\-prop\_\-type {\em t})}}
+\label{properties_8c_a16}
+
+
+describe a given theme-element type 
+
+\begin{Desc}
+\item[Returns:]textual description of the type (static memory caller mustn't free()) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the type we want explained\end{description}
+\end{Desc}
+\hypertarget{properties_8c_a30}{
+\index{properties.c@{properties.c}!prop_val@{prop\_\-val}}
+\index{prop_val@{prop\_\-val}!properties.c@{properties.c}}
+\subsubsection[prop\_\-val]{\setlength{\rightskip}{0pt plus 5cm}static int prop\_\-val (noir\_\-prop $\ast$ {\em e}, const char $\ast$ {\em val})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{properties_8c_a30}
+
+
+set a property from a string. 
+
+will guess type from value. called from \hyperlink{properties_8c_a31}{prop\_\-bag\_\-prop\_\-add()} and prop\_\-bag\_\-prop\_\-set\_\-set(). \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the theme-element to set \item[{\em val}]the value (as C-string) to set the element to\end{description}
+\end{Desc}

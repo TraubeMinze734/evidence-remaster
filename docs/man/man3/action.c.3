@@ -1,0 +1,87 @@
+.TH "action.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+action.c \- selections 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "action_file * \fBaction_file_dst\fP (action_file *af)"
+.br
+.RI "\fIdestroy a file-entry in a menu-action context \fP"
+.ti -1c
+.RI "action_file * \fBaction_file_new\fP (action_context *ac, const char *tag)"
+.br
+.RI "\fIadd a file-entry to a menu-action context \fP"
+.ti -1c
+.RI "void \fBaction_context_dst\fP (action_context *ac)"
+.br
+.RI "\fIdestroy an action-context \fP"
+.ti -1c
+.RI "action_context * \fBaction_context_new\fP (long serial, const char *cwd)"
+.br
+.RI "\fIcreate a new action-context \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+selections 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "void action_context_dst (action_context * ac)"
+.PP
+destroy an action-context 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP the action-context to destroy
+.RE
+.PP
+
+.SS "action_context* action_context_new (long serial, const char * cwd)"
+.PP
+create a new action-context 
+.PP
+\fBReturns:\fP
+.RS 4
+an action-context. serial is that of the calling session. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the serial of the calling session 
+.br
+\fIcwd\fP the work-directory
+.RE
+.PP
+
+.SS "action_file* action_file_dst (action_file * af)"
+.PP
+destroy a file-entry in a menu-action context 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIaf\fP the file-entry
+.RE
+.PP
+
+.SS "action_file* action_file_new (action_context * ac, const char * tag)"
+.PP
+add a file-entry to a menu-action context 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIac\fP an action context to add to, or NULL 
+.br
+\fItag\fP the file's name
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

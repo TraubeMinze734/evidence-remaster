@@ -1,0 +1,156 @@
+\hypertarget{ipc__ecore_8c}{
+\section{ipc\_\-ecore.c File Reference}
+\label{ipc__ecore_8c}\index{ipc_ecore.c@{ipc\_\-ecore.c}}
+}
+e\-Core IPC module for evidence 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{ipc__ecore_8c_a0}{get\_\-string} (char $\ast$$\ast$m, char $\ast$$\ast$r)
+\begin{CompactList}\small\item\em get a data-element from a message we received \mbox{[}type.b\mbox{]}\mbox{[}len.w\mbox{]}\mbox{[}contents.b\mbox{]} \item\end{CompactList}\item 
+static int \hyperlink{ipc__ecore_8c_a1}{send} (Ecore\_\-Ipc\_\-Event\_\-Client\_\-Data $\ast$e, int code, char $\ast$reply)
+\begin{CompactList}\small\item\em send message \item\end{CompactList}\item 
+static int \hyperlink{ipc__ecore_8c_a2}{handle\_\-request} (Ecore\_\-Ipc\_\-Server $\ast$server, Ecore\_\-Ipc\_\-Event\_\-Client\_\-Data $\ast$e)
+\begin{CompactList}\small\item\em handle a client's request \item\end{CompactList}\item 
+static int \hyperlink{ipc__ecore_8c_a3}{ipc\_\-client\_\-add} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: client has connected. \item\end{CompactList}\item 
+static int \hyperlink{ipc__ecore_8c_a4}{ipc\_\-client\_\-del} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: client has disconnected. \item\end{CompactList}\item 
+static int \hyperlink{ipc__ecore_8c_a5}{ipc\_\-client\_\-sent} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: client sent us a request. \item\end{CompactList}\item 
+int \hyperlink{ipc__ecore_8c_a6}{ipc\_\-module\_\-init} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em initialize e\-Core IPC module \item\end{CompactList}\item 
+int \hyperlink{ipc__ecore_8c_a7}{ipc\_\-module\_\-exit} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em deinitialize DBUS IPC (destall handlers, drop connection, release resources) \item\end{CompactList}\item 
+int \hyperlink{ipc__ecore_8c_a8}{ipc\_\-module\_\-poll} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em check for messages from e\-Core IPC \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+e\-Core IPC module for evidence 
+
+by Azundris, with thanks to Corey Donohoe $<$\href{mailto:atmos@atmos.org}{\tt atmos@atmos.org}$>$
+
+\subsection{Function Documentation}
+\hypertarget{ipc__ecore_8c_a0}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!get_string@{get\_\-string}}
+\index{get_string@{get\_\-string}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[get\_\-string]{\setlength{\rightskip}{0pt plus 5cm}static int get\_\-string (char $\ast$$\ast$ {\em m}, char $\ast$$\ast$ {\em r})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__ecore_8c_a0}
+
+
+get a data-element from a message we received \mbox{[}type.b\mbox{]}\mbox{[}len.w\mbox{]}\mbox{[}contents.b\mbox{]} 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]current position in buffer, will be updated to next item \item[{\em r}]where to store pointer to resulting data\end{description}
+\end{Desc}
+\hypertarget{ipc__ecore_8c_a2}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!handle_request@{handle\_\-request}}
+\index{handle_request@{handle\_\-request}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[handle\_\-request]{\setlength{\rightskip}{0pt plus 5cm}static int handle\_\-request (Ecore\_\-Ipc\_\-Server $\ast$ {\em server}, Ecore\_\-Ipc\_\-Event\_\-Client\_\-Data $\ast$ {\em e})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__ecore_8c_a2}
+
+
+handle a client's request 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em server}]the server-object (ignored) \item[{\em e}]the request\end{description}
+\end{Desc}
+\hypertarget{ipc__ecore_8c_a3}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!ipc_client_add@{ipc\_\-client\_\-add}}
+\index{ipc_client_add@{ipc\_\-client\_\-add}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[ipc\_\-client\_\-add]{\setlength{\rightskip}{0pt plus 5cm}static int ipc\_\-client\_\-add (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__ecore_8c_a3}
+
+
+callback: client has connected. 
+
+mostly informational.\hypertarget{ipc__ecore_8c_a4}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!ipc_client_del@{ipc\_\-client\_\-del}}
+\index{ipc_client_del@{ipc\_\-client\_\-del}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[ipc\_\-client\_\-del]{\setlength{\rightskip}{0pt plus 5cm}static int ipc\_\-client\_\-del (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__ecore_8c_a4}
+
+
+callback: client has disconnected. 
+
+mostly informational.\hypertarget{ipc__ecore_8c_a5}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!ipc_client_sent@{ipc\_\-client\_\-sent}}
+\index{ipc_client_sent@{ipc\_\-client\_\-sent}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[ipc\_\-client\_\-sent]{\setlength{\rightskip}{0pt plus 5cm}static int ipc\_\-client\_\-sent (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__ecore_8c_a5}
+
+
+callback: client sent us a request. 
+
+handle it.\hypertarget{ipc__ecore_8c_a7}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!ipc_module_exit@{ipc\_\-module\_\-exit}}
+\index{ipc_module_exit@{ipc\_\-module\_\-exit}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[ipc\_\-module\_\-exit]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-exit (void $\ast$$\ast$ {\em data})}}
+\label{ipc__ecore_8c_a7}
+
+
+deinitialize DBUS IPC (destall handlers, drop connection, release resources) 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the connection to throw out\end{description}
+\end{Desc}
+\hypertarget{ipc__ecore_8c_a6}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!ipc_module_init@{ipc\_\-module\_\-init}}
+\index{ipc_module_init@{ipc\_\-module\_\-init}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[ipc\_\-module\_\-init]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-init (void $\ast$$\ast$ {\em data})}}
+\label{ipc__ecore_8c_a6}
+
+
+initialize e\-Core IPC module 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]where to store our connection handle\end{description}
+\end{Desc}
+\hypertarget{ipc__ecore_8c_a8}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!ipc_module_poll@{ipc\_\-module\_\-poll}}
+\index{ipc_module_poll@{ipc\_\-module\_\-poll}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[ipc\_\-module\_\-poll]{\setlength{\rightskip}{0pt plus 5cm}int ipc\_\-module\_\-poll (void $\ast$$\ast$ {\em data})}}
+\label{ipc__ecore_8c_a8}
+
+
+check for messages from e\-Core IPC 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the connection\end{description}
+\end{Desc}
+\hypertarget{ipc__ecore_8c_a1}{
+\index{ipc_ecore.c@{ipc\_\-ecore.c}!send@{send}}
+\index{send@{send}!ipc_ecore.c@{ipc\_\-ecore.c}}
+\subsubsection[send]{\setlength{\rightskip}{0pt plus 5cm}static int send (Ecore\_\-Ipc\_\-Event\_\-Client\_\-Data $\ast$ {\em e}, int {\em code}, char $\ast$ {\em reply})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{ipc__ecore_8c_a1}
+
+
+send message 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em e}]the connection \item[{\em code}]an error-code \item[{\em reply}]the string to send, or NULL\end{description}
+\end{Desc}

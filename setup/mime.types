@@ -1,0 +1,206 @@
+# this is an example mime.types.  if located in one of evidence's directories,
+# it will NOT be used!  evidence, like many other programs, expects a file
+# "mime.types" in /etc -- you likely already have that file and do not need
+# to fiddle with it.  if you are certain that you do not have that file at
+# all, you may copy this file to /etc as a temporary solution. that's all. : )
+
+application/x-torrent		torrent
+application/vnd.sun.xml.writer	sxw
+application/vnd.sun.xml.draw	sxd
+application/vnd.sun.xml.calc	sxc
+application/EDI-Consent
+application/EDI-X12
+application/EDIFACT
+application/activemessage
+application/andrew-inset	ez
+application/applefile
+application/atomicmail
+application/cals-1840
+application/commonground
+application/cybercash
+application/cu-seeme		csm cu
+application/dca-rft
+application/dec-dx
+application/eshop
+application/excel		xls
+application/ghostview
+application/hyperstudio
+application/iges
+application/mac-binhex40	hqx
+application/mac-compactpro	cpt
+application/macwriteii
+application/marc
+application/mathematica
+application/msword		doc dot wrd
+application/news-message-id
+application/news-transmission
+application/octet-stream	bin dms exe
+application/x-lha		lzh lha LZH LHA
+application/oda			oda
+application/pdf			pdf
+application/pgp			pgp
+application/pgp-encrypted
+application/pgp-keys
+application/pgp-signature	pgp
+application/postscript		ai eps ps EPS PS
+application/powerpoint		ppt PPT
+application/remote-printing
+application/rtf			rtf RTF
+application/slate
+application/wita
+application/wordperfect5.1	wp5
+application/x-123		wk
+application/x-Wingz		wz
+application/x-bcpio		bcpio
+application/x-bzip2		bz2
+application/x-bytecode.elisp	elc
+application/x-bytecode.python	pyc
+application/x-cdlink		vcd
+application/x-cc-source		C cc cpp
+application/x-c-source		c
+application/x-c-header		h hh
+application/x-chess-pgn		pgn
+application/x-compress		z Z
+application/x-comic-rar		cbr
+application/x-comic-zip		cbz
+application/x-cpio		cpio
+application/x-csh		csh
+application/x-debian-package	deb
+application/x-director		dcr dir dxr
+application/x-dvi		dvi
+application/x-gtar		gtar tgz
+application/x-e-theme           etheme
+application/x-font              pfa pfb gsf pcf pcf.Z
+application/x-font-ttf          ttf TTF
+application/x-gunzip		gz
+application/x-gzip		gz
+application/x-eet		eet
+application/x-rar		rar
+application/x-ace		ace
+application/x-hdf		hdf
+application/x-httpd-php		phtml pht php php3
+application/x-log		log
+application/x-javascript	js
+application/x-kword		kwd kwt
+application/x-kspread		ksp
+application/x-kpresenter	kpr kpt
+application/x-kchart		chrt
+application/x-koan		skp skd skt skm
+application/x-latex		latex
+application/x-maker		frm maker frame fm fb book fbdoc
+application/x-mif		mif
+application/x-msdos-program	com exe bat
+application/x-netcdf		nc cdf
+application/x-ns-proxy-autoconfig	pac
+application/x-perl		pl pm
+application/x-python		py
+application/x-rad		rad
+application/x-rpm		rpm spm srpm
+application/x-sh		sh
+application/x-shar		shar
+application/x-shockwave-flash	swf
+application/x-stuffit		sit
+application/x-sv4cpio		sv4cpio
+application/x-sv4crc		sv4crc
+application/x-tar		tar
+application/x-tcl		tcl
+application/x-tex		tex
+application/x-texinfo		texinfo texi
+application/x-troff		t tr roff
+application/x-troff-man		man 1 2 3 4 5 6 7 8 9 3s
+application/x-troff-me		me
+application/x-troff-ms		ms
+application/x-ustar		ustar
+application/x-wais-source	src
+application/zip			zip ZIP
+application/x-sharedlib		so so.0 so.1 so.2 so.3 so.4 so.5 so.6 so.7 so.8 so.9 so.10 so.11 so.12 so.13 so.14 so.15 so.16
+application/x-object		o
+application/x-soundfont		sf2 SF2
+audio/midi			mid midi kar MID
+audio/mpeg			mpga mp2 mp3 MP3
+audio/x-musepack		mpc
+audio/x-mac			ape
+audio/x-mpegurl			m3u
+audio/ogg			ogg OGG
+audio/x-realaudio		ra
+audio/x-med			med
+chemical/x-pdb			pdb xyz
+image/xcf			xcf
+image/gif			gif GIF
+image/ief			ief
+image/jpeg			jpeg jpg jpe JPG
+image/png			png PNG
+image/tiff			tiff tif TIF
+image/x-cmu-raster		ras
+image/x-portable-anymap		pnm
+image/x-portable-bitmap		pbm
+image/x-portable-graymap	pgm
+image/x-portable-pixmap		ppm
+image/x-rgb			rgb
+image/x-xbitmap			xbm
+image/x-xpixmap			xpm
+image/x-xwindowdump		xwd
+image/x-xfig			fig xfig
+image/bmp			bmp BMP
+image/x-djvu                    djvu djv
+message/external-body
+message/news
+message/partial
+message/rfc822
+model/iges			igs iges
+model/mesh			msh mesh silo
+model/vrml			wrl vrml
+multipart/alternative
+multipart/appledouble
+multipart/digest
+multipart/mixed
+multipart/parallel
+text/css			css
+text/html			html htm HTM
+text/plain			asc txt hpp
+text/richtext			rtx
+text/rtf			rtf RTF
+text/sgml			sgml sgm
+text/tab-separated-values	tsv
+text/x-setext			etx
+text/x-vCalendar		vcs
+text/x-vCard			vcf
+text/x-patch			patch diff
+text/x-script.elisp		el
+text/xml			xml dtd
+video/dl			dl
+video/fli			fli
+video/gl			gl
+video/mpeg			mp2 mpe mpeg mpg MPG
+video/quicktime			qt mov QT MOV
+video/x-msvideo			avi AVI
+video/x-sgi-movie		movie
+video/wmv			wmv
+x-conference/x-cooltalk		ice
+x-world/x-vrml			wrl vrml
+audio/x-pn-realaudio rmm ram
+audio/vnd.rn-realaudio ra
+application/smil smi smil
+text/vnd.rn-realtext rt
+video/vnd.rn-realvideo rv
+image/vnd.rn-realflash rf swf
+application/x-shockwave-flash2-preview rf swf SWF
+application/sdp sdp
+application/x-sdp sdp
+application/vnd.rn-realmedia rm
+image/vnd.rn-realpix rp
+audio/wav wav WAV
+audio/x-wav wav
+audio/x-pn-wav wav
+audio/x-pn-windows-acm wav
+audio/basic au
+audio/x-pn-au au
+audio/aiff aiff af
+audio/x-aiff aiff af
+audio/x-pn-aiff aiff af
+application/x-java              class
+text/x-java                     java
+application/x-jar               jar
+image/svg+xml                   svg svgz
+application/x-openoffice        sxw
+application/x-gameboy-rom       gba

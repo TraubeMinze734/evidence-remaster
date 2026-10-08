@@ -1,0 +1,73 @@
+\hypertarget{exif_8c}{
+\section{exif.c File Reference}
+\label{exif_8c}\index{exif.c@{exif.c}}
+}
+meta-data provider plug-in \char`\"{}EXIF\char`\"{} 
+
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\hypertarget{exif_8c_a58}{
+\#define \hyperlink{exif_8c_a58}{MA}(k, d, v)~meta\_\-add(Image\-Info $\rightarrow$ md,META\_\-RO,META\_\-STR,(k),(d),MY\_\-NAME,(v),prov)}
+\label{exif_8c_a58}
+
+\begin{CompactList}\small\item\em Show the collected image info, displaying camera F-stop and shutter speed in a consistent and legible fashion. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+static int \hyperlink{exif_8c_a94}{process\_\-EXIF} (Image\-Info\_\-t $\ast$Image\-Info, unsigned char $\ast$Exif\-Section, unsigned int length)
+\begin{CompactList}\small\item\em Process a EXIF marker -- describes all the drivel that most digital cameras include. \item\end{CompactList}\item 
+\hypertarget{exif_8c_a95}{
+static int \hyperlink{exif_8c_a95}{Read\-Jpeg\-Sections} (Image\-Info\_\-t $\ast$Image\-Info, Section\_\-t Sections\mbox{[}$\,$\mbox{]}, FILE $\ast$infile)}
+\label{exif_8c_a95}
+
+\begin{CompactList}\small\item\em Parse the marker stream until SOS or EOI is seen. \item\end{CompactList}\item 
+int \hyperlink{exif_8c_a99}{meta\_\-get\_\-for\_\-file} (noir\_\-md $\ast$md, char $\ast$file, noir\_\-provider $\ast$prov)
+\begin{CompactList}\small\item\em get meta-data for this file \item\end{CompactList}\item 
+int \hyperlink{exif_8c_a100}{layoutp} (void)
+\begin{CompactList}\small\item\em let info-dialog do the layout for us \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+meta-data provider plug-in \char`\"{}EXIF\char`\"{} 
+
+get EXIF tags (JPEGs taken by digital cameras) code adapated from JHead by Matthias Wandel
+
+\subsection{Function Documentation}
+\hypertarget{exif_8c_a100}{
+\index{exif.c@{exif.c}!layoutp@{layoutp}}
+\index{layoutp@{layoutp}!exif.c@{exif.c}}
+\subsubsection[layoutp]{\setlength{\rightskip}{0pt plus 5cm}int layoutp (void)}}
+\label{exif_8c_a100}
+
+
+let info-dialog do the layout for us 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC to do our own layout, NOIR\_\-FAIL to have the caller do it\end{Desc}
+\hypertarget{exif_8c_a99}{
+\index{exif.c@{exif.c}!meta_get_for_file@{meta\_\-get\_\-for\_\-file}}
+\index{meta_get_for_file@{meta\_\-get\_\-for\_\-file}!exif.c@{exif.c}}
+\subsubsection[meta\_\-get\_\-for\_\-file]{\setlength{\rightskip}{0pt plus 5cm}int meta\_\-get\_\-for\_\-file (noir\_\-md $\ast$ {\em md}, char $\ast$ {\em file}, noir\_\-provider $\ast$ {\em prov})}}
+\label{exif_8c_a99}
+
+
+get meta-data for this file 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em md}]the list of (all) meta-data \item[{\em file}]the file to set the meta-data on \item[{\em prov}]the provider-entry for this plugin\end{description}
+\end{Desc}
+\hypertarget{exif_8c_a94}{
+\index{exif.c@{exif.c}!process_EXIF@{process\_\-EXIF}}
+\index{process_EXIF@{process\_\-EXIF}!exif.c@{exif.c}}
+\subsubsection[process\_\-EXIF]{\setlength{\rightskip}{0pt plus 5cm}static int process\_\-EXIF (Image\-Info\_\-t $\ast$ {\em Image\-Info}, unsigned char $\ast$ {\em Exif\-Section}, unsigned int {\em length})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{exif_8c_a94}
+
+
+Process a EXIF marker -- describes all the drivel that most digital cameras include. 
+
+..

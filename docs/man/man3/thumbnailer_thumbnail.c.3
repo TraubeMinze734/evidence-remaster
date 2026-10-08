@@ -1,0 +1,872 @@
+.TH "thumbnail.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+thumbnail.c \- threaded modular thumbnailer. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBthumbnail_failinfo_save\fP (const char *fail, const char *software, char **path)"
+.br
+.RI "\fIcreate an application-specific thumbnail-failure entry in thumbnail cache \fP"
+.ti -1c
+.RI "static int \fBthumbnailer_start\fP (Evidence_Thumbnailer *t)"
+.br
+.RI "\fIstart thumbnailing thread (unless already running). \fP"
+.ti -1c
+.RI "static int \fBthumbnail_num_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlistener for numeric properties \fP"
+.ti -1c
+.RI "static int \fBthumbnail_str_listener\fP (noir_prop_bag *b, noir_prop *e, int tag, void *data)"
+.br
+.RI "\fIlistener for string properties \fP"
+.ti -1c
+.RI "char * \fBevidence_thumb_get_tmpname\fP (const char *file, const char *ext)"
+.br
+.RI "\fImake a temporary file-name. \fP"
+.ti -1c
+.RI "char * \fBevidence_thumbnail_path\fP (thumbnaildir td, const char *file, const char *ext)"
+.br
+.RI "\fIcreate path for a thumbnail. \fP"
+.ti -1c
+.RI "static int \fBevidence_thumb_hash_name\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIget the thumbnail name (hash) on disk. \fP"
+.ti -1c
+.RI "static void \fBevidence_thumb_free_attributes\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIfree the attributes of an Evidence_Thumb. \fP"
+.ti -1c
+.RI "static void \fBevidence_thumb_free\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIfree an Evidence_Thumb. \fP"
+.ti -1c
+.RI "static int \fBevidence_thumb_new\fP (Evidence_Thumb **thumb, void *t, const char *file, const char *mime)"
+.br
+.RI "\fIAllocate a new Evas_Thumb, setting up everything. \fP"
+.ti -1c
+.RI "static char * \fBevidence_thumb_find_cached\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIfind thumbnail in any of the cache-dirs. \fP"
+.ti -1c
+.RI "static FILE * \fBevidence_thumb_open_png\fP (char *filename)"
+.br
+.RI "\fIOpen a PNG-image. \fP"
+.ti -1c
+.RI "static int \fBevidence_thumb_read_file_attributes\fP (Evidence_Thumb *e, int f)"
+.br
+.RI "\fIread the attributes of an ePEG or PNG thumbnail. \fP"
+.ti -1c
+.RI "static int \fBevidence_thumb_write_png\fP (char *file, Evidence_Thumb *e, const char *software)"
+.br
+.RI "\fIwrite thumbnail (from e->data) to a PNG image. \fP"
+.ti -1c
+.RI "static int \fBevidence_thumb_save_png\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIsave thumbnail(s) for a file. \fP"
+.ti -1c
+.RI "void \fBthumbnail_imlib_gc\fP (void)"
+.br
+.RI "\fIflush unused fonts and images \fP"
+.ti -1c
+.RI "Imlib_Image \fBevidence_thumb_imlib_standardize\fP (Evidence_Thumb *e)"
+.br
+.RI "\fIresize thumbnail to standard-size (using Imlib2). \fP"
+.ti -1c
+.RI "Evidence_Thumbnailer * \fBthumbnailer_new\fP (void)"
+.br
+.RI "\fIcreate a new thumbnailer-struct \fP"
+.ti -1c
+.RI "static int \fBthumbnailer_cxl\fP (Evidence_Thumbnailer *t)"
+.br
+.RI "\fIstop a thumbnailer \fP"
+.ti -1c
+.RI "static int \fBthumbnailer_gc\fP (Evidence_Thumbnailer *t)"
+.br
+.RI "\fIcheck whether a given thumbnailer has timed out. \fP"
+.ti -1c
+.RI "Evidence_Thumbnailer * \fBthumbnailer_dst\fP (Evidence_Thumbnailer *t)"
+.br
+.RI "\fIdestroy a thumbnailer (thread, struct, Q) \fP"
+.ti -1c
+.RI "int \fBthumbnailer_enqueue\fP (Evidence_Thumbnailer *t, Evidence_Thumb *thumb)"
+.br
+.RI "\fIenqueue an item to be thumbnailed \fP"
+.ti -1c
+.RI "Evidence_Thumb * \fBthumbnailer_dequeue\fP (Evidence_Thumbnailer *t)"
+.br
+.RI "\fIpop an item from the Q for a given thumbnailer \fP"
+.ti -1c
+.RI "static int \fBthumbnailer_generate\fP (Evidence_Thumb *thumb)"
+.br
+.RI "\fIcreates a new thumbnail (using a plugin, ePEG or Imlib2 or whatver). \fP"
+.ti -1c
+.RI "int \fBthumbnailer_protected_sigchld\fP (void *data, int type, void *event)"
+.br
+.RI "\fIthumbnailing task exited; release associated thread \fP"
+.ti -1c
+.RI "static int \fBthumbnailer_protected_generate\fP (Evidence_Thumbnailer *t, Evidence_Thumb *thumb)"
+.br
+.RI "\fIexecute thumbnailer in separate task so it won't take down evidence if it crashes. \fP"
+.ti -1c
+.RI "static void * \fBthumbnailer_generator\fP (void *q)"
+.br
+.RI "\fIthe thumbnailing thread. \fP"
+.ti -1c
+.RI "\fBfile_info\fP * \fBthumbnailer_pending\fP (void)"
+.br
+.RI "\fIif any new thumbnails have arrived, dequeue the top one from the ready-Q, add the thumbfile to the file-info instance, and return fi to model. \fP"
+.ti -1c
+.RI "static int \fBthumbnail_enqueue_do\fP (void *t, \fBfile_info\fP *fi, thumbnail_plugin *tp)"
+.br
+.RI "\fIfetches or creates a new thumbnail. \fP"
+.ti -1c
+.RI "int \fBthumbnail_init\fP (const char *setup)"
+.br
+.RI "\fIcreates the directories we need for thumbnailing. \fP"
+.ti -1c
+.RI "int \fBthumbnail_find_for\fP (const char *tag, char **path)"
+.br
+.RI "\fIfind a thumbnail for a given file, if one exists \fP"
+.ti -1c
+.RI "static int \fBthumbnailers_gc\fP (void)"
+.br
+.RI "\fIdeinitialize thumbnail sub-system. \fP"
+.ti -1c
+.RI "int \fBthumbnail_lib_gc\fP (void)"
+.br
+.RI "\fIgarbage-collect plugins \fP"
+.ti -1c
+.RI "int \fBthumbnail_disk_gc_one\fP (const char *tag)"
+.br
+.RI "\fIdelete all the thumbnails for the given source file. \fP"
+.ti -1c
+.RI "int \fBthumbnail_disk_gc\fP (void)"
+.br
+.RI "\fIUsing the URI tag stored in the png, check all the thumbnails to see if their source file has been deleted; if so, delete the thumbnail as well. \fP"
+.ti -1c
+.RI "int \fBthumbnail_disk_op\fP (noir_job_type t, const char *src, const char *dst)"
+.br
+.RI "\fIreact to a disk-op (copy, move (re-tag), delete thumbnail) \fP"
+.ti -1c
+.RI "int \fBthumbnail_attribute_add\fP (Evidence_Thumb *e, const char *key_, const char *val_)"
+.br
+.RI "\fIadd an attribute to a thumbnail \fP"
+.ti -1c
+.RI "int \fBthumbnail_exit\fP (void)"
+.br
+.RI "\fIdeinitialize thumbnail sub-system. \fP"
+.ti -1c
+.RI "int \fBthumbnail_enqueue\fP (\fBfile_info\fP *fi)"
+.br
+.RI "\fIenqueue a file for thumbnail-creation, if its format is supported. \fP"
+.ti -1c
+.RI "static int \fBevidence_thumb_calc_size\fP (void *t, int *w, int *h)"
+.br
+.RI "\fIresize thumb-object to fit theme (after saving in standardized size). \fP"
+.ti -1c
+.RI "static Evas_Object * \fBevidence_thumb_evas_image_load\fP (Evas *evas, const char *file)"
+.br
+.RI "\fItry to load the image (using Evas). \fP"
+.ti -1c
+.RI "Evas_Object * \fBevas_thumbnail_dead\fP (void *t, Evas *evas, \fBfile_info\fP *fi)"
+.br
+.RI "\fIload an existing thumbnail \fP"
+.ti -1c
+.RI "Evas_Object * \fBevas_thumbnail_live\fP (void *t, Evas *evas, \fBfile_info\fP *fi, int w, int h)"
+.br
+.RI "\fIcreate a 'live' thumbnail \fP"
+.ti -1c
+.RI "Evas_Object * \fBevas_thumbnail_dead_or_alive\fP (void *t, Evas *evas, \fBfile_info\fP *fi, int w, int h)"
+.br
+.RI "\fIcreate a 'live' thumbnail if possible, otherwise return a static one \fP"
+.ti -1c
+.RI "Evas_Object * \fBevas_object_from_imlib_image\fP (Evas *evas, void *im)"
+.br
+.RI "\fIcreate a new evas image-object from a given Imlib2-image \fP"
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "pthread_mutex_t \fBimlib_mutex\fP"
+.br
+.RI "\fIfrontend and backend shouldn't use imlib2 at the same time, it's not threadsafe. \fP"
+.ti -1c
+.RI "Evidence_Thumbnailer * \fBthumbnailers\fP = NULL"
+.br
+.RI "\fIlist of thumbnailers (one for now) \fP"
+.ti -1c
+.RI "Evidence_Thumbnailer * \fBthumbnails_complete\fP = NULL"
+.br
+.RI "\fIlist of complete thumbnails \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+threaded modular thumbnailer. 
+
+original imlib2 thumbnailer by Azundris original truetype thumbnailer by raster original freedesktop.org-compatible thumbnailer by atmos threaded thumbnailer by Azundris modular thumbnailer by Azundris
+.SH "Function Documentation"
+.PP 
+.SS "Evas_Object* evas_object_from_imlib_image (Evas * evas, void * im)"
+.PP
+create a new evas image-object from a given Imlib2-image 
+.PP
+\fBReturns:\fP
+.RS 4
+the new evas image-object, or NULL for failure 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevas\fP the evas to create the image-object on 
+.br
+\fIim\fP the Imlib2-image, or NULL for image currently in context
+.RE
+.PP
+
+.SS "Evas_Object* evas_thumbnail_dead (void * t, Evas * evas, \fBfile_info\fP * fi)"
+.PP
+load an existing thumbnail 
+.PP
+this convenience function is intended to be called from icon-factories wishing to load an existing thumbnail. 
+.PP
+\fBReturns:\fP
+.RS 4
+an Evas_Image_Object containing the properly sized thumbnail, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP - the current theme (needed for sizing info) 
+.br
+\fIevas\fP - the Evas canvas to create the image-object on 
+.br
+\fIfi\fP - the file we want a thumbnail for
+.RE
+.PP
+
+.SS "Evas_Object* evas_thumbnail_dead_or_alive (void * t, Evas * evas, \fBfile_info\fP * fi, int w, int h)"
+.PP
+create a 'live' thumbnail if possible, otherwise return a static one 
+.PP
+this convenience function is intended to be called from icon-factories wishing to create a 'live' thumb, but settling for a static one if need be. 
+.PP
+\fBReturns:\fP
+.RS 4
+an Evas_Image_Object containing the properly sized thumbnail, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP - the current theme (needed for sizing info) 
+.br
+\fIevas\fP - the Evas canvas to create the image-object on 
+.br
+\fIfi\fP - the file we want a thumbnail for 
+.br
+\fIw\fP - the suggested width 
+.br
+\fIh\fP - the suggested height
+.RE
+.PP
+
+.SS "Evas_Object* evas_thumbnail_live (void * t, Evas * evas, \fBfile_info\fP * fi, int w, int h)"
+.PP
+create a 'live' thumbnail 
+.PP
+this convenience function is intended to be called from icon-factories wishing to create a 'live' thumbnail. 
+.PP
+\fBReturns:\fP
+.RS 4
+an Evas_Image_Object containing the properly sized thumbnail, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP - the current theme (needed for sizing info) 
+.br
+\fIevas\fP - the Evas canvas to create the image-object on 
+.br
+\fIfi\fP - the file we want a thumbnail for 
+.br
+\fIw\fP - the suggested width 
+.br
+\fIh\fP - the suggested height
+.RE
+.PP
+
+.SS "static int evidence_thumb_calc_size (void * t, int * w, int * h)\fC [static]\fP"
+.PP
+resize thumb-object to fit theme (after saving in standardized size). 
+.PP
+\fBReturns:\fP
+.RS 4
+theme-dependent on-screen size of thumbnail in w,h 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP - the theme (needed for icon-dimensions and resize-mode) 
+.br
+\fIw\fP - source-width (of newly-created or read-from-cache thumbnail) 
+.br
+\fIh\fP - source-height (of newly-created or read-from-cache thumbnail)
+.RE
+.PP
+useful values for icon-mode are {w,h}/h and {w,h}/w. {w,h} means that both width and height of the thumbnail are scaled. h as a divisor indicates that the thumbnail should be as high as a normal icon, no matter what width that will result in -- this is adequate for smaller icon-sets, as it tends to prevent the thumbnails from getting too small. w as a divisor indicates that the thumbnail should be as wide as a canonical icon, no matter what the height will be. the special value 'auto' will scale the thumbnail to its maximum within the bounding-box of the icon while retaining the thumbnails aspect ratio, which in real terms means, 'make thumbnail as wide as an icon, unless that would mean it's higher than an icon; in this case, make the thumbnail as high as an icon instead.'
+.PP
+icon: 32x48
+.PP
+icon-mode 640x480 picture 320x960 picture
+.PP
+{w,h}/w 32x24 thumbnail 32x96 thumbnail
+.PP
+{w,h}/h 64x48 thumbnail 16x48 thumbnail
+.PP
+auto 32x24 thumbnail 16x48 thumbnail
+.SS "static Evas_Object* evidence_thumb_evas_image_load (Evas * evas, const char * file)\fC [static]\fP"
+.PP
+try to load the image (using Evas). 
+.PP
+\fBReturns:\fP
+.RS 4
+an Evas_Image_Object, or NULL for failure 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIevas\fP - the evas to add the object to if the load succeeds 
+.br
+\fIfile\fP - the name of the image file on disk ('/home/me/foo.png')
+.RE
+.PP
+
+.SS "static char* evidence_thumb_find_cached (Evidence_Thumb * e)\fC [inline, static]\fP"
+.PP
+find thumbnail in any of the cache-dirs. 
+.PP
+only used from \fBevidence_thumb_read_file_attributes()\fP 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - struct describing the thumbnail to look for
+.RE
+.PP
+
+.SS "static void evidence_thumb_free (Evidence_Thumb * e)\fC [static]\fP"
+.PP
+free an Evidence_Thumb. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the Evidence_Thumb we want to free
+.RE
+.PP
+
+.SS "static void evidence_thumb_free_attributes (Evidence_Thumb * e)\fC [static]\fP"
+.PP
+free the attributes of an Evidence_Thumb. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the Evidence_Thumb we want to free
+.RE
+.PP
+
+.SS "char* evidence_thumb_get_tmpname (const char * file, const char * ext)"
+.PP
+make a temporary file-name. 
+.PP
+\fBReturns:\fP
+.RS 4
+a newly-allocated buffer 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP - the file to make a temporary name for 
+.br
+\fIext\fP - the extension to give the temporary file
+.RE
+.PP
+
+.SS "static int evidence_thumb_hash_name (Evidence_Thumb * e)\fC [inline, static]\fP"
+.PP
+get the thumbnail name (hash) on disk. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the evidence thumb we're hashing
+.RE
+.PP
+
+.SS "Imlib_Image evidence_thumb_imlib_standardize (Evidence_Thumb * e)"
+.PP
+resize thumbnail to standard-size (using Imlib2). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the thumbnail descriptor
+.RE
+.PP
+
+.SS "static int evidence_thumb_new (Evidence_Thumb ** thumb, void * t, const char * file, const char * mime)\fC [inline, static]\fP"
+.PP
+Allocate a new Evas_Thumb, setting up everything. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIthumb\fP - where the address of the newly-allocated buffer is stored 
+.br
+\fIt\fP - the noir theme, used in icon size calculation and more! 
+.br
+\fIfile\fP - the file on disk we want to make a thumbnail of 
+.br
+\fImime\fP - the MIME-type of 'file'
+.RE
+.PP
+called from \fBthumbnail_enqueue_do()\fP only.
+.SS "static FILE* evidence_thumb_open_png (char * filename)\fC [inline, static]\fP"
+.PP
+Open a PNG-image. 
+.PP
+\fBReturns:\fP
+.RS 4
+file-handle only if file exists and is PNG 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfilename\fP - the file to open
+.RE
+.PP
+used by \fBevidence_thumb_read_file_attributes()\fP only 
+.SS "static int evidence_thumb_read_file_attributes (Evidence_Thumb * e, int f)\fC [static]\fP"
+.PP
+read the attributes of an ePEG or PNG thumbnail. 
+.PP
+\fBReturns:\fP
+.RS 4
+if NOIR_SUCC, the attributes were set on the thumbnail-descriptor 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the thumbnail desciptor 
+.br
+\fIf\fP - force reading even on fail-infos
+.RE
+.PP
+used in \fBthumbnail_enqueue_do()\fP and \fBthumbnail_disk_gc()\fP.
+.SS "static int evidence_thumb_save_png (Evidence_Thumb * e)\fC [inline, static]\fP"
+.PP
+save thumbnail(s) for a file. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the thumbnail descriptor
+.RE
+.PP
+wrapper for \fBevidence_thumb_write_png()\fP.
+.SS "static int evidence_thumb_write_png (char * file, Evidence_Thumb * e, const char * software)\fC [inline, static]\fP"
+.PP
+write thumbnail (from e->data) to a PNG image. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile\fP - the name for the image-file 
+.br
+\fIe\fP - the thumbnail descriptor; e->data must point to the thumbnail's image-data 
+.br
+\fIsoftware\fP - who generated the thumbnail
+.RE
+.PP
+used in \fBevidence_thumb_save_png()\fP only.
+.SS "char* evidence_thumbnail_path (thumbnaildir td, const char * file, const char * ext)"
+.PP
+create path for a thumbnail. 
+.PP
+\fBReturns:\fP
+.RS 4
+the desired path, or NULL for failure 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItd\fP - the directory the thumbnail will reside in 
+.br
+\fIfile\fP - the name for the thumbnail (a hash), or NULL 
+.br
+\fIext\fP - the extension for the thumbnail, or NULL
+.RE
+.PP
+
+.SS "int thumbnail_attribute_add (Evidence_Thumb * e, const char * key_, const char * val_)"
+.PP
+add an attribute to a thumbnail 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP the thumbnail 
+.br
+\fIkey_\fP the name of the attribute 
+.br
+\fIval_\fP the contents of the attribute
+.RE
+.PP
+
+.SS "int thumbnail_disk_gc_one (const char * tag)"
+.PP
+delete all the thumbnails for the given source file. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItag\fP the source-file
+.RE
+.PP
+
+.SS "int thumbnail_disk_op (noir_job_type t, const char * src, const char * dst)"
+.PP
+react to a disk-op (copy, move (re-tag), delete thumbnail) 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the action-type 
+.br
+\fIsrc\fP the source-file, or file to be deleted 
+.br
+\fIdst\fP the destination file, or NULL
+.RE
+.PP
+
+.SS "int thumbnail_enqueue (\fBfile_info\fP * fi)"
+.PP
+enqueue a file for thumbnail-creation, if its format is supported. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfi\fP - file_info for the item we want a thumbnail for 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+If we don't know how to thumbnail a file of the given type, NOIR_TYPEMISMATCH is returned. If THUMBNAIL_IMAGES_SMALLER_THAN is set to a non-zero value and the original file's size exceeds that value, NOIR_IGNORED is returned. If an error occurs, NOIR_FAIL is returned. Otherwise, the response of \fBthumbnail_enqueue_do()\fP is returned.
+.RE
+.PP
+
+.SS "static int thumbnail_enqueue_do (void * t, \fBfile_info\fP * fi, thumbnail_plugin * tp)\fC [inline, static]\fP"
+.PP
+fetches or creates a new thumbnail. 
+.PP
+\fBReturns:\fP
+.RS 4
+If an up-to-date thumbnail is found, NOIR_SUCC is returned and fi->thumbfile holds the name of that thumbnail. Otherwise, NOIR_PARTIAL is returned and the thumbnail is enqueued for generation. If an error occurs, fi->thumbfile is NULL and an error-code is returned. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP - current theme 
+.br
+\fIfi\fP - current file 
+.br
+\fItp\fP - what plugin to use to thumbnail this item
+.RE
+.PP
+
+.SS "static int thumbnail_failinfo_save (const char * fail, const char * software, char ** path)\fC [static]\fP"
+.PP
+create an application-specific thumbnail-failure entry in thumbnail cache 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfail\fP the item we failed on 
+.br
+\fIsoftware\fP a comment to save in the failure entry (e.g. the plugin that failed), or NULL 
+.br
+\fIpath\fP where to store the path to the newly-written item, or NULL
+.RE
+.PP
+
+.SS "int thumbnail_find_for (const char * tag, char ** path)"
+.PP
+find a thumbnail for a given file, if one exists 
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC for thumbnail found, NOIR_PARTIAL for 'can't thumbnail this item', or another error-code for 'this should never happen' 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItag\fP the item for which we want a thumbnail 
+.br
+\fIpath\fP where to store the path to the thumbnail (if any), NULL for don't
+.RE
+.PP
+
+.SS "int thumbnail_init (const char * setup)"
+.PP
+creates the directories we need for thumbnailing. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsetup\fP the directory containing the setup
+.RE
+.PP
+
+.SS "int thumbnail_lib_gc (void)"
+.PP
+garbage-collect plugins 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code
+.RE
+.PP
+
+.SS "static int thumbnail_num_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listener for numeric properties 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIe\fP the property 
+.br
+\fItag\fP the numeric tag of the property 
+.br
+\fIdata\fP the icon-list
+.RE
+.PP
+
+.SS "static int thumbnail_str_listener (noir_prop_bag * b, noir_prop * e, int tag, void * data)\fC [static]\fP"
+.PP
+listener for string properties 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIb\fP the bag 
+.br
+\fIe\fP the property 
+.br
+\fItag\fP the numeric tag of the property 
+.br
+\fIdata\fP the icon-list
+.RE
+.PP
+
+.SS "static int thumbnailer_cxl (Evidence_Thumbnailer * t)\fC [static]\fP"
+.PP
+stop a thumbnailer 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the thumbnailer to stop
+.RE
+.PP
+
+.SS "Evidence_Thumb* thumbnailer_dequeue (Evidence_Thumbnailer * t)"
+.PP
+pop an item from the Q for a given thumbnailer 
+.PP
+\fBReturns:\fP
+.RS 4
+the tail item from the Q 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIthe\fP thumbnailer
+.RE
+.PP
+
+.SS "Evidence_Thumbnailer* thumbnailer_dst (Evidence_Thumbnailer * t)"
+.PP
+destroy a thumbnailer (thread, struct, Q) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the thumbnailer
+.RE
+.PP
+
+.SS "int thumbnailer_enqueue (Evidence_Thumbnailer * t, Evidence_Thumb * thumb)"
+.PP
+enqueue an item to be thumbnailed 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the thumbnailer to use 
+.br
+\fIthumb\fP the item to thumbnail
+.RE
+.PP
+
+.SS "static int thumbnailer_gc (Evidence_Thumbnailer * t)\fC [static]\fP"
+.PP
+check whether a given thumbnailer has timed out. 
+.PP
+if so, cancel it. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the thumbnailer to check
+.RE
+.PP
+
+.SS "static int thumbnailer_generate (Evidence_Thumb * thumb)\fC [static]\fP"
+.PP
+creates a new thumbnail (using a plugin, ePEG or Imlib2 or whatver). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIthumb\fP - the thumbnail descriptor 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+NOIR_SUCC for success, or NOIR_NOTSUPP if the format can not be thumbnailed.
+.RE
+.PP
+
+.SS "static void* thumbnailer_generator (void * q)\fC [static]\fP"
+.PP
+the thumbnailing thread. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIq\fP - the queue of items to create thumbnails for
+.RE
+.PP
+
+.SS "Evidence_Thumbnailer* thumbnailer_new (void)"
+.PP
+create a new thumbnailer-struct 
+.PP
+\fBReturns:\fP
+.RS 4
+a new initialized struct
+.RE
+.PP
+
+.SS "\fBfile_info\fP* thumbnailer_pending (void)"
+.PP
+if any new thumbnails have arrived, dequeue the top one from the ready-Q, add the thumbfile to the file-info instance, and return fi to model. 
+.PP
+called by the model to poll for new thumbnails. 
+.PP
+\fBReturns:\fP
+.RS 4
+the file-info struct that now has a thumbnail
+.RE
+.PP
+
+.SS "static int thumbnailer_protected_generate (Evidence_Thumbnailer * t, Evidence_Thumb * thumb)\fC [inline, static]\fP"
+.PP
+execute thumbnailer in separate task so it won't take down evidence if it crashes. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the thumbnailer 
+.br
+\fIthumb\fP the thumbnail struct to create a thumbnail file for
+.RE
+.PP
+
+.SS "static int thumbnailer_start (Evidence_Thumbnailer * t)\fC [static]\fP"
+.PP
+start thumbnailing thread (unless already running). 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP - instance to start
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "pthread_mutex_t \fBimlib_mutex\fP"
+.PP
+frontend and backend shouldn't use imlib2 at the same time, it's not threadsafe. 
+.PP
+we will always have the mutex, even if evidence proper is not compiled with imlib2 support. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

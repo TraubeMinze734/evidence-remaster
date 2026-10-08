@@ -1,0 +1,119 @@
+DEVELOPER DOCS
+
+
+
+providers in evidence
+
+Evidence will display additional information for certain classes of
+file where possible -- the length and genre of an MP3 or Ogg-Vorbis
+sound file, etc.
+
+As we cannot anticipate all types of file that are (or will be) out
+there, and not all people are interested in all kinds of file, the
+functions to read and write this additional information are not built
+into evidence; it is instead built into separate "plug-ins" (or
+"information providers").  This way, only the functions needed for
+the files a user actually has are loaded, keeping down "bloat".  Also,
+evidence can easily be extended as the need arises.
+
+
+
+evidence.providers
+
+This file lists MIME-types and the providers for them, one per line,
+like so:
+
+audio/ogg  /usr/src/app/evidence/vorbis.so
+audio/mp3  /usr/src/app/evidence/mp3.so
+audio/mpeg /usr/src/app/evidence/mp3.so
+
+As you see, one provider may handle several MIME-types.
+The provider will add all the info it provides to evidence's internal
+list of metadata:
+
+
+
+evidence Meta-Data
+
+Each file has a (linked) list of Meta-Data describing it -- its name,
+its size, its location in the file-system, and so forth.
+
+Each element in the list features the Name of the Element ("Name"), a
+value ("/foo/bar/baz.c"), an optional description ("The file's name"),
+a data-type (META_STR, aka '\0'-terminated string, aka C-string),
+flags (is the data read-only or both readable and writable?), and a
+pointer to the entry for the provider that generated these meta-data
+in the internal list of providers.  Lastly, it contains a string
+denoting the "group" of the Meta-Data entry -- the genre of an MP3
+would be in the group "MP3".  This is useful so that data can be
+logically grouped, e.g. to be displayed on the same page.  A provider
+may create several groups, hence several pages, if it enhances clarity.
+
+
+
+evidence.menu
+
+This file lists MIME-types and actions for them, one per line, like so:
+
+"Info ..."    *              /usr/src/app/evidence/info_dial.so
+"Edit ..."    text/*         "gnuclient %s"
+"Archive..."  block_device   tar_my_disk
+
+The first argument will become the entry to be read in the context-menu --
+the one you get on right-clicking a file or directory.
+
+The second argument declares for what kind of file (MIME-type) the entry
+should appear in the context-menu.  * denotes "for all files", "text/*"
+requests the entry only to appear when the file is of a text-type (like
+"text/html" or "text/plain" etc.); text/plain would only have the entry
+appear for that MIME-type.  Mind the special MIME-types "unknown", "folder",
+etc.  Lastly, a MIME-type of "internal/root3" will add that entry to the
+menu that appears when you right-click where *no* icon is.
+
+The third argument either is a command-line passed to the shell (with %s
+substituted with the file's name), or a shared object (recognized by the
+extension .so) containing a function with the signature
+
+  int efun(noir_sess *,char *,meta **)
+
+which will be called with the session (which may normally be ignored),
+the file's name, and the list of it's meta-data (including those
+received from external providers).
+
+
+
+effigy (file properties dialog)
+
+effigy is one of the actions defined in evidence.menu -- in fact, it's
+a wildcard action, one defined with a MIME-type of "*" so that it will
+be available for any kind of file.
+
+Effigy will open a "notebook"-style dialog with several pages in it.
+The first page(s) will handle the default Meta-Data (file-size,
+permissions, mtime, ...).  The group of these Meta-Data is set to
+"basic".
+
+The following page will handle additional meta-data provided by
+meta-data providers.  Effigy will call a function layoutp() in
+the group's meta-data provider.
+
+- If it returns NOIR_SUCC, effigy will create a tab in the notebook
+  and hand the resulting object to the function layout() in the
+  provider; the provider will create the dialog itself.  This way,
+  special needs ("Get default values for the unset fields in the MP3
+  ID3 tag from the CDDB" etc.) in terms of initialization, widgets
+  and layout can be taken care of.
+
+- If it returns NOIR_FAIL, effigy will create a tab in the notebook
+  and push all meta-data items in this group onto the page with
+  appropriate widgets (labels for stuff flagged read-only, edit-fields
+  for read/write-fields etc.).
+
+Lastly, effigy will create a tab "Misc" and push all Meta-Data elements
+that have no group information onto that page.
+
+If effigy's apply-button is depressed, it will update the read/write
+meta-data entries by calling the generic meta_set() for each changed
+element.  For each group in which a change occurred, it will then call
+meta_set_for_file() to have the meta-data provider write the information
+back to the file.

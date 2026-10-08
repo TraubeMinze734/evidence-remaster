@@ -1,0 +1,87 @@
+\hypertarget{rb__gradient2_8c}{
+\section{rb\_\-gradient2.c File Reference}
+\label{rb__gradient2_8c}\index{rb_gradient2.c@{rb\_\-gradient2.c}}
+}
+plugin that creates and handles a \char`\"{}rubberband\char`\"{} selection 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{rb__gradient2_8c_a0}{rubber\_\-die} (noir\_\-theme $\ast$theme)
+\begin{CompactList}\small\item\em destall factory -- unregister listeners, free any resources etc. \item\end{CompactList}\item 
+void $\ast$ \hyperlink{rb__gradient2_8c_a1}{rubber\_\-new} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il)
+\begin{CompactList}\small\item\em create a new rubber-band selection \item\end{CompactList}\item 
+int \hyperlink{rb__gradient2_8c_a2}{rubber\_\-set} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, int x1, int y1, int x2, int y2)
+\begin{CompactList}\small\item\em update rubber-band to encompass given coordinates. \item\end{CompactList}\item 
+void \hyperlink{rb__gradient2_8c_a3}{rubber\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct a rubber-band \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+plugin that creates and handles a \char`\"{}rubberband\char`\"{} selection 
+
+this simple selection installs no properties. it consists of a central rectangle and four gradients that \char`\"{}fade it out.\char`\"{} it mimicks the look of the edb-selection that came with the first e17/essence prototype.
+
+\subsection{Function Documentation}
+\hypertarget{rb__gradient2_8c_a0}{
+\index{rb_gradient2.c@{rb\_\-gradient2.c}!rubber_die@{rubber\_\-die}}
+\index{rubber_die@{rubber\_\-die}!rb_gradient2.c@{rb\_\-gradient2.c}}
+\subsubsection[rubber\_\-die]{\setlength{\rightskip}{0pt plus 5cm}int rubber\_\-die (noir\_\-theme $\ast$ {\em theme})}}
+\label{rb__gradient2_8c_a0}
+
+
+destall factory -- unregister listeners, free any resources etc. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em theme}]the theme\end{description}
+\end{Desc}
+\hypertarget{rb__gradient2_8c_a3}{
+\index{rb_gradient2.c@{rb\_\-gradient2.c}!rubber_dst@{rubber\_\-dst}}
+\index{rubber_dst@{rubber\_\-dst}!rb_gradient2.c@{rb\_\-gradient2.c}}
+\subsubsection[rubber\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void rubber\_\-dst (void $\ast$$\ast$ {\em data})}}
+\label{rb__gradient2_8c_a3}
+
+
+destruct a rubber-band 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]- the rubber-band handle\end{description}
+\end{Desc}
+\hypertarget{rb__gradient2_8c_a1}{
+\index{rb_gradient2.c@{rb\_\-gradient2.c}!rubber_new@{rubber\_\-new}}
+\index{rubber_new@{rubber\_\-new}!rb_gradient2.c@{rb\_\-gradient2.c}}
+\subsubsection[rubber\_\-new]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ rubber\_\-new (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il})}}
+\label{rb__gradient2_8c_a1}
+
+
+create a new rubber-band selection 
+
+\begin{Desc}
+\item[Returns:]the handle of the newly-created rubber-band selection \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list we wish to select in\end{description}
+\end{Desc}
+\hypertarget{rb__gradient2_8c_a2}{
+\index{rb_gradient2.c@{rb\_\-gradient2.c}!rubber_set@{rubber\_\-set}}
+\index{rubber_set@{rubber\_\-set}!rb_gradient2.c@{rb\_\-gradient2.c}}
+\subsubsection[rubber\_\-set]{\setlength{\rightskip}{0pt plus 5cm}int rubber\_\-set (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, int {\em x1}, int {\em y1}, int {\em x2}, int {\em y2})}}
+\label{rb__gradient2_8c_a2}
+
+
+update rubber-band to encompass given coordinates. 
+
+the coordinates are guaranteed to be in order, ie, x1$<$=x2 $^\wedge$ y1$<$=y2. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]- the icon-list we're selecting in \item[{\em x1}]- left boundary \item[{\em y1}]- upper boundary \item[{\em x2}]- right boundary \item[{\em y2}]- lower boundary\end{description}
+\end{Desc}

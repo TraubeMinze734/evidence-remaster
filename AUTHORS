@@ -1,0 +1,30 @@
+
+Author:
+
+  Azundris  http://www.azundris.com/
+
+Contributors:
+
+  atmos     (thumbnail-caches confirming to freedesktop.org standards)
+  tillsan   (original auto-foo)
+  isotopp   (ideas, rephorm)
+  underDOG  (effigy layout)
+  omni      (original Makefile, options-handling)
+  spanKY    (more auto-foo)
+  sytse     (debian dir)
+
+Testers:
+
+  #edevel: atmos, benr, catalyst, creepy, fletch, RbdPngn
+  evidence-users: Alan Schmitt, Andrew Elcock, Justus Schwartz
+
+Inspiration:
+
+  efm       (enlightenment .16 file-manager)    Typebuffer    [Mandrake]
+  FSViewer  (NeXT/Step file-manager)            Browser-View  []
+  fm        (http://www.uwyn.com/projects/fm/)  Tree-View     [G. Bevin]
+
+Contact:
+
+  <evidence@azundris.com>
+  http://evidence.sourceforget.net/

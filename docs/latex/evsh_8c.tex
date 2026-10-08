@@ -1,0 +1,259 @@
+\hypertarget{evsh_8c}{
+\section{evsh.c File Reference}
+\label{evsh_8c}\index{evsh.c@{evsh.c}}
+}
+shell-specific parts of evsh of evsh (evidence shell). 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+int \hyperlink{evsh_8c_a19}{ev\_\-ipc\_\-server\_\-con} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: connected \item\end{CompactList}\item 
+int \hyperlink{evsh_8c_a20}{ev\_\-ipc\_\-server\_\-dis} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: disconnected \item\end{CompactList}\item 
+int \hyperlink{evsh_8c_a21}{ev\_\-ipc\_\-server\_\-sent} (void $\ast$data, int type, void $\ast$event)
+\begin{CompactList}\small\item\em callback: connected \item\end{CompactList}\item 
+static long \hyperlink{evsh_8c_a22}{get\_\-serial} (char $\ast$$\ast$m)
+\begin{CompactList}\small\item\em get serial number from answer \item\end{CompactList}\item 
+static int \hyperlink{evsh_8c_a23}{get\_\-token} (char $\ast$$\ast$beg, char $\ast$$\ast$end, int tol)
+\begin{CompactList}\small\item\em get token from input \item\end{CompactList}\item 
+static int \hyperlink{evsh_8c_a24}{handle\_\-any} (Ecore\_\-Ipc\_\-Server $\ast$$\ast$server, call $\ast$cp, char $\ast$line)
+\begin{CompactList}\small\item\em process a command (entered in shell, parsed in \hyperlink{evsh_8c_a31}{evsh\_\-parse\_\-line()}). \item\end{CompactList}\item 
+static char $\ast$ \hyperlink{evsh_8c_a25}{clean} (char $\ast$c)
+\begin{CompactList}\small\item\em clean user-input compress space, make sure strings are terminated, turn arbitrary hierarchy notation to lisp-style (\char`\"{}my.fancy.command\char`\"{} -$>$ \char`\"{}my-fancy-command\char`\"{}) \item\end{CompactList}\item 
+static int \hyperlink{evsh_8c_a26}{abbrevcmp} (char $\ast$a, char $\ast$t)
+\begin{CompactList}\small\item\em compare two tokens, of one the first may be abbreviated so that \char`\"{}m-f-c\char`\"{} matches \char`\"{}my-fancy-call\char`\"{} \item\end{CompactList}\item 
+static call $\ast$ \hyperlink{evsh_8c_a27}{find\_\-call} (char $\ast$b)
+\begin{CompactList}\small\item\em find a (possibly abbreviated) token in command-list \item\end{CompactList}\item 
+static call $\ast$ \hyperlink{evsh_8c_a28}{find\_\-abbrev} (char $\ast$$\ast$beg, char $\ast$$\ast$end)
+\begin{CompactList}\small\item\em find a token consisting of initials (\char`\"{}mfc\char`\"{}) in command-list turns \char`\"{}mfc\char`\"{} into \char`\"{}m-f-c\char`\"{} for this. \item\end{CompactList}\item 
+static call $\ast$ \hyperlink{evsh_8c_a29}{find\_\-with\_\-delims} (char $\ast$$\ast$beg, char $\ast$$\ast$end)
+\begin{CompactList}\small\item\em find a token (\char`\"{}my-fancy-command\char`\"{}) in command-list \item\end{CompactList}\item 
+static call $\ast$ \hyperlink{evsh_8c_a30}{find\_\-with\_\-spaces} (char $\ast$$\ast$beg, char $\ast$$\ast$end)
+\begin{CompactList}\small\item\em find a token (\char`\"{}my fancy command\char`\"{}) in command-list turns \char`\"{}my fancy command\char`\"{} into \char`\"{}my-fancy-command\char`\"{} for this. \item\end{CompactList}\item 
+static int \hyperlink{evsh_8c_a31}{evsh\_\-parse\_\-line} (Ecore\_\-Ipc\_\-Server $\ast$$\ast$server, char $\ast$line)
+\begin{CompactList}\small\item\em parse input from shell. \item\end{CompactList}\item 
+int \hyperlink{evsh_8c_a32}{main} (int argc, char $\ast$$\ast$argv)
+\begin{CompactList}\small\item\em evidence textual shell (mainloop). \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+shell-specific parts of evsh of evsh (evidence shell). 
+
+generic client library in \hyperlink{evclient_8c}{evclient.c}
+
+\subsection{Function Documentation}
+\hypertarget{evsh_8c_a26}{
+\index{evsh.c@{evsh.c}!abbrevcmp@{abbrevcmp}}
+\index{abbrevcmp@{abbrevcmp}!evsh.c@{evsh.c}}
+\subsubsection[abbrevcmp]{\setlength{\rightskip}{0pt plus 5cm}static int abbrevcmp (char $\ast$ {\em a}, char $\ast$ {\em t})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a26}
+
+
+compare two tokens, of one the first may be abbreviated so that \char`\"{}m-f-c\char`\"{} matches \char`\"{}my-fancy-call\char`\"{} 
+
+\begin{Desc}
+\item[Returns:]$<$0,0,$>$0 see strcmp() \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em a}](possibly abbreviated) token \item[{\em t}]token\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a25}{
+\index{evsh.c@{evsh.c}!clean@{clean}}
+\index{clean@{clean}!evsh.c@{evsh.c}}
+\subsubsection[clean]{\setlength{\rightskip}{0pt plus 5cm}static char$\ast$ clean (char $\ast$ {\em c})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a25}
+
+
+clean user-input compress space, make sure strings are terminated, turn arbitrary hierarchy notation to lisp-style (\char`\"{}my.fancy.command\char`\"{} -$>$ \char`\"{}my-fancy-command\char`\"{}) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em c}]buffer holding user input (modified)\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a19}{
+\index{evsh.c@{evsh.c}!ev_ipc_server_con@{ev\_\-ipc\_\-server\_\-con}}
+\index{ev_ipc_server_con@{ev\_\-ipc\_\-server\_\-con}!evsh.c@{evsh.c}}
+\subsubsection[ev\_\-ipc\_\-server\_\-con]{\setlength{\rightskip}{0pt plus 5cm}int ev\_\-ipc\_\-server\_\-con (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})}}
+\label{evsh_8c_a19}
+
+
+callback: connected 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]connstate variable \item[{\em type}]event-type \item[{\em event}]the event\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a20}{
+\index{evsh.c@{evsh.c}!ev_ipc_server_dis@{ev\_\-ipc\_\-server\_\-dis}}
+\index{ev_ipc_server_dis@{ev\_\-ipc\_\-server\_\-dis}!evsh.c@{evsh.c}}
+\subsubsection[ev\_\-ipc\_\-server\_\-dis]{\setlength{\rightskip}{0pt plus 5cm}int ev\_\-ipc\_\-server\_\-dis (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})}}
+\label{evsh_8c_a20}
+
+
+callback: disconnected 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]connstate variable \item[{\em type}]event-type \item[{\em event}]the event\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a21}{
+\index{evsh.c@{evsh.c}!ev_ipc_server_sent@{ev\_\-ipc\_\-server\_\-sent}}
+\index{ev_ipc_server_sent@{ev\_\-ipc\_\-server\_\-sent}!evsh.c@{evsh.c}}
+\subsubsection[ev\_\-ipc\_\-server\_\-sent]{\setlength{\rightskip}{0pt plus 5cm}int ev\_\-ipc\_\-server\_\-sent (void $\ast$ {\em data}, int {\em type}, void $\ast$ {\em event})}}
+\label{evsh_8c_a21}
+
+
+callback: connected 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]reserved \item[{\em type}]event-type \item[{\em event}]the event\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a31}{
+\index{evsh.c@{evsh.c}!evsh_parse_line@{evsh\_\-parse\_\-line}}
+\index{evsh_parse_line@{evsh\_\-parse\_\-line}!evsh.c@{evsh.c}}
+\subsubsection[evsh\_\-parse\_\-line]{\setlength{\rightskip}{0pt plus 5cm}static int evsh\_\-parse\_\-line (Ecore\_\-Ipc\_\-Server $\ast$$\ast$ {\em server}, char $\ast$ {\em line})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a31}
+
+
+parse input from shell. 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em server}]the connection to evidence \item[{\em line}]the input we received from the user\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a28}{
+\index{evsh.c@{evsh.c}!find_abbrev@{find\_\-abbrev}}
+\index{find_abbrev@{find\_\-abbrev}!evsh.c@{evsh.c}}
+\subsubsection[find\_\-abbrev]{\setlength{\rightskip}{0pt plus 5cm}static call$\ast$ find\_\-abbrev (char $\ast$$\ast$ {\em beg}, char $\ast$$\ast$ {\em end})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a28}
+
+
+find a token consisting of initials (\char`\"{}mfc\char`\"{}) in command-list turns \char`\"{}mfc\char`\"{} into \char`\"{}m-f-c\char`\"{} for this. 
+
+\begin{Desc}
+\item[Returns:]the command-struct, or NULL for not found \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em beg}]the start of the potential command-token \item[{\em end}]the end of the potential command-token\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a27}{
+\index{evsh.c@{evsh.c}!find_call@{find\_\-call}}
+\index{find_call@{find\_\-call}!evsh.c@{evsh.c}}
+\subsubsection[find\_\-call]{\setlength{\rightskip}{0pt plus 5cm}static call$\ast$ find\_\-call (char $\ast$ {\em b})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a27}
+
+
+find a (possibly abbreviated) token in command-list 
+
+\begin{Desc}
+\item[Returns:]the command-struct, or NULL for not found \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em b}]the token\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a29}{
+\index{evsh.c@{evsh.c}!find_with_delims@{find\_\-with\_\-delims}}
+\index{find_with_delims@{find\_\-with\_\-delims}!evsh.c@{evsh.c}}
+\subsubsection[find\_\-with\_\-delims]{\setlength{\rightskip}{0pt plus 5cm}static call$\ast$ find\_\-with\_\-delims (char $\ast$$\ast$ {\em beg}, char $\ast$$\ast$ {\em end})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a29}
+
+
+find a token (\char`\"{}my-fancy-command\char`\"{}) in command-list 
+
+\begin{Desc}
+\item[Returns:]the command-struct, or NULL for not found or not delimited \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em beg}]the start of the potential command-token \item[{\em end}]the end of the potential command-token\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a30}{
+\index{evsh.c@{evsh.c}!find_with_spaces@{find\_\-with\_\-spaces}}
+\index{find_with_spaces@{find\_\-with\_\-spaces}!evsh.c@{evsh.c}}
+\subsubsection[find\_\-with\_\-spaces]{\setlength{\rightskip}{0pt plus 5cm}static call$\ast$ find\_\-with\_\-spaces (char $\ast$$\ast$ {\em beg}, char $\ast$$\ast$ {\em end})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a30}
+
+
+find a token (\char`\"{}my fancy command\char`\"{}) in command-list turns \char`\"{}my fancy command\char`\"{} into \char`\"{}my-fancy-command\char`\"{} for this. 
+
+\begin{Desc}
+\item[Returns:]the command-struct, or NULL for not found \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em beg}]the start of the potential command-token \item[{\em end}]the end of the potential command-token\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a22}{
+\index{evsh.c@{evsh.c}!get_serial@{get\_\-serial}}
+\index{get_serial@{get\_\-serial}!evsh.c@{evsh.c}}
+\subsubsection[get\_\-serial]{\setlength{\rightskip}{0pt plus 5cm}static long get\_\-serial (char $\ast$$\ast$ {\em m})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a22}
+
+
+get serial number from answer 
+
+\begin{Desc}
+\item[Returns:]the serial number, or -1 for none \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em m}]the answer\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a23}{
+\index{evsh.c@{evsh.c}!get_token@{get\_\-token}}
+\index{get_token@{get\_\-token}!evsh.c@{evsh.c}}
+\subsubsection[get\_\-token]{\setlength{\rightskip}{0pt plus 5cm}static int get\_\-token (char $\ast$$\ast$ {\em beg}, char $\ast$$\ast$ {\em end}, int {\em tol})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a23}
+
+
+get token from input 
+
+\begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em beg}]start of current token (changed) \item[{\em end}]end of current token (changed) \item[{\em tol}]change token to lower-case where needed?\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a24}{
+\index{evsh.c@{evsh.c}!handle_any@{handle\_\-any}}
+\index{handle_any@{handle\_\-any}!evsh.c@{evsh.c}}
+\subsubsection[handle\_\-any]{\setlength{\rightskip}{0pt plus 5cm}static int handle\_\-any (Ecore\_\-Ipc\_\-Server $\ast$$\ast$ {\em server}, call $\ast$ {\em cp}, char $\ast$ {\em line})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{evsh_8c_a24}
+
+
+process a command (entered in shell, parsed in \hyperlink{evsh_8c_a31}{evsh\_\-parse\_\-line()}). 
+
+at this point, the command is known, but its parameters still have to be parsed. the function will do this, then send the request to evidence. \begin{Desc}
+\item[Returns:]an error-code \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em server}]connection to evidence \item[{\em cp}]the command to send \item[{\em line}]the input-buffer containing the parameters for the command\end{description}
+\end{Desc}
+\hypertarget{evsh_8c_a32}{
+\index{evsh.c@{evsh.c}!main@{main}}
+\index{main@{main}!evsh.c@{evsh.c}}
+\subsubsection[main]{\setlength{\rightskip}{0pt plus 5cm}int main (int {\em argc}, char $\ast$$\ast$ {\em argv})}}
+\label{evsh_8c_a32}
+
+
+evidence textual shell (mainloop). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em argc}]number of command-line arguments \item[{\em argv}]command-line arguments\end{description}
+\end{Desc}

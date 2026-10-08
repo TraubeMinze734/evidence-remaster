@@ -1,0 +1,199 @@
+.TH "tag2name.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+tag2name.c \- context-menu action 'tag2name' set file-name from ID3 or Ogg-tag TODO ### should get template for file-name from properties 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static char * \fBget_val\fP (noir_md *md, char *key)"
+.br
+.RI "\fIget the value of a meta-data item \fP"
+.ti -1c
+.RI "static char * \fBget_two\fP (noir_md *md, char *k1, char *k2)"
+.br
+.RI "\fIget the value of the first existing of two meta-data items \fP"
+.ti -1c
+.RI "static char * \fBrep\fP (char *s, size_t d, char *n)"
+.br
+.RI "\fIreplace a substring with another, possibly with a different length \fP"
+.ti -1c
+.RI "static int \fBtp_do\fP (tag *t, char *buf)"
+.br
+.RI "\fIexpand -sequences in user-defined template for new name \fP"
+.ti -1c
+.RI "static char * \fBtprintf\fP (tag *t, char *fmt)"
+.br
+.RI "\fIcreate file-name by user-defined rule sprintf() with automatic buffer allocation. \fP"
+.ti -1c
+.RI "static int \fBcheck\fP (void *ns, action_context *ac, char *f, char *p, char *l)"
+.br
+.RI "\fIcheck whether required meta-data item is present \fP"
+.ti -1c
+.RI "static char * \fBtag2name_get_mask\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIget formatting mask for renamed files from prop-list, or return the default. \fP"
+.ti -1c
+.RI "int \fBefun\fP (long serial, char *filename, noir_md *md, action_context *ac)"
+.br
+.RI "\fIcontext-menu action: derive file-name from ID3/Vorbis-tag \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+context-menu action 'tag2name' set file-name from ID3 or Ogg-tag TODO ### should get template for file-name from properties 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static int check (void * ns, action_context * ac, char * f, char * p, char * l)\fC [static]\fP"
+.PP
+check whether required meta-data item is present 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for present, FALSE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session, or NULL 
+.br
+\fIac\fP the action-context 
+.br
+\fIf\fP the file's name 
+.br
+\fIp\fP the pointer to the meta-data item's value, or NULL 
+.br
+\fIl\fP a textual description of the meta-data item
+.RE
+.PP
+
+.SS "int efun (long serial, char * filename, noir_md * md, action_context * ac)"
+.PP
+context-menu action: derive file-name from ID3/Vorbis-tag 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIserial\fP the serial number of the session that called us 
+.br
+\fIfilename\fP the file to act on 
+.br
+\fImd\fP the file's meta-data 
+.br
+\fIac\fP the context of this action (selection et al.)
+.RE
+.PP
+
+.SS "static char* get_two (noir_md * md, char * k1, char * k2)\fC [static]\fP"
+.PP
+get the value of the first existing of two meta-data items 
+.PP
+\fBReturns:\fP
+.RS 4
+a value, or '' 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImd\fP the list of meta-data 
+.br
+\fIk1\fP the 1st key, or NULL 
+.br
+\fIk2\fP the 2nd key, or NULL
+.RE
+.PP
+
+.SS "static char* get_val (noir_md * md, char * key)\fC [static]\fP"
+.PP
+get the value of a meta-data item 
+.PP
+\fBReturns:\fP
+.RS 4
+a value, or '' 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImd\fP the list of meta-data 
+.br
+\fIkey\fP the key of the item to look for
+.RE
+.PP
+
+.SS "static char* rep (char * s, size_t d, char * n)\fC [static]\fP"
+.PP
+replace a substring with another, possibly with a different length 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIs\fP replace from this position 
+.br
+\fId\fP remove this many chars 
+.br
+\fIn\fP insert this string
+.RE
+.PP
+
+.SS "static char* tag2name_get_mask (\fBnoir_sess\fP * ns)\fC [static]\fP"
+.PP
+get formatting mask for renamed files from prop-list, or return the default. 
+.PP
+\fBReturns:\fP
+.RS 4
+the mask as a C-string, which must be free()d. 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static int tp_do (tag * t, char * buf)\fC [static]\fP"
+.PP
+expand -sequences in user-defined template for new name 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the data from the tag 
+.br
+\fIbuf\fP the buffer for the new name
+.RE
+.PP
+
+.SS "static char* tprintf (tag * t, char * fmt)\fC [static]\fP"
+.PP
+create file-name by user-defined rule sprintf() with automatic buffer allocation. 
+.PP
+grip compatible switches: d disc-name t trackno a artist (track) n name (title) y year G genre
+.PP
+\fBReturns:\fP
+.RS 4
+a newly-allocated buffer holding the new name 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIt\fP the data from the tag 
+.br
+\fIfmt\fP the user-defined template for the new name
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

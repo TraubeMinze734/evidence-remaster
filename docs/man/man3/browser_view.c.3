@@ -1,0 +1,595 @@
+.TH "browser_view.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+browser_view.c \- handle the GTK browser-view. 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBbrowser_view_evt\fP (\fBfile_info\fP *fi, \fBmodel_event\fP type, \fBfile_flags\fP changed, void *data)"
+.br
+.RI "\fIcallback for file-model events. \fP"
+.ti -1c
+.RI "static void \fBbrowser_selection_changed\fP (GtkTreeSelection *sel, gpointer data)"
+.br
+.RI "\fI'selection-changed' callback for browser-view. \fP"
+.ti -1c
+.RI "int \fBbrowser_view_set_selection\fP (void *data)"
+.br
+.RI "\fIset selection in browser-view. \fP"
+.ti -1c
+.RI "static void \fBicon_path_drag_data_received\fP (GtkWidget *widget, GdkDragContext *dc, gint x, gint y, GtkSelectionData *selection, guint info, guint timestamp, gpointer data)"
+.br
+.RI "\fIDND: drop source sent data. \fP"
+.ti -1c
+.RI "static void \fBicon_path_drag_data_get\fP (GtkWidget *widget, GdkDragContext *dc, GtkSelectionData *selectionData, guint info, guint timestamp, gpointer data)"
+.br
+.RI "\fIDND: drop target asks for data. \fP"
+.ti -1c
+.RI "static void \fBbrowser_drag_data_received\fP (GtkWidget *widget, GdkDragContext *dc, gint x, gint y, GtkSelectionData *selection, guint info, guint timestamp, gpointer data)"
+.br
+.RI "\fIDND: drop source sent data. \fP"
+.ti -1c
+.RI "static void \fBbrowser_drag_data_get\fP (GtkWidget *widget, GdkDragContext *dc, GtkSelectionData *selectionData, guint info, guint timestamp, gpointer data)"
+.br
+.RI "\fIDND: drop target asks for data. \fP"
+.ti -1c
+.RI "static gboolean \fBblind_clicked\fP (GtkWidget *widget, GdkEventButton *event, gpointer data)"
+.br
+.RI "\fIcallback for button-click events on the 'blinds' (neither file-list nor column folder). \fP"
+.ti -1c
+.RI "static gboolean \fBicon_path_clicked\fP (GtkWidget *view, GdkEventButton *event, gpointer data)"
+.br
+.RI "\fIcallback for button-click events on the folder of a column. \fP"
+.ti -1c
+.RI "static gboolean \fBcolumn_clicked\fP (GtkWidget *view, GdkEventButton *event, gpointer data)"
+.br
+.RI "\fIcallback for button-click events in a column. \fP"
+.ti -1c
+.RI "static gboolean \fBcolumn_keyed\fP (GtkWidget *widget, GdkEventKey *ev, gpointer data)"
+.br
+.RI "\fIcallback for key-events \fP"
+.ti -1c
+.RI "static noir_column * \fBbrowser_view_dir\fP (int col_no, char *title, char *path, noir_browser *bv)"
+.br
+.RI "\fIcreate a single browser column \fP"
+.ti -1c
+.RI "static noir_column * \fBbrowser_view_release_column\fP (noir_column *col)"
+.br
+.RI "\fIdestruct adminstrative info of a single column of a browser-view. \fP"
+.ti -1c
+.RI "static noir_column * \fBbrowser_view_release_columns\fP (noir_column **ref)"
+.br
+.RI "\fIrelease administrative info of a column and all its successors called from \fBbrowser_view_dst()\fP. \fP"
+.ti -1c
+.RI "static void \fBbrowser_view_drop_column\fP (noir_browser *bv, noir_column *nc)"
+.br
+.RI "\fIdiscard a single column from a browser-view. \fP"
+.ti -1c
+.RI "static void \fBbrowser_view_drop_columns_starting_with\fP (noir_browser *bv, noir_column *nc)"
+.br
+.RI "\fIrelease a column and all its successors (both GTK and administrative info). \fP"
+.ti -1c
+.RI "static void \fBbrowser_view_set_selection_handler\fP (noir_browser *bv)"
+.br
+.RI "\fIset 'selection-changed' handler for view. \fP"
+.ti -1c
+.RI "static noir_column * \fBbrowser_view_fetch_column_for\fP (noir_browser *bv, \fBfile_info\fP *fi)"
+.br
+.RI "\fIget column in view bv that contains file fi \fP"
+.ti -1c
+.RI "static GtkTreeIter * \fBbrowser_view_find_in_dir\fP (\fBfile_info\fP *fi, noir_column *nc, int create)"
+.br
+.RI "\fIfind the entry for a given file in a certain column \fP"
+.ti -1c
+.RI "static int \fBbrowser_view_deselect\fP (noir_column *nc, GtkTreeIter *it)"
+.br
+.RI "\fIdeselect an entry in a column. \fP"
+.ti -1c
+.RI "static int \fBbrowser_view_select_maybe\fP (noir_column *nc, \fBfile_info\fP *fi, GtkTreeIter *it)"
+.br
+.RI "\fIif file-entry is element of cwd, select it. \fP"
+.ti -1c
+.RI "static int \fBbrowser_view_replay_maybe\fP (noir_browser *bv, \fBfile_info\fP *fp)"
+.br
+.RI "\fIreplay column from model rather than the fs. \fP"
+.ti -1c
+.RI "static int \fBbrowser_view_focus\fP (noir_browser *bv, \fBfile_info\fP *fi)"
+.br
+.RI "\fIchange focus ('cd') for a browser-view. \fP"
+.ti -1c
+.RI "static int \fBbrowser_view_dst\fP (void **data)"
+.br
+.RI "\fIbrowser_view_dst - destruct a browser-view. \fP"
+.ti -1c
+.RI "int \fBbrowser_view_init\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIinitialize a session's browser-view. \fP"
+.ti -1c
+.RI "int \fBbrowser_view_exit\fP (\fBnoir_sess\fP *ns)"
+.br
+.RI "\fIdeinitialize a session's browser \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+handle the GTK browser-view. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "static gboolean blind_clicked (GtkWidget * widget, GdkEventButton * event, gpointer data)\fC [static]\fP"
+.PP
+callback for button-click events on the 'blinds' (neither file-list nor column folder). 
+.PP
+open a menu or, if middle button is clicked while type-buffer is open, past selection. 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for handled (allow no further handlers), FALSE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the column (GTK-treeview) 
+.br
+\fIevent\fP the actual event 
+.br
+\fIdata\fP the column (administrative struct)
+.RE
+.PP
+
+.SS "static void browser_drag_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selectionData, guint info, guint timestamp, gpointer data)\fC [static]\fP"
+.PP
+DND: drop target asks for data. 
+.PP
+collect and send. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget that was dragged from, or NULL 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIselectionData\fP the received data 
+.br
+\fIinfo\fP type of the data as per GtkTargetList 
+.br
+\fItimestamp\fP when the event happened 
+.br
+\fIdata\fP column
+.RE
+.PP
+
+.SS "static void browser_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection, guint info, guint timestamp, gpointer data)\fC [static]\fP"
+.PP
+DND: drop source sent data. 
+.PP
+act upon them. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIx\fP where the data was dropped 
+.br
+\fIy\fP where the data was dropped 
+.br
+\fIselection\fP the received data 
+.br
+\fIinfo\fP type of the data as per GtkTargetList 
+.br
+\fItimestamp\fP when the event happened 
+.br
+\fIdata\fP column
+.RE
+.PP
+
+.SS "static void browser_selection_changed (GtkTreeSelection * sel, gpointer data)\fC [static]\fP"
+.PP
+'selection-changed' callback for browser-view. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsel\fP the new selection for the column 
+.br
+\fIdata\fP the column the selection of which has changed
+.RE
+.PP
+
+.SS "static int browser_view_deselect (noir_column * nc, GtkTreeIter * it)\fC [inline, static]\fP"
+.PP
+deselect an entry in a column. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fInc\fP the column to deselect in 
+.br
+\fIit\fP the iter to deselect
+.RE
+.PP
+
+.SS "static noir_column* browser_view_dir (int col_no, char * title, char * path, noir_browser * bv)\fC [static]\fP"
+.PP
+create a single browser column 
+.PP
+\fBReturns:\fP
+.RS 4
+the new column, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcol_no\fP colum index 
+.br
+\fItitle\fP title for this column 
+.br
+\fIpath\fP the object this column represents (normally path to a folder) 
+.br
+\fIbv\fP the browser-view this column will be part of
+.RE
+.PP
+
+.SS "static void browser_view_drop_column (noir_browser * bv, noir_column * nc)\fC [inline, static]\fP"
+.PP
+discard a single column from a browser-view. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbv\fP the view to drop the column from 
+.br
+\fInc\fP the column to drop
+.RE
+.PP
+
+.SS "static void browser_view_drop_columns_starting_with (noir_browser * bv, noir_column * nc)\fC [static]\fP"
+.PP
+release a column and all its successors (both GTK and administrative info). 
+.PP
+called from \fBbrowser_view_focus()\fP. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbv\fP the view to remove the columns from 
+.br
+\fInc\fP the first column to drop
+.RE
+.PP
+
+.SS "static int browser_view_dst (void ** data)\fC [static]\fP"
+.PP
+browser_view_dst - destruct a browser-view. 
+.PP
+set on client-record for the respective view (as callback). 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP the browser-view to destruct
+.RE
+.PP
+
+.SS "static int browser_view_evt (\fBfile_info\fP * fi, \fBmodel_event\fP type, \fBfile_flags\fP changed, void * data)\fC [static]\fP"
+.PP
+callback for file-model events. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfi\fP the file the event refers to 
+.br
+\fItype\fP the type of the event 
+.br
+\fIchanged\fP what changed 
+.br
+\fIdata\fP the browser-view
+.RE
+.PP
+
+.SS "int browser_view_exit (\fBnoir_sess\fP * ns)"
+.PP
+deinitialize a session's browser 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static noir_column* browser_view_fetch_column_for (noir_browser * bv, \fBfile_info\fP * fi)\fC [inline, static]\fP"
+.PP
+get column in view bv that contains file fi 
+.PP
+\fBReturns:\fP
+.RS 4
+the column the file is shown in, or NULL for not found. called from \fBbrowser_view_evt()\fP. 
+.PP
+the column the file is in, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbv\fP the browser-view 
+.br
+\fIfi\fP the file to find
+.RE
+.PP
+
+.SS "static GtkTreeIter* browser_view_find_in_dir (\fBfile_info\fP * fi, noir_column * nc, int create)\fC [inline, static]\fP"
+.PP
+find the entry for a given file in a certain column 
+.PP
+\fBReturns:\fP
+.RS 4
+the GtkTreeIter for the file called from \fBbrowser_view_focus()\fP and \fBbrowser_view_evt()\fP. 
+.PP
+a GTK tree-iter, or NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfi\fP the file to find 
+.br
+\fInc\fP the column to search in 
+.br
+\fIcreate\fP create if not found?
+.RE
+.PP
+
+.SS "static int browser_view_focus (noir_browser * bv, \fBfile_info\fP * fi)\fC [static]\fP"
+.PP
+change focus ('cd') for a browser-view. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbv\fP the browser-view to change to focus for 
+.br
+\fIfi\fP the folder to focus on
+.RE
+.PP
+
+.SS "int browser_view_init (\fBnoir_sess\fP * ns)"
+.PP
+initialize a session's browser-view. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIns\fP the session
+.RE
+.PP
+
+.SS "static noir_column* browser_view_release_column (noir_column * col)\fC [static]\fP"
+.PP
+destruct adminstrative info of a single column of a browser-view. 
+.PP
+called from \fBbrowser_view_release_columns()\fP and \fBbrowser_view_drop_column()\fP. 
+.PP
+\fBReturns:\fP
+.RS 4
+NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcol\fP the column to destruct
+.RE
+.PP
+
+.SS "static noir_column* browser_view_release_columns (noir_column ** ref)\fC [static]\fP"
+.PP
+release administrative info of a column and all its successors called from \fBbrowser_view_dst()\fP. 
+.PP
+\fBReturns:\fP
+.RS 4
+NULL 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIref\fP the first column to release (normally the first column in the view)
+.RE
+.PP
+
+.SS "static int browser_view_replay_maybe (noir_browser * bv, \fBfile_info\fP * fp)\fC [inline, static]\fP"
+.PP
+replay column from model rather than the fs. 
+.PP
+if we're in the middle of reading the directory in question from the file-system, we'll click in what we already have in the store, then let the events from the backend do the rest. there is room for race-conditions here since all backend-events from now on will add files to the column, and this routine might catch up and try to add them to the column again. this has been accounted for. called from \fBbrowser_view_focus()\fP. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbv\fP the browser-view 
+.br
+\fIfp\fP the directory to process
+.RE
+.PP
+
+.SS "static int browser_view_select_maybe (noir_column * nc, \fBfile_info\fP * fi, GtkTreeIter * it)\fC [inline, static]\fP"
+.PP
+if file-entry is element of cwd, select it. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fInc\fP the column to select in 
+.br
+\fIfi\fP the file in question 
+.br
+\fIit\fP the GtkTreeIter corresponding to fi
+.RE
+.PP
+
+.SS "int browser_view_set_selection (void * data)"
+.PP
+set selection in browser-view. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata\fP session
+.RE
+.PP
+
+.SS "static void browser_view_set_selection_handler (noir_browser * bv)\fC [inline, static]\fP"
+.PP
+set 'selection-changed' handler for view. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbv\fP the browser-view
+.RE
+.PP
+
+.SS "static gboolean column_clicked (GtkWidget * view, GdkEventButton * event, gpointer data)\fC [static]\fP"
+.PP
+callback for button-click events in a column. 
+.PP
+double-clicks should unfold a level. 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for handled (allow no further handlers), FALSE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIview\fP the column (GTK-treeview) 
+.br
+\fIevent\fP the actual event 
+.br
+\fIdata\fP the column (administrative struct)
+.RE
+.PP
+
+.SS "static gboolean column_keyed (GtkWidget * widget, GdkEventKey * ev, gpointer data)\fC [static]\fP"
+.PP
+callback for key-events 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for handled (allow no further handlers), FALSE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget that received the event 
+.br
+\fIev\fP the actual event 
+.br
+\fIdata\fP the column the widget is in
+.RE
+.PP
+
+.SS "static gboolean icon_path_clicked (GtkWidget * view, GdkEventButton * event, gpointer data)\fC [static]\fP"
+.PP
+callback for button-click events on the folder of a column. 
+.PP
+double-clicks should focus on that folder. 
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE for handled (allow no further handlers), FALSE otherwise 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIview\fP the column (GTK-treeview) 
+.br
+\fIevent\fP the actual event 
+.br
+\fIdata\fP the column (administrative struct)
+.RE
+.PP
+
+.SS "static void icon_path_drag_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selectionData, guint info, guint timestamp, gpointer data)\fC [static]\fP"
+.PP
+DND: drop target asks for data. 
+.PP
+collect and send. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget that was dragged from, or NULL 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIselectionData\fP the selection to set our data on 
+.br
+\fIinfo\fP type of the data as per GtkTargetList 
+.br
+\fItimestamp\fP when the event happened 
+.br
+\fIdata\fP column
+.RE
+.PP
+
+.SS "static void icon_path_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection, guint info, guint timestamp, gpointer data)\fC [static]\fP"
+.PP
+DND: drop source sent data. 
+.PP
+act upon them. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwidget\fP the widget 
+.br
+\fIdc\fP the drag-context 
+.br
+\fIx\fP where the data was dropped 
+.br
+\fIy\fP where the data was dropped 
+.br
+\fIselection\fP the received data 
+.br
+\fIinfo\fP type of the data as per GtkTargetList 
+.br
+\fItimestamp\fP when the event happened 
+.br
+\fIdata\fP column
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

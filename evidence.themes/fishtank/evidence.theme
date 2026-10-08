@@ -1,0 +1,36 @@
+logo:			png
+author:			Azundris
+
+typebuffer_factory:	default
+scrollbar_factory:	default
+icon_factory:		alignbelow
+# background_factory:	ebg_trans
+background_factory:	trans
+iconview_background_tint_colour:	#0000ff
+iconview_background_tint_alpha:	47
+tooltip_factory:	traditional
+rubberband_factory:	gradient2
+
+open_folder_animation:	growfade
+open_app_animation:	grey
+open_file_animation:	basic
+
+idle_fun_icon_view:	bubbles
+idle_shelf:		bubbles
+
+# shelf:		fishtank
+# icon_view:		fishtank
+shelf:			NONE
+icon_view:		NONE
+
+typebuffer_font:	xfiles
+typebuffer_font_size:	61
+icon_font:		verase
+icon_font_size:		20
+tooltip_font:		verase
+tooltip_font_size:	15
+textpath_font:          verase
+textpath_font_size:	18
+
+icon_set:		fishtank_128
+icon_mode:		auto

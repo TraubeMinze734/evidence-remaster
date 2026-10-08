@@ -1,0 +1,199 @@
+# mime.icons maps MIME-types to icons. this mapping is different for each
+# iconset -- file-names may differ, as may completeness.  to change the
+# mapping in a given icon-set, change the mime.icons file in that icon-set's
+# folder.  the file you are currently reading is but a sample to model those
+# files after; changing it will have no immediate effect and should be avoided.
+
+application/x-executable     i-executable.png
+
+application/x-tex            gnome-tex.png
+application/encapsulated_postscript gnome-application-encapsulated_postscript.png
+application/postscript       gnome-application-postscript.png
+application/pdf              gnome-application-pdf.png
+
+application/pgp              gnome-application-pgp.png
+application/pgp-encrypted    gnome-application-pgp.png
+application/pgp-keys         gnome-application-pgp.png
+application/pgp-signature    gnome-application-pgp.png
+
+application/msword           gnome-application-msword.png
+application/excel            gnome-application-vnd.ms-excel.png
+application/powerpoint       gnome-application-vnd.ms-powerpoint.png
+
+application/qif              gnome-application-qif.png
+application/smil             gnome-application-smil.png
+application/x-123            gnome-application-vnd.lotus-1-2-3.png
+application/vnd.rn-realmedia gnome-application-vnd.rn-realmedia.png
+
+application/x-cc-source      gnome-application-x-cc-source.png
+application/x-c-header       gnome-application-x-c-header.png
+application/x-c-source       gnome-application-x-c-source.png
+application/x-scheme-source  gnome-application-x-scheme-source.png
+application/x-httpd-php      gnome-application-x-php.png
+
+application/x-sharedlib      gnome-library.png
+application/x-object         gnome-objectfile.png
+
+application/x-troff-man      gnome-x-troff-man.png
+application/x-troff          gnome-x-troff-man.png
+application/x-troff-me       gnome-x-troff-man.png
+application/x-troff-ms       gnome-x-troff-man.png
+
+# gnome-application-vnd.stardivision.calc.png
+# gnome-application-vnd.stardivision.impress.png
+# gnome-application-vnd.stardivision.writer.png
+# gnome-application-vnd.sun.xml.calc.png
+# gnome-application-vnd.sun.xml.impress.png
+# gnome-application-vnd.sun.xml.writer.png
+# gnome-application-wks.png
+
+application/x-dia-diagram    gnome-application-x-dia-diagram.png
+application/x-abiword        gnome-application-x-abiword.png
+application/x-font-sunus-news gnome-application-x-font-sunos-news.png
+application/x-gnome-app-info gnome-application-x-gnome-app-info.png
+application/x-gnumeric       gnome-application-x-gnumeric.png
+application/x-gtktalog       gnome-application-x-gtktalog.png
+
+application/x-jar            gnome-application-x-jar.png
+application/x-java-source    gnome-application-x-java-source.png
+
+application/x-kde-app-info   gnome-application-x-kde-app-info.png
+application/x-killustrator   gnome-application-x-killustrator.png
+application/x-kpresenter     gnome-application-x-kpresenter.png
+application/x-kspread        gnome-application-x-kspread.png
+application/x-kword          gnome-application-x-kword.png
+
+application/x-dc-rom         gnome-application-x-dc-rom.png
+application/x-gameboy-rom    gnome-application-x-gameboy-rom.png
+application/x-genesis-rom    gnome-application-x-genesis-rom.png
+application/x-msx-rom        gnome-application-x-msx-rom.png
+application/x-n64-rom        gnome-application-x-n64-rom.png
+application/x-nes-rom        gnome-application-x-nes-rom.png
+application/x-sms-rom        gnome-application-x-sms-rom.png
+
+application/x-ogg            gnome-application-x-ogg.png
+application/x-reject         gnome-application-x-reject.png
+application/x-sql            gnome-application-x-sql.png
+
+application/x-e-theme        gnome-application-x-e-theme.png
+application/x-gzip           gnome-application-x-gzip.png
+application/x-arj            gnome-application-x-arj.png
+application/x-backup         gnome-application-x-backup.png
+application/x-stuffit        gnome-application-x-stuffit.png
+application/x-debian-package gnome-pack-deb.png
+application/x-rpm            gnome-pack-rpm.png
+application/x-bzip2          gnome-application-x-blender.png
+application/x-compress       gnome-application-x-compress.png
+
+
+
+audio/*                      gnome-audio.png
+audio/basic                  gnome-audio-basic.png
+audio/midi                   gnome-audio-midi.png
+audio/mpeg                   gnome-audio-mpeg.png
+audio/ogg                    gnome-audio.png
+audio/ac3                    gnome-audio-ac3.png
+audio/ulaw                   gnome-audio-ulaw.png
+audio/x-aiff                 gnome-audio-x-aiff.png
+audio/x-bmx                  gnome-audio-x-bmx.png
+audio/x-mod                  gnome-audio-x-mod.png
+audio/x-pn-realaudio         gnome-audio-x-pn-realaudio.png
+audio/x-s3m                  gnome-audio-x-s3m.png
+audio/x-stm                  gnome-audio-x-stm.png
+audio/x-voc                  gnome-audio-x-voc.png
+audio/x-wav                  gnome-audio-x-wav.png
+audio/x-xi                   gnome-audio-x-xi.png
+audio/x-xm                   gnome-audio-x-xm.png
+
+
+
+font/afm                     gnome-font-afm.png
+font/bdf                     gnome-font-bdf.png
+font/linux-psf               gnome-font-linux-psf.png
+font/ttf                     gnome-font-ttf.png
+font/x-pcf                   gnome-font-x-pcf.png
+font/x-afm                   gnome-x-font-afm.png
+
+
+
+image/*                      gnome-image-generic.png
+image/gif                    gnome-image-gif.png
+image/ief                    gnome-image-ief.png
+image/jpeg                   gnome-image-jpeg.png
+image/png                    gnome-image-png.png
+image/tiff                   gnome-image-tiff.png
+image/x-cmu-raster           gnome-image-ras.png
+image/x-portable-anymap      gnome-image-pnm.png
+image/x-portable-bitmap      gnome-image-pbm.png
+image/x-portable-graymap     gnome-image-pgm.png
+image/x-portable-pixmap      gnome-image-ppm.png
+image/x-rgb                  gnome-image-rgb.png
+image/x-xbitmap              gnome-image-xbm.png
+image/x-xpixmap              gnome-image-xpm.png
+image/x-xwindowdump          gnome-image-xwd.png
+image/bmp                    gnome-image-bmp.png
+image/psd                    gnome-image-psd.png
+image/svg                    gnome-image-svg.png
+image/tga                    gnome-image-tga.png
+image/x-3ds                  gnome-image-x-3ds.png
+image/x-applix-graphic       gnome-image-x-applix-graphic.png
+image/x-applix               gnome-image-x-applix.png
+image/xcf                    gnome-image-xcf.png
+image/x-lwo                  gnome-image-x-lwo.png
+image/x-lws                  gnome-image-x-lws.png
+image/x-xfig                 gnome-image-x-xfig.png
+
+
+
+text/*                       gnome-textfile.png
+text/css                     gnome-text-css.png
+text/html                    gnome-text-html.png
+text/plain                   gnome-text-plain.png
+text/richtext                gnome-application-rtf.png
+text/rtf                     gnome-application-rtf.png
+text/xml                     gnome-text-xml.png
+text/abiword                 gnome-text-abiword.png
+text/x-authors               gnome-text-x-authors.png
+text/x-copying               gnome-text-x-copying.png
+text/x-credits               gnome-text-x-credits.png
+text/x-c                     gnome-text-x-c.png
+text/x-haskell               gnome-text-x-haskell.png
+text/x-install               gnome-text-x-install.png
+text/x-literate-haskell      gnome-text-x-literate-haskell.png
+text/x-lyx                   gnome-text-x-lyx.png
+text/x-makefile              gnome-text-x-makefile.png
+text/x-patch                 gnome-text-x-patch.png
+text/x-perl                  gnome-text-x-perl.png
+text/x-php                   gnome-text-x-php.png
+text/x-readme                gnome-text-x-readme.png
+text/x-sql                   gnome-text-x-sql.png
+text/x-zsh                   gnome-text-x-zsh.png
+
+video/mpeg                   gnome-video-mpeg.png
+video/quicktime              gnome-video-quicktime.png
+video/x-msvideo              gnome-video-x-msvideo.png
+video/x-ms-asf               gnome-video-x-ms-asf.png
+video/x-ms-wmv               gnome-video-x-ms-wmv.png
+
+
+
+block_device                 i-blockdev.png
+character_device             i-chardev.png
+FIFO                         i-fifo.png
+# i-manual.png
+# i-nfs.png
+
+/cdrom                       i-cdrom.png
+/mnt/cdrom                   i-cdrom.png
+/mnt/cdr                     i-cdrom.png
+/fd                          i-floppy.png
+/mnt/fd                      i-floppy.png
+/mnt/*                       i-harddisk.png
+
+application/x-empty          i-core.png
+audio/x-med                  i-music.png
+
+# gnome-compressed.png
+# gnome-core.png
+# gnome-http-url.png
+# gnome-package.png

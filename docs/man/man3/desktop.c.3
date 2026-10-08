@@ -1,0 +1,96 @@
+.TH "desktop.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+desktop.c \- desktop-related functions 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fBwindow_prop_set\fP (Display *disp, Window win, Atom prop, Atom type, int bits, void *data, int elements)"
+.br
+.RI "\fIset an X property on a window. \fP"
+.ti -1c
+.RI "void \fBwindow_as_desk\fP (Display *disp, Window win, int w, int h)"
+.br
+.RI "\fIset all the necessary X props to mark the specified window as the desktop, according to the NetWM specs. \fP"
+.ti -1c
+.RI "void \fBdesktop_click\fP (int mx, int my, int button, int pressed, int state, unsigned long serial, unsigned long timestamp)"
+.br
+.RI "\fIforward mouse-click to desktop when evidence handles a desktop, it can forward clicks to the 'original' background (to call up window-manager menus etc. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+desktop-related functions 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "void desktop_click (int mx, int my, int button, int pressed, int state, unsigned long serial, unsigned long timestamp)"
+.PP
+forward mouse-click to desktop when evidence handles a desktop, it can forward clicks to the 'original' background (to call up window-manager menus etc. 
+.PP
+) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImx\fP mouse x 
+.br
+\fImy\fP mouse y 
+.br
+\fIbutton\fP mouse buttons (X format) 
+.br
+\fIpressed\fP pressed (1) or released (0)? 
+.br
+\fIstate\fP modifiers (shift etc., X format) 
+.br
+\fIserial\fP last X event seen 
+.br
+\fItimestamp\fP when did the event happen?
+.RE
+.PP
+
+.SS "void window_as_desk (Display * disp, Window win, int w, int h)"
+.PP
+set all the necessary X props to mark the specified window as the desktop, according to the NetWM specs. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdisp\fP the X-display 
+.br
+\fIwin\fP the X-window 
+.br
+\fIw\fP width 
+.br
+\fIh\fP height
+.RE
+.PP
+
+.SS "static int window_prop_set (Display * disp, Window win, Atom prop, Atom type, int bits, void * data, int elements)\fC [static]\fP"
+.PP
+set an X property on a window. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdisp\fP - X display 
+.br
+\fIwin\fP - X window 
+.br
+\fIprop\fP - the property 
+.br
+\fItype\fP - the type of the property (ignored by server, application-layer only) 
+.br
+\fIbits\fP - number of bits in one element (8/16/32) 
+.br
+\fIdata\fP - the actual data to set 
+.br
+\fIelements\fP - number of elements in data
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

@@ -1,0 +1,196 @@
+\hypertarget{struct__icon__list}{
+\section{\_\-icon\_\-list Struct Reference}
+\label{struct__icon__list}\index{_icon_list@{\_\-icon\_\-list}}
+}
+an icon-list  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__icon__list_o0}{
+char $\ast$ \hyperlink{struct__icon__list_o0}{name}}
+\label{struct__icon__list_o0}
+
+\begin{CompactList}\small\item\em a new for this list (will not strdup() value!) \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o1}{
+void $\ast$ \hyperlink{struct__icon__list_o1}{canvas}}
+\label{struct__icon__list_o1}
+
+\begin{CompactList}\small\item\em canvas \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o2}{
+void $\ast$ \hyperlink{struct__icon__list_o2}{bg}}
+\label{struct__icon__list_o2}
+
+\begin{CompactList}\small\item\em background-object \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o4}{
+void $\ast$ \hyperlink{struct__icon__list_o4}{sb\_\-v}}
+\label{struct__icon__list_o4}
+
+\begin{CompactList}\small\item\em scrollbar objects (horizontal, vertical) \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o5}{
+void $\ast$ \hyperlink{struct__icon__list_o5}{rubber}}
+\label{struct__icon__list_o5}
+
+\begin{CompactList}\small\item\em rubberband object (or NULL) \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o7}{
+int \hyperlink{struct__icon__list_o7}{ypad}}
+\label{struct__icon__list_o7}
+
+\begin{CompactList}\small\item\em pad visible area (offsets for icon \#0) \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o9}{
+int \hyperlink{struct__icon__list_o9}{hpad}}
+\label{struct__icon__list_o9}
+
+\begin{CompactList}\small\item\em pad visible area (between icons) \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o11}{
+int \hyperlink{struct__icon__list_o11}{height}}
+\label{struct__icon__list_o11}
+
+\begin{CompactList}\small\item\em virtual size \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o13}{
+int \hyperlink{struct__icon__list_o13}{vis\_\-h}}
+\label{struct__icon__list_o13}
+
+\begin{CompactList}\small\item\em visible size \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o16}{
+int \hyperlink{struct__icon__list_o16}{ss}}
+\label{struct__icon__list_o16}
+
+\begin{CompactList}\small\item\em scroll offsets, state \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o18}{
+int \hyperlink{struct__icon__list_o18}{py}}
+\label{struct__icon__list_o18}
+
+\begin{CompactList}\small\item\em prvs offsets (scroll) \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o20}{
+int \hyperlink{struct__icon__list_o20}{myb}}
+\label{struct__icon__list_o20}
+
+\begin{CompactList}\small\item\em motion offsets (scrolling) - begin pos. \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o22}{
+int \hyperlink{struct__icon__list_o22}{mye}}
+\label{struct__icon__list_o22}
+
+\begin{CompactList}\small\item\em motion offsets (scrolling) - end pos \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o24}{
+int \hyperlink{struct__icon__list_o24}{mys}}
+\label{struct__icon__list_o24}
+
+\begin{CompactList}\small\item\em motion offsets (scrolling) - scroll-bar pos \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o25}{
+int \hyperlink{struct__icon__list_o25}{ki}}
+\label{struct__icon__list_o25}
+
+\begin{CompactList}\small\item\em keybdb icon \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o27}{
+int \hyperlink{struct__icon__list_o27}{ry1}}
+\label{struct__icon__list_o27}
+
+\begin{CompactList}\small\item\em rubber-band coordinates \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o29}{
+int \hyperlink{struct__icon__list_o29}{ry2}}
+\label{struct__icon__list_o29}
+
+\begin{CompactList}\small\item\em guarantee: x1$<$=x2 $^\wedge$ y1$<$=y2 \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o30}{
+int \hyperlink{struct__icon__list_o30}{mb}}
+\label{struct__icon__list_o30}
+
+\begin{CompactList}\small\item\em mouse-button \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o31}{
+int \hyperlink{struct__icon__list_o31}{num\_\-icons}}
+\label{struct__icon__list_o31}
+
+\begin{CompactList}\small\item\em number of icons in view \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o32}{
+il\_\-flags \hyperlink{struct__icon__list_o32}{flags}}
+\label{struct__icon__list_o32}
+
+\begin{CompactList}\small\item\em flags -- inhibit visual updates etc. \item\end{CompactList}\item 
+int $\ast$ \hyperlink{struct__icon__list_o33}{sortflags}
+\begin{CompactList}\small\item\em how to sort (dirs first, by ext, . \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o34}{
+int \hyperlink{struct__icon__list_o34}{dragflag}}
+\label{struct__icon__list_o34}
+
+\begin{CompactList}\small\item\em dragging in process? \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o35}{
+void $\ast$ \hyperlink{struct__icon__list_o35}{dc}}
+\label{struct__icon__list_o35}
+
+\begin{CompactList}\small\item\em drag-context \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o36}{
+char $\ast$ \hyperlink{struct__icon__list_o36}{sep}}
+\label{struct__icon__list_o36}
+
+\begin{CompactList}\small\item\em string w/ wrap-chars in icon-labels \item\end{CompactList}\item 
+char $\ast$ \hyperlink{struct__icon__list_o37}{find}
+\begin{CompactList}\small\item\em go to icon starting with. \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o38}{
+long \hyperlink{struct__icon__list_o38}{find\_\-last}}
+\label{struct__icon__list_o38}
+
+\begin{CompactList}\small\item\em when was last keystroke for find entrd? \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o39}{
+void $\ast$ \hyperlink{struct__icon__list_o39}{theme}}
+\label{struct__icon__list_o39}
+
+\begin{CompactList}\small\item\em theme for this icon-list \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o40}{
+void $\ast$ \hyperlink{struct__icon__list_o40}{extensions}}
+\label{struct__icon__list_o40}
+
+\begin{CompactList}\small\item\em plugins for this icon-list \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o41}{
+long \hyperlink{struct__icon__list_o41}{serial}}
+\label{struct__icon__list_o41}
+
+\begin{CompactList}\small\item\em serial number \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o42}{
+void $\ast$ \hyperlink{struct__icon__list_o42}{sess}}
+\label{struct__icon__list_o42}
+
+\begin{CompactList}\small\item\em session this icon-list belongs to \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o43}{
+void $\ast$ \hyperlink{struct__icon__list_o43}{user1}}
+\label{struct__icon__list_o43}
+
+\begin{CompactList}\small\item\em not used in evidence \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o44}{
+void $\ast$ \hyperlink{struct__icon__list_o44}{user2}}
+\label{struct__icon__list_o44}
+
+\begin{CompactList}\small\item\em not used in evidence \item\end{CompactList}\item 
+\hypertarget{struct__icon__list_o45}{
+\hyperlink{struct__icon}{icon} $\ast$ \hyperlink{struct__icon__list_o45}{icons}}
+\label{struct__icon__list_o45}
+
+\begin{CompactList}\small\item\em linked list of icons in this icon-list \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+an icon-list 
+
+
+
+\subsection{Field Documentation}
+\hypertarget{struct__icon__list_o37}{
+\index{_icon_list@{\_\-icon\_\-list}!find@{find}}
+\index{find@{find}!_icon_list@{\_\-icon\_\-list}}
+\subsubsection[find]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ \hyperlink{struct__icon__list_o37}{\_\-icon\_\-list::find}}}
+\label{struct__icon__list_o37}
+
+
+go to icon starting with. 
+
+.. \hypertarget{struct__icon__list_o33}{
+\index{_icon_list@{\_\-icon\_\-list}!sortflags@{sortflags}}
+\index{sortflags@{sortflags}!_icon_list@{\_\-icon\_\-list}}
+\subsubsection[sortflags]{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ \hyperlink{struct__icon__list_o33}{\_\-icon\_\-list::sortflags}}}
+\label{struct__icon__list_o33}
+
+
+how to sort (dirs first, by ext, . 
+
+..) 

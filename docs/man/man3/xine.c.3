@@ -1,0 +1,158 @@
+.TH "xine.c" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+xine.c \- xine movie thumbnailer 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static int \fByv12_to_rgb\fP (const char *name, int w, int h, DATA8 **buf, Imlib_Image *rp)"
+.br
+.RI "\fIcreate RGB data from YV12 \fP"
+.ti -1c
+.RI "static Imlib_Image \fBmake\fP (struct _Evidence_Thumb *e, thumbnailer_xine_param *param, int *r)"
+.br
+.RI "\fIthumbnail a movie (using libxine). \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_exit\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIdeinitialize the thumbnailer-plugin and free any resources it may hold \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_init\fP (thumbnail_plugin *tp)"
+.br
+.RI "\fIinitialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_make\fP (thumbnail_plugin *tp, struct _Evidence_Thumb *e, void **data)"
+.br
+.RI "\fIcreate a thumbnail \fP"
+.ti -1c
+.RI "int \fBthumbnail_plugin_live\fP (thumbnail_plugin *tp, struct _Evidence_Thumb *e, thumbnail_plugin_capabilities what)"
+.br
+.RI "\fIcreate a live thumbnail \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+xine movie thumbnailer 
+
+if libxine is there, it will be used for static thumbnails of movie files. if libemotion is also there, it will be used to generate live thumbnails.
+.SH "Function Documentation"
+.PP 
+.SS "static Imlib_Image make (struct _Evidence_Thumb * e, thumbnailer_xine_param * param, int * r)\fC [inline, static]\fP"
+.PP
+thumbnail a movie (using libxine). 
+.PP
+called from thumbnail_generate() only. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIe\fP - the thumbnail struct 
+.br
+\fIparam\fP - TLS for this xine-thumbnailer 
+.br
+\fIr\fP - store error-code here (or NULL)
+.RE
+.PP
+
+.SS "int thumbnail_plugin_exit (thumbnail_plugin * tp)"
+.PP
+deinitialize the thumbnailer-plugin and free any resources it may hold 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct
+.RE
+.PP
+
+.SS "int thumbnail_plugin_init (thumbnail_plugin * tp)"
+.PP
+initialize the thumbnailer-plugin and register it for the MIME-types and extensions it knows. 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code <0, or a set of features supported by the plugin 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct
+.RE
+.PP
+
+.SS "int thumbnail_plugin_live (thumbnail_plugin * tp, struct _Evidence_Thumb * e, thumbnail_plugin_capabilities what)"
+.PP
+create a live thumbnail 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct 
+.br
+\fIe\fP the struct describing the thumbnail 
+.br
+\fIwhat\fP what is to be created (if the thumbnailer has more than one capability)
+.RE
+.PP
+
+.SS "int thumbnail_plugin_make (thumbnail_plugin * tp, struct _Evidence_Thumb * e, void ** data)"
+.PP
+create a thumbnail 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fItp\fP an opaque thumbnailer-plugin struct 
+.br
+\fIe\fP the struct describing the thumbnail 
+.br
+\fIdata\fP the imlib-image (if TP_IMLIB)
+.RE
+.PP
+
+.SS "static int yv12_to_rgb (const char * name, int w, int h, DATA8 ** buf, Imlib_Image * rp)\fC [inline, static]\fP"
+.PP
+create RGB data from YV12 
+.PP
+\fBReturns:\fP
+.RS 4
+an error-code (NOIR_SUCC: all is well, NOIR_PARTIAL: dubious contrast, anything else: no thumbs for you, you come back one year!) 
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fIname\fP a label (for debug info only) 
+.br
+\fIw\fP width of the image 
+.br
+\fIh\fP height of the image 
+.br
+\fIbuf\fP YUV data of the image 
+.br
+\fIrp\fP a pointer to valid imlib-image or NULL will be store in *rp
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

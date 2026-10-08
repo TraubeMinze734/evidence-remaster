@@ -1,0 +1,59 @@
+.TH "_icon_el" 3 "5 Sep 2005" "evidence" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+_icon_el \- an icon-element -- icons may be composed of several of these (image, label, emblems, .  
+
+.PP
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "void * \fBdata\fP"
+.br
+.RI "\fIdata (eg Evas_Object) \fP"
+.ti -1c
+.RI "int \fByo\fP"
+.br
+.RI "\fIoffset in icon \fP"
+.ti -1c
+.RI "int \fBh\fP"
+.br
+.RI "\fIsize in pixels \fP"
+.ti -1c
+.RI "icon_state \fBstate\fP"
+.br
+.RI "\fIonly visible in these states \fP"
+.ti -1c
+.RI "void * \fBuser1\fP"
+.br
+.RI "\fInot used in evidence-proper; may be used in plugins for private 'icons', see \fBix_rephormed.c\fP for an example \fP"
+.ti -1c
+.RI "element_tag \fBtag\fP"
+.br
+.RI "\fIwhat kind of element (image, label, . \fP"
+.ti -1c
+.RI "\fB_icon_el\fP * \fBnext\fP"
+.br
+.RI "\fInext icon-element in this icon \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+an icon-element -- icons may be composed of several of these (image, label, emblems, . 
+
+..) 
+.PP
+.SH "Field Documentation"
+.PP 
+.SS "element_tag \fB_icon_el::tag\fP"
+.PP
+what kind of element (image, label, . 
+.PP
+..) is it? 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evidence from the source code.

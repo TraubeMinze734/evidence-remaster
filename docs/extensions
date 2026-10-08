@@ -1,0 +1,27 @@
+
+  extensions  (toolbars et al.)
+
+  (icon *i)il->theme->areas anchors a list of all extensions for icon-list il.
+  each of these "icon" entries describes a single extension.
+  user1 of each of these "icon" entries contains a pointer to a theme_area
+  struct that contains function pointers, a shared object-handle, and space
+  for extra user-data.
+  each of these "icon" entries is likely to have one or more sub-entries of
+  the "icon_el" type that describe the rectangle-list of the extension.
+  the user1 of each of these "icon_el" entries is not used by evidence and
+  may be used by the extensions to store pointers particular to the given
+  rectangle.  the nature of the data pointed to may vary from extension to
+  extension.
+
+  icon
+   +- user1{theme_area *}                   theme_area object
+   |   +- user1,user2,user3,user4           extension-specific pointers
+   |   +- lib                               library-handle
+   |   +- ext_upd, ext_dst, ext_evt         functions in extension
+   +- user2{void *}                         extension-specific pointer
+   +- els{icon_el *}                        rectangle list of extension
+   |   +- user1{file_info *}                extension-specific pointer
+   |   +- xo,yo,w,h{int}                    position and area of rectangle
+   |   +- ...
+   |   +- next{icon_el *}                   next rectangle
+   +- next{icon *}                          next extension

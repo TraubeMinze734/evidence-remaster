@@ -1,0 +1,355 @@
+SENDING IN BUG REPORTS
+
+   DO NOT send bug reports directly to the developers!
+   Please send to the evidence users mailing list so we can distribute
+   the load: <evidence-users@lists.sourceforge.net>
+   If you do not wish to subscribe to the list, still post there, and
+   ask for a CC (courtesy copy).  If you wish to post to the list, but
+   do not wish for the posting to appear in the mailing list's archive,
+   use the "X-No-Archive: yes" header.
+   evidence-related mail sent directly to the developers will be forwarded
+   to the mailing list at their discretion!
+
+   To get extra-info from evidence:    evidence -D3
+   To see what system-calls are made:  strace -f evidence -D3
+   To see what causes a crash:
+
+     > gdb evidence
+     (gdb) run evidence -D3
+     .
+     . (info from evidence, what's happening)
+     .
+     Segmentation fault!
+     (gdb) bt
+     .
+     . (debugger telling us where the program crashed)
+     .
+     (gdb) quit
+
+
+
+BUILDING
+
+   With all that stuff that evidence supports, won't I be installing
+   required libraries all day?
+
+   The build breaks in avifile.cpp, because it can't find avifile.h, but
+   I have avifile installed?
+
+
+
+RUNNING/LOOK & FEEL
+
+   Where are those fancy tooltips I saw in the screenshots?
+   I hover over an icon with the mouse, and nothing happens?
+
+   How do I open the type-buffer (micro-shell)?
+
+   Why isn't the type-buffer always open?
+
+   I get labels in icon-view, but they are garbled!
+   (a/k/a/ What about accents, umlauts, UTF-8?)
+
+   Why doesn't it look like efm?  ...like essence?
+
+
+
+RUNNING/MEMORY USE
+
+   Evidence is HUGE!!  Does it leak like hell, or is it bloat?
+
+   Evidence uses tons and tons of memory when thumbnailing my fonts dir?
+
+
+
+
+
+
+
+
+
+BUILDING
+
+Q  With all that stuff that evidence supports, won't I be installing
+   required libraries all day?
+
+A  There aren't a lot of *required* libraries aside from GTK2 and evas.
+   Just about everything else is purely *optional*, and in most
+   cases you already have the libraries if you are interested in
+   the respective functionality.  For instance, there's little point
+   in building the vorbis-provider if you're not using vorbis; on the
+   other hand if you *are* using vorbis, you in all likelihood already
+   have the required libraries on your system.
+
+   Also, most optional functions are not compiled into the main program,
+   but into separate modules.  You can build these at a later date without
+   having to rebuild the whole program.
+
+   See the file DEPENDENCIES to see what functionality needs which
+   libraries.
+
+
+
+Q  I get "gtk/gtk.h: No such file or directory" on Mandrake?       [deprecated]
+
+A  automake 1.7 or better is required.  Entering "export AUTOMAKE=automake-1.7"
+   in the shell should fix this.  Thankyou.
+
+
+
+Q  The build breaks in avifile.cpp, because it can't find avifile.h, but
+   I have avifile installed?
+
+A  Try "avifile-config --cflags" and "pkg-config --cflags avifile" -- if
+   they give different paths after "-I", something is very wrong, but not
+   in evidence. : (
+
+   avifile.pc is broken.  The headers are probably in /usr/include/avifile-0.7
+   and the avifile.pc says just /usr/include/avifile -- or the other way
+   around.
+
+   Solutions:
+   - fix the .pc file and the avifile-config to point the right way OR
+   - make an appropriate symlink for the include-dir OR
+   - disable avifile support with --enable-avifile=no (SUGGESTED)
+     You don't need avifile if you have a working libxine instead.
+     (In fact, you can compile with neither, but then you won't get
+     thumbnail previews for .avi-movies.)
+
+
+
+Q  id3lib is found, but the mp3-provider cannot be built?          [deprecated]
+
+A  See above; id3lib 3.8+ is required, sorry. : (
+   If you are positive you have 3.8 or better, but it does not get detected,
+   you may be on a Debian box.  Kindly consider rebuilding id3lib from source.
+   Sorry for the trouble, but 3rd party packages are beyond my control.  : (
+
+
+
+Q  evas is found, but evidence cannot be built?                    [deprecated]
+
+A  If you get "undefined reference to `evas_object_font_cache_set/get',
+   `evas_object_image_cache_set/get', `evas_object_font_path_append',
+   that's because raster changed the API of evas AND didn't increase
+   the version number.  Please upgrade evas.
+
+
+
+Q  configure says I need GTK+ 2.2, what's wrong with 2.0?          [deprecated]
+
+A  Apparently, some of the tree-related functions are present in GTK 2.0,
+   but don't do anything.  If you build against 2.0, selections (in particular
+   cross-selections -- selecting some items in one view, then trying to add
+   items to that in another view) may not work correctly.
+   To build with 2.0, find the following line in configure.in:
+   PKG_CHECK_MODULES(EVIDENCE, gtk+-2.0 >= 2.2 )
+   Change 2.2 into 2.0, run ./autogen.sh, and you're set (we advise against
+   it, of course, and offer no support for such setups).
+
+
+
+RUNNING/LOOK & FEEL
+
+Q  Where are those fancy tooltips I saw in the screenshots?
+   I hover over an icon with the mouse, and nothing happens?
+
+A  Hover-for-tooltip needs to be enabled (-W on the command-line).
+   By default, the tooltip only comes up when you middle-click an
+   icon.  I agree that this violates the principle of least surprise,
+   and I apologize, but I am confident that in the long run, you will
+   find this behaviour much less annoying and faster to work with.
+   And of course if you disagree, you can still get the other behaviour
+   as per above.
+
+
+
+Q  There are no labels underneath/next to the icons in icon-view?  [deprecated]
+
+A  Sorry, your freetype is broken and does not work with the fonts
+   in the theme your are using.  To fix this, you may, in order of
+   preference, get a non-broken freetype, edit the theme-file to
+   use different fonts, or copy over the offending fonts in the
+   theme with ones known to work with your version of freetype.
+
+
+
+Q  How do I open the type-buffer (micro-shell)?
+
+A  Escape opens the type-buffer for vi-afficionados,
+   / ' or < open it for those with less nimble fingers, and
+   L or O, controlled or alternated, open it for browser-buffs.
+
+
+
+Q  Why isn't the type-buffer always open?
+
+A  Because that would break about every paradigm of GTK and any
+   file-manager that the user may know (with the exception of efm).
+   Given that it opens automagically on typing a /, this isn't much
+   of a restriction.
+
+
+
+Q  I get labels in icon-view, but they are garbled!
+   (a/k/a/ What about accents, umlauts, UTF-8?)
+
+A  This usually happens when you have files with non-ASCII names
+   (names that feature accents, umlauts, Eastern characters etc.).
+   evidence is pretty-characters-enabled (by virtue of using unicode),
+   but issues may still arise if the locale is not set up properly
+   on the machine in question, or if the font in use simply does not
+   feature the characters in question.
+   If the locale is not set up (use the 'locale' command to see your
+   current settings), no unicode-enabled application will work right.
+   Correct the locale and restart evidence.
+   If you surmise that the font in use does not support your locale,
+   try a font that is known to support your locale.  You can change
+   the font from the typebuffer, like so: 'iconfont vera
+
+
+
+Q  Why doesn't it look like efm?  ...like essence?
+
+A  Because it's themable, and you are using a non-efmy theme.
+   "evidence --efm" is a shortcut that selects a behaviour that
+   closely resembles that of efm (it reuses efm's graphics files).
+
+
+
+Q  What's with efm (enlightened file-manager), anyway?             [deprecated]
+
+A  There is no efm.
+   Repeat after me.
+   There is no efm.
+
+   efm was a study, and much of the good stuff that was in there was
+   cleaned up went into the e-libs ("EFL").  Hence, efm marked the
+   transition from e16 to e17.  It is no longer maintained, and really
+   never was, nor was it intended for production use.  There are a
+   couple of screenshots on the net showing efm windows, but those
+   never really were fully functional versions.
+
+
+
+RUNNING/FUN WITH LIBRARIES
+
+Q  Evidence is HUGE!!  Does it leak like hell, or is it bloat?
+
+A  You seem to have the libxine movie-thumbnailer enabled and engaged.
+   This eats a lot of memory (if there is something to create previews
+   for, anyway).  If in doubt, disable the xine thumbnailer and restart
+   evidence -- you should save almost half of the previous memory usage
+   that way!
+
+
+
+Q  Evidence uses tons and tons of memory when thumbnailing my fonts dir?
+
+A  This is a known leak in Imlib2 that was fixed in version 1.1.0;
+   please update. (However, evidence will only thumbnail when there
+   are new files, so the problem should not occur too often.)
+
+
+
+Q  Evidence cannot thumbnail a certain XPM graphic?                [deprecated]
+
+A  This was fixed in Imlib2 (XPM-loader) on 2003/05/22, please update.
+
+
+
+Q  Evidence crashes at startup!?                                   [deprecated]
+
+A  I'm really sorry. : (
+
+-  There is one known bug that is not my fault:  on Mandrake Cooker, you
+   can install libmagic and the file-command separately.  If you install
+   only the former, libmagic will have no MIME-database and crash rather
+   than throw an error. : (  Installing the database too (which is part
+   of the "file"-command RPM) fixes this.
+
+-  There have been reports that loading the IPC/DCOP-module        [deprecated]
+   crashes evidence on Gentoo.  If you are on gentoo and experiencing a
+   crash at start-up, try running "evidence -D1".  If the last message
+   before the crash is "checking /some/where/lib/evidence/ipc/ipc_dcop.so",
+   remove that file, and restart evidence.  All should be fine.
+
+
+
+RUNNING/DEBUGGING
+
+Q  If evidence crashes in gdb, it bombs right out of the debugger /
+   it bombs as soon as I ask for a "bt" (backtrace)!?
+
+A  I have no idea what causes this.  It works fine in early versions
+   of gdb-5.3; later versions and gdb 6.0 seem to blow up on Linux.
+   gdb-6.0 also seems to crash when trying to debug itself ("gdb gdb"
+   in the gdb source-directory, or "gdb gdb", "(gdb) b internal_error").
+   If you can at all, use an earlier version of gdb until this issue is
+   resolved. : (
+
+
+
+MISCELLANEOUS/PHILOSOPHICAL
+
+Q  Is evidence in any way related to NeXT/Step (or to Mac OS X)?
+
+A  Yes and no.  The "browser-view" (Alt-B) is a way of file-browsing
+   that I think is native to the NeXT.  I've never seen it anywhere else
+   (except on GNU/Step, which tries to be NeXT/Step, and apparently,
+   Mac OS X, which was NeXT/Step).  I used to work on a NeXT-station for
+   a year or two, but I mostly used the shell.  Iso said, "You what, the
+   browser's the best thing there ever was!"  Since we'd already sold
+   the NeXT, the only way to find out was to write something like it. : )
+
+     All code is original however; no code of NeXT's, Apple's, or even
+     GNU/Step's or FSViewer's is used; also while I prefer Objective C
+     (and Objective CAML) over C++, evidence was written in plain C.
+
+   I wasn't impressed at first, figuring it doesn't look much, but I
+   soon found out that in terms of usability, there's nothing better
+   for navigation song-directories or in fact anything where you
+   frequently have to go up and down several levels
+   ("/music/artist/album/song.ogg").  The "rephormed" text-path does
+   something similar for the icon-view, but it still takes one more
+   click for the same thing. : )  For fast navigation, there's nothing
+   like the browser.
+
+
+
+Q  Why isn't evidence a web-browser like all the other file-browsers
+   seem to be these days?
+
+A  I seriously distrust apps that try to be both a web- and a file-
+   browser.  It's not the UNIX way.
+   The UNIX way is small, dedicated legos that you can combine, each
+   doing one job, and doing that one job right.
+   My web-browser is Galeon (its slogan interestingly being tres UNIX,
+   "The Web, and only the web"), and I'm quite happy to have it be a
+   separate app from my file-browser so that it won't take down
+   evidence if it crashes.  If you want to combine evidence and Galeon
+   (or whatever), you might want to look into pekwm and related.  : )
+   Personally, I see no point in having wildly separate applications
+   share a window -- they already share a desktop, that's good enough.
+
+
+
+Q  Why doesn't evidence offer the two-pane design like all the other
+   file-browsers seem to do these days?
+
+A  I'm not overly fond of it, and there are already good solutions for
+   that paradigm (not to mention you can have something like it by opening
+   two windows next to each other anyway : ).  If you want it in evidence,
+   send me a patch that will make it a compile-time option.
+
+
+
+Q  What kind of name is "Azundris" anyway?
+
+A  Tachlarem.  Female first name.
+
+
+
+
+Next/Step, Mac and Mac OS X may be trademarks, but they are none of mine.
+Using them is not a challenge.

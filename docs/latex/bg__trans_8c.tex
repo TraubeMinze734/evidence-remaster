@@ -1,0 +1,173 @@
+\hypertarget{bg__trans_8c}{
+\section{bg\_\-trans.c File Reference}
+\label{bg__trans_8c}\index{bg_trans.c@{bg\_\-trans.c}}
+}
+background-handler providing pseudo-transparency 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+Window \hyperlink{bg__trans_8c_a7}{get\_\-desk} (Window app)
+\begin{CompactList}\small\item\em find root-window our application window lives in \item\end{CompactList}\item 
+static Evas\_\-Object $\ast$ \hyperlink{bg__trans_8c_a8}{transparency\_\-get\_\-pixmap} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, Evas\_\-Object $\ast$old, int x, int y, int w, int h)
+\begin{CompactList}\small\item\em get pixmap for pseudo-transparency \item\end{CompactList}\item 
+static int \hyperlink{bg__trans_8c_a9}{bg\_\-num\_\-listener} (noir\_\-prop\_\-bag $\ast$bag, noir\_\-prop $\ast$e, int tag, void $\ast$data)
+\begin{CompactList}\small\item\em listen for changes in our numeric properties. \item\end{CompactList}\item 
+void \hyperlink{bg__trans_8c_a10}{bg\_\-scroll} (void $\ast$i)
+\begin{CompactList}\small\item\em callback: view was scrolled, update background \item\end{CompactList}\item 
+static void \hyperlink{bg__trans_8c_a11}{bg\_\-upd\_\-el} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, Evas\_\-Object $\ast$bg)
+\begin{CompactList}\small\item\em update a single element of the (composed) background \item\end{CompactList}\item 
+void \hyperlink{bg__trans_8c_a12}{bg\_\-upd} (void $\ast$i, int x, int y, int w, int h)
+\begin{CompactList}\small\item\em callback: update background (window resized or moved, backdrop changed, . \item\end{CompactList}\item 
+static void \hyperlink{bg__trans_8c_a13}{bg\_\-new\_\-el} (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, Evas\_\-Object $\ast$o, int layer)
+\begin{CompactList}\small\item\em set up a single element of the (composed) background \item\end{CompactList}\item 
+void $\ast$ \hyperlink{bg__trans_8c_a14}{bg\_\-new} (noir\_\-theme $\ast$t, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$il, char $\ast$bg\_\-pic)
+\begin{CompactList}\small\item\em set a background on a view \item\end{CompactList}\item 
+void \hyperlink{bg__trans_8c_a15}{bg\_\-dst} (void $\ast$$\ast$data)
+\begin{CompactList}\small\item\em destruct background \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+background-handler providing pseudo-transparency 
+
+this plugin provides pseudo-transparency, so you will see the \char`\"{}root-window\char`\"{} -- the desktop -- shining through, but not other windows.
+
+properties:\begin{itemize}
+\item backgroundtintalpha\item backgroundtintcolour\end{itemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{bg__trans_8c_a15}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_dst@{bg\_\-dst}}
+\index{bg_dst@{bg\_\-dst}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-dst]{\setlength{\rightskip}{0pt plus 5cm}void bg\_\-dst (void $\ast$$\ast$ {\em data})}}
+\label{bg__trans_8c_a15}
+
+
+destruct background 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em data}]the background to dest\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a14}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_new@{bg\_\-new}}
+\index{bg_new@{bg\_\-new}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-new]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ bg\_\-new (noir\_\-theme $\ast$ {\em t}, \hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, char $\ast$ {\em bg\_\-pic})}}
+\label{bg__trans_8c_a14}
+
+
+set a background on a view 
+
+\begin{Desc}
+\item[Returns:]the newly set background object (il-$>$bg) \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em t}]the current theme in this session \item[{\em il}]the icon-list \item[{\em bg\_\-pic}]the name of the image for the background (any format evas loads)\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a13}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_new_el@{bg\_\-new\_\-el}}
+\index{bg_new_el@{bg\_\-new\_\-el}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-new\_\-el]{\setlength{\rightskip}{0pt plus 5cm}static void bg\_\-new\_\-el (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, Evas\_\-Object $\ast$ {\em o}, int {\em layer})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{bg__trans_8c_a13}
+
+
+set up a single element of the (composed) background 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]the icon-list \item[{\em o}]the background-element (evas-object) \item[{\em layer}]the layer the object should live in\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a9}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_num_listener@{bg\_\-num\_\-listener}}
+\index{bg_num_listener@{bg\_\-num\_\-listener}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-num\_\-listener]{\setlength{\rightskip}{0pt plus 5cm}static int bg\_\-num\_\-listener (noir\_\-prop\_\-bag $\ast$ {\em bag}, noir\_\-prop $\ast$ {\em e}, int {\em tag}, void $\ast$ {\em data})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{bg__trans_8c_a9}
+
+
+listen for changes in our numeric properties. 
+
+\begin{Desc}
+\item[Returns:]NOIR\_\-SUCC, or an error-code. \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em bag}]- the bag \item[{\em e}]- the property \item[{\em tag}]- our index/tag for the property that has changed \item[{\em data}]- our parameter-struct for this plugin, for faster access to the properties' values\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a10}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_scroll@{bg\_\-scroll}}
+\index{bg_scroll@{bg\_\-scroll}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-scroll]{\setlength{\rightskip}{0pt plus 5cm}void bg\_\-scroll (void $\ast$ {\em i})}}
+\label{bg__trans_8c_a10}
+
+
+callback: view was scrolled, update background 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]the icon-list (contains coordinates and pointer to background)\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a12}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_upd@{bg\_\-upd}}
+\index{bg_upd@{bg\_\-upd}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-upd]{\setlength{\rightskip}{0pt plus 5cm}void bg\_\-upd (void $\ast$ {\em i}, int {\em x}, int {\em y}, int {\em w}, int {\em h})}}
+\label{bg__trans_8c_a12}
+
+
+callback: update background (window resized or moved, backdrop changed, . 
+
+..) moving is relevant since the plugin uses pseudo-transparency! \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em i}]the icon-list (contains pointer to background) \item[{\em x}]horizontal position \item[{\em y}]vertical position \item[{\em w}]width \item[{\em h}]height\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a11}{
+\index{bg_trans.c@{bg\_\-trans.c}!bg_upd_el@{bg\_\-upd\_\-el}}
+\index{bg_upd_el@{bg\_\-upd\_\-el}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[bg\_\-upd\_\-el]{\setlength{\rightskip}{0pt plus 5cm}static void bg\_\-upd\_\-el (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, Evas\_\-Object $\ast$ {\em bg})\hspace{0.3cm}{\tt  \mbox{[}inline, static\mbox{]}}}}
+\label{bg__trans_8c_a11}
+
+
+update a single element of the (composed) background 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]the icon-list \item[{\em bg}]the background-element (evas-object)\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a7}{
+\index{bg_trans.c@{bg\_\-trans.c}!get_desk@{get\_\-desk}}
+\index{get_desk@{get\_\-desk}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[get\_\-desk]{\setlength{\rightskip}{0pt plus 5cm}Window get\_\-desk (Window {\em app})}}
+\label{bg__trans_8c_a7}
+
+
+find root-window our application window lives in 
+
+\begin{Desc}
+\item[Returns:]the \char`\"{}desktop\char`\"{} \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em app}]our application-window\end{description}
+\end{Desc}
+\hypertarget{bg__trans_8c_a8}{
+\index{bg_trans.c@{bg\_\-trans.c}!transparency_get_pixmap@{transparency\_\-get\_\-pixmap}}
+\index{transparency_get_pixmap@{transparency\_\-get\_\-pixmap}!bg_trans.c@{bg\_\-trans.c}}
+\subsubsection[transparency\_\-get\_\-pixmap]{\setlength{\rightskip}{0pt plus 5cm}static Evas\_\-Object$\ast$ transparency\_\-get\_\-pixmap (\hyperlink{struct__icon__list}{icon\_\-list} $\ast$ {\em il}, Evas\_\-Object $\ast$ {\em old}, int {\em x}, int {\em y}, int {\em w}, int {\em h})\hspace{0.3cm}{\tt  \mbox{[}static\mbox{]}}}}
+\label{bg__trans_8c_a8}
+
+
+get pixmap for pseudo-transparency 
+
+\begin{Desc}
+\item[Returns:]an evas image-object \end{Desc}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em il}]the icon-list \item[{\em old}]the previous PT pixmap \item[{\em x}]position of the application-window \item[{\em y}]position of the application-window \item[{\em w}]width of the application-window \item[{\em h}]height of the application-window\end{description}
+\end{Desc}

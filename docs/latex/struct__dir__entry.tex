@@ -1,0 +1,70 @@
+\hypertarget{struct__dir__entry}{
+\section{\_\-dir\_\-entry Struct Reference}
+\label{struct__dir__entry}\index{_dir_entry@{\_\-dir\_\-entry}}
+}
+an entry returned by \hyperlink{file_8c_a41}{file\_\-getdir()}  
+
+
+\subsection*{Data Fields}
+\begin{CompactItemize}
+\item 
+\hypertarget{struct__dir__entry_o0}{
+\hyperlink{struct__dir__entry}{\_\-dir\_\-entry} $\ast$ \hyperlink{struct__dir__entry_o0}{child}}
+\label{struct__dir__entry_o0}
+
+\begin{CompactList}\small\item\em file's children \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o1}{
+char $\ast$ \hyperlink{struct__dir__entry_o1}{name}}
+\label{struct__dir__entry_o1}
+
+\begin{CompactList}\small\item\em file's name \item\end{CompactList}\item 
+char $\ast$ \hyperlink{struct__dir__entry_o2}{tag}
+\begin{CompactList}\small\item\em file's UUID/path/URL/. \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o3}{
+ulong \hyperlink{struct__dir__entry_o3}{children}}
+\label{struct__dir__entry_o3}
+
+\begin{CompactList}\small\item\em file's children (number of) \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o4}{
+ulong \hyperlink{struct__dir__entry_o4}{descendents}}
+\label{struct__dir__entry_o4}
+
+\begin{CompactList}\small\item\em file's descendents (number of) \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o5}{
+off\_\-t \hyperlink{struct__dir__entry_o5}{size}}
+\label{struct__dir__entry_o5}
+
+\begin{CompactList}\small\item\em file's size \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o6}{
+off\_\-t \hyperlink{struct__dir__entry_o6}{net}}
+\label{struct__dir__entry_o6}
+
+\begin{CompactList}\small\item\em file's size (dirs: direct children only) \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o7}{
+mode\_\-t \hyperlink{struct__dir__entry_o7}{mode}}
+\label{struct__dir__entry_o7}
+
+\begin{CompactList}\small\item\em file's mode \item\end{CompactList}\item 
+\hypertarget{struct__dir__entry_o8}{
+time\_\-t \hyperlink{struct__dir__entry_o8}{mtime}}
+\label{struct__dir__entry_o8}
+
+\begin{CompactList}\small\item\em when the file-contents were last modified \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+an entry returned by \hyperlink{file_8c_a41}{file\_\-getdir()} 
+
+
+
+\subsection{Field Documentation}
+\hypertarget{struct__dir__entry_o2}{
+\index{_dir_entry@{\_\-dir\_\-entry}!tag@{tag}}
+\index{tag@{tag}!_dir_entry@{\_\-dir\_\-entry}}
+\subsubsection[tag]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ \hyperlink{struct__dir__entry_o2}{\_\-dir\_\-entry::tag}}}
+\label{struct__dir__entry_o2}
+
+
+file's UUID/path/URL/. 
+
+.. 

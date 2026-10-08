@@ -1,0 +1,49 @@
+\hypertarget{events_8c}{
+\section{events.c File Reference}
+\label{events_8c}\index{events.c@{events.c}}
+}
+inform the user of something. 
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+const char $\ast$ \hyperlink{events_8c_a0}{noir\_\-error} (int no)
+\begin{CompactList}\small\item\em get string-representation for evidence error-code \item\end{CompactList}\item 
+void \hyperlink{events_8c_a1}{alert} (void $\ast$ns, const char $\ast$fmt,...)
+\begin{CompactList}\small\item\em inform the user of something. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+inform the user of something. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{events_8c_a1}{
+\index{events.c@{events.c}!alert@{alert}}
+\index{alert@{alert}!events.c@{events.c}}
+\subsubsection[alert]{\setlength{\rightskip}{0pt plus 5cm}void alert (void $\ast$ {\em ns}, const char $\ast$ {\em fmt},  {\em ...})}}
+\label{events_8c_a1}
+
+
+inform the user of something. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em ns}]- the session that wanted to talk to you \item[{\em fmt}]- the message, possibly containing -substitutions as per sprintf() \item[{\em ...}]- variables for the above -substitutions\end{description}
+\end{Desc}
+\hypertarget{events_8c_a0}{
+\index{events.c@{events.c}!noir_error@{noir\_\-error}}
+\index{noir_error@{noir\_\-error}!events.c@{events.c}}
+\subsubsection[noir\_\-error]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ noir\_\-error (int {\em no})}}
+\label{events_8c_a0}
+
+
+get string-representation for evidence error-code 
+
+(strerror() clone) \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em no}]- a noir error-code\end{description}
+\end{Desc}

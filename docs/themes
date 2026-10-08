@@ -1,0 +1,81 @@
+; Lines beginning with a ; are ignored by evidence.
+; Plugins must be loaded before setting their respective parameters --
+; if in doubt, load all plugins, then set all parameters, as shown below.
+; Most parameters have sensible defaults.
+; At least one of tooltip_font, icon_font and typebuffer_font must be given,
+; however.
+
+
+
+; optional line denoting the author.
+author:			Azundris
+
+
+
+; PLUGINS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; mandatory
+typebuffer_factory:	default
+scrollbar_factory:	edb
+icon_factory:		nautilus
+background_factory:	scale
+tooltip_factory:	traditional
+rubberband_factory:	nautilus
+
+
+
+; optional: toolbars
+extensions:		rephormed
+
+
+
+; optional: animations
+open_folder_animation:	growfade
+open_app_animation:	grey
+open_file_animation:	basic
+
+
+
+; PARAMETERS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; what background should the background-factory set?
+shelf:			Phusion9_purple
+icon_view:		Phusion9_purple
+
+
+
+; what font and -size should the typebuffer-factory use?
+typebuffer_font:	aircut3
+typebuffer_fontsize:	48
+
+
+
+; what font and -size should the icon-factory use for icon-labels?
+icon_font:		aircut3
+icon_fontsize:		16
+
+; what icon-set should the icon-factory use?
+icon_set:		tosh_128
+
+; what icon-mode should the icon-factory use when "thumbnailing" images?
+; - {w,h}/h  make thumbnails the same height as other icons
+; - {w,h}/w  make thumbnails the same width  as other icons
+; - auto     make thumbnails as big as possible, but not bigger than an icon
+icon_mode:		{w,h}/h
+
+
+
+; what font and -size should the tooltip-factory use?
+tooltip_font:		vera
+tooltip_fontsize:	14
+
+
+
+; what font and -size should the textpath toolbar use?
+; as with all optional plugins, you don't need to set this if you don't use
+; the corresponding plugin (ie, if you don't use the textpath-toolbar by
+; listing it under 'extensions', there is no point in setting parameters for
+; it here).
+textpath_font:		vera
+textpath_fontsize:	14
+textpath_dropshadow:    2
