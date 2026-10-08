@@ -28,6 +28,9 @@ PNG=no;   if have_pc libpng; then PNG=yes; PNG_CFLAGS=$(pc_cflags libpng); PNG_L
 JPEG=no;  if have_pc libjpeg; then JPEG=yes; JPEG_CFLAGS=$(pc_cflags libjpeg); JPEG_LIBS=$(pc_libs libjpeg); fi
 PCRE=no;  if have_pc libpcre; then PCRE=yes; PCRE_CFLAGS=$(pc_cflags libpcre); PCRE_LIBS=$(pc_libs libpcre); fi
 LIBMAGIC=no; if have_pc libmagic; then LIBMAGIC=yes; LIBMAGIC_CFLAGS=$(pc_cflags libmagic); LIBMAGIC_LIBS=$(pc_libs libmagic); fi
+EMOTION=no; if have_pc emotion; then EMOTION=yes; EMOTION_CFLAGS=$(pc_cflags emotion); EMOTION_LIBS=$(pc_libs emotion); fi
+EXTRACTOR=no; if have_pc extractor; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=$(pc_cflags extractor); EXTRACTOR_LIBS=$(pc_libs extractor); fi
+LIBCURL=no; if have_pc libcurl; then LIBCURL=yes; LIBCURL_CFLAGS=$(pc_cflags libcurl); LIBCURL_LIBS=$(pc_libs libcurl); fi
 X11=no;   if have_pc x11; then X11=yes; X11_CFLAGS=$(pc_cflags x11); X11_LIBS=$(pc_libs x11); fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
@@ -74,6 +77,12 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   [ "$JPEG" = yes ] && echo "#define HAVE_LIBJPEG 1"
   [ "$PCRE" = yes ] && echo "#define HAVE_PCRE 1"
   [ "$LIBMAGIC" = yes ] && echo "#define HAVE_LIBMAGIC 1"
+  [ "$EMOTION" = yes ] && echo "#define HAVE_EMOTION 1"
+  [ "$EXTRACTOR" = yes ] && echo "#define HAVE_EXTRACTOR 1"
+  [ "$LIBCURL" = yes ] && echo "#define HAVE_LIBCURL 1"
+case "$(uname -s)" in
+  Linux) echo "#define I_NOTIFY 1" ;;
+esac
   [ "$X11" = yes ] && echo "#define HAVE_X 1"
   # views (old configure.in logic): tree-view and browser-view are always
   # built; the icon-view/shelf require a canvas (Evas or GnomeCanvas)
@@ -115,6 +124,12 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   echo "PCRE_LIBS ?= $PCRE_LIBS"
   echo "LIBMAGIC_CFLAGS ?= $LIBMAGIC_CFLAGS"
   echo "LIBMAGIC_LIBS ?= $LIBMAGIC_LIBS"
+  echo "EMOTION_CFLAGS ?= $EMOTION_CFLAGS"
+  echo "EMOTION_LIBS ?= $EMOTION_LIBS"
+  echo "EXTRACTOR_CFLAGS ?= $EXTRACTOR_CFLAGS"
+  echo "EXTRACTOR_LIBS ?= $EXTRACTOR_LIBS"
+  echo "LIBCURL_CFLAGS ?= $LIBCURL_CFLAGS"
+  echo "LIBCURL_LIBS ?= $LIBCURL_LIBS"
   echo "GLIB2 ?= $GLIB2"
   echo "GLIB2_CFLAGS ?= $GLIB2_CFLAGS"
   echo "GLIB2_LIBS ?= $GLIB2_LIBS"
@@ -130,6 +145,9 @@ say "  GTK2 backend  $GTK2"
 say "  EFL backend   $EFL"
 say "  Ecore-IPC     $ECOREIPC"
 say "  libmagic      $LIBMAGIC"
+say "  Emotion       $EMOTION"
+say "  libextractor  $EXTRACTOR"
+say "  libcurl       $LIBCURL"
 say "  Imlib2        $IMLIB2"
 say "  libpng        $PNG"
 say "  libjpeg       $JPEG"

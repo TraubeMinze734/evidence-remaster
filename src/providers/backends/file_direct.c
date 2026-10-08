@@ -58,8 +58,8 @@
 
 
 #ifdef I_NOTIFY
-#  include <sys/ioctl.h>
-#  include <linux/inotify.h>
+#  include <sys/inotify.h>
+#  include <sys/select.h>
 #endif
 
 
@@ -1270,204 +1270,110 @@ const char *backend_get_mime(const char *myfile) {
 
 
 
+/* inotify via the modern sys/inotify.h API (kernel >= 2.6.13).  the
+   original code used the 2003 pre-mainline interface (/dev/inotify,
+   ioctl(2), struct inotify_watch_request), which never existed in any
+   released kernel. */
 #ifdef I_NOTIFY
-
 static const char *mon_inotify="I_NOTIFY";
-
 static int inotify_fd=-1;
 
 static int inotify_init(void) {
-  if((inotify_fd=open("/dev/inotify",O_RDONLY))<0) {
-    if(errno==ENOENT) {
-      E(1,"I_NOTIFY not supported by OS, disabled.\n");
-      return NOIR_NOTSUPP; }
-    else
-      E(0,"couldn't open \"/dev/inotify\": %s\n",strerror(errno)); }
-  return (inotify_fd<0)?NOIR_FAIL:NOIR_SUCC; }
+  if(inotify_fd>=0)
+    return NOIR_SUCC;
+  if((inotify_fd=inotify_init1(IN_NONBLOCK))<0) {
+    E(1,"inotify not available, disabled. (%s)\n",strerror(errno));
+    return NOIR_NOTSUPP; }
+  return NOIR_SUCC; }
 
 static int inotify_exit(void) {
   if(inotify_fd<0)
     return NOIR_IGNORED;
   if(close(inotify_fd)<0) {
-    E(0,"couldn't close \"/dev/inotify\": %s\n",strerror(errno));
+    E(0,"couldn't close inotify fd: %s\n",strerror(errno));
     return NOIR_FAIL; }
+  inotify_fd=-1;
   return NOIR_SUCC; }
 
 /**
- * add a monitor -- tell us if the file/directory changes
- * @return an error-code
+ * add a monitor -- tell us if the directory changes
+ * @return the watch-descriptor, or a negative error-code
  * @param dir  the directory to watch
  */
 static int inotify_add(char *dir) {
-  int                          wd;
-  struct inotify_watch_request iwr;
+  int wd;
 
   if(inotify_fd<0) {
-    E(0,"was called when there is not inotify_fd!?\n");
+    E(0,"was called when there is no inotify_fd!?\n");
     return NOIR_IGNORED; }
 
-  if(!(iwr.dirname=strdup(dir)))
-    return NOIR_OOM;
-
-  iwr.mask=0xffffffff;
-
-  if((wd=ioctl(inotify_fd,INOTIFY_WATCH,&iwr))<0)
-    E(0,"ioctl(fd,INOTIFY_WATCH,{%s,%u}): %s\n",iwr.dirname,iwr.mask,strerror(errno));
-
-  free(iwr.dirname);
-
-  return (wd<0)?NOIR_FAIL:wd; }
-
-
+  if((wd=inotify_add_watch(inotify_fd,dir,
+                           IN_MODIFY|IN_CLOSE_WRITE|IN_MOVED_FROM|IN_MOVED_TO|
+                           IN_CREATE|IN_DELETE|IN_DELETE_SELF|IN_ATTRIB))<0) {
+    E(0,"inotify_add_watch(\"%s\"): %s\n",dir,strerror(errno));
+    return NOIR_FAIL; }
+  return wd; }
 
 /**
- * remove a monitor -- we're no long interested in that file/directory
+ * remove a monitor -- we're no longer interested in that directory
  * @return an error-code
- * @param dir  the directory to stop watching
+ * @param wd  the watch-descriptor to remove
  */
 static int inotify_remove(int wd) {
   if(inotify_fd<0) {
-    E(0,"was called when there is not inotify_fd!?\n");
+    E(0,"was called when there is no inotify_fd!?\n");
     return NOIR_IGNORED; }
-
-  if(ioctl(inotify_fd,INOTIFY_IGNORE,&wd)<0) {
-    E(0,"failed: %s\n",strerror(errno));
+  if(inotify_rm_watch(inotify_fd,wd)<0) {
+    E(0,"inotify_rm_watch(%d): %s\n",wd,strerror(errno));
     return NOIR_FAIL; }
-
   return NOIR_SUCC; }
 
-
-
-static char *inotify_mask(int mask) {
-  char *r=NULL;
-
-  esprintf(&r,"");
-  if(!r)
-    return NULL;
-
-  if(mask&IN_ACCESS)
-    eappendf(&r,"ACCESS ");
-  if(mask&IN_MODIFY)
-    eappendf(&r,"MODIFY ");
-  if(mask&IN_ATTRIB)
-    eappendf(&r,"ATTRIB ");
-  if(mask&IN_CLOSE_WRITE)
-    eappendf(&r,"CLOSE_WRITE ");
-  if(mask&IN_CLOSE_NOWRITE)
-    eappendf(&r,"CLOSE_NOWRITE ");
-  if(mask&IN_OPEN)
-    eappendf(&r,"OPEN ");
-  if(mask&IN_MOVED_FROM)
-    eappendf(&r,"MOVE_FROM ");
-  if(mask&IN_MOVED_TO)
-    eappendf(&r,"MOVE_TO ");
-  if(mask&IN_DELETE_SUBDIR)
-    eappendf(&r,"DELETE_SUBDIR ");
-  if(mask&IN_DELETE_FILE)
-    eappendf(&r,"DELETE_FILE ");
-  if(mask&IN_CREATE_SUBDIR)
-    eappendf(&r,"CREATE_SUBDIR ");
-  if(mask&IN_CREATE_FILE)
-    eappendf(&r,"CREATE_FILE ");
-  if(mask&IN_DELETE_SELF)
-    eappendf(&r,"DELETE_SELF ");
-  if(mask&IN_UNMOUNT)
-    eappendf(&r,"UNMOUNT ");
-  if(mask&IN_Q_OVERFLOW)
-    eappendf(&r,"Q_OVERFLOW ");
-  if(mask&IN_IGNORED)
-    eappendf(&r,"IGNORED");
-
-  eappendf(&r,"\n");
-
-  return r; }
-
-
-
 static int inotify_check(void) {
-  struct inotify_event event;
-  struct timeval       timeout;
-  int                  r,cnt=0;
-  fd_set               rfds;
-  ssize_t              got,have;
-  char                *p;
+  char              buf[8192];
+  ssize_t           got;
+  int               cnt=0;
 
-  /* check for events */
+  if(inotify_fd<0)
+    return NOIR_IGNORED;
 
- inotify_try_select:
-  timeout.tv_sec =0;
-  timeout.tv_usec=0;
+  while((got=read(inotify_fd,buf,sizeof(buf)))>0) {
+    char *p=buf;
+    while(p<buf+got) {
+      struct inotify_event *event=(struct inotify_event *)p;
+      noir_monitor *m=file_monitor_get_1st();
+      p+=sizeof(struct inotify_event)+event->len;
 
-  FD_ZERO(&rfds);
-  FD_SET(inotify_fd,&rfds);
+      if(!(event->mask&(IN_MODIFY|IN_CLOSE_WRITE|
+                        IN_MOVED_FROM|IN_MOVED_TO|IN_ATTRIB|
+                        IN_CREATE|IN_DELETE|IN_DELETE_SELF)))
+        continue;
 
-  if((r=select(inotify_fd+1,&rfds,NULL,NULL,&timeout))<0) {
-    if(errno==EINTR)
-      goto inotify_try_select;
-    E(0,"select() failed: %s\n",strerror(errno));
-    return NOIR_FAIL; }
+      while(m) {
+        if((m->system==mon_inotify)&&(event->wd==(int)m->handle)) {
+          noir_file_event e=NOIR_MONITOR_DK;
 
-  else if(!r)
-    return cnt?NOIR_SUCC:NOIR_IGNORED;
+          if(event->mask&(IN_MODIFY|IN_CLOSE_WRITE))
+            e=NOIR_MONITOR_CHG;
+          else if(event->mask&(IN_CREATE|IN_MOVED_TO))
+            e=NOIR_MONITOR_NEW;
+          else if(event->mask&(IN_DELETE|IN_MOVED_FROM|IN_DELETE_SELF))
+            e=NOIR_MONITOR_DEL;
+          else if(event->mask&IN_ATTRIB)
+            e=NOIR_MONITOR_META;
 
-  /* read events */
+          if(e==NOIR_MONITOR_DK)
+            E(0,"INOTIFY event $%x for \"%s\" ignored...\n",(int)event->mask,event->name);
+          else {
+            E(0,"INOTIFY event $%x for \"%s\"...\n",(int)e,event->name);
+            file_monitor_event(m,e,event->name); }
+          cnt++;
+          break; }   /* one monitor per wd */
+        m=m->next; } } }
 
-  have=0;
-  p=(char *)&event;
- inotify_try_read:
-  event.wd=0xdeadbeef;
-  event.mask=0xdeadbeef;
-  if((got=read(inotify_fd,p,sizeof(struct inotify_event)))<0) {
-    if(errno==EINTR)
-      goto inotify_try_read;
-    E(0,"read() failed: %s\n",strerror(errno));
-    return NOIR_FAIL; }
+  if(got<0&&errno!=EAGAIN)
+    E(0,"inotify read(): %s\n",strerror(errno));
 
-  if((have+=got)<sizeof(struct inotify_event)) {
-    p+=got;
-    goto inotify_try_read; }
-
-  p=inotify_mask(event.mask);
-  E(0,"EVENT!  \"%s\" (wd=%d): %s\n",event.filename,event.wd,p?p:"unknown!?");
-  if(p)
-    free(p);
-
-  if(event.mask&(IN_MODIFY|IN_CLOSE_WRITE|
-                 IN_MOVED_FROM|IN_MOVED_TO|
-                 IN_ATTRIB|
-                 IN_DELETE_SUBDIR|IN_DELETE_FILE|
-                 IN_CREATE_SUBDIR|IN_CREATE_FILE|
-                 IN_DELETE_SELF|
-                 IN_UNMOUNT|IN_Q_OVERFLOW)) {
-    noir_monitor *m=file_monitor_get_1st();
-
-    while(m) {
-      if((m->system==mon_inotify)&&(event.wd==(int)m->handle)) {
-        noir_file_event e=NOIR_MONITOR_DK;
-        /* not using a mapping here; in theory, multiple flags may be set */
-        if(event.mask&(IN_MODIFY|IN_CLOSE_WRITE))
-          e=NOIR_MONITOR_CHG;
-        else if(event.mask&(IN_MOVED_FROM))
-          e=NOIR_MONITOR_NEW;
-        else if(event.mask&(IN_DELETE_SELF|IN_UNMOUNT|IN_MOVED_TO))
-          e=NOIR_MONITOR_DEL;
-        else if(event.mask&IN_ATTRIB)
-          e=NOIR_MONITOR_META;
-
-        E(0,"INOTIFY for \"%s\"...\n",event.filename);
-        if(e==NOIR_MONITOR_DK)
-          E(0,"INOTIFY event $%x for \"%s\" ignored...\n",e,event.filename);
-        else {
-          E(0,"INOTIFY event $%x for \"%s\"...\n",e,event.filename);
-          file_monitor_event(m,e,event.filename); }
-        cnt++; /* count event */
-        /* if there are more events on Q, process them before returning */
-        goto inotify_try_select; }
-      m=m->next; }
-    return NOIR_NOTFOUND; }
-
-  return NOIR_IGNORED; }
-
+  return cnt?NOIR_SUCC:NOIR_IGNORED; }
 #endif
 
 
