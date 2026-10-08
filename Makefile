@@ -75,8 +75,11 @@ GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(wildcard $(d)/*.c)) \
            src/gui/gtk2/icon_view/gevas_light.c \
            src/gui/gtk2/icon_view/gevas_bind.c
 endif
-# theme + theme_bind are Evas-guarded internally; every backend needs them
+# theme + theme_bind are Evas-guarded internally; every backend needs them.
+# with EFL they are already covered by EFL_COMMON_SRC below.
+ifneq ($(EFL),yes)
 GUI_SRC += src/gui/efl/common/theme.c src/gui/efl/common/theme_bind.c
+endif
 # without a canvas there is no icon-list backend; provide no-op stubs
 ifneq ($(EFL),yes)
 GUI_SRC += src/gui/iconlist_stub.c
