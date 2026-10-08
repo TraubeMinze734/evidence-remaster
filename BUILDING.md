@@ -22,6 +22,10 @@ derives from the same `PREFIX`.
 | GTK2 GUI   | gtk+-2.0                      | GTK2 backend                           |
 | EFL GUI    | evas, ecore, ecore-evas, edje | EFL backend (buffer-engine port)       |
 | cairo      | cairo                         | blits the Evas buffer into the GdkWindow |
+| Emotion    | emotion                       | live/static video thumbnails (needs a backend: gstreamer or xine) |
+| inotify    | (kernel, Linux only)          | auto-refresh directories on change |
+| libextractor | extractor                  | mass meta-data extraction for the tooltip/info dialog |
+| libcurl    | libcurl                       | remote URLs (download for file_run %f etc.) |
 | Ecore-IPC  | ecore-ipc                     | IPC backend / evsh                     |
 | Imlib2     | imlib2                        | thumbnailer                            |
 | libpng     | libpng                        | thumbnailer (strongly recommended)    |
