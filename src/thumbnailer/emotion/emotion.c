@@ -79,14 +79,16 @@ int thumbnail_plugin_init(thumbnail_plugin *tp) {
      video containers. */
   thumbnail_plugin_register_mime(tp,"video/*",TP_PRIO_MID,TP_ICONS);
   thumbnail_plugin_register_mime(tp,"video/*",TP_PRIO_MID,TP_LIVE);
-  thumbnail_plugin_register_ext(tp,"avi",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"mpg",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"mpeg",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"mp4",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"mkv",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"mov",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"webm",TP_PRIO_MID,TP_ICONS);
-  thumbnail_plugin_register_ext(tp,"ogv",TP_PRIO_MID,TP_ICONS);
+  /* register the common containers by MIME-type as well, so the lookup
+     finds us even for files whose MIME was determined by content rather
+     than extension */
+  thumbnail_plugin_register_mime(tp,"video/mp4",TP_PRIO_MID,TP_LIVE);
+  thumbnail_plugin_register_mime(tp,"video/mpeg",TP_PRIO_MID,TP_LIVE);
+  thumbnail_plugin_register_mime(tp,"video/x-matroska",TP_PRIO_MID,TP_LIVE);
+  thumbnail_plugin_register_mime(tp,"video/quicktime",TP_PRIO_MID,TP_LIVE);
+  thumbnail_plugin_register_mime(tp,"video/webm",TP_PRIO_MID,TP_LIVE);
+  thumbnail_plugin_register_mime(tp,"video/ogg",TP_PRIO_MID,TP_LIVE);
+  thumbnail_plugin_register_mime(tp,"video/x-msvideo",TP_PRIO_MID,TP_LIVE);
 
   if(!disclaimer) {
     disclaimer++;
