@@ -2,14 +2,19 @@
  *  @brief Emotion movie thumbnailer (live + static), using modern EFL's
  *         system libemotion (which delegates to gstreamer/xine backends).
  *
- *  replaces the old xine.c thumbnailer, which required the 2005 libxine API
- *  and bundled a private copy of the Emotion smart object (emotion.h here
- *  is a left-over of that and is no longer used).
+ *  replaces the old xine.c thumbnailer, which required the 2005 libxine API.
  *
  *  static thumbnails: seek into the stream, grab the frame via
- *                     emotion_object_image_get(), hand it to Imlib2.
+ *                     emotion_object_image_get(), hand a COPY to Imlib2.
  *  live thumbnails:   the emotion object itself is an Evas smart object;
  *                     we just hand it to the icon-view and play it.
+ *
+ *  threading: the thumbnailer calls plugins from a worker thread that runs
+ *  its own ecore loop (eina_main_loop_is() is TRUE there, but the domain
+ *  differs!).  Emotion objects must live in the domain of the thread that
+ *  later renders them (the GUI main thread).  therefore we remember the
+ *  main thread's identity at init() time and defer all Evas/Emotion work
+ *  to it via ecore_main_loop_thread_safe_call_async() + handshake.
  */
 
 #include "config.h"
@@ -17,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "debug.h"
 #include "errors.h"
@@ -27,8 +33,8 @@
 
 #ifdef HAVE_EVAS2
 #  include <Evas.h>
-#  include <Emotion.h>
 #  include <Ecore.h>
+#  include <Emotion.h>
 #  include <pthread.h>
 #  ifdef HAVE_IMLIB2
 #    include <Imlib2.h>
@@ -37,17 +43,147 @@
 
 #define SEEK_NUMERATOR   8   /* take a frame from ~ 8% into the movie */
 #define SEEK_DENOMINATOR 10
-#define MAX_TRIES         8  /* how often to retry after an open error */
+#define MAX_TRIES         8  /* how often to poll while emotion opens the file */
 
 /******************************************************************************/
 
 #ifdef HAVE_EVAS2
 
 typedef struct _emotion_param {
-  int inited;
+  int          dummy;
 } emotion_param;
 
+static pthread_t emotion_main_thread;   /* the GUI thread, set in init() */
 
+
+
+typedef struct {
+  void           (*cb)(void *);
+  void            *data;
+  pthread_mutex_t  mtx;
+  pthread_cond_t   cond;
+  int              done;
+} emotion_handshake;
+
+/* runs in the main thread; calls the real callback, then signals */
+static void _emotion_hs_dispatch(void *data) {
+  emotion_handshake *hs=(emotion_handshake *)data;
+  hs->cb(hs->data);
+  pthread_mutex_lock(&hs->mtx);
+  hs->done=1;
+  pthread_cond_signal(&hs->cond);
+  pthread_mutex_unlock(&hs->mtx); }
+
+/* run cb(data) in the GUI main thread and block until it finished */
+static void emotion_in_main(void (*cb)(void *),void *data) {
+  emotion_handshake hs;
+
+  if(pthread_equal(pthread_self(),emotion_main_thread)) {
+    cb(data);
+    return; }
+
+  memset(&hs,0,sizeof(hs));
+  hs.cb=cb;
+  hs.data=data;
+  pthread_mutex_init(&hs.mtx,NULL);
+  pthread_cond_init(&hs.cond,NULL);
+
+  ecore_main_loop_thread_safe_call_async(_emotion_hs_dispatch,&hs);
+
+  pthread_mutex_lock(&hs.mtx);
+  while(!hs.done)
+    pthread_cond_wait(&hs.cond,&hs.mtx);
+  pthread_mutex_unlock(&hs.mtx);
+  pthread_mutex_destroy(&hs.mtx);
+  pthread_cond_destroy(&hs.cond); }
+
+#endif /* HAVE_EVAS2 */
+
+
+
+
+#if defined(HAVE_EVAS2) && defined(HAVE_IMLIB2)
+
+/* context for the static thumbnail, filled in the main thread */
+typedef struct {
+  const char  *file;
+  Imlib_Image  im;
+} emotion_make_ctx;
+
+static void _emotion_make_in_main(void *data) {
+  emotion_make_ctx *c=(emotion_make_ctx *)data;
+  Evas             *evas=NULL;
+  Evas_Object      *em=NULL;
+  const char       *file=c->file;
+  double            len=0.0;
+  int               tries=0;
+
+  /* a private buffer canvas hosts the emotion object */
+  if(!(evas=evas_new()))
+    return;
+  if(evas_render_method_lookup("buffer"))
+    evas_output_method_set(evas,evas_render_method_lookup("buffer"));
+  evas_output_size_set(evas,16,16);
+  evas_output_viewport_set(evas,0,0,16,16);
+
+  if(!(em=emotion_object_add(evas)))
+    goto done;
+  /* NULL module: use whatever backend is installed (gstreamer/xine) */
+  if(!emotion_object_init(em,NULL)) {
+    E(0,"couldn't init emotion (no gstreamer/xine backend?) for \"%s\"...\n",file);
+    goto done; }
+
+  emotion_object_file_set(em,file);
+
+  /* emotion loads asynchronously; poll the length until it is known */
+  while(tries++<MAX_TRIES) {
+    len=emotion_object_play_length_get(em);
+    if(len>0.0)
+      break;
+    usleep(100000); }
+
+  if(len<=0.0) {
+    E(1,"no video in \"%s\"?\n",file);
+    goto done; }
+
+  /* seek into the movie: trailers/logos are usually in the first frames */
+  emotion_object_position_set(em,len*SEEK_NUMERATOR/SEEK_DENOMINATOR);
+
+  {
+    /* the emotion smart object hosts an internal image with the frame */
+    Evas_Object   *frame=emotion_object_image_get(em);
+    unsigned char *frame_data;
+    int            iw=0,ih=0;
+
+    if(!frame) {
+      E(1,"couldn't get frame image from \"%s\"...\n",file);
+      goto done; }
+
+    evas_object_image_size_get(frame,&iw,&ih);
+    frame_data=(unsigned char *)evas_object_image_data_get(frame,0);
+    if(frame_data&&iw>0&&ih>0) {
+      Imlib_Image wrap=imlib_create_image_using_data(iw,ih,(DATA32 *)frame_data);
+      if(wrap) {
+        imlib_context_set_image(wrap);
+        /* copy: the canvas (and with it frame_data) goes away below */
+        c->im=imlib_create_cropped_image(0,0,iw,ih);
+        imlib_free_image_and_decache(); } }
+    else
+      E(1,"couldn't get frame data from \"%s\" (%dx%d)...\n",file,iw,ih); }
+
+ done:
+  if(em)
+    evas_object_del(em);
+  if(evas)
+    evas_free(evas); }
+
+#endif /* HAVE_EVAS2 && HAVE_IMLIB2 */
+
+
+
+/******************************************************************************/
+
+#ifdef HAVE_EVAS2
 
 static void _live_frame(void *data,Evas_Object *o,void *einfo) {
   Evas *evas=(Evas *)data;
@@ -55,7 +191,43 @@ static void _live_frame(void *data,Evas_Object *o,void *einfo) {
   if(evas)
     evas_render(evas); }
 
+/* context for the live object, filled in the main thread */
+typedef struct {
+  Evas        *evas;
+  const char  *file;
+  int          w,h;
+  Evas_Object *result;
+} emotion_live_ctx;
+
+static void _emotion_live_in_main(void *data) {
+  emotion_live_ctx *c=(emotion_live_ctx *)data;
+  Evas_Object *o;
+
+  if((o=emotion_object_add(c->evas))&&emotion_object_init(o,NULL)) {
+    int w,h;
+
+    evas_object_smart_callback_add(o,"frame_decode",_live_frame,c->evas);
+    evas_object_move(o,0,0);
+    evas_object_resize(o,320,240);
+    emotion_object_smooth_scale_set(o,1);
+    evas_object_show(o);
+    emotion_object_file_set(o,c->file);
+    emotion_object_play_set(o,1);
+
+    emotion_object_size_get(o,&w,&h);
+    evas_object_resize(o,c->w,c->h);  /* fill the icon */
+    E(1,"now playing \"%s\" (%dx%d)\n",c->file,w,h);
+    c->result=o; }
+  else {
+    if(o)
+      evas_object_del(o);   /* created, but init failed */
+    E(0,"couldn't create live object for movie \"%s\"...\n",c->file); } }
+
+#endif /* HAVE_EVAS2 */
+
 /******************************************************************************/
+
+
 
 /**
  * initialize the thumbnailer-plugin and register what we can handle
@@ -63,27 +235,19 @@ static void _live_frame(void *data,Evas_Object *o,void *einfo) {
  * @param tp  an opaque thumbnailer-plugin struct
  */
 int thumbnail_plugin_init(thumbnail_plugin *tp) {
-  emotion_param *param;
-  static int     disclaimer=0;
+  static int disclaimer=0;
 
-  if(!(param=malloc(sizeof(emotion_param))))
-    return NOIR_FAIL;
-  memset(param,0,sizeof(emotion_param));
-
-  /* emotion_init() is deprecated since EFL 1.21 -- the first
-     emotion_object_add() initializes the library implicitly. */
-  param->inited=1;
-
-  thumbnail_plugin_data_set(tp,(void *)param);
+#ifdef HAVE_EVAS2
+  /* remember which thread is the GUI main thread; all Evas/Emotion
+     objects must be created there (cf. file comment) */
+  emotion_main_thread=pthread_self();
+#endif
 
   /* what we handle.  emotion delegates to whatever backend is installed
-     (gstreamer by default, xine optionally), so we register the common
+     (gstreamer by default, xine optionally), so register the common
      video containers. */
   thumbnail_plugin_register_mime(tp,"video/*",TP_PRIO_MID,TP_ICONS);
   thumbnail_plugin_register_mime(tp,"video/*",TP_PRIO_MID,TP_LIVE);
-  /* register the common containers by MIME-type as well, so the lookup
-     finds us even for files whose MIME was determined by content rather
-     than extension */
   thumbnail_plugin_register_mime(tp,"video/mp4",TP_PRIO_MID,TP_LIVE);
   thumbnail_plugin_register_mime(tp,"video/mpeg",TP_PRIO_MID,TP_LIVE);
   thumbnail_plugin_register_mime(tp,"video/x-matroska",TP_PRIO_MID,TP_LIVE);
@@ -111,25 +275,12 @@ int thumbnail_plugin_init(thumbnail_plugin *tp) {
  * @param tp  an opaque thumbnailer-plugin struct
  */
 int thumbnail_plugin_exit(thumbnail_plugin *tp) {
-  emotion_param *param=NULL;
-  void          *v;
-
-  if((thumbnail_plugin_data_get(tp,&v)==NOIR_SUCC)&&v) {
-    param=(emotion_param *)v;
-    free(param);
-    thumbnail_plugin_data_set(tp,NULL); }
-
+  (void)tp;
   return NOIR_SUCC; }
 
 
 
-#ifndef HAVE_IMLIB2
-/* no Imlib2: we cannot produce static thumbnails, but live video still
-   works.  the plugin API requires a make() function, so provide a stub. */
-int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **data) {
-  (void)tp; (void)e; (void)data;
-  return NOIR_NOTSUPP; }
-#else
+#ifdef HAVE_IMLIB2
 /**
  * create a static thumbnail image of a movie
  * @return an error-code
@@ -138,153 +289,35 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
  * @param data returns an Imlib-image (for TP_IMLIB)
  */
 int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **data) {
-  Evas        *evas=NULL;
-  Evas_Object *em=NULL;
-  const char  *file=e->origfile;
-  Imlib_Image  im=NULL;
-  double       len;
-  int          w=0,h=0,tries=0;
+#  ifdef HAVE_EVAS2
+  emotion_make_ctx c;
 
   (void)tp;
 
-  if(!file||!data)
+  if(!e->origfile||!data)
     return NOIR_NODATA;
 
-  /* we need a canvas to host the emotion object.  the thumbnailer is
-     threaded, so we create a private software-buffer canvas. */
-  if(!(evas=evas_new()))
-    return NOIR_FAIL;
-  if(evas_render_method_lookup("buffer"))
-    evas_output_method_set(evas,evas_render_method_lookup("buffer"));
-  evas_output_size_set(evas,16,16);
-  evas_output_viewport_set(evas,0,0,16,16);
+  memset(&c,0,sizeof(c));
+  c.file=e->origfile;
 
-  if(!(em=emotion_object_add(evas))) {
-    E(0,"couldn't create emotion object for \"%s\"...\n",file);
-    evas_free(evas);
+  emotion_in_main(_emotion_make_in_main,&c);
+
+  if(!c.im) {
+    E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
     return NOIR_FAIL; }
 
-  /* NULL module: use whatever backend is installed (gstreamer/xine) */
-  if(!emotion_object_init(em,NULL)) {
-    E(0,"couldn't init emotion (no gstreamer/xine backend?) for \"%s\"...\n",file);
-    evas_object_del(em);
-    evas_free(evas);
-    return NOIR_FAIL; }
-
-  emotion_object_file_set(em,file);
-
-  /* emotion loads asynchronously; poll the length until it is known
-     (emotion_object_ready() does not exist in modern EFL).  best-effort:
-     without spinning a main-loop we may not get a picture, but the
-     metadata will be there. */
-  while(tries++<MAX_TRIES) {
-    len=emotion_object_play_length_get(em);
-    if(len>0.0)
-      break;
-    usleep(100000); }
-
-  if(len<=0.0) {
-    E(1,"no video in \"%s\"?\n",file);
-    evas_object_del(em);
-    evas_free(evas);
-    return NOIR_FAIL; }
-
-  /* seek into the movie: trailers/logos are usually in the first frames */
-  emotion_object_position_set(em,len*SEEK_NUMERATOR/SEEK_DENOMINATOR);
-
-  emotion_object_size_get(em,&w,&h);
-  if((w<1)||(h<1)) {
-    E(1,"couldn't determine size of \"%s\"...\n",file);
-    evas_object_del(em);
-    evas_free(evas);
-    return NOIR_FAIL; }
-
-  {
-    /* the emotion smart object hosts an internal image that holds the
-       current frame (emotion_object_image_get() returns it) */
-    Evas_Object   *frame=emotion_object_image_get(em);
-    unsigned char *frame_data;
-    int            iw=0,ih=0;
-
-    if(!frame) {
-      E(1,"couldn't get frame image from \"%s\"...\n",file);
-      evas_object_del(em);
-      evas_free(evas);
-      return NOIR_FAIL; }
-
-    evas_object_image_size_get(frame,&iw,&ih);
-    frame_data=(unsigned char *)evas_object_image_data_get(frame,0);
-    if(frame_data&&iw>0&&ih>0) {
-      /* evas gives premultiplied ARGB in native endianness; imlib
-         wants ARGB in host byte order as well. */
-      im=imlib_create_image_using_data(iw,ih,(DATA32 *)frame_data);
-      if(im) {
-        imlib_context_set_image(im);
-        imlib_image_set_has_alpha(0); } }
-    else
-      E(1,"couldn't get frame data from \"%s\" (%dx%d)...\n",file,iw,ih); }
-
-  evas_object_del(em);
-  evas_free(evas);
-
-  if(!im) {
-    E(1,"couldn't create thumbnail of \"%s\"...\n",file);
-    return NOIR_FAIL; }
-
-  *data=im;
-  return NOIR_SUCC; }
+  *data=c.im;
+  return NOIR_SUCC;
+#  else
+  (void)tp; (void)e; (void)data;
+  return NOIR_NOTSUPP;
+#  endif
+}
 #endif /* HAVE_IMLIB2 */
 
 
 
-/**
- * create a live Evas object (video playing "inside" the icon)
- * @return NOIR_SUCC for success
- * @param tp    an opaque thumbnailer-plugin struct
- * @param e     the thumbnail struct describing what to create
- * @param what  TP_VIDEO and/or TP_AUDIO
- */
-typedef struct {
-  Evas              *evas;
-  Evidence_Thumb    *et;
-  Evas_Object       *result;
-  pthread_mutex_t    mtx;
-  pthread_cond_t     cond;
-  int                done;
-} emotion_live_req;
-
-/* create the emotion object; runs in the MAIN loop thread (Emotion
-   objects are main-loop-only -- creating them in a worker thread makes
-   the EO id invalid in the main domain and crashes on first use) */
-static void _emotion_live_in_main(void *data) {
-  emotion_live_req *r=(emotion_live_req *)data;
-  Evas_Object *o;
-
-  if((o=emotion_object_add(r->evas))&&emotion_object_init(o,NULL)) {
-    int w,h;
-
-    evas_object_smart_callback_add(o,"frame_decode",_live_frame,r->evas);
-    evas_object_move(o,0,0);
-    evas_object_resize(o,320,240);
-    emotion_object_smooth_scale_set(o,1);
-    evas_object_show(o);
-    emotion_object_file_set(o,r->et->origfile);
-    emotion_object_play_set(o,1);
-
-    emotion_object_size_get(o,&w,&h);
-    evas_object_resize(o,r->et->w,r->et->h);  /* fill the icon */
-    E(1,"now playing \"%s\" (%dx%d)\n",r->et->origfile,w,h);
-    r->result=o; }
-  else {
-    if(o)
-      evas_object_del(o);   /* created, but init failed */
-    E(0,"couldn't create live object for movie \"%s\"...\n",r->et->origfile); }
-
-  pthread_mutex_lock(&r->mtx);
-  r->done=1;
-  pthread_cond_signal(&r->cond);
-  pthread_mutex_unlock(&r->mtx); }
-
+#ifdef HAVE_EVAS2
 /**
  * create a live Evas object (video playing "inside" the icon)
  * @return NOIR_SUCC for success
@@ -293,39 +326,21 @@ static void _emotion_live_in_main(void *data) {
  * @param what  TP_VIDEO and/or TP_AUDIO
  */
 int thumbnail_plugin_live(thumbnail_plugin *tp,struct _Evidence_Thumb *e,thumbnail_plugin_capabilities what) {
+  emotion_live_ctx c;
+
   (void)tp;
 
   if(!(what&TP_VIDEO))
     return NOIR_NOTSUPP;
 
-  /* the thumbnailer may call us from a worker thread; emotion objects
-     must be created and used in the main loop.  if we are not in the
-     main loop, defer the creation there and wait for it. */
-  if(eina_main_loop_is()) {
-    emotion_live_req r;
-    memset(&r,0,sizeof(r));
-    r.evas=(Evas *)e->data;
-    r.et=e;
-    _emotion_live_in_main(&r);
-    e->data=r.result; }
-  else {
-    emotion_live_req *r=calloc(1,sizeof(emotion_live_req));
-    if(!r)
-      return NOIR_OOM;
-    r->evas=(Evas *)e->data;
-    r->et=e;
-    pthread_mutex_init(&r->mtx,NULL);
-    pthread_cond_init(&r->cond,NULL);
-    ecore_main_loop_thread_safe_call_async(_emotion_live_in_main,r);
-    pthread_mutex_lock(&r->mtx);
-    while(!r->done)
-      pthread_cond_wait(&r->cond,&r->mtx);
-    pthread_mutex_unlock(&r->mtx);
-    pthread_mutex_destroy(&r->mtx);
-    pthread_cond_destroy(&r->cond);
-    e->data=r->result;
-    free(r); }
+  memset(&c,0,sizeof(c));
+  c.evas=(Evas *)e->data;
+  c.file=e->origfile;
+  c.w=e->w;
+  c.h=e->h;
 
-  return e->data?NOIR_SUCC:NOIR_FAIL; }
+  emotion_in_main(_emotion_live_in_main,&c);
 
+  e->data=c.result;
+  return c.result?NOIR_SUCC:NOIR_FAIL; }
 #endif /* HAVE_EVAS2 */
