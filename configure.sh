@@ -29,7 +29,8 @@ JPEG=no;  if have_pc libjpeg; then JPEG=yes; JPEG_CFLAGS=$(pc_cflags libjpeg); J
 PCRE=no;  if have_pc libpcre; then PCRE=yes; PCRE_CFLAGS=$(pc_cflags libpcre); PCRE_LIBS=$(pc_libs libpcre); fi
 LIBMAGIC=no; if have_pc libmagic; then LIBMAGIC=yes; LIBMAGIC_CFLAGS=$(pc_cflags libmagic); LIBMAGIC_LIBS=$(pc_libs libmagic); fi
 EMOTION=no; if have_pc emotion; then EMOTION=yes; EMOTION_CFLAGS=$(pc_cflags emotion); EMOTION_LIBS=$(pc_libs emotion); fi
-EXTRACTOR=no; if have_pc extractor; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=$(pc_cflags extractor); EXTRACTOR_LIBS=$(pc_libs extractor); fi
+EXTRACTOR=no; for ex in extractor libextractor; do if have_pc $ex; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=$(pc_cflags $ex); EXTRACTOR_LIBS=$(pc_libs $ex); break; fi; done
+if [ "$EXTRACTOR" = no ] && [ -f /usr/include/extractor.h ]; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=""; EXTRACTOR_LIBS="-lextractor"; fi
 LIBCURL=no; if have_pc libcurl; then LIBCURL=yes; LIBCURL_CFLAGS=$(pc_cflags libcurl); LIBCURL_LIBS=$(pc_libs libcurl); fi
 X11=no;   if have_pc x11; then X11=yes; X11_CFLAGS=$(pc_cflags x11); X11_LIBS=$(pc_libs x11); fi
 
