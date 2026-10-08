@@ -64,10 +64,18 @@ GTK2_SUBDIRS := src/gui/gtk2/common src/gui/gtk2/common/tree \
 # them behind #if HAVE_EVAS2 || HAVE_GNOMECANVAS, so leave them out of a
 # canvas-less build
 ifneq ($(EFL),yes)
-GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(filter-out %shelf.c,$(wildcard $(d)/*.c)))
+GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(filter-out %shelf.c,$(wildcard $(d)/*.c))) \
+           src/gui/gtk2/about/about.c
 else
 GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(wildcard $(d)/*.c)) \
+           src/gui/gtk2/about/about.c \
            src/gui/gtk2/icon_view/icon_view.c
+endif
+# theme + theme_bind are Evas-guarded internally; every backend needs them
+GUI_SRC += src/gui/efl/common/theme.c src/gui/efl/common/theme_bind.c
+# without a canvas there is no icon-list backend; provide no-op stubs
+ifneq ($(EFL),yes)
+GUI_SRC += src/gui/iconlist_stub.c
 endif
 endif
 
