@@ -154,6 +154,9 @@ static void compat_gradient_render(compat_gradient *g) {
   (void)i;
   evas_object_image_size_set(g->img, w, h);
   evas_object_image_data_set(g->img, g->pixels);
+  /* plain image_add() objects start with a 0x0 fill-rect and draw
+     nothing unless the fill is set to cover the data */
+  evas_object_image_fill_set(g->img, 0, 0, w, h);
   evas_object_image_data_update_add(g->img, 0, 0, w, h); }
 
 void evas_object_gradient_color_add(Evas_Object *o, int r, int gr, int b, int a, int distance) {
