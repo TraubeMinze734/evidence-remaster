@@ -530,7 +530,7 @@ static gboolean gevas_motioned(GtkWidget *widget,GdkEventMotion *ev,gpointer dat
 
 
 
-    else if(il->mb==1) {  /* open rubber-band */
+    else if(il->mb==1&&((noir_theme *)ns->theme)->rubber_new&&((noir_theme *)ns->theme)->rubber_set) {  /* open rubber-band */
       il->rubber=((noir_theme *)ns->theme)->rubber_new(il);
       ((noir_theme *)ns->theme)->rubber_set(il,
                             il->mxb-sx,il->myb-sy,

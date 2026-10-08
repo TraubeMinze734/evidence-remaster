@@ -395,10 +395,10 @@ int tooltip_show_for(noir_sess *ns,char *file,int x,int y) {
     if(doshow) {
       noir_theme *theme=(noir_theme *)noir_sess_get_theme(ns);
 
-      tooltip->open=TTO_EVAS;
+      tooltip->open=(theme&&theme->tt_new)?TTO_EVAS:tooltip->open;
 
       gdk_window_get_origin(iv->icon_scroll->window,&mx,&my);
-      tooltip->efl=theme->tt_new(il,x-mx,y-my,fi);
+      tooltip->efl=(theme&&theme->tt_new)?theme->tt_new(il,x-mx,y-my,fi):NULL;
       gevas_queue_redraw((GtkgEvas *)iv->icon_view); }
 
     noir_sess_set_tooltip_flags(ns,noir_sess_get_tooltip_flags(ns)&(~TOOLTIP_MOUSE)); }
