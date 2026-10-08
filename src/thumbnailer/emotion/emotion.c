@@ -260,6 +260,12 @@ int thumbnail_plugin_init(thumbnail_plugin *tp) {
 
 #ifdef HAVE_EVAS2
   emotion_parent_pid=getpid();
+  /* hold a reference for the life of the plugin: every video object
+     deletion calls emotion_shutdown() (refcount--); without our +1
+     the count reaches zero with the first deleted object and GStreamer
+     is deinitialized while the app keeps running -- 'playbin' creation
+     fails from then on, and the final gst_deinit() asserts in glib */
+  emotion_init();
 #endif
 
   /* what we handle.  emotion delegates to whatever backend is installed
@@ -295,6 +301,9 @@ int thumbnail_plugin_init(thumbnail_plugin *tp) {
  */
 int thumbnail_plugin_exit(thumbnail_plugin *tp) {
   (void)tp;
+#ifdef HAVE_EVAS2
+  emotion_shutdown();   /* drop the reference taken in init() */
+#endif
   return NOIR_SUCC; }
 
 
