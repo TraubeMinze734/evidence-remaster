@@ -15,18 +15,18 @@
 # This is a (somewhat) complete listing of IAVA MIME Types and 
 # SuSE 9.1 MIME types.
 
-TEXT=gnuclient
-AUDIO=eplay
+TEXT=xdg-open
+AUDIO=xdg-open
 # AUDIO=xmms -e %s
 GIMP=gimp-remote
-IMAGE=entice
+IMAGE=xdg-open
 # IMAGE=xv
 # IMAGE=eog
-VIDEO=mplayer
-WP=soffice
+VIDEO=xdg-open
+WP=xdg-open
 # WP=swriter
 BROWSER=opera
-FALLBACK=gnuclient
+FALLBACK=xdg-open
 COMICS=qcomicbook
 
 
@@ -492,6 +492,10 @@ application/x-edu			keduca
 application/x-edugallery		keduca
 application/x-executable
 application/x-flac			totem
+audio/x-flac			$AUDIO
+audio/flac				$AUDIO
+audio/x-wav				$AUDIO
+audio/wav				$AUDIO
 application/x-font-afm
 application/x-font-bdf
 application/x-font-ghostscript

@@ -8,8 +8,11 @@ works with modern toolchains. Use the new lightweight build instead:
     ./evidence
 
 `configure.sh` uses pkg-config to detect optional dependencies and writes
-`config.h` and `config.mk`. Nothing is installed yet (`make install` follows
-in a later step).
+`config.h` and `config.mk`. Run `make install` to install the binary, setup files (mime.types,
+menus, providers), themes, icon-sets, plugins and theme engines below
+`PREFIX` (default `/usr/local`, override with `PREFIX=/usr make install`).
+The program finds its data via `PACKAGE_DATA_DIR`, which configure.sh
+derives from the same `PREFIX`.
 
 ## Detected dependencies
 
@@ -17,7 +20,8 @@ in a later step).
 |------------|-------------------------------|----------------------------------------|
 | GLib2      | glib-2.0                      | optional; util.c falls back to POSIX   |
 | GTK2 GUI   | gtk+-2.0                      | GTK2 backend                           |
-| EFL GUI    | evas, ecore, ecore-evas, edje | EFL backend (still WIP, see below)     |
+| EFL GUI    | evas, ecore, ecore-evas, edje | EFL backend (buffer-engine port)       |
+| cairo      | cairo                         | blits the Evas buffer into the GdkWindow |
 | Ecore-IPC  | ecore-ipc                     | IPC backend / evsh                     |
 | Imlib2     | imlib2                        | thumbnailer                            |
 | libpng     | libpng                        | thumbnailer (strongly recommended)    |
@@ -34,7 +38,13 @@ useful for CI and core testing.
 
 1. [x] New build system (`configure.sh` + `Makefile`), core builds headless
 2. [ ] GTK2 backend build (needs gtk+-2.0 dev packages; code unchanged)
-3. [ ] EFL backend: port from raw X11/Evas to ecore-evas; keep legacy
-       gradient API (`evas_object_gradient_*` still exists in EFL)
+3. [~] EFL backend: GTK2 icon-view/shelf embed an Evas canvas again.
+       The raw X11 engine setup was replaced by Evas' buffer engine, which
+       renders into a backing-store blitted to the GdkWindow via cairo
+       (modern EFL no longer installs the X11 engine headers).  The legacy
+       gradient API (`evas_object_gradient_*`), removed from modern EFL, is
+       reimplemented on top of EvasVG (see src/gui/efl/common/evas_compat.*);
+       the original theme engines build against it unmodified.  Engines
+       depending on dead libs (Edb, Ebits, Ebg) are not built.
 4. [ ] Replace/remove dead deps: Ebits, Edb (removed from EFL ~2004)
 5. [ ] Re-enable plugins (providers/actions/thumbnailer plugins)

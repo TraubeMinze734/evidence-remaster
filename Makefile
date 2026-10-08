@@ -71,10 +71,15 @@ GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(filter-out %shelf.c,$(wildcard $(d)/*.c
 else
 GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(wildcard $(d)/*.c)) \
            src/gui/gtk2/about/about.c \
-           src/gui/gtk2/icon_view/icon_view.c
+           src/gui/gtk2/icon_view/icon_view.c \
+           src/gui/gtk2/icon_view/gevas_light.c \
+           src/gui/gtk2/icon_view/gevas_bind.c
 endif
-# theme + theme_bind are Evas-guarded internally; every backend needs them
+# theme + theme_bind are Evas-guarded internally; every backend needs them.
+# with EFL they are already covered by EFL_COMMON_SRC below.
+ifneq ($(EFL),yes)
 GUI_SRC += src/gui/efl/common/theme.c src/gui/efl/common/theme_bind.c
+endif
 # without a canvas there is no icon-list backend; provide no-op stubs
 ifneq ($(EFL),yes)
 GUI_SRC += src/gui/iconlist_stub.c
@@ -83,8 +88,11 @@ endif
 
 # efl backend
 ifeq ($(EFL),yes)
+# core files may #include <Evas.h> behind #ifdef HAVE_EVAS2 as well
+# (ipc_main.c -> theme.h), so make the flags global like the GTK2 ones
+BASE_CFLAGS += $(EVAS_CFLAGS)
 EFL_COMMON_SRC := $(wildcard src/gui/efl/common/*.c)
-EFL_ICONVIEW_SRC := $(filter-out %gevas_light.c,$(wildcard src/gui/efl/icon_view/*.c))
+EFL_ICONVIEW_SRC := $(wildcard src/gui/efl/icon_view/*.c)
 endif
 
 OBJS := $(CORE_OBJ) $(GUI_COMMON_OBJ) $(THUMBNAILER_OBJ) $(GUI_SRC:.c=.o) \
@@ -99,14 +107,21 @@ endif
 # NOTE: 'all' must stay the first target in this file
 PLUGINS := lib/evidence/backend/posix.so lib/evidence/backend/null.so \
            lib/evidence/metadata/folder.so \
-           lib/evidence/actions/null.so
+           lib/evidence/actions/null.so \
+           lib/evidence/action/delete.so \
+           lib/evidence/action/rename.so \
+           lib/evidence/action/mkdir.so \
+           lib/evidence/action/info_dial.so \
+           lib/evidence/action/newwindow.so \
+           lib/evidence/action/backdrop.so \
+           lib/evidence/action/tile.so
 
 PLUG_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS)
 PLUG_LINK    := -shared -fPIC $(CORE_LIBS)
 
 lib/evidence/backend/posix.so: src/providers/backends/file_posix.c src/providers/backends/file_direct.c
 	@mkdir -p $(dir $@)
-	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ src/providers/backends/file_posix.c src/providers/backends/file_direct.c
+	$(CC) $(PLUG_CFLAGS) $(LIBMAGIC_CFLAGS) $(PLUG_LINK) -o $@ src/providers/backends/file_posix.c src/providers/backends/file_direct.c $(LIBMAGIC_LIBS)
 
 lib/evidence/backend/null.so: src/providers/backends/file_null.c
 	@mkdir -p $(dir $@)
@@ -119,14 +134,63 @@ lib/evidence/metadata/folder.so: src/providers/folder/folder.c
 lib/evidence/actions/null.so: src/actions/null/null.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/delete.so: src/actions/delete/delete.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/rename.so: src/actions/rename/rename.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/mkdir.so: src/actions/mkdir/mkdir.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/newwindow.so: src/actions/newwindow/newwindow.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/backdrop.so: src/actions/backdrop/backdrop.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/tile.so: src/actions/tile/tile.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+# properties dialog is GTK2-only; keep the plugin under action/ where
+# evidence.menu's internal handlers expect it
+lib/evidence/action/info_dial.so: src/actions/properties/info_dial.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
 
-plugins: $(PLUGINS)
+# --- EFL theme engines -------------------------------------------------------
+# engine plugins (scrollbars, tooltips, icon frames, rubber-bands, ...) are
+# dlopen()ed by theme.c/theme_bind.c from lib/evidence/gui/efl/engines/.
+# engines depending on long-removed EFL libs (Edb, Ebits, Ebg) are not built.
+ifeq ($(EFL),yes)
+ENGINE_SRC := $(filter-out src/gui/efl/engines/e_bg.c src/gui/efl/engines/sb_edb.c \
+                      src/gui/efl/engines/rb_edb.c src/gui/efl/engines/bg_ebg.c \
+                      src/gui/efl/engines/bg_ebg_trans.c \
+                      src/gui/efl/engines/ia_common.c src/gui/efl/engines/ix_textpath.c, \
+                      $(wildcard src/gui/efl/engines/*.c))
+# some engines consist of more than one source file (cf. engines/Makefile.am)
+ENGINE_EXTRA := ia_grey:ia_common ia_throb:ia_common ia_solid:ia_common \
+                ia_basic:ia_common ia_grow:ia_common ia_growfade:ia_common \
+                ia_creepy:ia_common ia_creepology:ia_common \
+                ix_rephormed:ix_textpath ix_LCARS:ix_textpath
+ENGINE_GET_EXTRA = $(strip $(foreach e,$(ENGINE_EXTRA),$(if $(filter $(1),$(firstword $(subst :, ,$(e)))), $(word 2,$(subst :, ,$(e))))))
+ENGINES := $(patsubst src/gui/efl/engines/%.c,lib/evidence/gui/efl/engines/%.so,$(ENGINE_SRC))
+ENGINE_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS) $(EVAS_CFLAGS) -I$(TOP)/src -I$(TOP)/src/gui/common \
+                 -I$(TOP)/src/gui/efl/common -I$(TOP)/src/gui/efl/engines -fPIC
+ENGINE_LINK := -shared
+lib/evidence/gui/efl/engines/%.so: src/gui/efl/engines/%.c \
+    src/gui/efl/engines/ia_common.c src/gui/efl/engines/ix_textpath.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(ENGINE_CFLAGS) $(ENGINE_LINK) -o $@ $< $(addsuffix .c,$(addprefix src/gui/efl/engines/,$(call ENGINE_GET_EXTRA,$*)))
+endif
+
+plugins: $(PLUGINS) $(ENGINES)
 
 # --- rules ---------------------------------------------------------------------
 all: evidence plugins
 
 evidence: $(OBJS)
-	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(X11_LIBS) $(LDLIBS)
+	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(CAIRO_LIBS) $(X11_LIBS) $(LDLIBS)
 
 %.o: %.c config.h
 	$(CC) $(BASE_CFLAGS) $(CORE_CFLAGS) \
@@ -144,4 +208,39 @@ clean:
 distclean: clean
 	rm -f config.h config.mk
 
-.PHONY: all clean distclean plugins
+# --- install -------------------------------------------------------------------
+# mimics the original autotools install-data-local (Makefile.am): binary,
+# setup files, data images, themes, icon-sets (from their tarballs), plugins,
+# theme engines.  set PREFIX=/usr for a system-wide install, the default is
+# /usr/local.  use DESTDIR for packaging/pseudo installs.
+PREFIX ?= /usr/local
+
+install: all
+	$(MAKE) do-install
+
+do-install:
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 0755 evidence $(DESTDIR)$(PREFIX)/bin/evidence
+	install -d $(DESTDIR)$(PREFIX)/share/evidence
+	install -m 0644 setup/mime.types setup/mime.alii setup/mime.icons \
+	                setup/mime.handlers setup/evidence.menu \
+	                setup/evidence.providers setup/evidence.handlers \
+	                $(DESTDIR)$(PREFIX)/share/evidence/
+	install -m 0644 data/*.png data/README $(DESTDIR)$(PREFIX)/share/evidence/
+	install -d $(DESTDIR)$(PREFIX)/share/evidence/themes
+	for t in tosh efm fishtank metallo nautilus rephormed LCARS OtE; do \
+	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
+	done
+	cp -r evidence.themes/fonts $(DESTDIR)$(PREFIX)/share/evidence/themes/ || true
+	ln -sfn rephormed $(DESTDIR)$(PREFIX)/share/evidence/themes/default
+	install -d $(DESTDIR)$(PREFIX)/share/evidence/icons
+	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS; do \
+	  tar -xzf icons/$$i.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || echo "iconset $$i skipped"; \
+	done
+	cd $(DESTDIR)$(PREFIX)/share/evidence/icons && ln -sfn rephormed default
+	tar -xzf icons/emblems.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || true
+	install -d $(DESTDIR)$(PREFIX)/lib/evidence
+	cp -r lib/evidence/* $(DESTDIR)$(PREFIX)/lib/evidence/
+	cd $(DESTDIR)$(PREFIX)/lib/evidence/backend && ln -sfn posix.so fsxs.so
+
+.PHONY: all clean distclean plugins install do-install

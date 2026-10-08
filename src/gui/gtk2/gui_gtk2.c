@@ -24,6 +24,9 @@
 #ifdef HAVE_EDJE
 #  include <Edje.h>
 #endif
+#ifdef HAVE_EVAS2
+#  include <Evas.h>
+#endif
 
 
 
@@ -1164,6 +1167,11 @@ noir_sess *gui_init(int argc,char *argv[]) {
   ecore_init();
   ecore_app_args_set(argc,(const char **)argv);
   prop_bag_prop_set(props_global,"feature-ecore","engaged");
+#endif
+#ifdef HAVE_EVAS2
+  /* modern EFL requires evas_init() before any Evas canvas is created */
+  evas_init();
+  prop_bag_prop_set(props_global,"feature-evas","engaged");
 #endif
 
   return ns; }

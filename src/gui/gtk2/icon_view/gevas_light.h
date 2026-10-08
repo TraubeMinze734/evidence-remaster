@@ -31,9 +31,9 @@
 
 
 
-#define GTK_GEVAS(obj)          GTK_CHECK_CAST(obj,gevas_get_type(),GtkgEvas)
-#define GTK_GEVAS_CLASS(klass)  GTK_CHECK_CLASS_CAST(klass,gevas_get_type(),GtkgEvasClass)
-#define GTK_IS_GEVAS(obj)       GTK_CHECK_TYPE(obj,gevas_get_type())
+#define GTK_GEVAS(obj)          G_TYPE_CHECK_INSTANCE_CAST(obj,gevas_get_type(),GtkgEvas)
+#define GTK_GEVAS_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST(klass,gevas_get_type(),GtkgEvasClass)
+#define GTK_IS_GEVAS(obj)       G_TYPE_CHECK_INSTANCE_TYPE(obj,gevas_get_type())
 
 
 
@@ -44,12 +44,9 @@
 
 
 #define gevas_set_size_request_x(gevas,val) \
-          gtk_object_set(GTK_OBJECT(gevas), \
-          GTK_GEVAS_SIZE_REQUEST_X,(gint)val,NULL);
-
+          G_STMT_START { ((GtkgEvas *)(gevas))->size_request_x=(gint)(val); } G_STMT_END
 #define gevas_set_size_request_y(gevas,val) \
-          gtk_object_set(GTK_OBJECT(gevas), \
-          GTK_GEVAS_SIZE_REQUEST_Y,(gint)val,NULL);
+          G_STMT_START { ((GtkgEvas *)(gevas))->size_request_y=(gint)(val); } G_STMT_END
 
 
 
@@ -76,6 +73,8 @@ struct _GtkgEvas {
   gboolean       updating;
 	
   GSList        *gevasobjlist;      /* collection of each GtkgEvas in a list.*/
+  void          *pixels;            /* backing-store handed to the buffer engine */
+  int            pixels_w,pixels_h; /* current size of the backing-store */
 };
 
 
@@ -95,6 +94,7 @@ struct _GtkgEvasClass {
 
 
 
+GType      gevas_get_type(void);
 Evas      *gevas_get_evas(GtkgEvas *);
 void       gevas_queue_redraw(GtkgEvas *);
 gint       gevas_view_redraw(gpointer data);

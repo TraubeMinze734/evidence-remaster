@@ -989,7 +989,7 @@ static int icon_view_str_listener(noir_prop_bag *b,noir_prop *e,int tag,void *da
           return NOIR_NOTFOUND; }
       val=x; }
 
-    if((GTK_WIDGET_MAPPED(iv->icon_view))&&!theme->bg_new(theme,il,val)) {
+    if((GTK_WIDGET_MAPPED(iv->icon_view))&&theme->bg_new&&!theme->bg_new(theme,il,val)) {
       E(0,"failed to update background...\n");
       il->bg=o; }
     else {
