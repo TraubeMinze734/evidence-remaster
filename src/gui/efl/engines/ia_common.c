@@ -7,6 +7,7 @@
 #include <Evas.h>
 #include <string.h>
 #include "icon_list.h"
+#include "evas_compat.h"   /* clamps colours to premultiplied */
 
 
 
