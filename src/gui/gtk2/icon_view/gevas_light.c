@@ -154,12 +154,14 @@ GType gevas_get_type(void) {
 
 
 
-/* modern EFL: pick the render method by name, fall back to buffer */
+/* modern EFL: the widget renders into a backing-store blitted to the
+   GdkWindow via cairo, so the buffer engine is the only usable method.
+   other engines (software_x11, gl_x11, ...) render into their own X
+   windows, which cannot be embedded into a GdkWindow. */
 static int gevas_render_method(Evas *e,const char *engine) {
-  int m=evas_render_method_lookup(engine?engine:"buffer");
-  if(!m) {
-    E(0,"engine \"%s\" not available, defaulting to \"buffer\"...\n",engine?engine:"buffer");
-    m=evas_render_method_lookup("buffer"); }
+  int m=evas_render_method_lookup("buffer");
+  if(engine&&strcmp(engine,"buffer")&&evas_render_method_lookup(engine))
+    E(0,"engine \"%s\" requested, but only \"buffer\" can be embedded into a GdkWindow; using buffer...\n",engine);
   return m; }
 
 
@@ -176,8 +178,8 @@ GtkWidget *gevas_new(char *engine) {
 
   if(!engine)
     engine=dflt_engine;
-  ev->evas_engine=strdup(engine);
-  evas_output_method_set(ev->evas,gevas_render_method(ev->evas,ev->evas_engine));
+  ev->evas_engine=strdup(dflt_engine);
+  evas_output_method_set(ev->evas,gevas_render_method(ev->evas,engine));
   E(3,"render-method %d\n",evas_output_method_get(ev->evas));
 
   return GTK_WIDGET(ev); }
