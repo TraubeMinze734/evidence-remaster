@@ -268,9 +268,12 @@ static int thumbnail_plugins_setup_uptodate_p(const char *setup) {
   if(!tnp)
     goto done;
 
-  thumbnail_plugins_setup_file_get_date(path,TNS_ICONS,    &icons);     if(tnp>icons)     ret=FALSE;
-  thumbnail_plugins_setup_file_get_date(path,TNS_LIVE,     &live);      if(tnp>live)      ret=FALSE;
-  thumbnail_plugins_setup_file_get_date(path,TNS_MOUSEOVER,&mouseover); if(tnp>mouseover) ret=FALSE;
+  /* '>=': an install that touches plugin dir and cache in the same second
+     must still trigger a regenerate, or newly installed thumbnailers
+     stay invisible until the next plugin-dir change */
+  thumbnail_plugins_setup_file_get_date(path,TNS_ICONS,    &icons);     if(tnp>=icons)     ret=FALSE;
+  thumbnail_plugins_setup_file_get_date(path,TNS_LIVE,     &live);      if(tnp>=live)      ret=FALSE;
+  thumbnail_plugins_setup_file_get_date(path,TNS_MOUSEOVER,&mouseover); if(tnp>=mouseover) ret=FALSE;
 
   free(path);
 
