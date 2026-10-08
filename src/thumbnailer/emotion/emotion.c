@@ -307,7 +307,13 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
     return NOIR_FAIL; }
 
   *data=c.im;
-  return NOIR_SUCC; }
+  return NOIR_SUCC;
+#  else
+  /* no Evas: no live canvas to grab a frame from */
+  (void)tp; (void)e; (void)data;
+  return NOIR_NOTSUPP;
+#  endif
+  }
 #endif /* HAVE_IMLIB2 */
 
 
