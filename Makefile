@@ -121,7 +121,7 @@ PLUG_LINK    := -shared -fPIC $(CORE_LIBS)
 
 lib/evidence/backend/posix.so: src/providers/backends/file_posix.c src/providers/backends/file_direct.c
 	@mkdir -p $(dir $@)
-	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ src/providers/backends/file_posix.c src/providers/backends/file_direct.c
+	$(CC) $(PLUG_CFLAGS) $(LIBMAGIC_CFLAGS) $(PLUG_LINK) -o $@ src/providers/backends/file_posix.c src/providers/backends/file_direct.c $(LIBMAGIC_LIBS)
 
 lib/evidence/backend/null.so: src/providers/backends/file_null.c
 	@mkdir -p $(dir $@)
@@ -178,7 +178,8 @@ ENGINES := $(patsubst src/gui/efl/engines/%.c,lib/evidence/gui/efl/engines/%.so,
 ENGINE_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS) $(EVAS_CFLAGS) -I$(TOP)/src -I$(TOP)/src/gui/common \
                  -I$(TOP)/src/gui/efl/common -I$(TOP)/src/gui/efl/engines -fPIC
 ENGINE_LINK := -shared
-lib/evidence/gui/efl/engines/%.so: src/gui/efl/engines/%.c config.h
+lib/evidence/gui/efl/engines/%.so: src/gui/efl/engines/%.c \
+    src/gui/efl/engines/ia_common.c src/gui/efl/engines/ix_textpath.c config.h
 	@mkdir -p $(dir $@)
 	$(CC) $(ENGINE_CFLAGS) $(ENGINE_LINK) -o $@ $< $(addsuffix .c,$(addprefix src/gui/efl/engines/,$(call ENGINE_GET_EXTRA,$*)))
 endif
