@@ -29,6 +29,7 @@
 #endif
 #ifdef HAVE_EVAS2
 #  include "gui/efl/common/theme.h"
+#  include "gui/efl/common/evas_compat.h"   /* gradient API removed from modern EFL */
 #endif
 
 
@@ -191,7 +192,7 @@ static int tooltip_evas_cancel(noir_sess *ns) {
   /* if the evas-tooltip has a gradient (to low-light the view before
      the actual tooltip is drawn), fade it out before deleting it. */
   while(e&&
-        strcmp(evas_object_type_get((Evas_Object *)e->data),"gradient"))
+        !evas_object_data_get((Evas_Object *)e->data,"compat-gradient"))
     e=e->next;
 
   if(e) {
@@ -394,10 +395,10 @@ int tooltip_show_for(noir_sess *ns,char *file,int x,int y) {
     if(doshow) {
       noir_theme *theme=(noir_theme *)noir_sess_get_theme(ns);
 
-      tooltip->open=TTO_EVAS;
+      tooltip->open=(theme&&theme->tt_new)?TTO_EVAS:tooltip->open;
 
       gdk_window_get_origin(iv->icon_scroll->window,&mx,&my);
-      tooltip->efl=theme->tt_new(il,x-mx,y-my,fi);
+      tooltip->efl=(theme&&theme->tt_new)?theme->tt_new(il,x-mx,y-my,fi):NULL;
       gevas_queue_redraw((GtkgEvas *)iv->icon_view); }
 
     noir_sess_set_tooltip_flags(ns,noir_sess_get_tooltip_flags(ns)&(~TOOLTIP_MOUSE)); }

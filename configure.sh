@@ -20,12 +20,14 @@ GLIB2=no; if have_pc glib-2.0; then GLIB2=yes; GLIB2_CFLAGS=$(pc_cflags glib-2.0
 
 # --- optional ------------------------------------------------------------
 GTK2=no;  if have_pc gtk+-2.0; then GTK2=yes; GTK2_CFLAGS=$(pc_cflags gtk+-2.0); GTK2_LIBS=$(pc_libs gtk+-2.0); fi
+CAIRO=no; if have_pc cairo; then CAIRO=yes; CAIRO_CFLAGS=$(pc_cflags cairo); CAIRO_LIBS=$(pc_libs cairo); fi
 EFL=no;   if have_pc evas ecore ecore-evas edje; then EFL=yes; EVAS_CFLAGS=$(pc_cflags evas ecore ecore-evas edje); EVAS_LIBS=$(pc_libs evas ecore ecore-evas edje); fi
 IMLIB2=no; if have_pc imlib2; then IMLIB2=yes; IMLIB2_CFLAGS=$(pc_cflags imlib2); IMLIB2_LIBS=$(pc_libs imlib2); fi
 ECOREIPC=no; if have_pc ecore-ipc; then ECOREIPC=yes; ECOREIPC_CFLAGS=$(pc_cflags ecore-ipc); ECOREIPC_LIBS=$(pc_libs ecore-ipc); fi
 PNG=no;   if have_pc libpng; then PNG=yes; PNG_CFLAGS=$(pc_cflags libpng); PNG_LIBS=$(pc_libs libpng); fi
 JPEG=no;  if have_pc libjpeg; then JPEG=yes; JPEG_CFLAGS=$(pc_cflags libjpeg); JPEG_LIBS=$(pc_libs libjpeg); fi
 PCRE=no;  if have_pc libpcre; then PCRE=yes; PCRE_CFLAGS=$(pc_cflags libpcre); PCRE_LIBS=$(pc_libs libpcre); fi
+LIBMAGIC=no; if have_pc libmagic; then LIBMAGIC=yes; LIBMAGIC_CFLAGS=$(pc_cflags libmagic); LIBMAGIC_LIBS=$(pc_libs libmagic); fi
 X11=no;   if have_pc x11; then X11=yes; X11_CFLAGS=$(pc_cflags x11); X11_LIBS=$(pc_libs x11); fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
@@ -71,6 +73,7 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   [ "$PNG" = yes ] && echo "#define HAVE_LIBPNG 1"
   [ "$JPEG" = yes ] && echo "#define HAVE_LIBJPEG 1"
   [ "$PCRE" = yes ] && echo "#define HAVE_PCRE 1"
+  [ "$LIBMAGIC" = yes ] && echo "#define HAVE_LIBMAGIC 1"
   [ "$X11" = yes ] && echo "#define HAVE_X 1"
   # views (old configure.in logic): tree-view and browser-view are always
   # built; the icon-view/shelf require a canvas (Evas or GnomeCanvas)
@@ -90,6 +93,8 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   echo "GTK2 ?= $GTK2"
   echo "GTK2_CFLAGS ?= $GTK2_CFLAGS"
   echo "GTK2_LIBS ?= $GTK2_LIBS"
+  echo "CAIRO_CFLAGS ?= $CAIRO_CFLAGS"
+  echo "CAIRO_LIBS ?= $CAIRO_LIBS"
   echo "EFL ?= $EFL"
   echo "EVAS_CFLAGS ?= $EVAS_CFLAGS"
   echo "EVAS_LIBS ?= $EVAS_LIBS"
@@ -108,6 +113,8 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   echo "PCRE ?= $PCRE"
   echo "PCRE_CFLAGS ?= $PCRE_CFLAGS"
   echo "PCRE_LIBS ?= $PCRE_LIBS"
+  echo "LIBMAGIC_CFLAGS ?= $LIBMAGIC_CFLAGS"
+  echo "LIBMAGIC_LIBS ?= $LIBMAGIC_LIBS"
   echo "GLIB2 ?= $GLIB2"
   echo "GLIB2_CFLAGS ?= $GLIB2_CFLAGS"
   echo "GLIB2_LIBS ?= $GLIB2_LIBS"
@@ -122,6 +129,7 @@ say "  GLib2         $GLIB2"
 say "  GTK2 backend  $GTK2"
 say "  EFL backend   $EFL"
 say "  Ecore-IPC     $ECOREIPC"
+say "  libmagic      $LIBMAGIC"
 say "  Imlib2        $IMLIB2"
 say "  libpng        $PNG"
 say "  libjpeg       $JPEG"

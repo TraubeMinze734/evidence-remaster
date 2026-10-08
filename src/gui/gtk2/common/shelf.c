@@ -433,7 +433,7 @@ gboolean shelf_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
         evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
         evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
         if(GTK_WIDGET_MAPPED(widget)) {
-          if(!il->bg) {
+          if(!il->bg&&il->theme&&((noir_theme *)il->theme)->bg_new) {
             noir_theme *theme=il->theme;
             gtk_widget_hide(widget); gtk_widget_show(widget);
             theme->bg_new(theme,il,theme->shelf_bg);
@@ -596,7 +596,7 @@ static int shelf_str_listener(noir_prop_bag *b,noir_prop *e,int tag,void *data) 
     E(1,"(%s->%s::=\"%s\", %p)\n",
       ((noir_theme *)theme)->name,key,val?val:"<null>",data);
 
-    if((GTK_WIDGET_MAPPED(sh->shelf_view))&&!theme->bg_new(theme,il,val))
+    if((GTK_WIDGET_MAPPED(sh->shelf_view))&&theme->bg_new&&!theme->bg_new(theme,il,val))
       il->bg=o;
     else {
       if(theme->shelf_bg)
