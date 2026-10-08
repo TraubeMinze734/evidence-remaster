@@ -16,7 +16,7 @@
 #include "file_lcl.h"
 
 #include "gui/efl/common/theme.h"
-#include "gui/gtk2/common/notebook.h"  /* START_IN_* */
+/* START_IN_* (noir_viewtype) lives in gui/common/session.h */
 
 #ifdef HAVE_EVAS2
 #  include <Evas.h>
