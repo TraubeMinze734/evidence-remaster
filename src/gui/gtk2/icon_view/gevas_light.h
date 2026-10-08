@@ -76,6 +76,8 @@ struct _GtkgEvas {
   gboolean       updating;
 	
   GSList        *gevasobjlist;      /* collection of each GtkgEvas in a list.*/
+  void          *pixels;            /* backing-store handed to the buffer engine */
+  int            pixels_w,pixels_h; /* current size of the backing-store */
 };
 
 

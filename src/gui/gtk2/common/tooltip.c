@@ -29,6 +29,7 @@
 #endif
 #ifdef HAVE_EVAS2
 #  include "gui/efl/common/theme.h"
+#  include "gui/efl/common/evas_compat.h"   /* gradient API removed from modern EFL */
 #endif
 
 
@@ -191,7 +192,7 @@ static int tooltip_evas_cancel(noir_sess *ns) {
   /* if the evas-tooltip has a gradient (to low-light the view before
      the actual tooltip is drawn), fade it out before deleting it. */
   while(e&&
-        strcmp(evas_object_type_get((Evas_Object *)e->data),"gradient"))
+        !evas_object_data_get((Evas_Object *)e->data,"compat-gradient"))
     e=e->next;
 
   if(e) {

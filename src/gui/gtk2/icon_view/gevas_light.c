@@ -42,14 +42,17 @@
 
 #include "gui/efl/icon_view/evas_bind.h"
 
-#include <gdk/gdkx.h>
 #include <gtk/gtk.h>
+#include <cairo.h>
 
 #include <Evas.h>
-#include <Evas_Engine_Software_X11.h>
-#ifdef HAVE_EVAS_GL
-#  include <Evas_Engine_GL_X11.h>
-#endif
+/* Modern EFL no longer installs the per-engine headers (Evas_Engine_Software_X11.h)
+   and its X11 engines render into their own windows, which cannot be embedded
+   into a GdkWindow.  Instead we use the buffer engine, which is still installed
+   with Evas (Evas_Engine_Buffer.h) and renders into a memory buffer we hand to
+   GDK in the expose handler. */
+#include <Evas_Engine_Buffer.h>
+#include <stdlib.h>         /* realloc(), free() */
 
 
 
@@ -81,6 +84,48 @@ static void gevas_class_init(GtkgEvasClass *);
 
 
 
+/* allocate the backing-store and attach it to the buffer engine */
+static int gevas_buffer_configure(GtkgEvas *ev,int w,int h) {
+  Evas                     *evas=ev->evas;
+  Evas_Engine_Info_Buffer  *einfo;
+
+  if(w<1) w=1;
+  if(h<1) h=1;
+
+  if((w!=ev->pixels_w)||(h!=ev->pixels_h)) {
+    void *pixels=realloc(ev->pixels,(size_t)w*h*sizeof(int));
+    if(!pixels)
+      return -1;
+    ev->pixels=pixels;
+    ev->pixels_w=w;
+    ev->pixels_h=h; }
+
+  evas_output_size_set(evas,w,h);
+  evas_output_viewport_set(evas,0,0,w,h);
+
+  if(!(einfo=(Evas_Engine_Info_Buffer *)evas_engine_info_get(evas)))
+    return -1;
+
+  einfo->info.depth_type=EVAS_ENGINE_BUFFER_DEPTH_ARGB32;
+  einfo->info.dest_buffer=ev->pixels;
+  einfo->info.dest_buffer_row_bytes=w*sizeof(int);
+  einfo->info.use_color_key=0;
+  einfo->info.alpha_threshold=0;
+  einfo->info.color_key_r=0;
+  einfo->info.color_key_g=0;
+  einfo->info.color_key_b=0;
+  einfo->info.func.new_update_region=NULL;
+  einfo->info.func.free_update_region=NULL;
+  einfo->info.func.switch_buffer=NULL;
+  einfo->info.switch_data=NULL;
+
+  if(!evas_engine_info_set(evas,(Evas_Engine_Info *)einfo))
+    return -1;
+
+  return 0; }
+
+
+
 /******************************************************************************/
 
 
@@ -91,7 +136,9 @@ static void gevas_init(GtkgEvas *ev) {
   ev->evas          =evas_new();
   ev->size_request_x=100;
   ev->size_request_y=100;
-  ev->gevasobjlist  =NULL; }
+  ev->gevasobjlist  =NULL;
+  ev->pixels        =NULL;
+  ev->pixels_w=ev->pixels_h=0; }
 
 
 
@@ -115,9 +162,19 @@ guint gevas_get_type(void) {
 
 
 
+/* modern EFL: pick the render method by name, fall back to buffer */
+static int gevas_render_method(Evas *e,const char *engine) {
+  int m=evas_render_method_lookup(engine?engine:"buffer");
+  if(!m) {
+    E(0,"engine \"%s\" not available, defaulting to \"buffer\"...\n",engine?engine:"buffer");
+    m=evas_render_method_lookup("buffer"); }
+  return m; }
+
+
+
 GtkWidget *gevas_new(char *engine) {
   GtkgEvas *ev;
-  char     *dflt_engine="software_x11";
+  char     *dflt_engine="buffer";
 
   if(!(ev=gtk_type_new(gevas_get_type())))
     return NULL;
@@ -127,12 +184,8 @@ GtkWidget *gevas_new(char *engine) {
 
   if(!engine)
     engine=dflt_engine;
-  else if(!evas_render_method_lookup(engine)) {
-    E(0,"engine \"%s\" not available, defaulting to \"%s\"...\n",
-      engine,dflt_engine);
-    engine=dflt_engine; }
   ev->evas_engine=strdup(engine);
-  evas_output_method_set(ev->evas,evas_render_method_lookup(ev->evas_engine));
+  evas_output_method_set(ev->evas,gevas_render_method(ev->evas,ev->evas_engine));
   E(3,"render-method %d\n",evas_output_method_get(ev->evas));
 
   return GTK_WIDGET(ev); }
@@ -220,10 +273,8 @@ static void gevas_map(GtkWidget *widget) {
   if(GTK_WIDGET_CLASS(parent_class)->map)
     (*GTK_WIDGET_CLASS(parent_class)->map)(widget);
 
-  evas_output_size_set(ev->evas,widget->allocation.width,
-                       widget->allocation.height);
-  evas_output_viewport_set(ev->evas,0,0,widget->allocation.width,
-                           widget->allocation.height); }
+  gevas_buffer_configure(ev,widget->allocation.width,
+                          widget->allocation.height); }
 
 
 
@@ -272,52 +323,14 @@ static void gevas_realize(GtkWidget *widget) {
 
   gdk_window_set_back_pixmap(widget->window,NULL,FALSE);
 
-  /*  evas_output_method_set(evas,evas_render_method_lookup("software_x11")); */
   evas_output_size_set(evas,widget->allocation.width,
                        widget->allocation.height);
   evas_output_viewport_set(evas,0,0,widget->allocation.width,
                            widget->allocation.height);
 
-  if(!strcmp(ev->evas_engine,"software_x11")) {
-    Evas_Engine_Info_Software_X11 *einfo=(Evas_Engine_Info_Software_X11*)evas_engine_info_get(evas);
-    GdkVisual                     *rootvis=gdk_visual_get_system();
-
-    if(!einfo) {
-      E(0,"could not initialize evas with engine \"%s\"\n",ev->evas_engine);
-      exit(EXIT_FAILURE); }
-
-    /* the following is specific to the engine */
-    einfo->info.display=GDK_WINDOW_XDISPLAY(widget->window);
-    einfo->info.visual=GDK_VISUAL_XVISUAL(gtk_widget_get_visual(widget));
-    einfo->info.colormap=GDK_COLORMAP_XCOLORMAP(gtk_widget_get_colormap(widget));
-    einfo->info.drawable=GDK_WINDOW_XWINDOW(widget->window);
-    einfo->info.depth=rootvis->depth;
-    einfo->info.rotation=0;
-    einfo->info.debug=0;
-
-    evas_engine_info_set(evas,(Evas_Engine_Info *)einfo); }
-
-#ifdef HAVE_EVAS_GL
-  else if(!strcmp(ev->evas_engine,"gl_x11")) {
-    Display                 *disp=GDK_WINDOW_XDISPLAY(widget->window);
-    Evas_Engine_Info_GL_X11 *einfo=(Evas_Engine_Info_GL_X11 *)evas_engine_info_get(evas);
-
-    if(!einfo) {
-      E(0,"could not initialize evas with engine \"%s\"\n",ev->evas_engine);
-      exit(-1); }
-
-    einfo->info.display =disp;
-    einfo->info.visual  =einfo->func.best_visual_get(disp,DefaultScreen(disp));
-    einfo->info.drawable=GDK_WINDOW_XWINDOW(widget->window);
-E(0,"Drawable: %p\n",widget->window);
-    einfo->info.colormap=einfo->func.best_colormap_get(disp,DefaultScreen(disp));
-    einfo->info.depth   =einfo->func.best_depth_get(disp,DefaultScreen(disp));
-
-    evas_engine_info_set(evas,(Evas_Engine_Info *)einfo); }
-#endif
-
-  else {
-    E(0,"could not initialize evas, built without engine \"%s\"\n",ev->evas_engine);
+  if(gevas_buffer_configure(ev,widget->allocation.width,
+                            widget->allocation.height)) {
+    E(0,"could not initialize evas with engine \"%s\"\n",ev->evas_engine);
     exit(EXIT_FAILURE); }
 
   /* FIXME: Maybe we can do something better than single buffering? */
@@ -381,13 +394,10 @@ static void gevas_size_allocate(GtkWidget *widget,GtkAllocation *allocation) {
   widget->allocation=*allocation;
 
   if(GTK_WIDGET_REALIZED(widget)) {
-    evas_output_size_set(ev->evas,widget->allocation.width,
-                                  widget->allocation.height);
-    evas_output_viewport_set(ev->evas,0,0,widget->allocation.width,
-                                          widget->allocation.height);
-
+    gevas_buffer_configure(ev,allocation->width,allocation->height);
+    gtk_widget_queue_draw(widget);
     gdk_window_move_resize(widget->window,allocation->x,allocation->y,
-                           allocation->width,allocation->height); }}
+                           allocation->width,allocation->height); } }
 
 
 
@@ -423,10 +433,34 @@ static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
   if(!GTK_WIDGET_DRAWABLE(widget))
     return;
 
-  evas_damage_rectangle_add(ev->evas,area->x,area->y,area->width,area->height);
+  /* make sure the backing-store matches the canvas size */
+  if((area->width!=ev->pixels_w)||(area->height!=ev->pixels_h))
+    return;   /* resize pending; will be repainted on size-allocate */
 
-  ev->evas_r=*area;
-  evas_obscured_clear(ev->evas); }
+  evas_damage_rectangle_add(ev->evas,area->x,area->y,area->width,area->height);
+  evas_obscured_clear(ev->evas);
+  evas_render(ev->evas);
+
+  /* blit the rendered buffer into the GdkWindow.  the evas buffer engine
+     writes premultiplied native-endian ARGB, which is exactly what cairo's
+     CAIRO_FORMAT_ARGB32 expects, so we can wrap it zero-copy. */
+  {
+    cairo_t         *cr;
+    cairo_surface_t *surface;
+
+    surface=cairo_image_surface_create_for_data((unsigned char *)ev->pixels,
+                                                CAIRO_FORMAT_ARGB32,
+                                                ev->pixels_w,ev->pixels_h,
+                                                ev->pixels_w*sizeof(int));
+    if((cr=gdk_cairo_create(widget->window))) {
+      cairo_set_source_surface(cr,surface,0,0);
+      cairo_rectangle(cr,area->x,area->y,area->width,area->height);
+      cairo_clip(cr);
+      cairo_paint(cr);
+      cairo_destroy(cr); }
+    cairo_surface_destroy(surface); }
+
+  ev->evas_r=*area; }
 
 
 
@@ -449,12 +483,15 @@ static gint gevas_expose(GtkWidget *widget,GdkEventExpose *event) {
 
 gint gevas_view_redraw(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
+  GdkRectangle area;
 
   if(!GTK_WIDGET_MAPPED(ev))
     return FALSE;
 
-  evas_obscured_clear(ev->evas);
-  evas_render(ev->evas);
+  area.x=area.y=0;
+  area.width=ev->pixels_w;
+  area.height=ev->pixels_h;
+  gevas_paint(ev,&area);
   ev->current_idle=0;
   return FALSE; }
 
@@ -484,7 +521,11 @@ static void gevas_destroy(GtkObject *object) {
       ev->evas_engine=NULL; }
     if(ev->evas) {
       evas_free(ev->evas);
-      ev->evas=NULL; }}
+      ev->evas=NULL; }
+    if(ev->pixels) {
+      free(ev->pixels);
+      ev->pixels=NULL;
+      ev->pixels_w=ev->pixels_h=0; }}
 
   GTK_OBJECT_CLASS(parent_class)->destroy(object); }
 

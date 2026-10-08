@@ -71,7 +71,9 @@ GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(filter-out %shelf.c,$(wildcard $(d)/*.c
 else
 GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(wildcard $(d)/*.c)) \
            src/gui/gtk2/about/about.c \
-           src/gui/gtk2/icon_view/icon_view.c
+           src/gui/gtk2/icon_view/icon_view.c \
+           src/gui/gtk2/icon_view/gevas_light.c \
+           src/gui/gtk2/icon_view/gevas_bind.c
 endif
 # theme + theme_bind are Evas-guarded internally; every backend needs them
 GUI_SRC += src/gui/efl/common/theme.c src/gui/efl/common/theme_bind.c
@@ -84,7 +86,7 @@ endif
 # efl backend
 ifeq ($(EFL),yes)
 EFL_COMMON_SRC := $(wildcard src/gui/efl/common/*.c)
-EFL_ICONVIEW_SRC := $(filter-out %gevas_light.c,$(wildcard src/gui/efl/icon_view/*.c))
+EFL_ICONVIEW_SRC := $(wildcard src/gui/efl/icon_view/*.c)
 endif
 
 OBJS := $(CORE_OBJ) $(GUI_COMMON_OBJ) $(THUMBNAILER_OBJ) $(GUI_SRC:.c=.o) \
@@ -120,13 +122,31 @@ lib/evidence/actions/null.so: src/actions/null/null.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
 
-plugins: $(PLUGINS)
+# --- EFL theme engines -------------------------------------------------------
+# engine plugins (scrollbars, tooltips, icon frames, rubber-bands, ...) are
+# dlopen()ed by theme.c/theme_bind.c from lib/evidence/gui/efl/engines/.
+# engines depending on long-removed EFL libs (Edb, Ebits, Ebg) are not built.
+ifeq ($(EFL),yes)
+ENGINE_SRC := $(filter-out src/gui/efl/engines/e_bg.c src/gui/efl/engines/sb_edb.c \
+                      src/gui/efl/engines/rb_edb.c src/gui/efl/engines/bg_ebg.c \
+                      src/gui/efl/engines/bg_ebg_trans.c, \
+                      $(wildcard src/gui/efl/engines/*.c))
+ENGINES := $(patsubst src/gui/efl/engines/%.c,lib/evidence/gui/efl/engines/%.so,$(ENGINE_SRC))
+ENGINE_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS) $(EVAS_CFLAGS) -I$(TOP)/src -I$(TOP)/src/gui/common \
+                 -I$(TOP)/src/gui/efl/common -I$(TOP)/src/gui/efl/engines -fPIC
+ENGINE_LINK := -shared
+lib/evidence/gui/efl/engines/%.so: src/gui/efl/engines/%.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(ENGINE_CFLAGS) $(ENGINE_LINK) -o $@ $<
+endif
+
+plugins: $(PLUGINS) $(ENGINES)
 
 # --- rules ---------------------------------------------------------------------
 all: evidence plugins
 
 evidence: $(OBJS)
-	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(X11_LIBS) $(LDLIBS)
+	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(CAIRO_LIBS) $(X11_LIBS) $(LDLIBS)
 
 %.o: %.c config.h
 	$(CC) $(BASE_CFLAGS) $(CORE_CFLAGS) \
