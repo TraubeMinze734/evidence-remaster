@@ -35,6 +35,7 @@
 
 
 #include <errno.h>
+#include <string.h>    /* memset() */
 
 #include <fcntl.h>    /* O_RDONLY */
 #include <ctype.h>    /* tolower() */
@@ -680,7 +681,7 @@ static inline int evidence_thumb_write_png(char *file,Evidence_Thumb *e,const ch
       ret=NOIR_OOM;
       goto done; }
 
-    if(setjmp(png_ptr->jmpbuf)) {
+    if(setjmp(png_jmpbuf(png_ptr))) {
       png_destroy_write_struct(&png_ptr,&info_ptr);
       ret=NOIR_FAIL;
       goto done; }
@@ -2087,15 +2088,16 @@ int thumbnail_enqueue(file_info *fi) {
 
 
 #else
+int thumbnail_lib_gc(void)           { return NOIR_SUCC; }
 
 int thumbnail_attribute_add(Evidence_Thumb *e,const char *key,const char *val) { return NOIR_NOTSUPP; }
-int thumbnail_find_for(char *tag,char **path) { if(path) *path=NULL; return NOIR_NOTSUPP; }
-int thumbnail_enqueue(file_info *fi) { return NOIR_NOTSUPP; }
+int thumbnail_find_for(const char *tag,char **path) { if(path) *path=NULL; (void)tag; return NOIR_NOTSUPP; }
+int thumbnail_enqueue(file_info *fi) { (void)fi; return NOIR_NOTSUPP; }
 int thumbnail_disk_gc(void)          { return NOIR_NOTSUPP; }
-int thumbnail_disk_gc_one(char *tag) { return NOIR_NOTSUPP; }
+int thumbnail_disk_gc_one(const char *tag) { (void)tag; return NOIR_NOTSUPP; }
 int thumbnail_disk_op(noir_job_type t,const char *src,const char *dst) { return NOIR_NOTSUPP; }
 void thumbnail_imlib_gc(void)        { }
-int thumbnail_init(void)             { return NOIR_IGNORED; }
+int thumbnail_init(const char *setup) { (void)setup; return NOIR_IGNORED; }
 int thumbnail_exit(void)             { return NOIR_IGNORED; }
 file_info *thumbnailer_pending(void) { return NULL; }
 

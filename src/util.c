@@ -12,10 +12,13 @@
 #endif
 #ifdef HAVE_GLIB2
 #  include <glib.h>
+#endif
+#ifdef HAVE_GTK2
 #  include <gtk/gtk.h>
 #endif
 
 #include <iconv.h>
+#include <limits.h>       /* PATH_MAX */
 #include <sys/types.h>
 #include <sys/time.h>    /* gimetimeofday() */
 #include <stdio.h>       /* NULL */
@@ -44,7 +47,6 @@
 
 
 
-#ifndef HAVE_ECORE
 
 typedef struct _sigchld_handler {
   int                     (*func)(void *data,int type,void *event);
@@ -137,15 +139,6 @@ void *util_sigchld_handler_del(void *handle) {
 
 
 
-#else
-
-void *util_sigchld_handler_add(int (*func)(void *data,int type,void *event),const void *data) {
-  return (void *)ecore_event_handler_add(ECORE_EVENT_EXE_EXIT,func,data); }
-
-void *util_sigchld_handler_del(void *handle) {
-  return (void *)ecore_event_handler_del(handle); }
-
-#endif
 
 
 
@@ -510,7 +503,7 @@ int util_parse_line(char *in,char **o1,char **o2,char **o3,char **o4) {
  * @param size - the buffer to rewrite
  */
 char *unit_size(char *size) {
-  gchar *unit="byte";
+  char *unit="byte";
 #ifdef HAVE_STRTOULL
   unsigned long long s=strtoull(size,NULL,10);
 #elif defined(HAVE_STRTOUL)
@@ -597,8 +590,12 @@ void qsrt(void *a[],void *data,int lo,int hi,int (*compare)(const void *,const v
  * @return 0 for no, !0 for yes
  */
 int events_pending(void) {
-#ifdef HAVE_GLIB2
+#if defined(HAVE_ECORE)
+  return ecore_main_loop_iterate(), 0;
+#elif defined(HAVE_GTK2)
   return gdk_events_pending();
+#elif defined(HAVE_GLIB2)
+  return g_main_context_pending(NULL);
 #else
 #  warning uh-oh love has come to town ### FIXME
 #endif
@@ -653,9 +650,11 @@ int timeout_remove(void **h) {
 
 
 void *idle_enter_add(int prio,int (*fun)(void *),void *data) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_ECORE)
   return ecore_idle_enterer_add(fun,data);
-#else
+#elif defined(HAVE_GLIB2)
+  { (void)prio; return (void *)g_idle_add((GSourceFunc)fun,data); }
+#elif defined(HAVE_GTK2)
   return (void *)gtk_idle_add_priority(prio,fun,data);
 #endif
   return NULL; }
@@ -669,10 +668,13 @@ int idle_enter_remove(void **h) {
   if(!(handle=*h))
     return NOIR_IGNORED;
   *h=NULL;
-#ifdef HAVE_ECORE
+#if defined(HAVE_ECORE)
   ecore_idle_enterer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
+  g_source_remove((guint)handle);
+  return NOIR_SUCC;
+#elif defined(HAVE_GTK2)
   gtk_idle_remove((guint)handle);
   return NOIR_SUCC;
 #endif
@@ -693,11 +695,17 @@ int mainloop_once(void) {
 
 
 int mainloop_quit(void) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_ECORE)
   ecore_main_loop_quit();
   return NOIR_SUCC;
-#elif defined(HAVE_GLIB2)
+#elif defined(HAVE_GTK2)
   gtk_main_quit();
+  return NOIR_SUCC;
+#elif defined(HAVE_GLIB2)
+  { GMainContext *ctx=g_main_context_default();
+    if(g_main_context_acquire(ctx)) {
+      g_main_context_wakeup(ctx);
+      g_main_context_release(ctx); } }
   return NOIR_SUCC;
 #endif
   return NOIR_NOTSUPP; }
