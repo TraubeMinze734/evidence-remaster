@@ -307,12 +307,7 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
     return NOIR_FAIL; }
 
   *data=c.im;
-  return NOIR_SUCC;
-#  else
-  (void)tp; (void)e; (void)data;
-  return NOIR_NOTSUPP;
-#  endif
-}
+  return NOIR_SUCC; }
 #endif /* HAVE_IMLIB2 */
 
 
