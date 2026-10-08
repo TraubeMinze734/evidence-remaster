@@ -61,11 +61,11 @@ static void compat_gradient_rebuild(compat_gradient *g) {
   evas_vg_gradient_linear_end_set(g->grad, cx + dx * len, cy + dy * len);
 
   for(i = 0; i < g->count; i++) {
+    /* EFL requires premultiplied stops (0 <= r,g,b <= a) */
     g->stops[i].offset = (double)i / (double)(g->count - 1);
-    g->stops[i].r = g->stops[i].r;
-    g->stops[i].g = g->stops[i].g;
-    g->stops[i].b = g->stops[i].b;
-    g->stops[i].a = g->stops[i].a; }
+    g->stops[i].r = (g->stops[i].r > g->stops[i].a) ? g->stops[i].a : g->stops[i].r;
+    g->stops[i].g = (g->stops[i].g > g->stops[i].a) ? g->stops[i].a : g->stops[i].g;
+    g->stops[i].b = (g->stops[i].b > g->stops[i].a) ? g->stops[i].a : g->stops[i].b; }
 
   evas_vg_gradient_stop_set((Evas_Vg_Gradient *)g->grad, g->stops, g->count);
 
