@@ -28,6 +28,8 @@
 #ifdef HAVE_EVAS2
 #  include <Evas.h>
 #  include <Emotion.h>
+#  include <Ecore.h>
+#  include <pthread.h>
 #  ifdef HAVE_IMLIB2
 #    include <Imlib2.h>
 #  endif
@@ -242,32 +244,88 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
  * @param e     the thumbnail struct describing what to create
  * @param what  TP_VIDEO and/or TP_AUDIO
  */
-int thumbnail_plugin_live(thumbnail_plugin *tp,struct _Evidence_Thumb *e,thumbnail_plugin_capabilities what) {
+typedef struct {
+  Evas              *evas;
+  Evidence_Thumb    *et;
+  Evas_Object       *result;
+  pthread_mutex_t    mtx;
+  pthread_cond_t     cond;
+  int                done;
+} emotion_live_req;
+
+/* create the emotion object; runs in the MAIN loop thread (Emotion
+   objects are main-loop-only -- creating them in a worker thread makes
+   the EO id invalid in the main domain and crashes on first use) */
+static void _emotion_live_in_main(void *data) {
+  emotion_live_req *r=(emotion_live_req *)data;
   Evas_Object *o;
+
+  if((o=emotion_object_add(r->evas))&&emotion_object_init(o,NULL)) {
+    int w,h;
+
+    evas_object_smart_callback_add(o,"frame_decode",_live_frame,r->evas);
+    evas_object_move(o,0,0);
+    evas_object_resize(o,320,240);
+    emotion_object_smooth_scale_set(o,1);
+    evas_object_show(o);
+    emotion_object_file_set(o,r->et->origfile);
+    emotion_object_play_set(o,1);
+
+    emotion_object_size_get(o,&w,&h);
+    evas_object_resize(o,r->et->w,r->et->h);  /* fill the icon */
+    E(1,"now playing \"%s\" (%dx%d)\n",r->et->origfile,w,h);
+    r->result=o; }
+  else {
+    if(o)
+      evas_object_del(o);   /* created, but init failed */
+    E(0,"couldn't create live object for movie \"%s\"...\n",r->et->origfile); }
+
+  pthread_mutex_lock(&r->mtx);
+  r->done=1;
+  pthread_cond_signal(&r->cond);
+  pthread_mutex_unlock(&r->mtx); }
+
+/**
+ * create a live Evas object (video playing "inside" the icon)
+ * @return NOIR_SUCC for success
+ * @param tp    an opaque thumbnailer-plugin struct
+ * @param e     the thumbnail struct describing what to create
+ * @param what  TP_VIDEO and/or TP_AUDIO
+ */
+int thumbnail_plugin_live(thumbnail_plugin *tp,struct _Evidence_Thumb *e,thumbnail_plugin_capabilities what) {
   (void)tp;
 
   if(!(what&TP_VIDEO))
     return NOIR_NOTSUPP;
 
-  if((o=emotion_object_add((Evas *)e->data))&&emotion_object_init(o,NULL)) {
-    int w,h;
-
-    evas_object_smart_callback_add(o,"frame_decode",_live_frame,e->data);
-    evas_object_move(o,0,0);
-    evas_object_resize(o,320,240);
-    emotion_object_smooth_scale_set(o,1);
-    evas_object_show(o);
-    emotion_object_file_set(o,e->origfile);
-    emotion_object_play_set(o,1);
-
-    emotion_object_size_get(o,&w,&h);
-    evas_object_resize(o,e->w,e->h);  /* fill the icon */
-    E(1,"now playing \"%s\" (%dx%d)\n",e->origfile,w,h); }
+  /* the thumbnailer may call us from a worker thread; emotion objects
+     must be created and used in the main loop.  if we are not in the
+     main loop, defer the creation there and wait for it. */
+  if(eina_main_loop_is()) {
+    emotion_live_req r;
+    memset(&r,0,sizeof(r));
+    r.evas=(Evas *)e->data;
+    r.et=e;
+    _emotion_live_in_main(&r);
+    e->data=r.result; }
   else {
-    if(o)
-      evas_object_del(o);   /* created, but init failed */
-    E(0,"couldn't create live object for movie \"%s\"...\n",e->origfile); }
+    emotion_live_req *r=calloc(1,sizeof(emotion_live_req));
+    if(!r)
+      return NOIR_OOM;
+    r->evas=(Evas *)e->data;
+    r->et=e;
+    pthread_mutex_init(&r->mtx,NULL);
+    pthread_cond_init(&r->cond,NULL);
+    ecore_main_loop_thread_call(_emotion_live_in_main,r);
+    pthread_mutex_lock(&r->mtx);
+    while(!r->done)
+      pthread_cond_wait(&r->cond,&r->mtx);
+    pthread_mutex_unlock(&r->mtx);
+    pthread_mutex_destroy(&r->mtx);
+    pthread_cond_destroy(&r->cond);
+    e->data=r->result;
+    free(r); }
 
-  return (e->data=o)?NOIR_SUCC:NOIR_FAIL; }
+  return e->data?NOIR_SUCC:NOIR_FAIL; }
 
 #endif /* HAVE_EVAS2 */
