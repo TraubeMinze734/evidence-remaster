@@ -202,6 +202,14 @@ typedef struct {
   Evas_Object *result;
 } emotion_live_ctx;
 
+/* the tooltip engine deletes its elements when the tooltip closes; stop
+   the pipeline before the object is freed, or GStreamer keeps pushing
+   frames to a sink whose object is gone ('LOCKED') and trashes state */
+static void _emotion_live_del_cb(void *data,Evas *e,Evas_Object *o,void *einfo) {
+  (void)data; (void)e; (void)einfo;
+  emotion_object_play_set(o,0);
+  emotion_object_file_set(o,NULL); }
+
 static void _emotion_live_in_main(void *data) {
   emotion_live_ctx *c=(emotion_live_ctx *)data;
   Evas_Object *o;
@@ -210,6 +218,7 @@ static void _emotion_live_in_main(void *data) {
     int w,h;
 
     evas_object_smart_callback_add(o,"frame_decode",_live_frame,c->evas);
+    evas_object_event_callback_add(o,EVAS_CALLBACK_DEL,_emotion_live_del_cb,NULL);
     evas_object_move(o,0,0);
     evas_object_resize(o,320,240);
     emotion_object_smooth_scale_set(o,1);
