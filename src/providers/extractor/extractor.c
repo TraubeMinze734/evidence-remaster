@@ -63,7 +63,16 @@ void *meta_plugin_init(void) {
   /* run the extractor plugins in-process: by default libextractor forks
    helper processes, which is fatal in a GTK/X client (children inherit
    the X connection; 'Fatal IO error 11' on exit). */
+  /* EXTRACTOR_OPTION_IN_PROCESS keeps plugins in our process (out-of-process
+   would fork helpers, which is fatal for an X client).  the gstreamer
+   extractor plugin additionally spins its own GLib main-loop inside
+   EXTRACTOR_extract() to pull frames -- that loop dispatches pending GTK
+   events and re-enters our tooltip/dialog code while it is still running
+   (gtk_label_set_text on a half-built tooltip => crash).  we exclude it:
+   for movies, evidence's own Emotion thumbnailer provides the metadata,
+   and the remaining extractors (exif, id3, png, ... ) are loop-free. */
   struct EXTRACTOR_PluginList *extractors=EXTRACTOR_plugin_add_defaults(EXTRACTOR_OPTION_IN_PROCESS);
+  extractors=EXTRACTOR_plugin_remove(extractors,"gstreamer");
 
 #ifdef EVIL_HACK
   if(!sp) {
