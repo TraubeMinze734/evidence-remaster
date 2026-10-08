@@ -371,7 +371,7 @@ static int download(const char *url,const char *lcl) {
   if(!libcurl) {
     E(0,"download impossible, libcurl not loaded...\n");
     return NOIR_NOTSUPP; }
-  if(!(cu=libcurl->curl_easy_init())) {
+  if(!(cu=libcurl->cc_curl_easy_init())) {
     E(0,"curl_easy_init() failed for \"%s\", \"%s\"!?\n",url,lcl);
     return NOIR_FAIL; }
 
@@ -387,31 +387,31 @@ static int download(const char *url,const char *lcl) {
     goto done; }
   cont:
 
-  libcurl->curl_easy_setopt(cu,CURLOPT_VERBOSE,    (debug>0)?1:0);
-  libcurl->curl_easy_setopt(cu,CURLOPT_NOPROGRESS, (debug>=0)?0:1);
-  libcurl->curl_easy_setopt(cu,CURLOPT_HEADER,     0);
-  libcurl->curl_easy_setopt(cu,CURLOPT_NOSIGNAL,   1L);
-  libcurl->curl_easy_setopt(cu,CURLOPT_WRITEDATA,  th);
-  libcurl->curl_easy_setopt(cu,CURLOPT_ERRORBUFFER,em);
-  libcurl->curl_easy_setopt(cu,CURLOPT_FAILONERROR,1);
-  libcurl->curl_easy_setopt(cu,CURLOPT_URL,        url);
-  libcurl->curl_easy_setopt(cu,CURLOPT_NETRC,      CURL_NETRC_OPTIONAL);
-  libcurl->curl_easy_setopt(cu,CURLOPT_FOLLOWLOCATION,1);
-  libcurl->curl_easy_setopt(cu,CURLOPT_UNRESTRICTED_AUTH,0);
-  libcurl->curl_easy_setopt(cu,CURLOPT_MAXREDIRS,  8);
-  libcurl->curl_easy_setopt(cu,CURLOPT_REFERER,    url);
-  libcurl->curl_easy_setopt(cu,CURLOPT_USERAGENT,  "evidence");
-  libcurl->curl_easy_setopt(cu,CURLOPT_COOKIEFILE, "");
-  libcurl->curl_easy_setopt(cu,CURLOPT_PRIVATE,    lcl);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_VERBOSE,    (debug>0)?1:0);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_NOPROGRESS, (debug>=0)?0:1);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_HEADER,     0);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_NOSIGNAL,   1L);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_WRITEDATA,  th);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_ERRORBUFFER,em);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_FAILONERROR,1);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_URL,        url);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_NETRC,      CURL_NETRC_OPTIONAL);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_FOLLOWLOCATION,1);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_UNRESTRICTED_AUTH,0);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_MAXREDIRS,  8);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_REFERER,    url);
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_USERAGENT,  "evidence");
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_COOKIEFILE, "");
+  libcurl->cc_curl_easy_setopt(cu,CURLOPT_PRIVATE,    lcl);
 
-  if((cr=libcurl->curl_easy_perform(cu))!=CURLE_OK) {
+  if((cr=libcurl->cc_curl_easy_perform(cu))!=CURLE_OK) {
     E(0,"failed for \"%s\": %d - %s\n",url,cr,em);
     ret=NOIR_FAIL; }
 
   fclose(th);
 
  done:
-  libcurl->curl_easy_cleanup(cu);
+  libcurl->cc_curl_easy_cleanup(cu);
   return ret;
 #else
   E(0,"download impossible with this backend, built without support for libcurl...\n");
@@ -1278,7 +1278,7 @@ const char *backend_get_mime(const char *myfile) {
 static const char *mon_inotify="I_NOTIFY";
 static int inotify_fd=-1;
 
-static int inotify_init(void) {
+static int inotify_init_all(void) {
   if(inotify_fd>=0)
     return NOIR_SUCC;
   if((inotify_fd=inotify_init1(IN_NONBLOCK))<0) {
@@ -2870,16 +2870,16 @@ static int libcurl_init(void) {
 
   ret=dlmulti("remote URLs","libcurl.so",RTLD_NOW,&libcurl->handle,
               "!curl_global_init !curl_global_cleanup "
-              "!curl_easy_init   !curl_easy_cleanup "
-              "!curl_easy_setopt !curl_easy_perform "
-              "?curl_easy_getinfo",
+              "!cc_curl_easy_init   !cc_curl_easy_cleanup "
+              "!cc_curl_easy_setopt !cc_curl_easy_perform "
+              "?cc_curl_easy_getinfo",
               &libcurl->curl_global_init,
               &libcurl->curl_global_cleanup,
-              &libcurl->curl_easy_init,
-              &libcurl->curl_easy_cleanup,
-              &libcurl->curl_easy_setopt,
-              &libcurl->curl_easy_perform,
-              &libcurl->curl_easy_getinfo);
+              &libcurl->cc_curl_easy_init,
+              &libcurl->cc_curl_easy_cleanup,
+              &libcurl->cc_curl_easy_setopt,
+              &libcurl->cc_curl_easy_perform,
+              &libcurl->cc_curl_easy_getinfo);
 
   if((ret!=NOIR_SUCC)&&(ret!=NOIR_PARTIAL)) {
     if(ret==NOIR_NODATA)
@@ -2972,7 +2972,7 @@ int backend_init(q_head *qh) {
   mime_init();
 
 #ifdef I_NOTIFY
-  inotify_init();
+  inotify_init_all();
 #endif
 #ifdef F_NOTIFY
   fnotify_init();

@@ -42,11 +42,11 @@ struct _libcurl {
   void       *handle;
   CURLcode    (*curl_global_init)(long flags);
   void        (*curl_global_cleanup)(void);
-  CURL       *(*curl_easy_init)(void);
-  void        (*curl_easy_cleanup)(CURL *handle);
-  CURLcode    (*curl_easy_setopt)(CURL *handle,CURLoption option,...);
-  CURLcode    (*curl_easy_perform)(CURL *handle);
-  CURLcode    (*curl_easy_getinfo)(CURL *curl, CURLINFO info,...);
+  CURL       *(*cc_curl_easy_init)(void);
+  void        (*cc_curl_easy_cleanup)(CURL *handle);
+  CURLcode    (*cc_curl_easy_setopt)(CURL *handle,CURLoption option,...);
+  CURLcode    (*cc_curl_easy_perform)(CURL *handle);
+  CURLcode    (*cc_curl_easy_getinfo)(CURL *curl, CURLINFO info,...);
 };
 #endif
 
