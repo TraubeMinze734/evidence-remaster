@@ -191,9 +191,14 @@ static int tooltip_evas_cancel(noir_sess *ns) {
 
   /* if the evas-tooltip has a gradient (to low-light the view before
      the actual tooltip is drawn), fade it out before deleting it. */
-  while(e&&
-        !evas_object_data_get((Evas_Object *)e->data,"compat-gradient"))
-    e=e->next;
+  while(e) {
+    Evas_Object *eo=(Evas_Object *)e->data;
+    if(!eo||!evas_object_data_get(eo,"compat-gradient")) {
+      /* not one of ours (e.g. a live video object from a thumbnailer) --
+         don't touch it here, just skip to the next element */
+      e=e->next;
+      continue; }
+    break; }
 
   if(e) {
     o=(Evas_Object *)e->data;         /* fade out */
