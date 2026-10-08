@@ -72,6 +72,13 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   [ "$JPEG" = yes ] && echo "#define HAVE_LIBJPEG 1"
   [ "$PCRE" = yes ] && echo "#define HAVE_PCRE 1"
   [ "$X11" = yes ] && echo "#define HAVE_X 1"
+  # views (old configure.in logic): tree-view and browser-view are always
+  # built; the icon-view/shelf require a canvas (Evas or GnomeCanvas)
+  echo "#define WITH_TREEVIEW 1"
+  echo "#define WITH_BROWSERVIEW 1"
+  if [ "$EFL" = yes ]; then
+    echo "#define WITH_ICONVIEW 1"
+  fi
 } > config.h
 
 # --- config.mk --------------------------------------------------------------
