@@ -24,6 +24,14 @@
 
 #ifndef EVAS_LEGACY_GRADIENT
 
+/* Old Evas accepted non-premultiplied colours (e.g. 255,255,255,159 for
+   semi-transparent symlinks); modern EFL requires 0 <= R,G,B <= A and
+   logs a costly backtrace-dump for every violation.  Clamp at call-site
+   for all code including this header (the theme engines). */
+#define evas_object_color_set(obj,r,g,b,a) \
+  evas_object_color_set((obj), \
+    ((r)>(a))?(a):(r), ((g)>(a))?(a):(g), ((b)>(a))?(a):(b), (a))
+
 Evas_Object *evas_object_gradient_add(Evas *e);
 void evas_object_gradient_color_add(Evas_Object *o, int r, int g, int b, int a, int distance);
 void evas_object_gradient_colors_clear(Evas_Object *o);

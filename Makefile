@@ -107,7 +107,14 @@ endif
 # NOTE: 'all' must stay the first target in this file
 PLUGINS := lib/evidence/backend/posix.so lib/evidence/backend/null.so \
            lib/evidence/metadata/folder.so \
-           lib/evidence/actions/null.so
+           lib/evidence/actions/null.so \
+           lib/evidence/actions/delete.so \
+           lib/evidence/actions/rename.so \
+           lib/evidence/actions/mkdir.so \
+           lib/evidence/action/info_dial.so \
+           lib/evidence/actions/newwindow.so \
+           lib/evidence/actions/backdrop.so \
+           lib/evidence/actions/tile.so
 
 PLUG_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS)
 PLUG_LINK    := -shared -fPIC $(CORE_LIBS)
@@ -127,6 +134,29 @@ lib/evidence/metadata/folder.so: src/providers/folder/folder.c
 lib/evidence/actions/null.so: src/actions/null/null.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/actions/delete.so: src/actions/delete/delete.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/actions/rename.so: src/actions/rename/rename.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/actions/mkdir.so: src/actions/mkdir/mkdir.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/actions/newwindow.so: src/actions/newwindow/newwindow.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/actions/backdrop.so: src/actions/backdrop/backdrop.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/actions/tile.so: src/actions/tile/tile.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+# properties dialog is GTK2-only; keep the plugin under action/ where
+# evidence.menu's internal handlers expect it
+lib/evidence/action/info_dial.so: src/actions/properties/info_dial.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
 
 # --- EFL theme engines -------------------------------------------------------
 # engine plugins (scrollbars, tooltips, icon frames, rubber-bands, ...) are
