@@ -990,9 +990,55 @@ file_info *file_info_insert(file_info *root,const char *origtag) {
           anchor=fi; }
 
         else {
-          E(0,"(%s): parent (\"%s\") not found!  (XL: %s)\n",tag,n,dir_accel_get(n)?"yes":"no");
+#ifdef WITH_DOT_DIR
+          /* hidden files live in a virtual dot-folder ("/dir/.").  the
+             backend reads them straight from the real directory, which
+             does not contain that folder, so it may hand us the hidden
+             files before anyone created the dot-folder.  create it on
+             demand here -- same attributes as file_info_vfolder() --
+             and parent the new file into it. */
+          /* 'n' is the dirname after truncation at the LAST delimiter,
+             so for a hidden file in DIR it is exactly the dot-folder's
+             tag "DIR/." -- with no trailing slash.  the parent lookup
+             above failed because that dot-folder does not exist yet.
+             fetch the dot-folder's PARENT (DIR), create the dot-folder
+             under it, and parent the new file into it. */
+          size_t pl=strlen(n);
+          if(pl>=2&&n[pl-1]=='.'&&n[pl-2]==DIR_DELIMITER) {
+            file_info *df;
+            char *dt,*gp;
+            if((dt=strdup(n))&&(gp=malloc(pl))) {
+              memcpy(gp,n,pl-2); gp[pl-2]='\0';   /* parent: "DIR" */
+              if(!*gp) {                          /* "/.": the root */
+                gp[0]=DIR_DELIMITER; gp[1]='\0'; }
+              if((df=file_info_fetch(root,gp))&&
+                 (parent=file_info_new(DIR_DOT,dt))) {
+                  parent->have   =FF_NAME|FF_STAT|FF_MIME|FF_META;
+                  parent->flags |=IF_DOTDIR|IF_VIRTUAL;
+                  file_info_set_intrinsic(parent,posixmd_virtual(S_IFDIR|S_IRUSR|S_IWUSR|S_IXUSR));
+                  file_info_set_mime(parent,MIME_VFOLDER);
+#  ifdef HASH_DIRS
+                  dir_accel_set(parent);
+#  endif
+                  parent->parent=df;
+                  parent->next=df->child;
+                  df->child=parent;
+                  df->children++;
+                  df->have|=FF_NAME;
+                  /* parent the new file into the dot-folder */
+                  ret=fi;
+                  fi->parent=parent;
+                  fi->next=parent->child;
+                  parent->child=fi;
+                  parent->children++;
+                  E(3,"created dot-folder \"%s\" for \"%s\"\n",dt,tag); }
+                free(gp); free(dt); } }
+          if(!ret)
+#endif
+          {
+            E(0,"(%s): parent (\"%s\") not found!  (XL: %s)\n",tag,n,dir_accel_get(n)?"yes":"no");
   /*      abort(); */
-        }}
+          } }}
 
       free(n); }                          /* search done, release search key */
 
