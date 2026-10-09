@@ -173,7 +173,7 @@ GType gevas_get_type(void) {
 static int gevas_render_method(Evas *e,const char *engine) {
   int m=evas_render_method_lookup("buffer");
   if(engine&&strcmp(engine,"buffer")&&evas_render_method_lookup(engine))
-    E(0,"engine \"%s\" requested, but only \"buffer\" can be embedded into a GdkWindow; using buffer...\n",engine);
+    E(3,"engine \"%s\" requested, but only \"buffer\" can be embedded into a GdkWindow; using buffer...\n",engine);
   return m; }
 
 

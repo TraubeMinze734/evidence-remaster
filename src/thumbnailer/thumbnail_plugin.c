@@ -466,7 +466,7 @@ int thumbnail_plugins_init(const char *setup) {
     return NOIR_OOM;
 
   if(!thumbnail_plugins_setup_uptodate_p(setup)) {
-    E(0,"regenerating lists of thumbnailers...\n");
+    E(3,"regenerating lists of thumbnailers...\n");
     thumbnail_plugins_setup_regenerate(setup); }
   else {
     thumbnail_plugins_setup_load(setup,TNS_ICONS,    TP_ICONS);

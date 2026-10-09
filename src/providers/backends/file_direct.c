@@ -2604,7 +2604,16 @@ void *backend_opendir(char *path) {
 int backend_readdir(void **data,char *dir_path,char *fp) {
   struct dirent *de,buf;
 
-  if(data&&*data&&(READDIR((DIR *)*data,buf,de))) {
+  if(data&&*data) {
+    /* skip "." and ".." -- the model cannot parent them (they'd become
+       dot-dirs whose parent never exists, spamming 'parent not found') */
+    do {
+      if(!(READDIR((DIR *)*data,buf,de))) {
+        E(2,"no more files in \"%s\"...\n",dir_path);
+        return NOIR_NOFILE; }
+    } while(!strcmp(de->d_name,DIR_MYSELF)||!strcmp(de->d_name,DIR_PARENT)); }
+
+  {
     size_t      ld=strlen(dir_path);
 
     if((ld==1)&&(dir_path[0]=='/'))

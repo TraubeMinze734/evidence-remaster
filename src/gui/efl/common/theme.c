@@ -674,7 +674,7 @@ static int theme_parse(noir_sess *ns) {
           paths_add(ns->iconset); }
         else {
           ns->iconset=NULL;
-          E(0,"broken icon-set \"%s\" -- \"%s\" not found or not a directory; trying to fall back to default...\n",v,is?is:"<none>");
+          E(3,"broken icon-set \"%s\" -- \"%s\" not found or not a directory; trying to fall back to default...\n",v,is?is:"<none>");
           if(is)
             free(is); }
 
