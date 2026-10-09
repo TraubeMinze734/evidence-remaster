@@ -39,6 +39,7 @@
 #include <stdio.h>       /* stderr */
 #include <ctype.h>       /* isspace() */
 #include <dirent.h>      /* dirent */
+#include <stdint.h>     /* intptr_t for monitor handles */
 #include <sys/stat.h>    /* stat */
 #include <sys/types.h>
 #include <unistd.h>
@@ -1164,14 +1165,16 @@ static const char *mime_get_by_magic(const char *file) {
  * @return a MIME-type that must not be free()d
  * @param file  a file-name
  */
-static const char *mime_get_by_ext(const char *file) {
-  char *ext,*ret=NULL;
+static const char *mime_get_by_ext(const char *origfile) {
+  char       *ext,*lcl,*p;
+  const char *ret=NULL;
 
-  if(file&&*file&&!(ret=mime_chk_backup(file))) {
-    if((file=file_if_local(file))) {
-      char *p=strrchr(file,DIR_DELIMITER);
-      if(ht_mime&&(ext=strrchr(file,'.'))&&(!p||(p<ext))) {
-	ret=(char *)hash_table_fetch(ht_mime,&ext[1]); }}}
+  if(origfile&&*origfile&&!(ret=mime_chk_backup(origfile))) {
+    if((lcl=file_if_local(origfile))) {
+      if((p=strrchr(lcl,DIR_DELIMITER))&&
+         (ext=strrchr(lcl,'.'))&&(p<ext))
+        ret=(char *)hash_table_fetch(ht_mime,&ext[1]);
+      free(lcl); }}
   return ret; }
 
 
@@ -1349,7 +1352,7 @@ static int inotify_check(void) {
         continue;
 
       while(m) {
-        if((m->system==mon_inotify)&&(event->wd==(int)m->handle)) {
+        if((m->system==mon_inotify)&&(event->wd==(int)(intptr_t)m->handle)) {
           noir_file_event e=NOIR_MONITOR_DK;
 
           if(event->mask&(IN_MODIFY|IN_CLOSE_WRITE))
@@ -1406,7 +1409,7 @@ static void fnotify_handler(int sig,siginfo_t *si,void *data) {
 
   while(e) {
     if(fnotify_fd==((int)e->handle)) {
-      e->data=(void *)(((int)e->data)+1);
+      e->data=(void *)(intptr_t)(((int)(intptr_t)e->data)+1);
       if((sig==SIGIO)&&!(sigio_warn&1)) {
         sigio_warn|=1;
         E(0,"overflow (SIGIO) for \"%s\"...\n",e->want); }
@@ -1667,7 +1670,7 @@ static void backend_monitor_poll(void) {
         /* without FAM, we cannot easily determine deletes, so we re-read
            the whole dir for now */
         if(S_ISDIR(st.st_mode))
-          e->data=(void *)(((int)e->data)+1);  /* put on Q */
+          e->data=(void *)(intptr_t)(((int)(intptr_t)e->data)+1);  /* put on Q */
         else
           file_monitor_event(e,NOIR_MONITOR_CHG,e->have); }}
     else  /* can't stat, must've been deleted */
@@ -1827,13 +1830,13 @@ int backend_monitor_remove(noir_monitor *m) {
 #ifdef I_NOTIFY
   if(m->system==mon_inotify) {
     m->system=NULL;
-    return inotify_remove((int)m->handle); }
+    return inotify_remove((int)(intptr_t)m->handle); }
 #endif
 
 #ifdef F_NOTIFY
   if(m->system==mon_fnotify) {
     m->system=NULL;
-    return fnotify_remove((int)m->handle); }
+    return fnotify_remove((int)(intptr_t)m->handle); }
 #endif
 
 #ifdef HAVE_FAM
@@ -2548,7 +2551,7 @@ int backend_get_info(void *ns,const char *myfile,file_info **info) {
       (*info)->flags&=~(IF_NOUSE|IF_NOMODIFY);
       (*info)->flags|=get_xs(file,i->uid,i->gid,l?l:m);
 
-      { char *p=strrchr(file,'/');
+      { const char *p=strrchr(file,'/');
         (*info)->flags&=~IF_DOTDIR;
         if(p&&!strcmp(p,"/."))
           (*info)->flags|=IF_DOTDIR; }
