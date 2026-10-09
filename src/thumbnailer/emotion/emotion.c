@@ -28,6 +28,7 @@
 #include "errors.h"
 #include "util.h"            /* esprintf() */
 #include "evidence.h"        /* main_thread (the GUI thread) */
+#include "imlib.h"           /* IMLIB_ACQUIRE/RELEASE (imlib_mutex) */
 
 #include "../thumbnail_private.h"
 #include "../thumbnail_plugin.h"
@@ -36,6 +37,7 @@
 #  include <Evas.h>
 #  include <Ecore.h>
 #  include <Emotion.h>
+#  include <Evas_Engine_Buffer.h>
 #  include <pthread.h>
 #  ifdef HAVE_IMLIB2
 #    include <Imlib2.h>
@@ -44,7 +46,8 @@
 
 #define SEEK_NUMERATOR   8   /* take a frame from ~ 8% into the movie */
 #define SEEK_DENOMINATOR 10
-#define MAX_TRIES         8  /* how often to poll while emotion opens the file */
+#define EMOTION_OPEN_TIMEOUT 10.0 /* seconds to wait for emotion to open a file */
+#define EMOTION_SEEK_SETTLE   0.5  /* seconds to let the decoder settle after a seek */
 
 /******************************************************************************/
 
@@ -113,78 +116,132 @@ static void emotion_in_main(void (*cb)(void *),void *data) {
 
 #if defined(HAVE_EVAS2) && defined(HAVE_IMLIB2)
 
-/* context for the static thumbnail, filled in the main thread */
+/* context for the static thumbnail.  the object is created in the main
+   thread, but the frame is not grabbed synchronously:  emotion needs the
+   ecore mainloop to iterate to make progress (it reports the stream length
+   via smart callbacks), so a blocking poll inside the dispatched callback can
+   never observe the result -- which is why the old code always failed with
+   "no video in ...".  we now drive the whole thing from an ecore_timer in the
+   main loop; the thumbnailer worker just waits on a condvar until the
+   machine is done (success or timeout). */
 typedef struct {
-  const char  *file;
-  Imlib_Image  im;
+  const char    *file;
+  unsigned char *frame;      /* plain copy of the frame, or NULL */
+  int            iw,ih;
+  Ecore_Timer   *timer;
+  Evas          *evas;
+  Evas_Object   *em;
+  double         deadline;   /* absolute time when we give up */
+  double         seek_at;    /* when the seek was issued */
+  int            seek_set;
+  pthread_mutex_t mtx;
+  pthread_cond_t  cond;
+  int             done;
 } emotion_make_ctx;
+
+static void _emotion_make_finish(emotion_make_ctx *c) {
+  if(c->timer) {
+    ecore_timer_del(c->timer);
+    c->timer=NULL; }
+  if(c->em) {
+    /* stop the pipeline before tearing down, or GStreamer keeps pushing
+       frames into an object that is about to go away (EO errors) */
+    emotion_object_play_set(c->em,0);
+    emotion_object_file_set(c->em,NULL);
+    evas_object_del(c->em);
+    c->em=NULL; }
+  if(c->evas) {
+    evas_free(c->evas);
+    c->evas=NULL; }
+  pthread_mutex_lock(&c->mtx);
+  c->done=1;
+  pthread_cond_signal(&c->cond);
+  pthread_mutex_unlock(&c->mtx); }
+
+static Eina_Bool _emotion_make_timer(void *data) {
+  emotion_make_ctx *c=(emotion_make_ctx *)data;
+  double now=ecore_time_get();
+  double len=emotion_object_play_length_get(c->em);
+  if(len<=0.0) {
+    /* still opening: give the mainloop time to breathe */
+    if(now<c->deadline)
+      return ECORE_CALLBACK_RENEW;
+    E(1,"no video in \"%s\"? (open timed out)\n",c->file);
+    goto done; }
+  if(!c->seek_set) {
+    /* seek into the movie: trailers/logos are usually in the first frames */
+    emotion_object_position_set(c->em,len*SEEK_NUMERATOR/SEEK_DENOMINATOR);
+    c->seek_set=1;
+    c->seek_at=now;
+    return ECORE_CALLBACK_RENEW; }
+  /* after the seek, give the decoder time to actually produce the frame;
+     grabbing too early yields garbage */
+  if(now<c->seek_at+EMOTION_SEEK_SETTLE&&now<c->deadline)
+    return ECORE_CALLBACK_RENEW;
+  /* render the emotion object into a buffer WE own.  do not poke at the
+     object's internal image (emotion_object_image_get()):  its contents
+     are only loosely defined while the pipeline is moving, which showed
+     up as white noise.  the buffer engine gives us a tightly packed
+     premultiplied ARGB32 surface with the row-bytes we choose, exactly
+     like the gevas canvas does for the GUI. */
+  {
+    int vw=0,vh=0;
+    emotion_object_size_get(c->em,&vw,&vh);
+    if(vw>0&&vh>0) {
+      Evas_Engine_Info_Buffer *einfo;
+      if(!(c->frame=malloc((size_t)vw*vh*4))) {
+        E(0,"out of memory for \"%s\" thumbnail!?\n",c->file);
+        goto done; }
+      evas_output_size_set(c->evas,vw,vh);
+      evas_output_viewport_set(c->evas,0,0,vw,vh);
+      evas_object_move(c->em,0,0);
+      evas_object_resize(c->em,vw,vh);
+      if((einfo=(Evas_Engine_Info_Buffer *)evas_engine_info_get(c->evas))) {
+        einfo->info.depth_type=EVAS_ENGINE_BUFFER_DEPTH_ARGB32;
+        einfo->info.dest_buffer=c->frame;
+        einfo->info.dest_buffer_row_bytes=vw*4;
+        einfo->info.use_color_key=0;
+        einfo->info.alpha_threshold=0;
+        if(evas_engine_info_set(c->evas,(Evas_Engine_Info *)einfo)) {
+          evas_render(c->evas);
+          c->iw=vw; c->ih=vh;
+          goto done; } } }
+    /* couldn't render -- if we still have time, try again next tick */
+    if(c->frame) { free(c->frame); c->frame=NULL; }
+    if(now<c->deadline)
+      return ECORE_CALLBACK_RENEW;
+    E(1,"couldn't render a frame for \"%s\"...\n",c->file); }
+ done:
+  _emotion_make_finish(c);
+  return ECORE_CALLBACK_CANCEL; }
 
 static void _emotion_make_in_main(void *data) {
   emotion_make_ctx *c=(emotion_make_ctx *)data;
-  Evas             *evas=NULL;
-  Evas_Object      *em=NULL;
-  const char       *file=c->file;
-  double            len=0.0;
-  int               tries=0;
-
   /* a private buffer canvas hosts the emotion object */
-  if(!(evas=evas_new()))
-    return;
+  if(!(c->evas=evas_new()))
+    goto done;
   if(evas_render_method_lookup("buffer"))
-    evas_output_method_set(evas,evas_render_method_lookup("buffer"));
-  evas_output_size_set(evas,16,16);
-  evas_output_viewport_set(evas,0,0,16,16);
-
-  if(!(em=emotion_object_add(evas)))
+    evas_output_method_set(c->evas,evas_render_method_lookup("buffer"));
+  evas_output_size_set(c->evas,16,16);
+  evas_output_viewport_set(c->evas,0,0,16,16);
+  if(!(c->em=emotion_object_add(c->evas)))
     goto done;
   /* NULL module: use whatever backend is installed (gstreamer/xine) */
-  if(!emotion_object_init(em,NULL)) {
-    E(0,"couldn't init emotion (no gstreamer/xine backend?) for \"%s\"...\n",file);
+  if(!emotion_object_init(c->em,NULL)) {
+    E(0,"couldn't init emotion (no gstreamer/xine backend?) for \"%s\"...\n",c->file);
     goto done; }
-
-  emotion_object_file_set(em,file);
-
-  /* emotion loads asynchronously; poll the length until it is known */
-  while(tries++<MAX_TRIES) {
-    len=emotion_object_play_length_get(em);
-    if(len>0.0)
-      break;
-    usleep(100000); }
-
-  if(len<=0.0) {
-    E(1,"no video in \"%s\"?\n",file);
-    goto done; }
-
-  /* seek into the movie: trailers/logos are usually in the first frames */
-  emotion_object_position_set(em,len*SEEK_NUMERATOR/SEEK_DENOMINATOR);
-
-  {
-    /* the emotion smart object hosts an internal image with the frame */
-    Evas_Object   *frame=emotion_object_image_get(em);
-    unsigned char *frame_data;
-    int            iw=0,ih=0;
-
-    if(!frame) {
-      E(1,"couldn't get frame image from \"%s\"...\n",file);
-      goto done; }
-
-    evas_object_image_size_get(frame,&iw,&ih);
-    frame_data=(unsigned char *)evas_object_image_data_get(frame,0);
-    if(frame_data&&iw>0&&ih>0) {
-      Imlib_Image wrap=imlib_create_image_using_data(iw,ih,(DATA32 *)frame_data);
-      if(wrap) {
-        imlib_context_set_image(wrap);
-        /* copy: the canvas (and with it frame_data) goes away below */
-        c->im=imlib_create_cropped_image(0,0,iw,ih);
-        imlib_free_image_and_decache(); } }
-    else
-      E(1,"couldn't get frame data from \"%s\" (%dx%d)...\n",file,iw,ih); }
-
+  /* grace period: slow disks and big files need far more than the old 0.8s
+     of usleep()ing; the timer keeps the GUI responsive throughout */
+  c->deadline=ecore_time_get()+EMOTION_OPEN_TIMEOUT;
+  evas_object_move(c->em,0,0);
+  evas_object_resize(c->em,16,16);
+  evas_object_show(c->em);
+  emotion_object_file_set(c->em,c->file);
+  if((c->timer=ecore_timer_add(0.1,_emotion_make_timer,c)))
+    return;
+  /* no timers available!?  fall back to giving up */
  done:
-  if(em)
-    evas_object_del(em);
-  if(evas)
-    evas_free(evas); }
+  _emotion_make_finish(c); }
 
 #endif /* HAVE_EVAS2 && HAVE_IMLIB2 */
 
@@ -328,13 +385,55 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
   memset(&c,0,sizeof(c));
   c.file=e->origfile;
 
-  emotion_in_main(_emotion_make_in_main,&c);
+  pthread_mutex_init(&c.mtx,NULL);
+  pthread_cond_init(&c.cond,NULL);
+  /* _emotion_make_in_main only starts the machine; the worker waits here
+     until the main-loop timer finishes (frame grabbed or timed out).  the
+     mainloop stays responsive the whole time, and the timeout bounds the
+     wait so a broken file can never wedge the thumbnailer thread. */
 
-  if(!c.im) {
+  /* our caller (thumbnailer_generate) holds the imlib mutex while we
+     run.  the GUI thread needs that very mutex for its own imlib work
+     (theme engines like ix_rephormed, loading thumbnails), so waiting
+     for the GUI thread WITH the mutex held is a guaranteed ABBA
+     deadlock:  GUI waits for the mutex, we wait for the GUI.  drop the
+     mutex for the duration of the handshake and re-acquire it after;
+     the frame data is a plain malloc() copy, no imlib state is touched
+     while we don't hold the lock. */
+  IMLIB_RELEASE;
+  emotion_in_main(_emotion_make_in_main,&c);
+  pthread_mutex_lock(&c.mtx);
+  while(!c.done)
+    pthread_cond_wait(&c.cond,&c.mtx);
+  pthread_mutex_unlock(&c.mtx);
+  IMLIB_ACQUIRE;
+  pthread_mutex_destroy(&c.mtx);
+  pthread_cond_destroy(&c.cond);
+
+
+  if(!c.frame) {
     E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
     return NOIR_FAIL; }
-
-  *data=c.im;
+  /* build an imlib image from the copied pixels.  we run in the worker
+     thread, which already holds the imlib mutex, so imlib use is safe
+     here.  we do NOT use imlib_create_image_using_data() + free():  the
+     wrapper does not own the pixels, and the crop/free/decache dance
+     around it confused imlib's ownership bookkeeping and kept crashing
+     with double free.  imlib_create_image() allocates an image imlib
+     owns outright; we copy our frame in and are done.  (Evas delivers
+     premultiplied BGRA, which is exactly the byte order imlib uses
+     internally, so a plain memcpy is also correct.) */
+  {
+    Imlib_Image im=imlib_create_image(c.iw,c.ih);
+    if(im) {
+      imlib_context_set_image(im);
+      memcpy(imlib_image_get_data(),c.frame,(size_t)c.iw*c.ih*4);
+      imlib_image_set_has_alpha(1); }
+    free(c.frame);
+    if(!im) {
+      E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
+      return NOIR_FAIL; }
+    *data=im; }
   return NOIR_SUCC;
 #  else
   /* no Evas: no live canvas to grab a frame from */
