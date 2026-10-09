@@ -17,7 +17,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 config.guess \
 		       evidence-icons-basic.tar.bz2 \
 		       evidence-icons-extra.tar.bz2
 
-EXTRA_DIST=evidence.lsm.in evidence.spec.in evidence.spec evidence.texinfo evidence.1 evidence.xpm config.h DEPENDENCIES HELP_DEVELOP
+EXTRA_DIST=evidence.desktop evidence.lsm.in evidence.spec.in evidence.spec evidence.texinfo evidence.1 evidence.xpm config.h DEPENDENCIES HELP_DEVELOP
 
 # build and install the .info pages
 #info_TEXINFOS = evidence.texinfo
