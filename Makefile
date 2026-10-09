@@ -257,10 +257,12 @@ do-install:
 	for t in tosh efm fishtank metallo nautilus rephormed LCARS OtE; do \
 	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
 	done
+	# fonts is a data directory (referenced as themes/fonts/...), not a
+	# theme; keep it out of --theme's namespace
 	cp -r evidence.themes/fonts $(DESTDIR)$(PREFIX)/share/evidence/themes/ || true
 	ln -sfn rephormed $(DESTDIR)$(PREFIX)/share/evidence/themes/default
 	install -d $(DESTDIR)$(PREFIX)/share/evidence/icons
-	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS; do \
+	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS ento_64 gorilla_36 gorilla_48 gorilla_72; do \
 	  tar -xzf icons/$$i.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || echo "iconset $$i skipped"; \
 	done
 	# some 2005 tarballs shipped without the actual images (tosh_96, indigo_96);
