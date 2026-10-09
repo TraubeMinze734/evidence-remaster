@@ -190,6 +190,14 @@ lib/evidence/gui/efl/engines/%.so: src/gui/efl/engines/%.c \
 	$(CC) $(ENGINE_CFLAGS) $(ENGINE_LINK) -o $@ $< $(addsuffix .c,$(addprefix src/gui/efl/engines/,$(call ENGINE_GET_EXTRA,$*)))
 endif
 
+# --- Imlib2 image thumbnailer (static image thumbs) ---------------------------
+ifeq ($(IMLIB2),yes)
+lib/evidence/thumbnailer/imlib.so: src/thumbnailer/imlib_loaders/imlib.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) -shared -o $@ $< $(IMLIB2_LIBS) $(CORE_LIBS)
+PLUGINS += lib/evidence/thumbnailer/imlib.so
+endif
+
 # --- Emotion movie thumbnailer (live + static video thumbs) -------------------
 ifeq ($(EMOTION),yes)
 lib/evidence/thumbnailer/emotion.so: src/thumbnailer/emotion/emotion.c config.h
