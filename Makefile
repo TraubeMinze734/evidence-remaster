@@ -256,5 +256,11 @@ do-install:
 	install -d $(DESTDIR)$(PREFIX)/lib/evidence
 	cp -r lib/evidence/* $(DESTDIR)$(PREFIX)/lib/evidence/
 	cd $(DESTDIR)$(PREFIX)/lib/evidence/backend && ln -sfn posix.so fsxs.so
+	install -d $(DESTDIR)$(PREFIX)/share/applications
+	install -m 0644 desktop/evidence.desktop $(DESTDIR)$(PREFIX)/share/applications/
+	for s in 16x16 32x32 48x48 64x64 128x128; do \
+	  install -d $(DESTDIR)$(PREFIX)/share/icons/hicolor/$$s/apps && \
+	  install -m 0644 desktop/hicolor/$$s/apps/evidence.png $(DESTDIR)$(PREFIX)/share/icons/hicolor/$$s/apps/; \
+	done
 
 .PHONY: all clean distclean plugins install do-install

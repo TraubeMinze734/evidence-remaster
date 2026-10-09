@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Evidence
+GenericName=File Manager
+Comment=Enlightenment file manager
+Comment[de]=Enlightenment-Dateimanager
+TryExec=evidence
+Exec=evidence %F
+Icon=evidence
+Terminal=false
+Categories=System;FileTools;FileManager;Core;
+Keywords=file;manager;directory;folder;explorer;evidence;enlightenment;
+StartupNotify=false

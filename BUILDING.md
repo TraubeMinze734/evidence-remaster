@@ -10,7 +10,10 @@ works with modern toolchains. Use the new lightweight build instead:
 `configure.sh` uses pkg-config to detect optional dependencies and writes
 `config.h` and `config.mk`. Run `make install` to install the binary, setup files (mime.types,
 menus, providers), themes, icon-sets, plugins and theme engines below
-`PREFIX` (default `/usr/local`, override with `PREFIX=/usr make install`).
+`PREFIX` (default `/usr/local`, override with `PREFIX=/usr make install`), plus a
+desktop entry (`share/applications/evidence.desktop`) and hicolor icons
+(16-128px, rendered from `evidence.xpm`) so the program shows up in application
+launchers (Kickoff etc.).
 The program finds its data via `PACKAGE_DATA_DIR`, which configure.sh
 derives from the same `PREFIX`.
 
