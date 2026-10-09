@@ -197,7 +197,7 @@ static Eina_Bool _emotion_make_timer(void *data) {
       if(ecore_time_get()<c->deadline)
         return ECORE_CALLBACK_RENEW;
       E(1,"couldn't get frame data from \"%s\" (%dx%d)...\n",c->file,iw,ih);
-      goto done; }
+      goto done; } }
  done:
   _emotion_make_finish(c);
   return ECORE_CALLBACK_CANCEL; }
