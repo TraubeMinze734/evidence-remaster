@@ -388,24 +388,21 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
   if(!c.frame) {
     E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
     return NOIR_FAIL; }
-  /* wrap the copied pixels -- we run in the worker thread, which already
-     holds the imlib mutex, so imlib use is safe here */
+  /* build an imlib image from the copied pixels.  we run in the worker
+     thread, which already holds the imlib mutex, so imlib use is safe
+     here.  we do NOT use imlib_create_image_using_data() + free():  the
+     wrapper does not own the pixels, and the crop/free/decache dance
+     around it confused imlib's ownership bookkeeping and kept crashing
+     with double free.  imlib_create_image() allocates an image imlib
+     owns outright; we copy our frame in and are done.  (Evas delivers
+     premultiplied BGRA, which is exactly the byte order imlib uses
+     internally, so a plain memcpy is also correct.) */
   {
-        Imlib_Image wrap=imlib_create_image_using_data(c.iw,c.ih,(DATA32 *)c.frame);
-    Imlib_Image im=NULL;
-    if(wrap) {
-      imlib_context_set_image(wrap);
-      im=imlib_create_cropped_image(0,0,c.iw,c.ih);
-      /* NB: imlib_create_cropped_image() makes the new image the current
-         context, so a plain free here would release the THUMBNAIL, not
-         the wrapper.  switch back to the wrapper explicitly. */
-      imlib_context_set_image(wrap);
-      imlib_free_image_and_decache();
-      /* plugin contract: the returned image must be the current context --
-         thumbnailer_generate calls imlib_image_set_format() before it
-         switches the context, so leaving the (freed) wrapper as context
-         made it write to freed memory and crash on the next gc */
-      imlib_context_set_image(im); }
+    Imlib_Image im=imlib_create_image(c.iw,c.ih);
+    if(im) {
+      imlib_context_set_image(im);
+      memcpy(imlib_image_get_data(),c.frame,(size_t)c.iw*c.ih*4);
+      imlib_image_set_has_alpha(1); }
     free(c.frame);
     if(!im) {
       E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
