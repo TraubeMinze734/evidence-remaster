@@ -30,6 +30,7 @@
 #include <pthread.h>
 
 #include <stdarg.h>      /* varargs in dlmulti() */
+#include <stdint.h>      /* uintptr_t for GLib source-id <-> pointer */
 #include <dlfcn.h>       /* dlopen() and friends for dlmulti() */
 
 #include "util.h"
@@ -614,9 +615,11 @@ int events_pending(void) {
 void *timeout_add(uint f,int(*fun)(void *),void *data) {
 #ifdef HAVE_ECORE
 /* void *h=(void*)ecore_timer_add(f/1000.0,fun,data); E(0,"%p\n",h); return h; */
-  return (void *)ecore_timer_add(((float)f)/1000.0,fun,data);
+  return (void *)ecore_timer_add(((float)f)/1000.0,(Ecore_Task_Cb)fun,data);
 #elif defined(HAVE_GLIB2)
-  return (void *)g_timeout_add((guint)f,(GSourceFunc)fun,(gpointer)data);
+  /* GLib hands out guint source ids; widen them through uintptr_t so the
+     pointer-typed handle is well-defined on 64-bit */
+  return (void *)(uintptr_t)g_timeout_add((guint)f,(GSourceFunc)fun,(gpointer)data);
 #endif
   return (void *)0; }
 
@@ -643,7 +646,7 @@ int timeout_remove(void **h) {
   ecore_timer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
-  return g_source_remove((guint)handle)?NOIR_SUCC:NOIR_FAIL;
+  return g_source_remove((guint)(uintptr_t)handle)?NOIR_SUCC:NOIR_FAIL;
 #endif
   return NOIR_NOTSUPP; }
 
@@ -651,9 +654,9 @@ int timeout_remove(void **h) {
 
 void *idle_enter_add(int prio,int (*fun)(void *),void *data) {
 #if defined(HAVE_ECORE)
-  return ecore_idle_enterer_add(fun,data);
+  return ecore_idle_enterer_add((Ecore_Task_Cb)fun,data);
 #elif defined(HAVE_GLIB2)
-  { (void)prio; return (void *)g_idle_add((GSourceFunc)fun,data); }
+  { (void)prio; return (void *)(uintptr_t)g_idle_add((GSourceFunc)fun,data); }
 #elif defined(HAVE_GTK2)
   return (void *)gtk_idle_add_priority(prio,fun,data);
 #endif
@@ -672,10 +675,10 @@ int idle_enter_remove(void **h) {
   ecore_idle_enterer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
-  g_source_remove((guint)handle);
+  g_source_remove((guint)(uintptr_t)handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GTK2)
-  gtk_idle_remove((guint)handle);
+  gtk_idle_remove((guint)(uintptr_t)handle);
   return NOIR_SUCC;
 #endif
   return NOIR_NOTSUPP; }

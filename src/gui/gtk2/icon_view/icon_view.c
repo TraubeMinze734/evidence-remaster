@@ -673,7 +673,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
               icon_view_rerender_maybe(iv,il); }
             fc=file_info_get_next(fc); }
 
-          if((scr=(int)dcd_get_data(fi,cf))&&(oi=icon_list_get_icon_by_index(il,scr)))
+          if((scr=GPOINTER_TO_INT(dcd_get_data(fi,cf)))&&(oi=icon_list_get_icon_by_index(il,scr)))
             icon_list_scroll_abs(il,0,oi->y); }
 
         icon_list_set_selection(il);

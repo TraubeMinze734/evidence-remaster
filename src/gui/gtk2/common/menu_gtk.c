@@ -453,9 +453,9 @@ static gint root_menu_sort(GtkWidget *item,gpointer data) {
   int         act=gtk_check_menu_item_get_active((GtkCheckMenuItem *)item);
 
   if(act)
-    (*sess)->sortflags|=(int)para;
+    (*sess)->sortflags|=GPOINTER_TO_INT(para);
   else
-    (*sess)->sortflags&=~((int)para);
+    (*sess)->sortflags&=~GPOINTER_TO_INT(para);
 
   E(1,"resort with 0x%x...\n",(*sess)->sortflags);
 
@@ -496,7 +496,7 @@ static gint root_menu_grid(GtkWidget *item,gpointer data) {
 static gint root_menu_switch2(GtkWidget *item,gpointer data) {
   noir_sess **sess=(noir_sess **)data;
   gpointer    para=g_object_get_data(G_OBJECT(item),"data");
-  notebook_go2view(*sess,(int)para);
+  notebook_go2view(*sess,GPOINTER_TO_INT(para));
   return FALSE; }
 
 
@@ -565,7 +565,7 @@ static GtkMenuItem *root_sort_add(noir_sess **sess,GtkWidget *menu,char *title,g
     item=gtk_separator_menu_item_new();
   else {
     item=gtk_check_menu_item_new_with_mnemonic(title);
-    gtk_check_menu_item_set_active((GtkCheckMenuItem *)item,(((*sess)->sortflags)&((int)data))); }
+    gtk_check_menu_item_set_active((GtkCheckMenuItem *)item,(((*sess)->sortflags)&GPOINTER_TO_INT(data))); }
 
   g_object_set_data(G_OBJECT(item),"data",data);
   gtk_menu_shell_append((GtkMenuShell *)menu,item);
@@ -613,7 +613,7 @@ int menu_root_context(noir_sess *ns,const char *cwd,int mb) {
 
 #if 0
     root_menu_add(&sess,menu,NULL,NULL,NULL);
-    root_sort_add(&sess,menu,"Align using _grid",(gpointer)ns,root_menu_grid);
+    root_sort_add(&sess,menu,"Align using _grid",GINT_TO_POINTER(ns),root_menu_grid);
 #endif
 
     if(cwd) {
@@ -625,8 +625,8 @@ int menu_root_context(noir_sess *ns,const char *cwd,int mb) {
       else
         sort=menu;
 
-      root_sort_add(&sess,sort,"Show _unsorted",(gpointer)SORT_UNSORTED,root_menu_sort);
-      root_sort_add(&sess,sort,"_abc = ABC",(gpointer)SORT_CASEFOLD,root_menu_sort);
+      root_sort_add(&sess,sort,"Show _unsorted",GINT_TO_POINTER(SORT_UNSORTED),root_menu_sort);
+      root_sort_add(&sess,sort,"_abc = ABC",GINT_TO_POINTER(SORT_CASEFOLD),root_menu_sort);
       root_sort_add(&sess,sort,"_Folders first",(gpointer)SORT_DIRS1ST,root_menu_sort);
       root_sort_add(&sess,sort,"_The Smiths = Smiths",(gpointer)SORT_BANDNAMES,root_menu_sort);
       root_sort_add(&sess,sort,"by _meta-data",(gpointer)SORT_BYMETA,root_menu_sort);
