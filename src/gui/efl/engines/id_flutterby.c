@@ -268,7 +268,7 @@ int idle_func(void **data) {
       n++;
       a=a->next; }
 
-    evas_render_updates(c->evas); }   /* render updates */
+    (void)evas_render_updates(c->evas); }   /* render updates */
 
   else {
     D("Have no butterflies, re-scanning list...\n")

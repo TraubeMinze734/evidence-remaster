@@ -219,7 +219,7 @@ int idle_func(void **data) {
     if(ctl->fish->x>ctl->il->vis_w)
       unmake_fish(ctl); }
 
-  evas_render_updates(ctl->evas);
+  (void)evas_render_updates(ctl->evas);
 
   return TRUE; }  /* TRUE==success.  failure will remove handler. */
 

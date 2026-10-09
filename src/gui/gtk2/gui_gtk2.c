@@ -1092,10 +1092,10 @@ static int set_app_icon(noir_sess *ns) {
 
 #ifdef HAVE_ECORE
 
-static int ecore_gtk_event_handler(void *data,Ecore_Fd_Handler *fd_handler) {
+static Eina_Bool ecore_gtk_event_handler(void *data,Ecore_Fd_Handler *fd_handler) {
   while(gdk_events_pending())
     g_main_context_iteration(NULL,TRUE);
-  return 1; }
+  return EINA_TRUE; }
 
 static int ecore_gtk_update_handler(void *data) {
 #if 0
@@ -1122,9 +1122,10 @@ static int ecore_gtk_update_handler(void *data) {
 
   return TRUE; }
 
-static int ecore_exit(void *data,int ev_type,void *ev) {
+static Eina_Bool ecore_exit(void *data,int ev_type,void *ev) {
+  (void)data; (void)ev_type; (void)ev;
   ecore_main_loop_quit();
-  return 1; }
+  return EINA_TRUE; }
 #endif
 
 
