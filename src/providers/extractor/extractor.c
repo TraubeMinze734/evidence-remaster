@@ -40,7 +40,7 @@ char            *lt_dlgetsearchpath();
  * @param data  a handle created by meta_plugin_init()
  */
 int meta_plugin_exit(void *data) {
-  EXTRACTOR_removeAll((EXTRACTOR_ExtractorList *)data);
+  EXTRACTOR_plugin_remove_all((struct EXTRACTOR_PluginList *)data);
 
 #ifdef EVIL_HACK
   if(op) {
@@ -60,7 +60,19 @@ int meta_plugin_exit(void *data) {
  * @return a handle that will be handed to meta_plugin_exit() before the module is unloaded
  */
 void *meta_plugin_init(void) {
-  EXTRACTOR_ExtractorList *extractors=EXTRACTOR_loadDefaultLibraries();
+  /* run the extractor plugins in-process: by default libextractor forks
+   helper processes, which is fatal in a GTK/X client (children inherit
+   the X connection; 'Fatal IO error 11' on exit). */
+  /* EXTRACTOR_OPTION_IN_PROCESS keeps plugins in our process (out-of-process
+   would fork helpers, which is fatal for an X client).  the gstreamer
+   extractor plugin additionally spins its own GLib main-loop inside
+   EXTRACTOR_extract() to pull frames -- that loop dispatches pending GTK
+   events and re-enters our tooltip/dialog code while it is still running
+   (gtk_label_set_text on a half-built tooltip => crash).  we exclude it:
+   for movies, evidence's own Emotion thumbnailer provides the metadata,
+   and the remaining extractors (exif, id3, png, ... ) are loop-free. */
+  struct EXTRACTOR_PluginList *extractors=EXTRACTOR_plugin_add_defaults(EXTRACTOR_OPTION_IN_PROCESS);
+  extractors=EXTRACTOR_plugin_remove(extractors,"gstreamer");
 
 #ifdef EVIL_HACK
   if(!sp) {
@@ -99,6 +111,35 @@ int meta_set_for_file(noir_md *ret,char *file,noir_provider *prov) {
 
 
 /**
+ * callback for EXTRACTOR_extract(): add each meta-data item to the list
+ * @return 0 to continue extraction
+ */
+static int meta_add_cb(void *cls,const char *plugin_name,
+                       enum EXTRACTOR_MetaType type,
+                       enum EXTRACTOR_MetaFormat format,
+                       const char *data_mime_type,const char *data,size_t data_len) {
+  noir_md    *ret=(noir_md *)cls;
+  const char *key=EXTRACTOR_metatype_to_string(type);
+  noir_meta  *m;
+
+  (void)plugin_name; (void)data_mime_type; (void)data_len;
+
+  if(!key||!strcmp(key,"unknown")||!strcmp(key,"mimetype"))
+    return 0;
+
+  /* only take textual meta-data; ignore binary blobs */
+  if((format!=EXTRACTOR_METAFORMAT_UTF8)&&(format!=EXTRACTOR_METAFORMAT_C_STRING))
+    return 0;
+
+  meta_add(ret,META_RO,META_STR,(char *)key,NULL,MY_NAME,(char *)data,NULL);
+
+  if((m=meta_in_group(ret,"title",MY_NAME))&&meta_get_val(m))
+    meta_add(ret,META_RO,META_STR,"sortkey","If you enable 'Sort by meta-data', files will be sorted according to this field.",MY_NAME,(char *)meta_get_val(m),NULL);
+
+  return 0; }
+
+
+/**
  * get meta-data for this file
  * @return an error-code
  * @param ret   the list of (all) meta-data
@@ -106,44 +147,12 @@ int meta_set_for_file(noir_md *ret,char *file,noir_provider *prov) {
  * @param prov  the provider-entry for this plugin
  */
 int meta_get_for_file(noir_md *ret,char *file,noir_provider *prov) {
-  EXTRACTOR_ExtractorList *extractors=(EXTRACTOR_ExtractorList *)meta_provider_get_data(prov);
-  EXTRACTOR_KeywordList   *keywords;
-  const char              *key;
-  noir_meta               *m;
-
+  struct EXTRACTOR_PluginList *extractors=(struct EXTRACTOR_PluginList *)meta_provider_get_data(prov);
   /* avoid duplicate info (info was already set by a specialist provider). */
   if(meta_in_group(ret,"sortkey",NULL))
     return NOIR_IGNORED;
 
-#if !defined(EXTRACTOR_VERSION)||(EXTRACTOR_VERSION<0x00030300)
-  /* AVIs send extractor in a very very long loop at the moment, skip them */
-  if(((m=meta_in_group(ret,"MIME",NULL))&&meta_get_val(m))&&!strcmp(meta_get_val(m),"video/x-msvideo"))
-    return NOIR_IGNORED;
-#endif
-
-/*  extractors=EXTRACTOR_addLibraryLast(extractors,"libextractor_printable"); */
-/*  extractors=EXTRACTOR_addLibraryLast(extractors,"libextractor_split"); */
-
-  keywords=EXTRACTOR_getKeywords(extractors,file);
-  keywords=EXTRACTOR_removeDuplicateKeywords(keywords,0);
-
-#if 0
-  { char *p=file+strlen(file)-4;
-    if((p>=file)&&!strcasecmp(p,".wav"))
-      E(0,"extractor: %s\n",p); }
-#endif
-
-  while(keywords) {
-    if((key=EXTRACTOR_getKeywordTypeAsString(keywords->keywordType))&&
-       strcmp(key,"mimetype")&&
-       strcmp(key,"unknown"))
-      meta_add(ret,META_RO,META_STR,key,NULL,MY_NAME,keywords->keyword,prov);
-    keywords=keywords->next; }
-
-  EXTRACTOR_freeKeywords(keywords);
-
-  if((m=meta_in_group(ret,"title",MY_NAME))&&meta_get_val(m))
-    meta_add(ret,META_RO,META_STR,"sortkey","If you enable 'Sort by meta-data', files will be sorted according to this field.",MY_NAME,(char *)meta_get_val(m),prov);
+  EXTRACTOR_extract(extractors,file,NULL,0,meta_add_cb,ret);
 
   return NOIR_SUCC; }
 
