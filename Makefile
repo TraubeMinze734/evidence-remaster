@@ -263,6 +263,12 @@ do-install:
 	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS; do \
 	  tar -xzf icons/$$i.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || echo "iconset $$i skipped"; \
 	done
+	# some 2005 tarballs shipped without the actual images (tosh_96, indigo_96);
+	# drop such empty sets again so no theme silently binds to a broken icon-set
+	-for d in $(DESTDIR)$(PREFIX)/share/evidence/icons/*; do \
+	  if [ -d "$$d" ] && [ -z "$$(find "$$d" -name '*.png' -o -name '*.jpg' -print -quit)" ]; then \
+	    echo "iconset $$(basename $$d) contains no images, removing"; rm -rf "$$d"; fi; \
+	done
 	cd $(DESTDIR)$(PREFIX)/share/evidence/icons && ln -sfn rephormed default
 	tar -xzf icons/emblems.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || true
 	install -d $(DESTDIR)$(PREFIX)/lib/evidence
