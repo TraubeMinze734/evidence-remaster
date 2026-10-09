@@ -997,21 +997,22 @@ file_info *file_info_insert(file_info *root,const char *origtag) {
              files before anyone created the dot-folder.  create it on
              demand here -- same attributes as file_info_vfolder() --
              and parent the new file into it. */
-          /* 'n' is the dirname of the rewritten tag; for a hidden file
-             in DIR it is "DIR/./" -- the dot-folder ("DIR/.") plus a
-             trailing slash.  we need the dot-folder's PARENT (DIR), so
-             strip BOTH the trailing slash and the "/." segment. */
+          /* 'n' is the dirname after truncation at the LAST delimiter,
+             so for a hidden file in DIR it is exactly the dot-folder's
+             tag "DIR/." -- with no trailing slash.  the parent lookup
+             above failed because that dot-folder does not exist yet.
+             fetch the dot-folder's PARENT (DIR), create the dot-folder
+             under it, and parent the new file into it. */
           size_t pl=strlen(n);
-          if(pl>=3&&n[pl-1]==DIR_DELIMITER&&n[pl-2]=='.'&&n[pl-3]==DIR_DELIMITER) {
+          if(pl>=2&&n[pl-1]=='.'&&n[pl-2]==DIR_DELIMITER) {
             file_info *df;
             char *dt,*gp;
-            if((dt=malloc(pl))&&(gp=malloc(pl))) {
-              memcpy(dt,n,pl-1); dt[pl-1]='\0';   /* dot-folder: "DIR/." */
-              memcpy(gp,n,pl-3); gp[pl-3]='\0';   /* its parent:  "DIR"   */
+            if((dt=strdup(n))&&(gp=malloc(pl))) {
+              memcpy(gp,n,pl-2); gp[pl-2]='\0';   /* parent: "DIR" */
               if(!*gp) {                          /* "/.": the root */
                 gp[0]=DIR_DELIMITER; gp[1]='\0'; }
-              if((df=file_info_fetch(root,gp))) {
-                if((parent=file_info_new(DIR_DOT,dt))) {
+              if((df=file_info_fetch(root,gp))&&
+                 (parent=file_info_new(DIR_DOT,dt))) {
                   parent->have   =FF_NAME|FF_STAT|FF_MIME|FF_META;
                   parent->flags |=IF_DOTDIR|IF_VIRTUAL;
                   file_info_set_intrinsic(parent,posixmd_virtual(S_IFDIR|S_IRUSR|S_IWUSR|S_IXUSR));
@@ -1031,7 +1032,7 @@ file_info *file_info_insert(file_info *root,const char *origtag) {
                   parent->child=fi;
                   parent->children++;
                   E(3,"created dot-folder \"%s\" for \"%s\"\n",dt,tag); }
-                free(gp); free(dt); } } }
+                free(gp); free(dt); } }
           if(!ret)
 #endif
           {
