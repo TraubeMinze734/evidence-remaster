@@ -183,15 +183,22 @@ static Eina_Bool _emotion_make_timer(void *data) {
     evas_object_image_size_get(frame,&iw,&ih);
     frame_data=(unsigned char *)evas_object_image_data_get(frame,0);
     if(frame_data&&iw>0&&ih>0) {
-      /* copy the pixels out -- do NOT touch imlib here:  this runs in the
-         GUI thread, while the thumbnailer worker holds the imlib mutex
-         (IMLIB_ACQUIRE around tp->make()); imlib use from here corrupts
-         imlib's context (NULL-image warnings, double free).  the worker
-         wraps the copy in an Imlib image after we hand it over. */
+      /* copy the pixels out row by row -- do NOT touch imlib here (this
+         runs in the GUI thread, the worker holds the imlib mutex), and
+         do NOT assume the rows are tightly packed:  the backing GStreamer
+         buffer may be row-aligned, so a flat memcpy(w*h*4) produced
+         grey noise.  respect the stride. */
+      int stride=evas_object_image_stride_get(frame);
+      int row;
       size_t sz=(size_t)iw*ih*4;
-      if((c->frame=malloc(sz)))
-        memcpy(c->frame,frame_data,sz);
-      c->iw=iw; c->ih=ih; }
+      if(stride<iw*4)
+        stride=iw*4;
+      if((c->frame=malloc(sz))) {
+        for(row=0;row<ih;row++)
+          memcpy(c->frame+(size_t)row*iw*4,
+                 frame_data+(size_t)row*stride,
+                 (size_t)iw*4);
+        c->iw=iw; c->ih=ih; } }
     else {
       /* frame not decoded yet (e.g. right after the seek): keep waiting
          until the deadline rather than failing immediately */
