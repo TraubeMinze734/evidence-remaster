@@ -75,6 +75,18 @@ static void gevas_class_init(GtkgEvasClass *);
 
 
 
+/* after every evas_render() the backing-store holds a new frame; blit it
+   to the GdkWindow on the next GTK expose.  this also covers renders that
+   plugins trigger on their own (e.g. the live-video thumbnailer calling
+   evas_render() on each decoded frame) -- without the queue_draw those
+   frames would stay in the buffer, invisible. */
+static void gevas_render_flush(void *data,Evas *e,void *event_info) {
+  GtkWidget *widget=GTK_WIDGET(data);
+  (void)e; (void)event_info;
+  if(GTK_WIDGET_REALIZED(widget))
+    gtk_widget_queue_draw(widget); }
+
+
 /* allocate the backing-store and attach it to the buffer engine */
 static int gevas_buffer_configure(GtkgEvas *ev,int w,int h) {
   Evas                     *evas=ev->evas;
@@ -326,6 +338,8 @@ static void gevas_realize(GtkWidget *widget) {
                             widget->allocation.height)) {
     E(0,"could not initialize evas with engine \"%s\"\n",ev->evas_engine);
     exit(EXIT_FAILURE); }
+
+  evas_event_callback_add(evas,EVAS_CALLBACK_RENDER_FLUSH_POST,gevas_render_flush,widget);
 
   /* FIXME: Maybe we can do something better than single buffering? */
   gtk_widget_set_double_buffered(widget,0); }

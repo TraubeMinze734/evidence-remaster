@@ -1562,7 +1562,12 @@ int thumbnail_init(const char *setup) {
   thumbnail_plugins_init(setup);
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
-  prop_bag_prop_default(props_global,"thumbnail-protected-mode",   "1",0,1,1);
+  /* default OFF: the fork()ed task process is fundamentally incompatible
+     with modern EFL -- EO/Eina tables do not survive fork(), so every
+     Evas object created in the child is invalid and leaves broken state
+     (EO domain errors, crashes in the GUI).  set to 1 to re-enable the
+     2005 crash-isolation for plugins that don't touch EFL. */
+  prop_bag_prop_default(props_global,"thumbnail-protected-mode",   "0",0,1,1);
 #endif
   prop_bag_prop_default(props_global,"thumbnail-mute",             "0",0,1,1);
   prop_bag_prop_default(props_global,"thumbnail-icons-skip",       "audio/*",0,0,0);

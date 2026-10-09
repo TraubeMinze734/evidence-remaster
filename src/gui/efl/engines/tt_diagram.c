@@ -532,7 +532,9 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
     o=o2;
     evas_object_geometry_get(o,&_x,&_y,&_w,&_h);
     w_=_w; h_=_h;
-    ICON_EL_APP(IE_DFL,504,0,0);
+    /* layer 506: above the darkening fade (505), below the text (1010) --
+       with the fade at 504 the live video was hidden underneath it */
+    ICON_EL_APP(IE_DFL,506,0,0);
     evas_object_move(o,0,0);
     evas_object_show(o); }
   else
