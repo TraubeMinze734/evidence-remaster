@@ -549,8 +549,15 @@ static int evidence_thumb_read_file_attributes(Evidence_Thumb *e,int f) {
 
   evidence_thumb_free_attributes(e);
 
-  if(!f&&(e->found_in==TD_FAIL_ME)) /* we already know we can't thumbnail */
-    return NOIR_IGNORED;            /*  this; don't waste time trying again */
+  if(!f&&(e->found_in==TD_FAIL_ME)) {
+    /* we failed on this file before, but a stale failure must not block
+       forever:  if the source changed since ( Thumb::MTime in the fail-PNG
+       is older than the file's mtime ), forget the failure and retry */
+    if(e->mtime.thumb>=e->mtime.file)
+      return NOIR_IGNORED;          /* unchanged: don't waste time again */
+    E(2,"stale fail-info for \"%s\" (%ld<%ld), retrying...\n",
+      e->origfile?e->origfile:"",(long)e->mtime.thumb,(long)e->mtime.file);
+    return NOIR_NOTFOUND; }
 
 #ifdef HAVE_EPEG
   else if(e->type==TT_EPEG) {
