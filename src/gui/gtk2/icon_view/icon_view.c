@@ -14,6 +14,7 @@
 #include "gui/common/icon_list.h"
 #include "gui/common/menu.h"     /* menu_file_context(), menu_root_context() */
 #include "gui/common/icon_path.h"
+#include "thumbnailer/thumbnail.h"      /* thumbnail_enqueue() */
 #include "gui/common/tooltip.h"     /* info_tooltip_cancel() */
 
 #include "gui/gtk2/common/dnd.h"
@@ -672,6 +673,17 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
               cnt=0;
               icon_view_rerender_maybe(iv,il); }
             fc=file_info_get_next(fc); }
+          /* re-visit retry:  files that were read on a previous visit of
+             this folder never get FF_UNSEEN again, so the model will not
+             re-request thumbnails for them.  if a thumbnail is missing
+             (failed, or deleted from the cache), ask for it once more;
+             the FAIL_ME cache keeps broken files from being retried on
+             every single visit. */
+          if(iv->session->thumbnails_in_iconlist) {
+            for(fc=file_info_get_1st_child(fi);fc;fc=file_info_get_next(fc)) {
+              if(!(file_info_get_infobits(fc)&FF_THUMB)&&
+                 !S_ISDIR(file_info_get_mode(fc)))
+                thumbnail_enqueue(fc); } }
 
           if((scr=GPOINTER_TO_INT(dcd_get_data(fi,cf)))&&(oi=icon_list_get_icon_by_index(il,scr)))
             icon_list_scroll_abs(il,0,oi->y); }
