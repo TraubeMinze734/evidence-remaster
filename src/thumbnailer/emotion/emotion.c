@@ -391,11 +391,15 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
   /* wrap the copied pixels -- we run in the worker thread, which already
      holds the imlib mutex, so imlib use is safe here */
   {
-    Imlib_Image wrap=imlib_create_image_using_data(c.iw,c.ih,(DATA32 *)c.frame);
+        Imlib_Image wrap=imlib_create_image_using_data(c.iw,c.ih,(DATA32 *)c.frame);
     Imlib_Image im=NULL;
     if(wrap) {
       imlib_context_set_image(wrap);
       im=imlib_create_cropped_image(0,0,c.iw,c.ih);
+      /* NB: imlib_create_cropped_image() makes the new image the current
+         context, so a plain free here would release the THUMBNAIL, not
+         the wrapper.  switch back to the wrapper explicitly. */
+      imlib_context_set_image(wrap);
       imlib_free_image_and_decache(); }
     free(c.frame);
     if(!im) {
