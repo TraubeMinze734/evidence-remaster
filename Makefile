@@ -254,7 +254,10 @@ do-install:
 	install -d $(DESTDIR)$(PREFIX)/share/pixmaps
 	install -m 0644 evidence.xpm $(DESTDIR)$(PREFIX)/share/pixmaps/evidence.xpm
 	install -d $(DESTDIR)$(PREFIX)/share/evidence/themes
-	for t in tosh efm fishtank metallo nautilus rephormed LCARS OtE; do \
+	# OtE and metallo are not installable: their look depends on 2005-era
+	# binary formats (edje groups / Ebg) that no longer load; shipping them
+	# only produces crash reports.  kept in the repo for reference.
+	for t in tosh efm fishtank nautilus rephormed LCARS; do \
 	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
 	done
 	# fonts is a data directory (referenced as themes/fonts/...), not a

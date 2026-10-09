@@ -135,6 +135,11 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
       pfs=(long *)prop_get_data(prop_bag_prop_get(theme->data,FS));
       E(0,FS " not set, falling back to default (%ld).\n",*pfs); }}
 
+  /* sanity: a theme may set an absurd font-size (efm shipped 155555 in
+     2005), which crashes evas' glyph rasterizer.  clamp. */
+  if((*pfs<4)||(*pfs>128)) {
+    E(0,FS " insane (%ld), falling back to default (18).\n",*pfs);
+    *pfs=18; }
   sep=*pfs;
   if((fs2=(*pfs*3)/4)<9)
     fs2=9;
