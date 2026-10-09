@@ -2,7 +2,7 @@
 Type=Application
 Name=Evidence
 GenericName=File Manager
-Comment=Enlightenment file manager
+Comment=Enlightened file-manager
 Exec=evidence
 Icon=evidence
 Terminal=false
