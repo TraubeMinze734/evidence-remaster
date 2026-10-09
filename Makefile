@@ -254,14 +254,25 @@ do-install:
 	install -d $(DESTDIR)$(PREFIX)/share/pixmaps
 	install -m 0644 evidence.xpm $(DESTDIR)$(PREFIX)/share/pixmaps/evidence.xpm
 	install -d $(DESTDIR)$(PREFIX)/share/evidence/themes
-	for t in tosh efm fishtank metallo nautilus rephormed LCARS OtE; do \
+	# OtE and metallo are not installable: their look depends on 2005-era
+	# binary formats (edje groups / Ebg) that no longer load; shipping them
+	# only produces crash reports.  kept in the repo for reference.
+	for t in tosh efm fishtank nautilus rephormed LCARS; do \
 	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
 	done
+	# fonts is a data directory (referenced as themes/fonts/...), not a
+	# theme; keep it out of --theme's namespace
 	cp -r evidence.themes/fonts $(DESTDIR)$(PREFIX)/share/evidence/themes/ || true
 	ln -sfn rephormed $(DESTDIR)$(PREFIX)/share/evidence/themes/default
 	install -d $(DESTDIR)$(PREFIX)/share/evidence/icons
-	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS; do \
+	for i in indigo_128 indigo_96 tosh_128 tosh_96 efm rephormed fishtank_128 LCARS ento_64 gorilla_36 gorilla_48 gorilla_72; do \
 	  tar -xzf icons/$$i.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || echo "iconset $$i skipped"; \
+	done
+	# some 2005 tarballs shipped without the actual images (tosh_96, indigo_96);
+	# drop such empty sets again so no theme silently binds to a broken icon-set
+	-for d in $(DESTDIR)$(PREFIX)/share/evidence/icons/*; do \
+	  if [ -d "$$d" ] && [ -z "$$(find "$$d" \( -name '*.png' -o -name '*.jpg' \) -print -quit)" ]; then \
+	    echo "iconset $$(basename $$d) contains no images, removing"; rm -rf "$$d"; fi; \
 	done
 	cd $(DESTDIR)$(PREFIX)/share/evidence/icons && ln -sfn rephormed default
 	tar -xzf icons/emblems.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || true

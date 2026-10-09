@@ -25,8 +25,6 @@
 
 
 
-#define MIN(a,b)  ((a)<(b))?(a):(b)
-#define MAX(a,b)  ((a)>(b))?(a):(b)
 
 
 
@@ -137,6 +135,11 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
       pfs=(long *)prop_get_data(prop_bag_prop_get(theme->data,FS));
       E(0,FS " not set, falling back to default (%ld).\n",*pfs); }}
 
+  /* sanity: a theme may set an absurd font-size (efm shipped 155555 in
+     2005), which crashes evas' glyph rasterizer.  clamp. */
+  if((*pfs<4)||(*pfs>128)) {
+    E(0,FS " insane (%ld), falling back to default (18).\n",*pfs);
+    *pfs=18; }
   sep=*pfs;
   if((fs2=(*pfs*3)/4)<9)
     fs2=9;
@@ -213,6 +216,11 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
   evas_object_move(fade,_x,_y);
   evas_object_resize(fade,wt+*pfs,ht*c);
 
+  /* a live thumbnail (from evas_thumbnail_dead_or_alive()) is an
+     emotion smart object -- image_fill_set() on it is illegal and
+     crashes (eina safety / SIGSEGV).  only an actual image object gets
+     the fill-rect + fade-in treatment. */
+  int is_image=0;
   if(file_info_get_thumbfile(fi)) {
     t.icon_width=wt+*pfs;
     t.icon_height=ht*c;
@@ -228,6 +236,7 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
       double _xs=_x,_ys=_y,
              _ws=_w,_hs=_h;
       double tw=(wt+*pfs),th=ht*c;;
+      is_image=!strcmp(evas_object_type_get(o),"image");
 
       evas_object_geometry_get(o,&_x,&_y,&_w,&_h);
       w_=_w; h_=_h;
@@ -263,11 +272,13 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
 	d=0;
       else {
         evas_object_resize(thumb,xc,yc);
-        evas_object_image_fill_set(o,0,0,xc,yc);
+        if(is_image)
+          evas_object_image_fill_set(o,0,0,xc,yc);
         evas_object_move(thumb,thumb_x+(thumb_w-xc)/2,thumb_y+(thumb_h-yc)/2);
         evas_render(evas); }}
 
     evas_object_resize(thumb,thumb_w,thumb_h);
+    if(is_image)
     evas_object_image_fill_set(o,0,0,thumb_w,thumb_h);
     evas_object_move(thumb,thumb_x,thumb_y);
 
