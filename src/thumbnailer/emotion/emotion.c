@@ -400,7 +400,12 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
          context, so a plain free here would release the THUMBNAIL, not
          the wrapper.  switch back to the wrapper explicitly. */
       imlib_context_set_image(wrap);
-      imlib_free_image_and_decache(); }
+      imlib_free_image_and_decache();
+      /* plugin contract: the returned image must be the current context --
+         thumbnailer_generate calls imlib_image_set_format() before it
+         switches the context, so leaving the (freed) wrapper as context
+         made it write to freed memory and crash on the next gc */
+      imlib_context_set_image(im); }
     free(c.frame);
     if(!im) {
       E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
