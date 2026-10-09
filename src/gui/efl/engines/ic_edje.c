@@ -104,7 +104,10 @@ void bg_upd(void *i,int x,int y,int w,int h) {
   while(el) {
     o=(Evas_Object *)el->data;
     evas_object_hide(o);
-    evas_object_image_fill_set(o,0,0,il->vis_w,il->vis_h);
+    /* elements may be non-image objects (edje groups); image_fill_set()
+       is image-only and spams eina-safety errors */
+    if(!strcmp(evas_object_type_get(o),"image"))
+      evas_object_image_fill_set(o,0,0,il->vis_w,il->vis_h);
     evas_object_resize(o,il->vis_w,il->vis_h);
     evas_object_show(o);
     el=el->next; }
