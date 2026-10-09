@@ -25,8 +25,6 @@
 
 
 
-#define MIN(a,b)  ((a)<(b))?(a):(b)
-#define MAX(a,b)  ((a)>(b))?(a):(b)
 
 
 
@@ -213,6 +211,11 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
   evas_object_move(fade,_x,_y);
   evas_object_resize(fade,wt+*pfs,ht*c);
 
+  /* a live thumbnail (from evas_thumbnail_dead_or_alive()) is an
+     emotion smart object -- image_fill_set() on it is illegal and
+     crashes (eina safety / SIGSEGV).  only an actual image object gets
+     the fill-rect + fade-in treatment. */
+  int is_image=0;
   if(file_info_get_thumbfile(fi)) {
     t.icon_width=wt+*pfs;
     t.icon_height=ht*c;
@@ -224,14 +227,11 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
       (o=evas_thumbnail_dead(&t,evas,fi))
 #endif
       ) {
-      /* a live thumbnail is an emotion smart object -- image_fill_set()
-         on it is illegal and crashes (eina safety / SIGSEGV).  only an
-         actual image object gets the fill-rect + fade-in treatment. */
-      int is_image=!strcmp(evas_object_type_get(o),"image");
       int    hts=ht,wts=wt;
       double _xs=_x,_ys=_y,
              _ws=_w,_hs=_h;
       double tw=(wt+*pfs),th=ht*c;;
+      is_image=!strcmp(evas_object_type_get(o),"image");
 
       evas_object_geometry_get(o,&_x,&_y,&_w,&_h);
       w_=_w; h_=_h;
