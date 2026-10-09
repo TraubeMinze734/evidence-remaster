@@ -224,6 +224,10 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
       (o=evas_thumbnail_dead(&t,evas,fi))
 #endif
       ) {
+      /* a live thumbnail is an emotion smart object -- image_fill_set()
+         on it is illegal and crashes (eina safety / SIGSEGV).  only an
+         actual image object gets the fill-rect + fade-in treatment. */
+      int is_image=!strcmp(evas_object_type_get(o),"image");
       int    hts=ht,wts=wt;
       double _xs=_x,_ys=_y,
              _ws=_w,_hs=_h;
@@ -263,11 +267,13 @@ void *tt_new(void *data,int x,int y,file_info *fi) {
 	d=0;
       else {
         evas_object_resize(thumb,xc,yc);
-        evas_object_image_fill_set(o,0,0,xc,yc);
+        if(is_image)
+          evas_object_image_fill_set(o,0,0,xc,yc);
         evas_object_move(thumb,thumb_x+(thumb_w-xc)/2,thumb_y+(thumb_h-yc)/2);
         evas_render(evas); }}
 
     evas_object_resize(thumb,thumb_w,thumb_h);
+    if(is_image)
     evas_object_image_fill_set(o,0,0,thumb_w,thumb_h);
     evas_object_move(thumb,thumb_x,thumb_y);
 
