@@ -28,6 +28,7 @@
 #include "errors.h"
 #include "util.h"            /* esprintf() */
 #include "evidence.h"        /* main_thread (the GUI thread) */
+#include "imlib.h"           /* IMLIB_ACQUIRE/RELEASE (imlib_mutex) */
 
 #include "../thumbnail_private.h"
 #include "../thumbnail_plugin.h"
@@ -376,11 +377,21 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
      mainloop stays responsive the whole time, and the timeout bounds the
      wait so a broken file can never wedge the thumbnailer thread. */
 
+  /* our caller (thumbnailer_generate) holds the imlib mutex while we
+     run.  the GUI thread needs that very mutex for its own imlib work
+     (theme engines like ix_rephormed, loading thumbnails), so waiting
+     for the GUI thread WITH the mutex held is a guaranteed ABBA
+     deadlock:  GUI waits for the mutex, we wait for the GUI.  drop the
+     mutex for the duration of the handshake and re-acquire it after;
+     the frame data is a plain malloc() copy, no imlib state is touched
+     while we don't hold the lock. */
+  IMLIB_RELEASE;
   emotion_in_main(_emotion_make_in_main,&c);
   pthread_mutex_lock(&c.mtx);
   while(!c.done)
     pthread_cond_wait(&c.cond,&c.mtx);
   pthread_mutex_unlock(&c.mtx);
+  IMLIB_ACQUIRE;
   pthread_mutex_destroy(&c.mtx);
   pthread_cond_destroy(&c.cond);
 
