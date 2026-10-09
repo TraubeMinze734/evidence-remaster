@@ -123,7 +123,8 @@ static void emotion_in_main(void (*cb)(void *),void *data) {
    machine is done (success or timeout). */
 typedef struct {
   const char    *file;
-  Imlib_Image    im;         /* result, or NULL */
+  unsigned char *frame;      /* plain copy of the frame, or NULL */
+  int            iw,ih;
   Ecore_Timer   *timer;
   Evas          *evas;
   Evas_Object   *em;
@@ -139,6 +140,10 @@ static void _emotion_make_finish(emotion_make_ctx *c) {
     ecore_timer_del(c->timer);
     c->timer=NULL; }
   if(c->em) {
+    /* stop the pipeline before tearing down, or GStreamer keeps pushing
+       frames into an object that is about to go away (EO errors) */
+    emotion_object_play_set(c->em,0);
+    emotion_object_file_set(c->em,NULL);
     evas_object_del(c->em);
     c->em=NULL; }
   if(c->evas) {
@@ -177,15 +182,22 @@ static Eina_Bool _emotion_make_timer(void *data) {
     evas_object_image_size_get(frame,&iw,&ih);
     frame_data=(unsigned char *)evas_object_image_data_get(frame,0);
     if(frame_data&&iw>0&&ih>0) {
-      Imlib_Image wrap=imlib_create_image_using_data(iw,ih,(DATA32 *)frame_data);
-      if(wrap) {
-        imlib_context_set_image(wrap);
-        /* copy: the canvas (and with it frame_data) goes away below */
-        c->im=imlib_create_cropped_image(0,0,iw,ih);
-        imlib_free_image_and_decache(); } }
+      /* copy the pixels out -- do NOT touch imlib here:  this runs in the
+         GUI thread, while the thumbnailer worker holds the imlib mutex
+         (IMLIB_ACQUIRE around tp->make()); imlib use from here corrupts
+         imlib's context (NULL-image warnings, double free).  the worker
+         wraps the copy in an Imlib image after we hand it over. */
+      size_t sz=(size_t)iw*ih*4;
+      if((c->frame=malloc(sz)))
+        memcpy(c->frame,frame_data,sz);
+      c->iw=iw; c->ih=ih; }
     else {
+      /* frame not decoded yet (e.g. right after the seek): keep waiting
+         until the deadline rather than failing immediately */
+      if(ecore_time_get()<c->deadline)
+        return ECORE_CALLBACK_RENEW;
       E(1,"couldn't get frame data from \"%s\" (%dx%d)...\n",c->file,iw,ih);
-      goto done; } }
+      goto done; }
  done:
   _emotion_make_finish(c);
   return ECORE_CALLBACK_CANCEL; }
@@ -373,11 +385,23 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
   pthread_cond_destroy(&c.cond);
 
 
-  if(!c.im) {
+  if(!c.frame) {
     E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
     return NOIR_FAIL; }
-
-  *data=c.im;
+  /* wrap the copied pixels -- we run in the worker thread, which already
+     holds the imlib mutex, so imlib use is safe here */
+  {
+    Imlib_Image wrap=imlib_create_image_using_data(c.iw,c.ih,(DATA32 *)c.frame);
+    Imlib_Image im=NULL;
+    if(wrap) {
+      imlib_context_set_image(wrap);
+      im=imlib_create_cropped_image(0,0,c.iw,c.ih);
+      imlib_free_image_and_decache(); }
+    free(c.frame);
+    if(!im) {
+      E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
+      return NOIR_FAIL; }
+    *data=im; }
   return NOIR_SUCC;
 #  else
   /* no Evas: no live canvas to grab a frame from */
