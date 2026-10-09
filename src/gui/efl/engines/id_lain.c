@@ -197,7 +197,7 @@ int idle_func(void **data) {
 #endif
     evas_object_text_text_set(ctl->timer2,t2); }
 
-  evas_render_updates(ctl->evas);
+  (void)evas_render_updates(ctl->evas);
 
   ctl->state=state;
 

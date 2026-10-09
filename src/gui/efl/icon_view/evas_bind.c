@@ -487,7 +487,7 @@ int evas_icon_chg_event(icon_list *il,icon *i,file_info *fi) {
 
       /* file has changed in some way, update thumb in image-cache... */
       if((thumb=file_info_get_thumbfile(fi))) {
-        char *file,*key;
+        const char *file,*key;
         for(el=old;el;el=el->next) {
           if(!strcmp(evas_object_type_get(el->data),"image")) {
             evas_object_image_file_get(el->data,&file,&key);
