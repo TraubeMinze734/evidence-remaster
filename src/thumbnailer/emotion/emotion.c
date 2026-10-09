@@ -37,6 +37,7 @@
 #  include <Evas.h>
 #  include <Ecore.h>
 #  include <Emotion.h>
+#  include <Evas_Engine_Buffer.h>
 #  include <pthread.h>
 #  ifdef HAVE_IMLIB2
 #    include <Imlib2.h>
@@ -46,6 +47,7 @@
 #define SEEK_NUMERATOR   8   /* take a frame from ~ 8% into the movie */
 #define SEEK_DENOMINATOR 10
 #define EMOTION_OPEN_TIMEOUT 10.0 /* seconds to wait for emotion to open a file */
+#define EMOTION_SEEK_SETTLE   0.5  /* seconds to let the decoder settle after a seek */
 
 /******************************************************************************/
 
@@ -130,6 +132,7 @@ typedef struct {
   Evas          *evas;
   Evas_Object   *em;
   double         deadline;   /* absolute time when we give up */
+  double         seek_at;    /* when the seek was issued */
   int            seek_set;
   pthread_mutex_t mtx;
   pthread_cond_t  cond;
@@ -157,10 +160,11 @@ static void _emotion_make_finish(emotion_make_ctx *c) {
 
 static Eina_Bool _emotion_make_timer(void *data) {
   emotion_make_ctx *c=(emotion_make_ctx *)data;
+  double now=ecore_time_get();
   double len=emotion_object_play_length_get(c->em);
   if(len<=0.0) {
     /* still opening: give the mainloop time to breathe */
-    if(ecore_time_get()<c->deadline)
+    if(now<c->deadline)
       return ECORE_CALLBACK_RENEW;
     E(1,"no video in \"%s\"? (open timed out)\n",c->file);
     goto done; }
@@ -168,44 +172,45 @@ static Eina_Bool _emotion_make_timer(void *data) {
     /* seek into the movie: trailers/logos are usually in the first frames */
     emotion_object_position_set(c->em,len*SEEK_NUMERATOR/SEEK_DENOMINATOR);
     c->seek_set=1;
-    if(ecore_time_get()<c->deadline)
-      return ECORE_CALLBACK_RENEW;
-    /* no time left to wait for the seeked frame; fall through and grab
-       whatever the object currently holds */ }
+    c->seek_at=now;
+    return ECORE_CALLBACK_RENEW; }
+  /* after the seek, give the decoder time to actually produce the frame;
+     grabbing too early yields garbage */
+  if(now<c->seek_at+EMOTION_SEEK_SETTLE&&now<c->deadline)
+    return ECORE_CALLBACK_RENEW;
+  /* render the emotion object into a buffer WE own.  do not poke at the
+     object's internal image (emotion_object_image_get()):  its contents
+     are only loosely defined while the pipeline is moving, which showed
+     up as white noise.  the buffer engine gives us a tightly packed
+     premultiplied ARGB32 surface with the row-bytes we choose, exactly
+     like the gevas canvas does for the GUI. */
   {
-    /* the emotion smart object hosts an internal image with the frame */
-    Evas_Object   *frame=emotion_object_image_get(c->em);
-    unsigned char *frame_data;
-    int            iw=0,ih=0;
-    if(!frame) {
-      E(1,"couldn't get frame image from \"%s\"...\n",c->file);
-      goto done; }
-    evas_object_image_size_get(frame,&iw,&ih);
-    frame_data=(unsigned char *)evas_object_image_data_get(frame,0);
-    if(frame_data&&iw>0&&ih>0) {
-      /* copy the pixels out row by row -- do NOT touch imlib here (this
-         runs in the GUI thread, the worker holds the imlib mutex), and
-         do NOT assume the rows are tightly packed:  the backing GStreamer
-         buffer may be row-aligned, so a flat memcpy(w*h*4) produced
-         grey noise.  respect the stride. */
-      int stride=evas_object_image_stride_get(frame);
-      int row;
-      size_t sz=(size_t)iw*ih*4;
-      if(stride<iw*4)
-        stride=iw*4;
-      if((c->frame=malloc(sz))) {
-        for(row=0;row<ih;row++)
-          memcpy(c->frame+(size_t)row*iw*4,
-                 frame_data+(size_t)row*stride,
-                 (size_t)iw*4);
-        c->iw=iw; c->ih=ih; } }
-    else {
-      /* frame not decoded yet (e.g. right after the seek): keep waiting
-         until the deadline rather than failing immediately */
-      if(ecore_time_get()<c->deadline)
-        return ECORE_CALLBACK_RENEW;
-      E(1,"couldn't get frame data from \"%s\" (%dx%d)...\n",c->file,iw,ih);
-      goto done; } }
+    int vw=0,vh=0;
+    emotion_object_size_get(c->em,&vw,&vh);
+    if(vw>0&&vh>0) {
+      Evas_Engine_Info_Buffer *einfo;
+      if(!(c->frame=malloc((size_t)vw*vh*4))) {
+        E(0,"out of memory for \"%s\" thumbnail!?\n",c->file);
+        goto done; }
+      evas_output_size_set(c->evas,vw,vh);
+      evas_output_viewport_set(c->evas,0,0,vw,vh);
+      evas_object_move(c->em,0,0);
+      evas_object_resize(c->em,vw,vh);
+      if((einfo=(Evas_Engine_Info_Buffer *)evas_engine_info_get(c->evas))) {
+        einfo->info.depth_type=EVAS_ENGINE_BUFFER_DEPTH_ARGB32;
+        einfo->info.dest_buffer=c->frame;
+        einfo->info.dest_buffer_row_bytes=vw*4;
+        einfo->info.use_color_key=0;
+        einfo->info.alpha_threshold=0;
+        if(evas_engine_info_set(c->evas,(Evas_Engine_Info *)einfo)) {
+          evas_render(c->evas);
+          c->iw=vw; c->ih=vh;
+          goto done; } } }
+    /* couldn't render -- if we still have time, try again next tick */
+    if(c->frame) { free(c->frame); c->frame=NULL; }
+    if(now<c->deadline)
+      return ECORE_CALLBACK_RENEW;
+    E(1,"couldn't render a frame for \"%s\"...\n",c->file); }
  done:
   _emotion_make_finish(c);
   return ECORE_CALLBACK_CANCEL; }
@@ -228,6 +233,9 @@ static void _emotion_make_in_main(void *data) {
   /* grace period: slow disks and big files need far more than the old 0.8s
      of usleep()ing; the timer keeps the GUI responsive throughout */
   c->deadline=ecore_time_get()+EMOTION_OPEN_TIMEOUT;
+  evas_object_move(c->em,0,0);
+  evas_object_resize(c->em,16,16);
+  evas_object_show(c->em);
   emotion_object_file_set(c->em,c->file);
   if((c->timer=ecore_timer_add(0.1,_emotion_make_timer,c)))
     return;
