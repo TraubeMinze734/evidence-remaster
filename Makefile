@@ -241,6 +241,10 @@ do-install:
 	                setup/evidence.providers setup/evidence.handlers \
 	                $(DESTDIR)$(PREFIX)/share/evidence/
 	install -m 0644 data/*.png data/README $(DESTDIR)$(PREFIX)/share/evidence/
+	install -d $(DESTDIR)$(PREFIX)/share/applications
+	install -m 0644 evidence.desktop $(DESTDIR)$(PREFIX)/share/applications/evidence.desktop
+	install -d $(DESTDIR)$(PREFIX)/share/pixmaps
+	install -m 0644 evidence.xpm $(DESTDIR)$(PREFIX)/share/pixmaps/evidence.xpm
 	install -d $(DESTDIR)$(PREFIX)/share/evidence/themes
 	for t in tosh efm fishtank metallo nautilus rephormed LCARS OtE; do \
 	  cp -r evidence.themes/$$t $(DESTDIR)$(PREFIX)/share/evidence/themes/ || echo "theme $$t skipped"; \
