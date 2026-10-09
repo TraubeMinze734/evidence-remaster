@@ -123,14 +123,15 @@ void bg_upd(void *i,int x,int y,int w,int h) {
  * @param part_name  the name of the part
  */
 static Evas_Object *bg_load_part_from_edje(Evas *evas,int w,int h,const char *edje_name,const char *part_name) {
-  int          err;
   Evas_Object *o=edje_object_add(evas);
 
   if(o) {
-    edje_object_file_set(o,edje_name,part_name);
+    if(!edje_object_file_set(o,edje_name,part_name)) {
 
-    if((err=evas_object_image_load_error_get(o))!=EVAS_LOAD_ERROR_NONE) {
-      E(0,"error #%d loading \"%s\" from \"%s\"...\n",err,part_name,edje_name);
+      /* edje objects are smart objects -- evas_object_image_load_error_get()
+         is image-only and spams eina-safety errors; edje_object_file_set()
+         reports load failure on its own */
+      E(0,"edje_object_file_set() failed for \"%s\" from \"%s\"...\n",part_name,edje_name);
       evas_object_del(o);
       o=NULL; }
 
