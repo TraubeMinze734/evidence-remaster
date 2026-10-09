@@ -268,7 +268,7 @@ do-install:
 	# some 2005 tarballs shipped without the actual images (tosh_96, indigo_96);
 	# drop such empty sets again so no theme silently binds to a broken icon-set
 	-for d in $(DESTDIR)$(PREFIX)/share/evidence/icons/*; do \
-	  if [ -d "$$d" ] && [ -z "$$(find "$$d" -name '*.png' -o -name '*.jpg' -print -quit)" ]; then \
+	  if [ -d "$$d" ] && [ -z "$$(find "$$d" \( -name '*.png' -o -name '*.jpg' \) -print -quit)" ]; then \
 	    echo "iconset $$(basename $$d) contains no images, removing"; rm -rf "$$d"; fi; \
 	done
 	cd $(DESTDIR)$(PREFIX)/share/evidence/icons && ln -sfn rephormed default
