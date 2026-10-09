@@ -1166,15 +1166,16 @@ static const char *mime_get_by_magic(const char *file) {
  * @param file  a file-name
  */
 static const char *mime_get_by_ext(const char *origfile) {
-  char       *ext,*lcl,*p;
-  const char *ret=NULL;
+  char       *ext;
+  const char *p,*ret=NULL;
 
   if(origfile&&*origfile&&!(ret=mime_chk_backup(origfile))) {
-    if((lcl=file_if_local(origfile))) {
-      if((p=strrchr(lcl,DIR_DELIMITER))&&
-         (ext=strrchr(lcl,'.'))&&(p<ext))
-        ret=(char *)hash_table_fetch(ht_mime,&ext[1]);
-      free(lcl); }}
+    if((origfile=file_if_local(origfile))) {
+      /* NB: file_if_local() returns a pointer INTO its argument, not a
+         copy -- do not free it */
+      if((p=strrchr(origfile,DIR_DELIMITER))&&
+         (ext=strrchr(origfile,'.'))&&(p<ext))
+        ret=(char *)hash_table_fetch(ht_mime,&ext[1]); }}
   return ret; }
 
 
