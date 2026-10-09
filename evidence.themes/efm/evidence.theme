@@ -20,7 +20,7 @@ typebuffer_font_size:	61
 icon_font:		vera
 icon_font_size:		15
 tooltip_font:		verase
-tooltip_font_size:	155555
+tooltip_font_size:	15
 textpath_font:          vera
 textpath_font_size:	15
 

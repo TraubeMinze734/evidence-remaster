@@ -289,7 +289,10 @@ void bg_scroll(void *i) {
 static inline void bg_upd_el(icon_list *il,Evas_Object *bg) {
   if(bg) {
     evas_object_hide(bg);
-    evas_object_image_fill_set(bg,0,0,il->vis_w,il->vis_h);
+    /* the tint is a rectangle object -- image_fill_set() is image-only
+       and spams eina-safety errors.  rectangles need no fill-rect. */
+    if(!strcmp(evas_object_type_get(bg),"image"))
+      evas_object_image_fill_set(bg,0,0,il->vis_w,il->vis_h);
     evas_object_resize(bg,il->vis_w,il->vis_h);
     evas_object_show(bg); }}
 
