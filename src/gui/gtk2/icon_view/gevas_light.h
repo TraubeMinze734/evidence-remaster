@@ -67,9 +67,10 @@ struct _GtkgEvas {
   gchar         *evas_engine;       /* x11 or OpenGL? */
 
   void          *current_idle;      /* handles queue render callback (idle_enter_add: ecore!) */
-  void          *flush_idle;        /* g_idle_add handle of the RENDER_FLUSH_POST blit; MUST NOT be
-                                        mixed up with current_idle: idle_enter_remove() would feed a
-                                        GTK guint to ecore_idle_enterer_del() (SIGSEGV) */
+  void          *flush_idle;        /* g_idle_add/g_timeout_add handle of the RENDER_FLUSH_POST blit;
+                                        MUST NOT be mixed up with current_idle: idle_enter_remove() would
+                                        feed a GTK guint to ecore_idle_enterer_del() (SIGSEGV) */
+  ulong           flush_last;        /* ms-timestamp of the last flush blit (rate-limit) */
 
   GdkEvent      *current_event;     /* so that evas callbacks can get the gdk event.*/
 
