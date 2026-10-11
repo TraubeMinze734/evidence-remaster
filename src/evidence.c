@@ -7,6 +7,7 @@
 #include "evidence_private.h"  /* GC_INTERVAL_MAIN */
 #include <stdlib.h>         /* getenv() */
 #include <string.h>
+#include <signal.h>         /* SIGPIPE */
 #include <stdio.h>
 #include <locale.h>
 #ifdef HAVE_BTRACE
@@ -181,6 +182,12 @@ int main(int argc,char *argv[]) {
       putenv(a); }}
 
 
+
+  /* GUI processes must not die of SIGPIPE: library helpers (libextractor
+     fork children, thumbnailer tasks) write to pipes whose far end may
+     already be gone when a scan/extract is aborted. A broken pipe then
+     returns EPIPE from write() instead of killing the whole process. */
+  signal(SIGPIPE,SIG_IGN);
 
   main_thread=pthread_self();
 
