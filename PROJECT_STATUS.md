@@ -136,6 +136,11 @@ getestet.
   pthread_mutex_lock(&job->datalock)), sonst: Unlock eines nie
   genommenen Mutex + ungeschuetzte Writes gegen den GUI-Leser
   (Symptom: Progress-Fenster erscheint gar nicht mehr).
+- Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
+  Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
+  Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:
+  file_job_wait_all() (joint alle laufenden Jobs via file_job_collect)
+  VOR file_exit() im Exit-Pfad von evidence.c.
 - Progress-Fenster (PR #13): Schliessen per WM-X ist KEIN Cancel — der Job
   laeuft weiter, das Fenster wird nur weggeklickt. Der 2005-destroy-Handler
   (form_modeless_destroyed) setzte nur user1=NULL; user2..user6 (box, label,
