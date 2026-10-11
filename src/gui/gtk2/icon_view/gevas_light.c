@@ -89,11 +89,26 @@ static void gevas_class_init(GtkgEvasClass *);
    calling gevas_paint() directly) does not depend on GTK's exposure
    bookkeeping, so we take that one; queue_draw() is kept as a second
    chance for the ordinary icon-view repaints. */
+/* rate-limit for the flush blit, in ms.  the live-video thumbnailer
+   renders per decoded frame (25-30fps), and an unrestricted full-area
+   blit per frame made window resizing jerky -- the blits competed with
+   GTK's own resize drawing.  33ms ~= 30fps: no visible loss for video,
+   and resize stays smooth. */
+#define GEVAS_FLUSH_INTERVAL 33
+
 static gboolean gevas_flush_blit(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
   ev->flush_idle=NULL;
   if(GTK_WIDGET_MAPPED(ev)) {
     GdkRectangle area;
+    ulong t=now(0);
+    /* coalesce: if the last blit is younger than the interval, wait out
+       the remainder instead of painting immediately; the next frame
+       re-schedules us anyway. */
+    if(ev->flush_last&&(t-ev->flush_last)<GEVAS_FLUSH_INTERVAL) {
+      ev->flush_idle=(void *)(uintptr_t)g_timeout_add(GEVAS_FLUSH_INTERVAL-(t-ev->flush_last),gevas_flush_blit,ev);
+      return FALSE; }
+    ev->flush_last=t;
     area.x=area.y=0;
     area.width=ev->pixels_w;
     area.height=ev->pixels_h;
