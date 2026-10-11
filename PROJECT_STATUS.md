@@ -86,6 +86,18 @@ getestet.
   Statische Tag-Snapshots in clipboard.c (clipboard_file_tags) — die
   Selection darf nach Strg+C ruhig weiterleben; das Clipboard liefert die
   URIs on-demand aus dem Snapshot.
+  Zwei ownership-Fallstricke (getestet, PR #13):
+  1. selection_update() darf die CLIPBOARD-Selection NIE anfassen.
+     Ein Clipboard muss Selektionswechsel/Fokusverlust ueberleben; nur
+     die Strg+C/X-Handler setzen es. Sonst ist es leer, bevor Dolphin
+     (oder man selbst) einfuegt.
+  2. file_job_create() uebernimmt das Ownership am action_context
+     (file_job_dst() ruft action_context_dst). Aufrufer duerfen den
+     Context danach NICHT selbst freen — Double-Free, SIGABRT erst
+     NACH erfolgreichem Job-Ende ("dial for job should go away" ->
+     free(): invalid pointer). Ausserdem gehoert das ZIEL-Verzeichnis
+     als single in den Context (Muster wie file_drop_do), sonst hat
+     der Job keinen dst_path.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.

@@ -314,7 +314,18 @@ int clipboard_paste(noir_sess *ns,GdkAtom cb) {
       ret=NOIR_OOM;
       goto done; } }
 
+  /* the job takes ownership of the action_context (file_job_dst()
+     destroys it when the job is done) -- we must NOT dst() it here.
+     like file_drop_do() in dnd.c, the target directory is attached
+     as the context's 'single', which becomes the job's dst_path. */
+  if((af=action_file_new(NULL,cwd)))
+    action_context_set_single(ac,af);
+  else {
+    ret=NOIR_OOM;
+    goto done; }
+
   ret=file_job_create(ns,cut?NOIR_JOB_MV:NOIR_JOB_CP,ac,NULL);
+  ac=NULL;   /* owned by the job now */
 
  done:
   if(ac)
@@ -356,15 +367,16 @@ int selection_update(noir_sess *ns,client_funs *skip) {
 #endif
 
   if(s) {
-    /* keep the PRIMARY selection as plain text (for the typebuffer),
-       but also announce the files on the CLIPBOARD selection in a
-       format other applications (Dolphin, Nautilus, ...) understand */
     clipboard_set(GDK_SELECTION_PRIMARY,s);
-    clipboard_files_set(ac,0);
     free(s); }
-  else {
+  else
     gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-    gtk_clipboard_clear(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD)); }
+
+  /* the CLIPBOARD selection (file list) is NONE of selection_update's
+     business: a clipboard must outlive selection changes.  it is only
+     set by the explicit copy (Ctrl+C) and cut (Ctrl+X) handlers, and
+     only ever replaced or cleared by a new copy/cut -- otherwise any
+     focus change or deselect would wipe what the user just copied */
 
   return NOIR_SUCC; }
 
