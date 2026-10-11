@@ -64,6 +64,7 @@
 
 
 static GtkWidgetClass *parent_class=NULL;
+static void gevas_paint(GtkgEvas *ev,GdkRectangle *area);   /* fwd: used by gevas_flush_blit() */
 
 
 
@@ -80,11 +81,79 @@ static void gevas_class_init(GtkgEvasClass *);
    plugins trigger on their own (e.g. the live-video thumbnailer calling
    evas_render() on each decoded frame) -- without the queue_draw those
    frames would stay in the buffer, invisible. */
+/* the backing-store holds a new frame; make sure it reaches the screen.
+   queue_draw() alone proved unreliable after a window resize -- GTK
+   stopped delivering expose events to the widget even though it was
+   realized and queue_draw() kept being called (live video kept playing
+   audio-only).  the blit path gevas_queue_redraw() uses (idle handler
+   calling gevas_paint() directly) does not depend on GTK's exposure
+   bookkeeping, so we take that one; queue_draw() is kept as a second
+   chance for the ordinary icon-view repaints. */
+/* rate-limit for the flush blit, in ms.  the live-video thumbnailer
+   renders per decoded frame (25-30fps), and an unrestricted full-area
+   blit per frame made window resizing jerky -- the blits competed with
+   GTK's own resize drawing.  33ms ~= 30fps: no visible loss for video,
+   and resize stays smooth. */
+#define GEVAS_FLUSH_INTERVAL 33
+
+/* blit the backing-store to the GdkWindow WITHOUT rendering.  the
+   flush callback only fires after evas_render() has already produced a
+   new frame, so blitting is all that's left.  calling gevas_paint()
+   here instead created a feedback loop: paint -> render -> flush ->
+   idle -> paint ... repainting the whole canvas at idle forever, which
+   made plain window resizing jerky (constant background re-adapting). */
+static void gevas_blit(GtkgEvas *ev,GdkRectangle *area) {
+  GtkWidget *widget=GTK_WIDGET(ev);
+  cairo_t         *cr;
+  cairo_surface_t *surface;
+  if(!GTK_WIDGET_DRAWABLE(widget))
+    return;
+  surface=cairo_image_surface_create_for_data((unsigned char *)ev->pixels,
+                                              CAIRO_FORMAT_ARGB32,
+                                              ev->pixels_w,ev->pixels_h,
+                                              ev->pixels_w*sizeof(int));
+  if((cr=gdk_cairo_create(widget->window))) {
+    cairo_set_source_surface(cr,surface,0,0);
+    cairo_rectangle(cr,area->x,area->y,area->width,area->height);
+    cairo_clip(cr);
+    cairo_paint(cr);
+    cairo_destroy(cr); }
+  cairo_surface_destroy(surface); }
+
+static gboolean gevas_flush_blit(gpointer data) {
+  GtkgEvas *ev=(GtkgEvas *)data;
+  ev->flush_idle=NULL;
+  if(GTK_WIDGET_MAPPED(ev)) {
+    GdkRectangle area;
+    ulong t=now(0);
+    /* coalesce: if the last blit is younger than the interval, wait out
+       the remainder instead of blitting immediately; the next frame
+       re-schedules us anyway. */
+    if(ev->flush_last&&(t-ev->flush_last)<GEVAS_FLUSH_INTERVAL) {
+      ev->flush_idle=(void *)(uintptr_t)g_timeout_add(GEVAS_FLUSH_INTERVAL-(t-ev->flush_last),gevas_flush_blit,ev);
+      return FALSE; }
+    ev->flush_last=t;
+    area.x=area.y=0;
+    area.width=ev->pixels_w;
+    area.height=ev->pixels_h;
+    gevas_blit(ev,&area); }
+  return FALSE; }
+
+/* the backing-store holds a new frame; make sure it reaches the screen.
+   queue_draw() alone proved unreliable after a window resize -- GTK
+   stopped delivering expose events to the widget even though it was
+   realized and queue_draw() kept being called (live video kept playing
+   audio-only).  blit via a GTK idle directly, bypassing GTK's exposure
+   bookkeeping; queue_draw() is kept as a second chance for ordinary
+   icon-view repaints. */
 static void gevas_render_flush(void *data,Evas *e,void *event_info) {
-  GtkWidget *widget=GTK_WIDGET(data);
+  GtkgEvas *ev=(GtkgEvas *)data;
   (void)e; (void)event_info;
-  if(GTK_WIDGET_REALIZED(widget))
-    gtk_widget_queue_draw(widget); }
+  E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,GTK_WIDGET_MAPPED(ev)?1:0);
+  if(GTK_WIDGET_REALIZED(ev)) {
+    gtk_widget_queue_draw(GTK_WIDGET(ev));
+    if(!ev->flush_idle)
+      ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
 
 
 /* allocate the backing-store and attach it to the buffer engine */
@@ -339,7 +408,7 @@ static void gevas_realize(GtkWidget *widget) {
     E(0,"could not initialize evas with engine \"%s\"\n",ev->evas_engine);
     exit(EXIT_FAILURE); }
 
-  evas_event_callback_add(evas,EVAS_CALLBACK_RENDER_FLUSH_POST,gevas_render_flush,widget);
+  evas_event_callback_add(evas,EVAS_CALLBACK_RENDER_FLUSH_POST,gevas_render_flush,ev);
 
   /* FIXME: Maybe we can do something better than single buffering? */
   gtk_widget_set_double_buffered(widget,0); }
@@ -355,6 +424,9 @@ static void gevas_unrealize(GtkWidget *widget) {
   ev=GTK_GEVAS(widget);
 
   idle_enter_remove(&ev->current_idle);
+  if(ev->flush_idle) {   /* GTK idle, not ecore: remove via g_source_remove */
+    g_source_remove((guint)(uintptr_t)ev->flush_idle);
+    ev->flush_idle=NULL; }
 
   if(ev->gevasobjlist) {
     g_slist_free(ev->gevasobjlist);
@@ -431,6 +503,8 @@ static gint gevas_focus_out(GtkWidget *widget,GdkEventFocus *event) {
 
 
 static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
+  E(4,"gevas_paint: area %d,%d %dx%d, store %dx%d\n",
+    area->x,area->y,area->width,area->height,ev->pixels_w,ev->pixels_h);
   GtkWidget *widget;
 
   g_return_if_fail(ev!=NULL);
@@ -441,9 +515,21 @@ static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
   if(!GTK_WIDGET_DRAWABLE(widget))
     return;
 
-  /* make sure the backing-store matches the canvas size */
-  if((area->width!=ev->pixels_w)||(area->height!=ev->pixels_h))
-    return;   /* resize pending; will be repainted on size-allocate */
+  /* clamp the area to the backing-store rather than dropping it:
+     after a window resize GTK sends partial exposes whose area does
+     not exactly match the (already reconfigured) backing-store; the
+     old 'return' rejected those paints forever, so anything rendered
+     by plugins between size-allocates (e.g. the live-video thumbnail
+     calling evas_render() per decoded frame) never reached the
+     screen -- video kept playing audio-only after a resize. */
+  if(area->x<0) { area->width+=area->x; area->x=0; }
+  if(area->y<0) { area->height+=area->y; area->y=0; }
+  if((area->x+area->width)>ev->pixels_w)
+    area->width=ev->pixels_w-area->x;
+  if((area->y+area->height)>ev->pixels_h)
+    area->height=ev->pixels_h-area->y;
+  if((area->width<1)||(area->height<1))
+    return;   /* nothing left to paint */
 
   evas_damage_rectangle_add(ev->evas,area->x,area->y,area->width,area->height);
   evas_obscured_clear(ev->evas);

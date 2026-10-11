@@ -251,11 +251,20 @@ static void _emotion_make_in_main(void *data) {
 
 #ifdef HAVE_EVAS2
 
+/* rate-limit the per-frame render to the same 33ms the gevas flush blit
+   uses; the blit discards anything faster anyway, and rendering at full
+   decode rate (25-30fps) steals CPU from GTK's own resize drawing. */
+#define LIVE_FRAME_INTERVAL 33
+
 static void _live_frame(void *data,Evas_Object *o,void *einfo) {
   Evas *evas=(Evas *)data;
   (void)o; (void)einfo;
-  if(evas)
-    evas_render(evas); }
+  static ulong last=0;   /* single live object at a time in practice */
+  ulong t=now(0);
+  if(evas&&(t-last)>=LIVE_FRAME_INTERVAL) {
+    last=t;
+    E(4,"_live_frame: evas=%p\n",evas);
+    evas_render(evas); } }
 
 /* context for the live object, filled in the main thread */
 typedef struct {
