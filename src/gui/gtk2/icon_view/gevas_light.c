@@ -96,6 +96,30 @@ static void gevas_class_init(GtkgEvasClass *);
    and resize stays smooth. */
 #define GEVAS_FLUSH_INTERVAL 33
 
+/* blit the backing-store to the GdkWindow WITHOUT rendering.  the
+   flush callback only fires after evas_render() has already produced a
+   new frame, so blitting is all that's left.  calling gevas_paint()
+   here instead created a feedback loop: paint -> render -> flush ->
+   idle -> paint ... repainting the whole canvas at idle forever, which
+   made plain window resizing jerky (constant background re-adapting). */
+static void gevas_blit(GtkgEvas *ev,GdkRectangle *area) {
+  GtkWidget *widget=GTK_WIDGET(ev);
+  cairo_t         *cr;
+  cairo_surface_t *surface;
+  if(!GTK_WIDGET_DRAWABLE(widget))
+    return;
+  surface=cairo_image_surface_create_for_data((unsigned char *)ev->pixels,
+                                              CAIRO_FORMAT_ARGB32,
+                                              ev->pixels_w,ev->pixels_h,
+                                              ev->pixels_w*sizeof(int));
+  if((cr=gdk_cairo_create(widget->window))) {
+    cairo_set_source_surface(cr,surface,0,0);
+    cairo_rectangle(cr,area->x,area->y,area->width,area->height);
+    cairo_clip(cr);
+    cairo_paint(cr);
+    cairo_destroy(cr); }
+  cairo_surface_destroy(surface); }
+
 static gboolean gevas_flush_blit(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
   ev->flush_idle=NULL;
@@ -103,7 +127,7 @@ static gboolean gevas_flush_blit(gpointer data) {
     GdkRectangle area;
     ulong t=now(0);
     /* coalesce: if the last blit is younger than the interval, wait out
-       the remainder instead of painting immediately; the next frame
+       the remainder instead of blitting immediately; the next frame
        re-schedules us anyway. */
     if(ev->flush_last&&(t-ev->flush_last)<GEVAS_FLUSH_INTERVAL) {
       ev->flush_idle=(void *)(uintptr_t)g_timeout_add(GEVAS_FLUSH_INTERVAL-(t-ev->flush_last),gevas_flush_blit,ev);
@@ -112,7 +136,7 @@ static gboolean gevas_flush_blit(gpointer data) {
     area.x=area.y=0;
     area.width=ev->pixels_w;
     area.height=ev->pixels_h;
-    gevas_paint(ev,&area); }
+    gevas_blit(ev,&area); }
   return FALSE; }
 
 /* the backing-store holds a new frame; make sure it reaches the screen.
