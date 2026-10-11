@@ -66,9 +66,16 @@ void form_threads_leave(void) {
 /**
  * modeless info-box was destroyed, invalidate ref to it
  */
+/* user1..user6 of a noir_job hold win,box,label,bar1,bar2,bar3; the
+   window only knows &job->user1, the remaining five pointers follow
+   contiguously right behind it (see struct _noir_job in file.h) */
 static void form_modeless_destroyed(GtkWidget *w,void **win) {
-  if(win)
-    *win=NULL; }
+  if(win) {
+    void **u;
+    int    n;
+    *win=NULL;
+    for(u=win+1,n=0;n<5;n++,u++)
+      *u=NULL; } }
 
 /**
  * destroy a modeless info-box

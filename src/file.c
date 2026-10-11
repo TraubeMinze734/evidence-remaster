@@ -86,6 +86,8 @@ static void              *ht_user=NULL,
                          *ht_mime_alii=NULL;
 
 static noir_job          *jobs=NULL;
+static int                jobs_shutdown=0;   /* GUI loop gone; jobs must
+                                                not wait for it anymore */
 
 pthread_mutex_t           fe_pause=PTHREAD_MUTEX_INITIALIZER; /* front-end */
 
@@ -2704,6 +2706,8 @@ int file_job_progress_show(noir_job *job) {
 static int file_job_wait4gui(noir_job *job) {
   if(!job)
     return NOIR_FAIL;
+  if(jobs_shutdown)   /* GUI loop gone; never wait for it at shutdown */
+    return NOIR_IGNORED;
 
   if(job->async) {
     E(6,"backend locking & updating job (%ld)...\n",job->id);
@@ -2818,7 +2822,34 @@ int file_job_update(noir_job *job,noir_job_status s,int e,const char *src,const 
   if((s==NOIR_JOB_UNCHANGED)&&(e==NOIR_NOERRORCODE)&&!src&&!dst)
     return NOIR_IGNORED;
 
-  file_job_wait4gui(job);
+  /* PROGRESS/START/ADD/DEL updates don't need the GUI handshake: nothing
+     waits for a reply, the pulse just reads the fields under datalock.
+     the 2005 code slept here until the 250ms GUI pulse consumed EVERY
+     update -- with one per file/dir that throttled copy jobs to a few
+     files per second.  EDIT/QUESTION/DONE keep the handshake (dialogs
+     need an answer, DONE dests the job). */
+  /* START must keep the handshake: the progress window is only created
+     when the GUI consumes the START update (file_job_progress_show,
+     NOIR_JOB_START case).  without the handshake the backend races past
+     START within the 250ms pulse interval, the window is never created,
+     and every later update hits NULL widget slots.  it fires once per
+     job, so the cost is negligible. */
+  if((s==NOIR_JOB_EDIT)||(s==NOIR_JOB_QUESTION)||(s==NOIR_JOB_DONE)||(s==NOIR_JOB_START))
+    file_job_wait4gui(job);
+  else if(job->async) {
+    pthread_mutex_lock(&job->datalock);   /* protect fields, but don't
+                                             wait for the GUI to consume
+                                             the previous update */
+    /* one targeted wait: never overwrite an unconsumed START -- the
+       progress window is only created when the GUI consumes START
+       (file_job_progress_show, NOIR_JOB_START case).  the 2005 code
+       achieved this implicitly (every update waited for the previous
+       one to be consumed); the fast path must do it explicitly for
+       START, or the window is never created.  costs one pulse-wait
+       per job, nothing else. */
+    if(s!=NOIR_JOB_UNCHANGED&&!jobs_shutdown)
+      while(job->status==NOIR_JOB_START)
+        pthread_cond_wait(&job->backendpause,&job->datalock); }
 
   E(4,"locked job (%ld)...\n",job->id);
 
@@ -3131,7 +3162,7 @@ static int file_job_scan(noir_job *job,const char *path) {
     job->total_files=1;  /* count copy-root! */
 
     while(ch) {
-      job->total_bytes=ch->size;
+      job->total_bytes+=ch->size;   /* was '=', so the total was only ever the LAST top-level child */
       job->total_files+=ch->descendents+1;
       ch=ch->next; }
 
@@ -3618,6 +3649,25 @@ int file_init(q_head *qh,const char *be) {
  * cleanup.
  * @return an error-code
  */
+/* wait for all running async jobs to finish; called on shutdown so we
+   never dlclose() the backend or free jobs/model under a live thread */
+int file_job_wait_all(void) {
+  noir_job *job=jobs;
+  /* the GUI loop is gone (or going); backend threads blocked in
+     file_job_wait4gui() would wait for a pulse that never comes
+     (deadlock -- the user had to SIGKILL).  stop all waiting, wake
+     everything, then join. */
+  jobs_shutdown=1;
+  while(job) {
+    if(job->id>0) {   /* async: created via backend_job_start() */
+      pthread_mutex_lock(&job->datalock);
+      job->status=NOIR_JOB_UNCHANGED;
+      pthread_cond_broadcast(&job->backendpause);
+      pthread_mutex_unlock(&job->datalock);
+      ff.file_job_collect(job); }
+    job=job->next; }
+  return NOIR_SUCC; }
+
 int file_exit(void) {
   file_monitor_remove_all(NULL);
   ff.file_exit();

@@ -76,6 +76,100 @@ getestet.
   per action_file_new(ac,tag) in die Selection aufnehmen. Das generische
   Audio-Icon sagt nichts ueber den MIME aus (kommt aus mime.icons
   Wildcards); MIME selbst bestimmen mime.types/libmagic.
+- Clipboard (PR #12, clipboard.c): Strg+C/X legt die Selection jetzt zusaetzlich
+  auf die CLIPBOARD-Selection als x-special/gnome-copied-files (copy/cut-
+  Payload) UND text/uri-list, mit text/plain als Fallback. Damit verstehen
+  Dolphin/Nautilus/Thunar evidence-Kopien als Dateien, nicht als Text.
+  Strg+V im View pastet ueber file_job_create() (CP bei copy, MV bei cut)
+  ins cwd derselben Job-Maschinerie wie Drag&Drop. Der alte "(yet)"-Alert
+  ist weg. Der Typebuffer-Pfad (Strg+V bei offenem Typebuffer) unveraendert.
+  Statische Tag-Snapshots in clipboard.c (clipboard_file_tags) — die
+  Selection darf nach Strg+C ruhig weiterleben; das Clipboard liefert die
+  URIs on-demand aus dem Snapshot.
+  Zwei ownership-Fallstricke (getestet, PR #13):
+  1. selection_update() darf die CLIPBOARD-Selection NIE anfassen.
+     Ein Clipboard muss Selektionswechsel/Fokusverlust ueberleben; nur
+     die Strg+C/X-Handler setzen es. Sonst ist es leer, bevor Dolphin
+     (oder man selbst) einfuegt.
+  2. file_job_create() uebernimmt das Ownership am action_context
+     (file_job_dst() ruft action_context_dst). Aufrufer duerfen den
+     Context danach NICHT selbst freen — Double-Free, SIGABRT erst
+     NACH erfolgreichem Job-Ende ("dial for job should go away" ->
+     free(): invalid pointer). Ausserdem gehoert das ZIEL-Verzeichnis
+     als single in den Context (Muster wie file_drop_do), sonst hat
+     der Job keinen dst_path.
+  3. gtk_clipboard_set_with_data() ruft beim Uebergang des Ownership
+     den clear-Handler des VORbesitzers auf — das sind wir selbst.
+     Den Snapshot der Dateien erst NACH set_with_data() committen,
+     sonst loescht der eigene clear-Handler die frischen Daten und
+     jede zweite Strg+C-Kopie liefert ein leeres Clipboard.
+  4. Clipboard-URIs sind percent-escapet ("%20" fuer Leerzeichen).
+     file_if_local() dekodiert NICHT. Empfangene Pfade aus
+     gnome-copied-files/uri-list zwingend percent-dekodieren
+     (clipboard_uri_decode in clipboard.c), sonst "Datei nicht
+     gefunden" bei Namen mit Spaces.
+- Copy-Jobs / Fortschrittsanzeige (PR #13):
+  1. file_job_bytes() dividierte MB, labelte aber "GB" — Total zeigte
+     GB ab 100MB. Jetzt: GB erst ab 100GB, korrekt /1024^3.
+  2. file_job_scan() hatte "job->total_bytes=ch->size" (= statt +=):
+     das Total war immer nur das LETZTE Top-Level-Kind, Copied aber
+     akkumuliert ueber alles → Balken ueber 100% ("158/138 GB").
+  3. Langsamkeit: posix_copy_data() rief file_job_stats() (Mutex +
+     GUI-Handshake) nach JEDEM 4K-Block, dir_copy()/dir_move() riefen
+     file_job_update(PROGRESS) pro Verzeichniseintrag — jedes Mal wartete
+     der Backend-Thread auf den 250ms-GUI-Pulse (file_job_wait4gui).
+     Fixes: Stats nur noch ~alle 100ms + einmal final pro Datei;
+     dir_copy/dir_move nutzen UNCHANGED-Updates (kein Handshake).
+     Kopieren laeuft damit nahe an Platten-/read()-Geschwindigkeit.
+  (2. Runde, nach User-Test mit neuem Build noch immer langsam): Das war
+  noch nicht alles — file_job_update() wartete bei JEDEM Statuswechsel
+  (PROGRESS pro Datei via file_copy/dir_copy, START, ADD beim Prescan)
+  im file_job_wait4gui-Handshake auf den GUI-Pulse. Der Handshake ist
+  nur fuer EDIT/QUESTION (Antwort noetig) und DONE (Job wird zerstoert)
+  Pflicht — jetzt ueberspringen PROGRESS/START/ADD/DEL ihn komplett.
+  Ebenfalls unit_size() in util.c gefixt (dividierte MB, labelte GB,
+  gleicher Bug wie file_job_bytes): TB/GB/MB-Schwellen korrekt.
+  ACHTUNG Folgefehler (Version c2ac366): file_job_wait4gui() NIMMT
+  datalock (pthread_cond_wait) — das Funktions-ende von file_job_update()
+  gibt ihn immer frei. Wer den Handshake-Skip einbaut, muss fuer die
+  Nicht-Handshake-Zweige SELBST locken (else if(job->async)
+  pthread_mutex_lock(&job->datalock)), sonst: Unlock eines nie
+  genommenen Mutex + ungeschuetzte Writes gegen den GUI-Leser
+  (Symptom: Progress-Fenster erscheint gar nicht mehr).
+  ZWEITE Stolperfalle (Version c86b83d): Der Handshake-Skip darf START
+  NICHT einschliessen — das Progress-Fenster wird ausschliesslich im
+  NOIR_JOB_START-Fall von file_job_progress_show() erzeugt. Ohne
+  Handshake rennt der Backend-Thread in 250ms am START vorbei, das
+  Fenster entsteht nie, alle Folgebetrifft treffen NULL-Slots
+  (Symptom: Fenster erscheint auch nach dem Lock-Fix nicht). START
+  feuert nur einmal pro Job — Handshake dort ist gratis. EDIT/
+  QUESTION/DONE/START = Handshake; PROGRESS/ADD/DEL = nur datalock.
+  DRITTE Stolperfalle (cc652bb): Der START-Handshake allein reicht
+  NICHT — der Backend setzt START, rennt weiter, und das naechste
+  PROGRESS ueberschreibt START, bevor der 250ms-Pulse ihn sieht
+  (Fenster nie sichtbar, Pulse loggt "copy progress!" ohne Widgets).
+  Der Fast-Path braucht eine gezielte konditionale Wait: PROGRESS/
+  ADD/DEL duerfen einen unkonsumierten START nie ueberschreiben
+  (while status==START: cond_wait). Kostet eine Pulse-Warte pro Job.
+  PLUS Shutdown-Deadlock: file_job_wait_all() joint Threads, die im
+  Handshake auf den bereits toten GUI-Pulse warten → SIGKILL noetig.
+  Fix: globales jobs_shutdown-Flag — wait4gui und die START-Wait
+  warten waehrend des Shutdowns nie; wait_all setzt das Flag, weckt
+  per cond_broadcast alle Jobs und joint erst dann.
+- Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
+  Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
+  Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:
+  file_job_wait_all() (joint alle laufenden Jobs via file_job_collect)
+  VOR file_exit() im Exit-Pfad von evidence.c.
+- Progress-Fenster (PR #13): Schliessen per WM-X ist KEIN Cancel — der Job
+  laeuft weiter, das Fenster wird nur weggeklickt. Der 2005-destroy-Handler
+  (form_modeless_destroyed) setzte nur user1=NULL; user2..user6 (box, label,
+  bars) blieben als Zeiger auf zerstoerte Widgets stehen → Use-after-free,
+  SIGABRT beim naechsten Progress-Update. Fix: Handler invalidiert alle
+  sechs Slots (user1..user6 liegen kontinuierlich im struct, Pointer-
+  Arithmetik ab &user1). Die label/bar-Update-Fns tolerieren NULL-Slots
+  bereits. Ein echter Cancel-Button existiert (noch) nicht — waere ein
+  eigenes Feature (Cancel-Flag im Job + Abbruch im Backend-Loop).
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
