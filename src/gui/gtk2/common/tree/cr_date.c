@@ -58,7 +58,7 @@ static void cr_date_render(GtkCellRenderer *cell,GdkWindow *window,
   localtime_r(&mtime,&mktm);
   strftime(time,TREE_TIME_MAX,"%Y-%m-%d %H:%M",&mktm);
 
-  celltext->text=time;
+  g_object_set(celltext,"text",time,NULL);
   layout=cr_text_get_size(cell,widget,cell_area,&x,&y,NULL,NULL);
 
 #if GTK_CHECK_VERSION(3,0,0)
@@ -103,8 +103,13 @@ static void cr_date_set_property(GObject *object,guint param_id,const GValue *va
 
 
 static void cr_date_finalize (GObject *object) {
+#if !GTK_CHECK_VERSION(3,0,0)
   GtkCellRendererText *celltext=GTK_CELL_RENDERER_TEXT(object);
-  pango_font_description_free(celltext->font); }
+  pango_font_description_free(celltext->font);
+#else
+  /* GtkCellRendererText is opaque in GTK3 and owns its font-desc. */
+  (void)object;
+#endif }
 
 
 
