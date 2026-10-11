@@ -56,6 +56,12 @@ if have_pc libacl; then
 elif [ -f /usr/include/sys/acl.h ] || [ -f /usr/local/include/sys/acl.h ]; then
   LIBACL=yes
 fi
+# --- meta-data provider libs (2005 configure.in: plugin-vorbis, plugin-id3, ---
+# --- plugin-taglib, plugin-ttf) ----------------------------------------------
+VORBIS=no; if have_pc vorbis vorbisfile; then VORBIS=yes; VORBIS_CFLAGS=$(pc_cflags vorbis vorbisfile); VORBIS_LIBS=$(pc_libs vorbis vorbisfile ogg); fi
+TAGLIB=no; if have_pc taglib; then TAGLIB=yes; TAGLIB_CFLAGS=$(pc_cflags taglib); TAGLIB_LIBS=$(pc_libs taglib); fi
+ID3=no;    if have_pc id3; then ID3=yes; ID3_CFLAGS=$(pc_cflags id3); ID3_LIBS=$(pc_libs id3); fi
+FT2=no;    if have_pc freetype2; then FT2=yes; FT2_CFLAGS=$(pc_cflags freetype2); FT2_LIBS=$(pc_libs freetype2); fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
   say "WARNING: neither GTK2 nor EFL found -- no GUI backend will be built."
@@ -106,6 +112,10 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   [ "$EXTRACTOR" = yes ] && echo "#define HAVE_EXTRACTOR 1"
   [ "$LIBCURL" = yes ] && echo "#define HAVE_LIBCURL 1"
   [ "$LIBACL" = yes ] && echo "#define HAVE_LIBACL 1"
+  [ "$VORBIS" = yes ] && echo "#define HAVE_VORBIS 1"
+  [ "$TAGLIB" = yes ] && echo "#define HAVE_TAGLIB 1"
+  [ "$ID3" = yes ] && echo "#define HAVE_ID3 1"
+  [ "$FT2" = yes ] && echo "#define HAVE_FT2 1"
 case "$(uname -s)" in
   Linux) echo "#define I_NOTIFY 1" ;;
 esac
@@ -165,6 +175,18 @@ esac
   echo "X11 ?= $X11"
   echo "X11_CFLAGS ?= $X11_CFLAGS"
   echo "X11_LIBS ?= $X11_LIBS"
+  echo "VORBIS ?= $VORBIS"
+  echo "VORBIS_CFLAGS ?= $VORBIS_CFLAGS"
+  echo "VORBIS_LIBS ?= $VORBIS_LIBS"
+  echo "TAGLIB ?= $TAGLIB"
+  echo "TAGLIB_CFLAGS ?= $TAGLIB_CFLAGS"
+  echo "TAGLIB_LIBS ?= $TAGLIB_LIBS"
+  echo "ID3 ?= $ID3"
+  echo "ID3_CFLAGS ?= $ID3_CFLAGS"
+  echo "ID3_LIBS ?= $ID3_LIBS"
+  echo "FT2 ?= $FT2"
+  echo "FT2_CFLAGS ?= $FT2_CFLAGS"
+  echo "FT2_LIBS ?= $FT2_LIBS"
 } > config.mk
 
 say "evidence configured:"
@@ -178,6 +200,10 @@ say "  Emotion       $EMOTION"
 say "  libextractor  $EXTRACTOR"
 say "  libcurl       $LIBCURL"
   say "  ACLs          $LIBACL"
+say "  Vorbis        $VORBIS"
+say "  taglib        $TAGLIB"
+say "  id3lib        $ID3"
+say "  freetype2     $FT2"
 say "  Imlib2        $IMLIB2"
 say "  libpng        $PNG"
 say "  libjpeg       $JPEG"
