@@ -1012,7 +1012,11 @@ static int browser_view_focus(noir_browser *bv,file_info *fi) {
   if(bv->browser_paned)
     ih=gtk_paned_get_position(GTK_PANED(bv->browser_paned));
 
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_widget_hide(bv->browser_scroll);   /* hide_all removed in GTK3 */
+#else
   gtk_widget_hide_all(bv->browser_scroll);
+#endif
 
   if(bv->browser_box&&bv->browser_padding)
     gtk_container_remove(GTK_CONTAINER(bv->browser_box),bv->browser_padding);

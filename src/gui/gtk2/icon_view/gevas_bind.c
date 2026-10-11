@@ -1225,7 +1225,11 @@ GtkWidget *gevas_icon_list_new(noir_sess *ns,const char *name,int wpad,int hpad,
   il->sess=ns;
   il->sortflags=&ns->sortflags;
 
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_widget_set_size_request(gevas,il->width=256,200);
+#else
   gtk_widget_set_usize(gevas,il->width=256,200);
+#endif
   gevas_set_size_request_x(gevas,200);
   gevas_set_size_request_y(gevas,200);
 
