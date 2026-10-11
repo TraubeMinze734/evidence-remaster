@@ -407,6 +407,18 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
 
   pthread_mutex_init(&c.mtx,NULL);
   pthread_cond_init(&c.cond,NULL);
+
+  /* CANCEL-SAFETY: the make-machine runs an ecore_timer in the GUI
+     thread that dereferences THIS stack frame (c) until it signals
+     c.done.  The thumbnailer GC pthread_cancel()s stuck workers with
+     PTHREAD_CANCEL_ASYNCHRONOUS -- if that hit us mid-handshake, the
+     timer would keep running against a dead stack (futex error /
+     SIGABRT, as seen in the wild).  Deferred cancellation (the POSIX
+     default) makes us die only at well-defined cancellation points,
+     which none of the code below reaches before the handshake
+     completes; the GC's own join() then sees us exit cleanly. */
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED,NULL);
   /* _emotion_make_in_main only starts the machine; the worker waits here
      until the main-loop timer finishes (frame grabbed or timed out).  the
      mainloop stays responsive the whole time, and the timeout bounds the
@@ -429,6 +441,7 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
   IMLIB_ACQUIRE;
   pthread_mutex_destroy(&c.mtx);
   pthread_cond_destroy(&c.cond);
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
 
 
   if(!c.frame) {
