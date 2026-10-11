@@ -64,6 +64,8 @@
 
 
 static GtkWidgetClass *parent_class=NULL;
+static void gevas_queue_redraw(GtkgEvas *gevas);   /* fwd: used by gevas_render_flush() */
+static void gevas_paint(GtkgEvas *ev,GdkRectangle *area);   /* fwd: used by gevas_flush_blit() */
 
 
 
@@ -80,12 +82,40 @@ static void gevas_class_init(GtkgEvasClass *);
    plugins trigger on their own (e.g. the live-video thumbnailer calling
    evas_render() on each decoded frame) -- without the queue_draw those
    frames would stay in the buffer, invisible. */
+/* the backing-store holds a new frame; make sure it reaches the screen.
+   queue_draw() alone proved unreliable after a window resize -- GTK
+   stopped delivering expose events to the widget even though it was
+   realized and queue_draw() kept being called (live video kept playing
+   audio-only).  the blit path gevas_queue_redraw() uses (idle handler
+   calling gevas_paint() directly) does not depend on GTK's exposure
+   bookkeeping, so we take that one; queue_draw() is kept as a second
+   chance for the ordinary icon-view repaints. */
+static gboolean gevas_flush_blit(gpointer data) {
+  GtkgEvas *ev=(GtkgEvas *)data;
+  ev->current_idle=0;
+  if(GTK_WIDGET_MAPPED(ev)) {
+    GdkRectangle area;
+    area.x=area.y=0;
+    area.width=ev->pixels_w;
+    area.height=ev->pixels_h;
+    gevas_paint(ev,&area); }
+  return FALSE; }
+
+/* the backing-store holds a new frame; make sure it reaches the screen.
+   queue_draw() alone proved unreliable after a window resize -- GTK
+   stopped delivering expose events to the widget even though it was
+   realized and queue_draw() kept being called (live video kept playing
+   audio-only).  blit via a GTK idle directly, bypassing GTK's exposure
+   bookkeeping; queue_draw() is kept as a second chance for ordinary
+   icon-view repaints. */
 static void gevas_render_flush(void *data,Evas *e,void *event_info) {
-  GtkWidget *widget=GTK_WIDGET(data);
+  GtkgEvas *ev=(GtkgEvas *)data;
   (void)e; (void)event_info;
-  E(2,"gevas_render_flush: widget=%p realized=%d\n",widget,GTK_WIDGET_REALIZED(widget)?1:0);
-  if(GTK_WIDGET_REALIZED(widget))
-    gtk_widget_queue_draw(widget); }
+  E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,GTK_WIDGET_MAPPED(ev)?1:0);
+  if(GTK_WIDGET_REALIZED(ev)) {
+    gtk_widget_queue_draw(GTK_WIDGET(ev));
+    if(!ev->current_idle)
+      ev->current_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
 
 
 /* allocate the backing-store and attach it to the buffer engine */
@@ -340,7 +370,7 @@ static void gevas_realize(GtkWidget *widget) {
     E(0,"could not initialize evas with engine \"%s\"\n",ev->evas_engine);
     exit(EXIT_FAILURE); }
 
-  evas_event_callback_add(evas,EVAS_CALLBACK_RENDER_FLUSH_POST,gevas_render_flush,widget);
+  evas_event_callback_add(evas,EVAS_CALLBACK_RENDER_FLUSH_POST,gevas_render_flush,ev);
 
   /* FIXME: Maybe we can do something better than single buffering? */
   gtk_widget_set_double_buffered(widget,0); }
@@ -432,7 +462,7 @@ static gint gevas_focus_out(GtkWidget *widget,GdkEventFocus *event) {
 
 
 static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
-  E(2,"gevas_paint: area %d,%d %dx%d, store %dx%d\n",
+  E(4,"gevas_paint: area %d,%d %dx%d, store %dx%d\n",
     area->x,area->y,area->width,area->height,ev->pixels_w,ev->pixels_h);
   GtkWidget *widget;
 
