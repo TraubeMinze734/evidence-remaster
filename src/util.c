@@ -642,7 +642,11 @@ int timeout_remove(void **h) {
     E(0,"handle: %p\n",handle);
     E(0,"handle: { %lx, %lx }\n",p[0],p[1]); }
 #endif
-#ifdef HAVE_ECORE
+#if defined(HAVE_GTK3)
+  /* timeout_add() yields a GLib source id under GTK3; ecore_timer_del
+     would treat the id as an Ecore_Timer pointer (SIGSEGV) */
+  return g_source_remove((guint)(uintptr_t)handle)?NOIR_SUCC:NOIR_FAIL;
+#elif defined(HAVE_ECORE)
   ecore_timer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
@@ -673,7 +677,11 @@ int idle_enter_remove(void **h) {
   if(!(handle=*h))
     return NOIR_IGNORED;
   *h=NULL;
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  /* idle_enter_add() yields a GLib source id under GTK3 */
+  g_source_remove((guint)(uintptr_t)handle);
+  return NOIR_SUCC;
+#elif defined(HAVE_ECORE)
   ecore_idle_enterer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
