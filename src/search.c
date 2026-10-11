@@ -3,6 +3,7 @@
  */
 
 #include "config.h"
+#include <stdio.h>
 #include "errors.h"        /* NOIR_* */
 
 
@@ -885,5 +886,11 @@ int search_exit(void)
 
 int search_init(void) { return NOIR_IGNORED; }
 int search_exit(void) { return NOIR_IGNORED; }
+/* stub so that the searchable/searchable_r action plugins can be loaded
+   even when evidence was built without libdoodle; they report "not
+   supported" instead of failing with an undefined symbol at dlopen() */
+int search_scan_dir(const char *cdb,const char *dir,int recoursive_indexing) {
+  fprintf(stderr,"evidence: searches by meta-data are not supported (built without libdoodle).\n");
+  return NOIR_NOTSUPP; }
 
 #endif
