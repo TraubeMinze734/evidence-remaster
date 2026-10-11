@@ -5,12 +5,20 @@
 set -e
 
 PREFIX="${PREFIX:-/usr/local}"
+GTK_MAJOR="${GTK_MAJOR:-2}"
 PKG=${PKG_CONFIG:-pkg-config}
 
 say() { printf '%s\n' "$*"; }
 die() { say "ERROR: $*"; exit 1; }
 
 command -v "$PKG" >/dev/null 2>&1 || die "pkg-config not found. Install pkg-config first."
+for arg in "$@"; do
+  case "$arg" in
+    --with-gtk3) GTK_MAJOR=3 ;;
+    --with-gtk2) GTK_MAJOR=2 ;;
+    *) die "unknown option: $arg (supported: --with-gtk2, --with-gtk3)" ;;
+  esac
+done
 
 have_pc() { "$PKG" --exists "$@" 2>/dev/null; }
 pc_cflags() { "$PKG" --cflags "$@" 2>/dev/null; }
@@ -19,7 +27,13 @@ pc_libs() { "$PKG" --libs "$@" 2>/dev/null; }
 GLIB2=no; if have_pc glib-2.0; then GLIB2=yes; GLIB2_CFLAGS=$(pc_cflags glib-2.0); GLIB2_LIBS=$(pc_libs glib-2.0); fi
 
 # --- optional ------------------------------------------------------------
-GTK2=no;  if have_pc gtk+-2.0; then GTK2=yes; GTK2_CFLAGS=$(pc_cflags gtk+-2.0); GTK2_LIBS=$(pc_libs gtk+-2.0); fi
+GTK_PC=gtk+-2.0
+if [ "$GTK_MAJOR" = 3 ]; then GTK_PC=gtk+-3.0; fi
+GTK2=no
+if have_pc $GTK_PC; then GTK2=yes; GTK2_CFLAGS=$(pc_cflags $GTK_PC); GTK2_LIBS=$(pc_libs $GTK_PC); fi
+if [ "$GTK_MAJOR" = 3 ] && [ "$GTK2" = no ]; then
+  die "GTK3 requested (--with-gtk3) but gtk+-3.0 was not found by pkg-config."
+fi
 CAIRO=no; if have_pc cairo; then CAIRO=yes; CAIRO_CFLAGS=$(pc_cflags cairo); CAIRO_LIBS=$(pc_libs cairo); fi
 EFL=no;   if have_pc evas ecore ecore-evas edje; then EFL=yes; EVAS_CFLAGS=$(pc_cflags evas ecore ecore-evas edje); EVAS_LIBS=$(pc_libs evas ecore ecore-evas edje); fi
 IMLIB2=no; if have_pc imlib2; then IMLIB2=yes; IMLIB2_CFLAGS=$(pc_cflags imlib2); IMLIB2_LIBS=$(pc_libs imlib2); fi
@@ -69,6 +83,7 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   echo "#define HAVE_WORDEXP 1"
   [ "$GLIB2" = yes ] && echo "#define HAVE_GLIB2 1"
   [ "$GTK2" = yes ] && echo "#define HAVE_GTK2 1"
+  if [ "$GTK2" = yes ] && [ "$GTK_MAJOR" = 3 ]; then echo "#define HAVE_GTK3 1"; fi
   [ "$EFL" = yes ] && echo "#define HAVE_EVAS2 1"
   [ "$EFL" = yes ] && echo "#define HAVE_ECORE 1"
   [ "$EFL" = yes ] && echo "#define HAVE_EDJE 1"
@@ -145,7 +160,7 @@ esac
 say "evidence configured:"
 say "  prefix        $PREFIX"
 say "  GLib2         $GLIB2"
-say "  GTK2 backend  $GTK2"
+say "  GTK backend   $GTK2 (GTK$GTK_MAJOR)"
 say "  EFL backend   $EFL"
 say "  Ecore-IPC     $ECOREIPC"
 say "  libmagic      $LIBMAGIC"

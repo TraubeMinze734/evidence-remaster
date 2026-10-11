@@ -123,7 +123,7 @@ Window get_root_window(void) {
  * @param w - the widget
  */
 Window get_widget_window(void *w) {
-  return GDK_WINDOW_XWINDOW(gtk_widget_get_window((GtkWidget *)w)); }
+  return GDK_WINDOW_XID(gtk_widget_get_window((GtkWidget *)w)); }
 
 #endif
 
@@ -972,7 +972,9 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
     nodeco=TRUE;
     gtk_window_set_default_size(GTK_WINDOW(noir_sess_get_window(ns)),gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
     gtk_window_move(GTK_WINDOW(noir_sess_get_window(ns)),0,0);
+#if !GTK_CHECK_VERSION(3,0,0)
     gtk_window_set_wmclass(GTK_WINDOW(noir_sess_get_window(ns)),"desktop_window","evidence");
+#endif
     gtk_window_maximize(GTK_WINDOW(noir_sess_get_window(ns))); }
   else
     gtk_window_set_default_size(GTK_WINDOW(noir_sess_get_window(ns)),800,600);
@@ -991,8 +993,8 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   if(ns->fullscreen)
 #ifdef HAVE_X
 /*  gdk_window_set_type_hint(noir_sess_get_window(ns)->window,GDK_WINDOW_TYPE_HINT_DESKTOP); */
-    window_as_desk(GDK_WINDOW_XDISPLAY(gtk_widget_get_window(noir_sess_get_window(ns))),
-                   GDK_WINDOW_XWINDOW(gtk_widget_get_window(noir_sess_get_window(ns))),
+    window_as_desk(gdk_x11_display_get_xdisplay(gdk_display_get_default()),
+                   GDK_WINDOW_XID(gtk_widget_get_window(noir_sess_get_window(ns))),
                    gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
 #else
     E(0,"cannot flag window as desktop, compiled with --enable-x=no\n");
@@ -1028,7 +1030,11 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
     ns->start_in=START_IN_ICONVIEW;
 
   if(ns->start_in==START_IN_ICONVIEW)
+#if GTK_CHECK_VERSION(3,0,0)
+    icon_view_exposed(((noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW))->icon_view,(cairo_t *)NULL,ns);
+#else
     icon_view_exposed(((noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW))->icon_view,NULL,ns);
+#endif
 #endif
 
   notebook_go2view(ns,template->start_in);

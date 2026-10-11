@@ -53,11 +53,18 @@ static void cr_date_render(GtkCellRenderer *cell,GdkWindow *window,
   celltext->text=time;
   layout=cr_text_get_size(cell,widget,cell_area,&x,&y,NULL,NULL);
 
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_render_layout(gtk_widget_get_style_context(widget),cr,
+                   cell_area->x+x+cell->xpad,
+                   cell_area->y+y+cell->ypad,
+                   layout);
+#else
   gtk_paint_layout(gtk_widget_get_style(widget),window,GTK_STATE_NORMAL,TRUE,cell_area,
                    widget,"date",
                    cell_area->x+x+cell->xpad,
                    cell_area->y+y+cell->ypad,
                    layout);
+#endif
 
   g_object_unref(layout); }
 
