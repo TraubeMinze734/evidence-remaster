@@ -593,6 +593,10 @@ int file_monitor_event(noir_monitor *m,noir_file_event type,char *tag) {
               noir_sess_focus(ns,pa?pa->tag:"/"); }}
           ns=noir_sess_get_next(ns); }}
       ret=model_evt(fi,MODEL_DEL,FF_NONE);
+      /* model_evt(MODEL_DEL) already unref'd (and likely destroyed) fi.
+         if fi was a temporary item we made up above, it is gone now, so
+         suppress the balancing unref at the end of this function. */
+      ft=NULL;
    /* file_monitor_remove_one(m); */  /* item is gone, drop monitor(?) */
       break;
 
