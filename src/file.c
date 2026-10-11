@@ -2826,6 +2826,10 @@ int file_job_update(noir_job *job,noir_job_status s,int e,const char *src,const 
      need an answer, DONE dests the job). */
   if((s==NOIR_JOB_EDIT)||(s==NOIR_JOB_QUESTION)||(s==NOIR_JOB_DONE))
     file_job_wait4gui(job);
+  else if(job->async)
+    pthread_mutex_lock(&job->datalock);   /* protect fields, but don't
+                                             wait for the GUI to consume
+                                             the previous update */
 
   E(4,"locked job (%ld)...\n",job->id);
 
