@@ -166,6 +166,13 @@ getestet.
   den der freiwillige Rerender bereits nutzt. Thumbs erscheinen
   dadurch gebuendelt alle ~2s statt einzeln, dafuer bleibt die GUI
   fluessig. (PR #14)
+- unit_size() (util.c, zeigt Dateigroessen in Tooltips/Properties): Der
+  2005-Code stapelte ZWEI Divisionsschemata — die Einheiten-Auswahl
+  dividierte schon, der Formatter dividierte ERNEUT durch 1024. Bei
+  KB/MB fiel das zufaellig auf den Fuss zurueck (deshalb 100er-MB
+  korrekt), ab 1GB aber: 1GB → auf 1 skaliert → 1/1024 → "0.0 GB".
+  Neu: einmal skalieren, einmal formatieren (TB/GB/MB/KB, %.1f).
+  Auch file_job_bytes() (PR #13) hatte denselben Doppel-Divisions-Bug.
 - Live-Video im Tooltip nach Fenster-Resize (nur Ton, kein Bild):
   gevas_paint() warf JEDE Paint-Area weg, die nicht exakt
   pixels_w x pixels_h entsprach ("resize pending"). Nach einem

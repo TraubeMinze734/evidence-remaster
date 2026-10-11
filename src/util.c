@@ -504,7 +504,6 @@ int util_parse_line(char *in,char **o1,char **o2,char **o3,char **o4) {
  * @param size - the buffer to rewrite
  */
 char *unit_size(char *size) {
-  char *unit="byte";
 #ifdef HAVE_STRTOULL
   unsigned long long s=strtoull(size,NULL,10);
 #elif defined(HAVE_STRTOUL)
@@ -512,27 +511,20 @@ char *unit_size(char *size) {
 #else
   off_t              s=atol(size);
 #endif
-
-  if(s>=1024) {
-    if((s>(1024LL*1024*1024*1024))) {
-      unit="TB";
-      s=(unsigned long long)(s/(1024LL*1024*1024*1024)); }
-    else if((s>(1024LL*1024*1024))) {
-      unit="GB";
-      s=(unsigned long long)(s/(1024LL*1024*1024)); }
-    else if((s>(1024*1024))) {
-      unit="MB";
-      s=(unsigned long long)(s/1024); }
-    else
-      unit="KB";
-
-    if((s/1024)>31)
-      sprintf(size,"%lld %s",(unsigned long long)(s/1024),unit);
-    else
-      sprintf(size,"%.1f %s",((float)s)/1024,unit); }
+  /* scale once, format once.  the 2005 code stacked TWO division
+     schemes (the unit-picking divided a second time in the formatter),
+     which worked by accident for KB/MB and printed "0.0 GB" for
+     everything above 1GB. */
+  if(s>=(1024LL*1024*1024*1024))
+    sprintf(size,"%.1f %s",((double)s)/(1024LL*1024*1024*1024),"TB");
+  else if(s>=(1024LL*1024*1024))
+    sprintf(size,"%.1f %s",((double)s)/(1024LL*1024*1024),"GB");
+  else if(s>=(1024*1024))
+    sprintf(size,"%.1f %s",((double)s)/(1024*1024),"MB");
+  else if(s>=1024)
+    sprintf(size,"%.1f %s",((double)s)/1024,"KB");
   else
-    sprintf(size,"%lld %s",s,unit);
-
+    sprintf(size,"%llu %s",(unsigned long long)s,"byte");
   return size; }
 
 
