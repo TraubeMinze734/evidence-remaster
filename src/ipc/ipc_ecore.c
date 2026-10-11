@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <string.h>
 
 #include <Ecore.h>
 #include <Ecore_Ipc.h>
