@@ -156,6 +156,16 @@ getestet.
   Fix: globales jobs_shutdown-Flag — wait4gui und die START-Wait
   warten waehrend des Shutdowns nie; wait_all setzt das Flag, weckt
   per cond_broadcast alle Jobs und joint erst dann.
+- Icon-View Reaktivitaet in bilderlasten Verzeichnissen: jedes fertige
+  Thumbnail feuerte MODEL_UPD -- THUMB → icon_view_rerender() →
+  icon_list_layout_all() (Voll-Layout ALLER Icons). Bei 50+ Bildern
+  serienweise Thumbnail-Events = 50+ Voll-Layouts, die die GUI
+  blockierten — Klick-Highlight reagierte erst Sekunden spaeter.
+  Fix: THUMB-Rerender geht jetzt ueber icon_view_rerender_maybe()
+  (throttled auf IV_UPDATE_EVERY, 2000ms) — derselbe Mechanismus,
+  den der freiwillige Rerender bereits nutzt. Thumbs erscheinen
+  dadurch gebuendelt alle ~2s statt einzeln, dafuer bleibt die GUI
+  fluessig. (PR #14)
 - Live-Video im Tooltip nach Fenster-Resize (nur Ton, kein Bild):
   gevas_paint() warf JEDE Paint-Area weg, die nicht exakt
   pixels_w x pixels_h entsprach ("resize pending"). Nach einem
@@ -165,7 +175,17 @@ getestet.
   Live-Video-Thumbnail rendert pro dekodiertem Frame selbst
   (evas_render im frame_decode-Callback), d.h. die Frames lagen im
   Buffer, erreichten den Screen aber nie. Fix: Area an den
-  Backing-Store clampen statt verwerfen.
+  Backing-Store clampen statt verwerfen. Das allein reichte NICHT —
+  Debug-Trace bewies: nach dem Resize lieferte GTK KEINE Exposes mehr
+  (queue_draw feuerte, gevas_paint kam nie). Fix 2: RENDER_FLUSH_POST
+  schedult einen GTK-Idle-Blit (gevas_blit(), NUR cairo, KEIN render —
+  render im Idle baute eine paint->render->flush->idle-Repaint-Loop,
+  die das Resizing ruckelig machte). Fallstricke dabei: (a) der
+  g_idle_add-Handle darf NICHT in ev->current_idle — dort erwarten
+  idle_enter_remove/gevas_queue_redraw ein ECORE-Handle, GTK-guint an
+  ecore_idle_enterer_del = SIGSEGV (eigener Slot flush_idle). (b)
+  Blit + evas_render im frame_decode-Callback auf 33ms/~30fps
+  drosseln (GEVAS_FLUSH_INTERVAL / LIVE_FRAME_INTERVAL).
 - Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
   Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
   Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:
