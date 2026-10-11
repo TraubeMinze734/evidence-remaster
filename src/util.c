@@ -595,7 +595,15 @@ int events_pending(void) {
      ecore_main_loop_begin() in the GUI thread. */
   return g_main_context_pending(NULL);
 #elif defined(HAVE_ECORE)
-  return ecore_main_loop_iterate(), 0;
+  /* iterate-as-poll was the 2005 design, but modern EFL keeps the loop
+     object in per-thread EO domains: iterating from a worker (backend
+     scanner threads call this via model_pulse!) corrupts ecore and
+     eventually SIGSEGVs the GUI thread. Only the thread that owns the
+     ecore mainloop may iterate it. */
+  { extern pthread_t main_thread;
+    if(!pthread_equal(pthread_self(),main_thread))
+      return 0;
+    return ecore_main_loop_iterate(), 0; }
 #elif defined(HAVE_GTK2)
   return gdk_events_pending();
 #elif defined(HAVE_GLIB2)
