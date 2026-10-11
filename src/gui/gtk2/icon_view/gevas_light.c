@@ -618,7 +618,7 @@ static void gevas_destroy(GtkObject *object) {
       ev->pixels=NULL;
       ev->pixels_w=ev->pixels_h=0; }}
 
-  G_OBJECT_CLASS(parent_class)->destroy(object); }
+  GTK_WIDGET_CLASS(parent_class)->destroy(object); }
 
 
 
