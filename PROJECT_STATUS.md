@@ -76,6 +76,16 @@ getestet.
   per action_file_new(ac,tag) in die Selection aufnehmen. Das generische
   Audio-Icon sagt nichts ueber den MIME aus (kommt aus mime.icons
   Wildcards); MIME selbst bestimmen mime.types/libmagic.
+- Clipboard (PR #12, clipboard.c): Strg+C/X legt die Selection jetzt zusaetzlich
+  auf die CLIPBOARD-Selection als x-special/gnome-copied-files (copy/cut-
+  Payload) UND text/uri-list, mit text/plain als Fallback. Damit verstehen
+  Dolphin/Nautilus/Thunar evidence-Kopien als Dateien, nicht als Text.
+  Strg+V im View pastet ueber file_job_create() (CP bei copy, MV bei cut)
+  ins cwd derselben Job-Maschinerie wie Drag&Drop. Der alte "(yet)"-Alert
+  ist weg. Der Typebuffer-Pfad (Strg+V bei offenem Typebuffer) unveraendert.
+  Statische Tag-Snapshots in clipboard.c (clipboard_file_tags) — die
+  Selection darf nach Strg+C ruhig weiterleben; das Clipboard liefert die
+  URIs on-demand aus dem Snapshot.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
