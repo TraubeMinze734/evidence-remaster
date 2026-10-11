@@ -608,7 +608,12 @@ int events_pending(void) {
  * @param data - user-data to hand to "fun" when it is called
  */
 void *timeout_add(uint f,int(*fun)(void *),void *data) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_GTK3)
+  /* GTK3 runs gtk_main(); GLib timers survive the ecore/GLib split and
+     fire regardless of ecore's loop state (ecore timers would only fire
+     while ecore is being pumped -- fragile during shutdown). */
+  return (void *)(uintptr_t)g_timeout_add((guint)f,(GSourceFunc)fun,(gpointer)data);
+#elif defined(HAVE_ECORE)
 /* void *h=(void*)ecore_timer_add(f/1000.0,fun,data); E(0,"%p\n",h); return h; */
   return (void *)ecore_timer_add(((float)f)/1000.0,(Ecore_Task_Cb)fun,data);
 #elif defined(HAVE_GLIB2)
@@ -648,7 +653,9 @@ int timeout_remove(void **h) {
 
 
 void *idle_enter_add(int prio,int (*fun)(void *),void *data) {
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  { (void)prio; return (void *)(uintptr_t)g_idle_add((GSourceFunc)fun,data); }
+#elif defined(HAVE_ECORE)
   return ecore_idle_enterer_add((Ecore_Task_Cb)fun,data);
 #elif defined(HAVE_GLIB2)
   { (void)prio; return (void *)(uintptr_t)g_idle_add((GSourceFunc)fun,data); }
