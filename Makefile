@@ -114,7 +114,13 @@ PLUGINS := lib/evidence/backend/posix.so lib/evidence/backend/null.so \
            lib/evidence/action/info_dial.so \
            lib/evidence/action/newwindow.so \
            lib/evidence/action/backdrop.so \
-           lib/evidence/action/tile.so
+           lib/evidence/action/tile.so \
+           lib/evidence/action/tag2name.so \
+           lib/evidence/action/name2tag.so \
+           lib/evidence/action/sortkey2name.so \
+           lib/evidence/action/playlist.so \
+           lib/evidence/action/searchable.so \
+           lib/evidence/action/searchable_r.so
 
 PLUG_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS)
 PLUG_LINK    := -shared -fPIC $(CORE_LIBS)
@@ -156,6 +162,24 @@ lib/evidence/action/backdrop.so: src/actions/backdrop/backdrop.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
 lib/evidence/action/tile.so: src/actions/tile/tile.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/tag2name.so: src/actions/tag2name/tag2name.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/name2tag.so: src/actions/name2tag/name2tag.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/sortkey2name.so: src/actions/sortkey2name/sortkey2name.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/playlist.so: src/actions/playlist/playlist.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/searchable.so: src/actions/searchable/searchable.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/action/searchable_r.so: src/actions/searchable_r/searchable_r.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
 # properties dialog is GTK2-only; keep the plugin under action/ where
