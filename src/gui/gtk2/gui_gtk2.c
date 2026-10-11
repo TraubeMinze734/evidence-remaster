@@ -143,7 +143,7 @@ Window get_widget_window(void *w) {
  * @param page_index - the page we're switching to
  * @param data - the session
  */
-static int go2view_activate_page(GtkNotebook *notebook,GtkNotebookPage *page_ptr,
+static int go2view_activate_page(GtkNotebook *notebook,gpointer page_ptr,
                                  guint page_index,gpointer data) {
   noir_sess     *ns=(noir_sess *)data;
   noir_treeview *tv=(noir_treeview *)noir_sess_client_get_data(ns,CLIENT_TREEVIEW);
