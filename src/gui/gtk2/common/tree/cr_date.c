@@ -109,7 +109,8 @@ static void cr_date_finalize (GObject *object) {
 #else
   /* GtkCellRendererText is opaque in GTK3 and owns its font-desc. */
   (void)object;
-#endif }
+#endif
+}
 
 
 
