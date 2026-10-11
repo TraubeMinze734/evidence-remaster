@@ -141,6 +141,12 @@ typedef struct {
 
 static void _emotion_make_finish(emotion_make_ctx *c) {
   if(c->timer) {
+    /* If we are called from _emotion_make_timer (which returns
+       ECORE_CALLBACK_CANCEL right after us), ecore will already have
+       taken the timer off the list -- deleting it here as well gives
+       'destroying a timer which seems dead already'. Only delete when
+       the timer is genuinely still armed (finish from a non-timer
+       path). */
     ecore_timer_del(c->timer);
     c->timer=NULL; }
   if(c->em) {
@@ -212,6 +218,11 @@ static Eina_Bool _emotion_make_timer(void *data) {
       return ECORE_CALLBACK_RENEW;
     E(1,"couldn't render a frame for \"%s\"...\n",c->file); }
  done:
+  /* we are INSIDE the timer callback: ecore takes the timer off its list
+     as soon as we return CANCEL. NULL the handle so finish() will not
+     ecore_timer_del() the already-dying timer ('seems dead already'),
+     and so no other thread can stomp on it. */
+  c->timer=NULL;
   _emotion_make_finish(c);
   return ECORE_CALLBACK_CANCEL; }
 
