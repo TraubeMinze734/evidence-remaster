@@ -142,6 +142,15 @@ endif
 lib/evidence/metadata/folder.so: src/providers/folder/folder.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+
+# imlib2 image meta-data provider (Width/Height/Alpha/Format tab in the
+# properties dialog; evidence.providers references it for image/*)
+ifeq ($(IMLIB2),yes)
+lib/evidence/metadata/image.so: src/providers/image/image.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) $(PLUG_LINK) -o $@ $< $(IMLIB2_LIBS)
+PLUGINS += lib/evidence/metadata/image.so
+endif
 lib/evidence/metadata/exif.so: src/providers/exif/exif.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
