@@ -121,6 +121,15 @@ getestet.
      Fixes: Stats nur noch ~alle 100ms + einmal final pro Datei;
      dir_copy/dir_move nutzen UNCHANGED-Updates (kein Handshake).
      Kopieren laeuft damit nahe an Platten-/read()-Geschwindigkeit.
+- Progress-Fenster (PR #13): Schliessen per WM-X ist KEIN Cancel — der Job
+  laeuft weiter, das Fenster wird nur weggeklickt. Der 2005-destroy-Handler
+  (form_modeless_destroyed) setzte nur user1=NULL; user2..user6 (box, label,
+  bars) blieben als Zeiger auf zerstoerte Widgets stehen → Use-after-free,
+  SIGABRT beim naechsten Progress-Update. Fix: Handler invalidiert alle
+  sechs Slots (user1..user6 liegen kontinuierlich im struct, Pointer-
+  Arithmetik ab &user1). Die label/bar-Update-Fns tolerieren NULL-Slots
+  bereits. Ein echter Cancel-Button existiert (noch) nicht — waere ein
+  eigenes Feature (Cancel-Flag im Job + Abbruch im Backend-Loop).
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
