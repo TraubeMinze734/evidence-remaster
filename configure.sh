@@ -47,6 +47,15 @@ EXTRACTOR=no; for ex in extractor libextractor; do if have_pc $ex; then EXTRACTO
 if [ "$EXTRACTOR" = no ] && [ -f /usr/include/extractor.h ]; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=""; EXTRACTOR_LIBS="-lextractor"; fi
 LIBCURL=no; if have_pc libcurl; then LIBCURL=yes; LIBCURL_CFLAGS=$(pc_cflags libcurl); LIBCURL_LIBS=$(pc_libs libcurl); fi
 X11=no;   if have_pc x11; then X11=yes; X11_CFLAGS=$(pc_cflags x11); X11_LIBS=$(pc_libs x11); fi
+# libacl is dlopen()ed at run-time (libacl_init in the posix backend), so we
+# only need the headers at compile time -- matching the 2005 configure.in
+# logic (--enable-acls, AC_CHECK_HEADER(sys/acl.h)).
+LIBACL=no
+if have_pc libacl; then
+  LIBACL=yes
+elif [ -f /usr/include/sys/acl.h ] || [ -f /usr/local/include/sys/acl.h ]; then
+  LIBACL=yes
+fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
   say "WARNING: neither GTK2 nor EFL found -- no GUI backend will be built."
@@ -96,6 +105,7 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   [ "$EMOTION" = yes ] && echo "#define HAVE_EMOTION 1"
   [ "$EXTRACTOR" = yes ] && echo "#define HAVE_EXTRACTOR 1"
   [ "$LIBCURL" = yes ] && echo "#define HAVE_LIBCURL 1"
+  [ "$LIBACL" = yes ] && echo "#define HAVE_LIBACL 1"
 case "$(uname -s)" in
   Linux) echo "#define I_NOTIFY 1" ;;
 esac
@@ -167,6 +177,7 @@ say "  libmagic      $LIBMAGIC"
 say "  Emotion       $EMOTION"
 say "  libextractor  $EXTRACTOR"
 say "  libcurl       $LIBCURL"
+  say "  ACLs          $LIBACL"
 say "  Imlib2        $IMLIB2"
 say "  libpng        $PNG"
 say "  libjpeg       $JPEG"
