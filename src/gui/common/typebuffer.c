@@ -85,10 +85,10 @@ struct _typebuffer {
   tb_flags    tb_flags;
   history    *tb_history;
   hist_entry *tb_histlast;
-#  ifdef HAVE_PCRE
+#ifdef HAVE_PCRE
   pcre       *tb_re;        /**< typebuffer: regex */
   pcre_extra *tb_pe;        /**< typebuffer: regex */
-#  endif
+#endif
 };
 
 
@@ -503,7 +503,7 @@ int typebuffer_set(noir_sess *ns,const char *str) {
  * @param ns the session
  */
 int typebuffer_update(noir_sess *ns) {
-#if defined(HAVE_GNOMECANVAS)||defined(HAVE_EVAS2)
+#if defined(HAVE_EVAS2)
   noir_iconview *iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
 #endif
   char          *tmp=NULL;
@@ -653,7 +653,7 @@ static int typebuffer_handle_URL(noir_sess *ns,char *url) {
  * @param tb the typebuffer-contents
  */
 
-#if defined(HAVE_GNOMECANVAS)||defined(HAVE_EVAS2)
+#if defined(HAVE_EVAS2)
 
 static int typebuffer_modify_theme(noir_sess *ns,char *tb) {
   char *p=&tb[1],*k,*v;
@@ -1394,7 +1394,7 @@ fail:
  * @return an error-code
  * @param ns the session
  */
-#if defined(HAVE_GNOMECANVAS)||defined(HAVE_EVAS2)
+#if defined(HAVE_EVAS2)
 
 static int tab_property(noir_sess *ns) {
   noir_prop      *e;

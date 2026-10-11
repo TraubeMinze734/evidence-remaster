@@ -617,36 +617,6 @@ fi
 
 
 
-AC_MSG_CHECKING(whether support for gnomecanvas is to be built)
-AC_ARG_ENABLE(canvas-gnomecanvas, AC_HELP_STRING([--enable-canvas-gnomecanvas],[use gnomecanvas as canvas]),
-        [ ac_use_canvas_gnomecanvas="$enableval" ],
-        [ ac_use_canvas_gnomecanvas="no" ]
-        )
-if test X"$ac_use_canvas_gnomecanvas" = Xyes; then
-        AC_MSG_RESULT(yes)
-                AC_ARG_WITH(gnomecanvas,
-                   AC_HELP_STRING([--with-gnomecanvas=DIR],[use gnomecanvas in <DIR>]),
-                   [gnomecanvas_cflags="-I$withval/include"
-                   gnomecanvas_libs="-L$withval/lib"],
-                   [PKG_CHECK_MODULES(EVIDENCE,
-                                       libart-2.0
-                                       libgnomecanvas-2.0
-                                     )
-                    gnomecanvas_libs=`pkg-config --libs libgnomecanvas-2.0`
-                    gnomecanvas_cflags=`pkg-config --cflags libgnomecanvas-2.0`])
-                AC_DEFINE(HAVE_GNOMECANVAS, 1, Use gnomecanvas for canvas (no theming))
-                gnomecanvas=yes;
-                iconview="GNOME-canvas";
-                AC_MSG_WARN([Building with gnome-canvas is a legacy feature that isn't test very frequently, so your build may break, or shelf and icon-view may not work 100 %. Even if they do, there will be no theming except for iconsets.])
-else
-        AC_MSG_RESULT(no)
-                gnomecanvas=no;
-                if test "$evas" = "no"; then
-                  AC_MSG_WARN([Neither evas nor GNOME-canvas selected, building without icon-view and shelf!])
-                fi
-fi
-AC_SUBST(gnomecanvas_libs)
-AC_SUBST(gnomecanvas_cflags)
 
 
 
@@ -1681,9 +1651,8 @@ AM_CONDITIONAL(BUILD_ECORE_DEPENDENT,      test "$ecore" != "no")
 
 
 dnl canvas
-AM_CONDITIONAL(BUILD_WITH_GNOMECANVAS,     test "$gnomecanvas" = "yes")
 AM_CONDITIONAL(BUILD_WITH_EVAS2,           test "$evas" = "yes")
-AM_CONDITIONAL(BUILD_WITH_ICONLIST,        test "$evas" = "yes" -o "$gnomecanvas" = "yes")
+AM_CONDITIONAL(BUILD_WITH_ICONLIST,        test "$evas" = "yes")
 
 AM_CONDITIONAL(BUILD_WITH_EDB,             test "$edb" = "yes")
 AM_CONDITIONAL(BUILD_WITH_EET,             test "$eet" = "yes")
@@ -1802,29 +1771,24 @@ if test "$ttf"        = "yes"; then providers="$providers TrueTypeFonts"; fi
 if test "$imlib2"    != "";    then providers="$providers pictures";      fi
 if test "$extractor"  = "yes"; then providers="$providers misc";          fi
 
-if test "$gnomecanvas" = "yes"; then
-  canvas="GNOME-canvas";
-else
-  if test "$evas" = "yes"; then
-    canvas="evas"
-    evas_xtra=" X11";
-    if test "$evas_gl" = "yes"; then
-      evas_xtra="$evas_xtra GL";
-    fi
-    if test "$eet" = "yes"; then
-      evas_xtra="$evas_xtra EET";
-    fi
-    if test "$edb" = "yes"; then
-      evas_xtra="$evas_xtra EDB";
-    fi
-    if test "$edje" = "yes"; then
-      evas_xtra="$evas_xtra edje";
-    fi
-#    if test "x$evas_xtra" != "x"; then
-    canvas="$canvas {$evas_xtra }";
-#    fi
+if test "$evas" = "yes"; then
+  canvas="evas"
+  evas_xtra=" X11";
+  if test "$evas_gl" = "yes"; then
+    evas_xtra="$evas_xtra GL";
   fi
-fi
+  if test "$eet" = "yes"; then
+    evas_xtra="$evas_xtra EET";
+  fi
+  if test "$edb" = "yes"; then
+    evas_xtra="$evas_xtra EDB";
+  fi
+  if test "$edje" = "yes"; then
+    evas_xtra="$evas_xtra edje";
+  fi
+#    if test "x$evas_xtra" != "x"; then
+  canvas="$canvas {$evas_xtra }";
+#    fi
 
 
 if test "x$id3" = "xyes"; then

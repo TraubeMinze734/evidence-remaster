@@ -350,27 +350,34 @@ was not found" (Stale-Timeout-Handle beim Page-Switch-Race).
 EXTRACTOR_OPTION_IN_PROCESS Helper-Kinder; stirbt eines, killte das
 SIGPIPE den Scanner-Thread (und damit evidence). GUI-Standard.
 
-### Toter Code: GnomeCanvas-Backend (Phase 3: entfernen)
+### Entfernt: GnomeCanvas-Backend (Phase 3 -- ERLEDIGT)
 
-Der Icon-View hat historisch zwei Canvas-Backends: Evas (gevas) und
+Der Icon-View hatte historisch zwei Canvas-Backends: Evas (gevas) und
 GnomeCanvas (gnome-icon-list/gnome-icon-item, ~4.400 Zeilen). Der
-GnomeCanvas-Pfad ist seit Beginn des Remasters TOT und wird von
+GnomeCanvas-Pfad war seit Beginn des Remasters TOT und wurde von
 KEINEM Build erreicht (auch nicht GTK2):
 
-- configure.sh setzt HAVE_GNOMECANVAS NIE (nur ein #undef-Platzhalter
+- configure.sh setzte HAVE_GNOMECANVAS NIE (nur ein #undef-Platzhalter
   in config.h.in; es gab nie einen Erkennungs-Schalter)
-- das Makefile kompiliert gnome-icon-*.c nicht (nur icon_view.c +
+- das Makefile kompilierte gnome-icon-*.c nicht (nur icon_view.c +
   gevas_light.c + gevas_bind.c, den Evas-Pfad)
 - libgnomecanvas existiert auf modernen Systemen nicht mehr
   (GTK2-only, nicht mehr in Arch-Repos)
 
-Das Backend war 2005 der Fallback fuer Systeme OHNE Evas; da evidence
-ohne EFL faktisch kein Dasein hat, lief der Pfad nie. Die Codepfade
-hinter #ifdef HAVE_GNOMECANVAS sind Praeprozessor-kaudi-gefiltert,
-entfernen aendert am Binary kein Byte -- es macht nur den Quelltext
-ehrlich. PHASE 3: gnome-icon-*.c loeschen, HAVE_GNOMECANVAS-Zweige
-und das #undef in config.h.in entfernen, Doku/Makefile-Kommentare
-aufräumen.
+Phase 3 ist abgeschlossen (PR: Entfernen des GnomeCanvas-Backends):
+gnome-icon-list/item, gnome-marshal geloescht; alle
+HAVE_GNOMECANVAS-Zweige aus src/ entfernt (icon_view, shelf, dnd,
+typebuffer, options, about, gui_gtk2, icon_view.h); das #undef aus
+config.h.in, der canvas-gnomecanvas-Block aus configure.in und die
+gnomecanvas-CFLAGS/LIBS aus den Makefile.am entfernt. VERIFIKATION:
+da HAVE_GNOMECANVAS nie definiert war, ist der Praeprozor-Ausgang
+jeder geaenderten Datei BYTWEISE IDENTISCH zum alten Stand (cpp -E -P
+mit und ohne -DHAVE_EVAS2 verglichen) -- das Binary aendert sich
+nicht, nur der Quelltext wird ehrlich. Die 2005er Doxygen-Ausgabe in
+docs/ (html/man/latex) erwaehnt gnome-icon-list weiterhin; sie ist
+generiert und unangetastet. Achtung: configure.in/configure und die
+Makefile.in sind autotools-Reste, die configure.sh nicht nutzt -- sie
+wurden aus Konsistenz mitgepflegt, sind aber fuer den Build irrelevant.
 
 ### GTK2-Regressionstest (nach PR #19): BESTANDEN
 

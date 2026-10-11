@@ -9,9 +9,6 @@
 #include <sys/stat.h>   /* S_ISDIR */
 #include <stdlib.h>     /* malloc(), free() */
 
-#ifdef HAVE_GNOMECANVAS
-#  include "gui/gtk2/icon_view/gnome-icon-list.h"
-#endif
 
 #include "gui/common/session_private.h"
 #include "gui/common/alert.h"      /* form_alert() */
@@ -412,14 +409,6 @@ void file_drop_delete_from_iconlist(GtkWidget *widget,GdkDragContext *dc,gpointe
 
   if(dc==noir_sess_get_dragcontext(ns)) {
     for(af=action_context_get_1st(ns->drag_files);af;af=action_file_get_next(af)) {
-#if defined(HAVE_GNOMECANVAS)&&!defined(STANDALONE)
-        int no;
-        char *i=NULL;
-        for(no=0;i;no++) {
-          if((i=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(widget),no))&&!strcmp(i,action_file_get_tag(af))) {
-            gnome_icon_list_remove(GNOME_ICON_LIST(widget),no);
-            i=NULL; }}
-#endif
     }}}
 
 
