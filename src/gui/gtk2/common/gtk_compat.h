@@ -15,35 +15,40 @@ static inline int evis_seldata_length(const GtkSelectionData *sd) {
   return gtk_selection_data_get_length((GtkSelectionData *)sd);
 #else
   return sd?sd->length:-1234;
-#endif }
+#endif
+}
 
 static inline int evis_seldata_format(const GtkSelectionData *sd) {
 #if GTK_CHECK_VERSION(3,0,0)
   return gtk_selection_data_get_format((GtkSelectionData *)sd);
 #else
   return sd->format;
-#endif }
+#endif
+}
 
 static inline const guchar *evis_seldata_data(const GtkSelectionData *sd) {
 #if GTK_CHECK_VERSION(3,0,0)
   return gtk_selection_data_get_data((GtkSelectionData *)sd);
 #else
   return sd->data;
-#endif }
+#endif
+}
 
 static inline GdkAtom evis_seldata_target(const GtkSelectionData *sd) {
 #if GTK_CHECK_VERSION(3,0,0)
   return gtk_selection_data_get_target((GtkSelectionData *)sd);
 #else
   return sd->target;
-#endif }
+#endif
+}
 
 static inline GdkDragAction evis_drag_action(const GdkDragContext *dc) {
 #if GTK_CHECK_VERSION(3,0,0)
   return gdk_drag_context_get_selected_action((GdkDragContext *)dc);
 #else
   return dc->action;
-#endif }
+#endif
+}
 
 G_END_DECLS
 
