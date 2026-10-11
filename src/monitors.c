@@ -556,13 +556,15 @@ int file_monitor_event(noir_monitor *m,noir_file_event type,char *tag) {
 
   E(2,"%d-%s  %s  (%s)\n",type,type<t?types[type]:"???",tag,m->have);
 
-/* if(!(fi=file_info_insert(NULL,tag))) { */
   if(!(fi=file_info_fetch(NULL,tag))) {
-/*  E(1,"cannot find \"%s\" in model?\n",tag); */
-    /* if the event is for an item that doesn't exist in the model, as might
-       be the case with monitors that were not created by the model, make up
-       a temporary item. this item will not become part of the model. */
-    if(!(fi=ft=file_info_new(NULL,tag)))
+    /* CHG/NEW for an item that is not in the model yet (e.g. a rename that
+       just created it): insert it into the model so its parent-directory is
+       set and the views accept the event.  only DEL uses a throw-away item
+       -- model_evt(MODEL_DEL) destroys it either way. */
+    if(type==NOIR_MONITOR_DEL) {
+      if(!(fi=ft=file_info_new(NULL,tag)))
+        return NOIR_FAIL; }
+    else if(!(fi=file_info_insert(NULL,tag)))
       return NOIR_FAIL; }
 
   switch(type) {
