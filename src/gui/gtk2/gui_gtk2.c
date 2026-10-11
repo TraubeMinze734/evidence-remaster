@@ -1103,6 +1103,14 @@ static int set_app_icon(noir_sess *ns) {
 
 #ifdef HAVE_ECORE
 
+#if GTK_CHECK_VERSION(3,0,0)
+/* fallback when ecore_main_loop_glib_integrate() is unavailable:
+   give ecore a slice of the GLib mainloop every 10ms */
+static gboolean ecore_glib_pump(gpointer data) {
+  ecore_main_loop_iterate();
+  return TRUE; }
+#endif
+
 static Eina_Bool ecore_gtk_event_handler(void *data,Ecore_Fd_Handler *fd_handler) {
   while(gdk_events_pending())
     g_main_context_iteration(NULL,TRUE);
@@ -1184,8 +1192,15 @@ noir_sess *gui_init(int argc,char *argv[]) {
      -- otherwise the Emotion video thumbnailer (ecore_timer +
      thread-safe calls) never fires and ecore_shutdown() at exit
      wrecks half-dead objects. */
-  if(!ecore_main_loop_glib_integrate())
-    E(1,"ecore GLib integration failed; ecore timers may misbehave\n");
+  if(ecore_main_loop_glib_integrate())
+    E(2,"ecore rides the GLib mainloop\n");
+  else {
+    /* integration unavailable (ecore built without glib support):
+       pump ecore manually from a GLib timer so ecore_timer-driven
+       machinery (Emotion thumbnails, live video) still makes
+       progress and thread-safe calls get dispatched. */
+    E(0,"ecore GLib integration failed; installing manual pump\n");
+    g_timeout_add(10,ecore_glib_pump,NULL); }
 #endif
   prop_bag_prop_set(props_global,"feature-ecore","engaged");
 #endif
