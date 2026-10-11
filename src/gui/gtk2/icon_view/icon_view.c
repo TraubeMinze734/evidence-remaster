@@ -631,7 +631,10 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
               dcd_set(pa,cf,NULL); }
 
           iv->next_update=now(IV_UPDATE_EVERY/4);
-          icon_list_rst(il); }
+          icon_list_rst(il);
+          if(iv->cwd_shown)
+            free(iv->cwd_shown);
+          iv->cwd_shown=strdup(file_info_get_tag(fi)); }
 
 #elif defined(HAVE_GNOMECANVAS)
         if(iv->icon_view)
@@ -657,6 +660,18 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
       else {                      /* post */
 #ifdef HAVE_EVAS2
         file_info *fc;
+
+        /* view was paused during the cd (another notebook page was
+           active) so the pre-CWD (icon_list_rst) never ran: clear the
+           stale folder before replaying, or both folders' icons end
+           up in the same view */
+        { const char *tag=file_info_get_tag(fi);
+          if(!iv->cwd_shown||strcmp(iv->cwd_shown,tag)) {
+            E(2,"icon-view missed pre-CWD for \"%s\" (was paused?), clearing stale view...\n",tag);
+            icon_list_rst(il);
+            if(iv->cwd_shown) {
+              free(iv->cwd_shown);
+              iv->cwd_shown=NULL; } } }
 
         /* update ".." icon */
         if((pa=file_info_get_parent(fi))) {
