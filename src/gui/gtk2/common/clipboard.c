@@ -2,6 +2,7 @@
  *  @brief handle the clipboard and the primary selection. */
 
 #include <gtk/gtk.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>                            /* malloc(), free() */
 
@@ -76,6 +77,24 @@ static GtkTargetEntry clipboard_file_targets[CLIPBOARD_URI_TARGETS]={
   { "x-special/gnome-copied-files", 0, 0 },
   { "text/uri-list",                0, 1 },
   { "text/plain",                   0, 2 } };
+
+/*******************************************************************************
+ * percent-decode a URI path component in-place ('%20' -> ' ', etc.)
+ */
+static void clipboard_uri_decode(char *s) {
+  char *w=s;
+  if(!s)
+    return;
+  while(*s) {
+    if((*s=='%')&&isxdigit((unsigned char)s[1])&&isxdigit((unsigned char)s[2])) {
+      int h,d;
+      d=s[1]; h=(d<='9')?d-'0':((d|0x20)-'a'+10);
+      d=s[2]; h=h*16+((d<='9')?d-'0':((d|0x20)-'a'+10));
+      *w++=(char)h;
+      s+=3; }
+    else
+      *w++=*s++; }
+  *w='\0'; }
 
 /* snapshot of the tags currently on the CLIPBOARD selection; kept so the
    clipboard can answer requests even after the selection changed. */
@@ -167,7 +186,8 @@ static void clipboard_file_clear_cb(GtkClipboard *cb,gpointer user_data) {
  */
 int clipboard_files_set(action_context *ac,int cut) {
   action_file *af;
-  int          n=0;
+  char       **tags=NULL;
+  int          n=0,count=0;
 
   clipboard_file_clear();
 
@@ -175,33 +195,44 @@ int clipboard_files_set(action_context *ac,int cut) {
     return NOIR_FAIL;
 
   while(af) {
-    clipboard_file_count++;
+    count++;
     af=action_file_get_next(af); }
 
-  if(!clipboard_file_count)
+  if(!count)
     return NOIR_FAIL;
 
-  if(!(clipboard_file_tags=malloc(sizeof(char *)*clipboard_file_count)))
+  if(!(tags=malloc(sizeof(char *)*count)))
     return NOIR_OOM;
 
   af=action_context_get_selection(ac);
-  while(af&&n<clipboard_file_count) {
+  while(af&&n<count) {
     const char *tag=action_file_get_tag(af);
-    clipboard_file_tags[n]=tag?strdup(tag):NULL;
-    if(tag&&!clipboard_file_tags[n]) {
-      clipboard_file_count=n;
-      clipboard_file_clear();
+    tags[n]=tag?strdup(tag):NULL;
+    if(tag&&!tags[n]) {
+      while(n>0)
+        free(tags[--n]);
+      free(tags);
       return NOIR_OOM; }
     n++;
     af=action_file_get_next(af); }
 
-  clipboard_file_cut=cut;
-
+  /* commit the snapshot only AFTER gtk_clipboard_set_with_data():
+     taking ownership calls the previous owner's clear-handler, which
+     is our own clipboard_file_clear_cb() -- committing earlier, it
+     would wipe the fresh snapshot right away, so the second copy in a
+     row always left an empty clipboard. */
   if(!gtk_clipboard_set_with_data(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
                                   clipboard_file_targets,CLIPBOARD_URI_TARGETS,
                                   clipboard_file_get,clipboard_file_clear_cb,NULL)) {
-    clipboard_file_clear();
+    for(n=0;n<count;n++)
+      if(tags[n])
+        free(tags[n]);
+    free(tags);
     return NOIR_FAIL; }
+
+  clipboard_file_tags=tags;
+  clipboard_file_count=count;
+  clipboard_file_cut=cut;
 
   gtk_clipboard_set_can_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),NULL,0);
 
@@ -247,8 +278,10 @@ char **clipboard_files_get(GdkAtom cb,int *cut) {
                 const char *p;
                 if(ln&&(*line)[ln-1]=='\r')
                   (*line)[ln-1]='\0';
-                if((p=file_if_local(*line)))
-                  *w++=strdup(p); } }
+                if((p=file_if_local(*line))) {
+                  if((*w=strdup(p)))
+                    clipboard_uri_decode(*w);
+                  w++; } } }
             *w=NULL; } } }
       g_strfreev(lines);
       g_free(buf); }
@@ -273,8 +306,10 @@ char **clipboard_files_get(GdkAtom cb,int *cut) {
       if(n&&(ret=malloc(sizeof(char *)*(n+1)))) {
         for(u=uris,w=ret;*u;u++) {
           const char *p;
-          if((p=file_if_local(*u)))
-            *w++=strdup(p); }
+          if((p=file_if_local(*u))) {
+            if((*w=strdup(p)))
+              clipboard_uri_decode(*w);
+            w++; } }
         *w=NULL; }
       g_strfreev(uris);
       if(ret)
