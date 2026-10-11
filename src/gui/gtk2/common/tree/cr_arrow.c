@@ -34,15 +34,17 @@ static GtkCellRendererTextClass *parent_class;
 static void cr_arrow_render(GtkCellRenderer *cell,cairo_t *cr,
                             GtkWidget *widget,GdkRectangle *background_area,
                             GdkRectangle *cell_area,guint flags) {
-  gint wr,wn,as=(cell_area->height-cell->ypad-cell->ypad);
+  gint xpad,ypad;
+  gtk_cell_renderer_get_padding(cell,&xpad,&ypad);
+  { gint wr,wn,as=(cell_area->height-2*ypad);
   wr=gdk_window_get_width(gtk_widget_get_window(widget));
   wn=wr-as;
   if(S_ISDIR(NOIR_CELL_RENDERER_ARROW(cell)->dirstat)) {
     gtk_render_arrow(gtk_widget_get_style_context(widget),cr,GTK_ARROW_RIGHT,
                      cell_area->x+wn,
-                     cell_area->y+cell->ypad,
+                     cell_area->y+ypad,
                      as);
-    cell_area->width=wn+4; }
+    cell_area->width=wn+4; } }
   GTK_CELL_RENDERER_CLASS(parent_class)->render(cell,cr,widget,background_area,cell_area,flags); }
 #else
 static void cr_arrow_render(GtkCellRenderer *cell,GdkWindow *window,
