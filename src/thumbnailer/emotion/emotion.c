@@ -254,6 +254,7 @@ static void _emotion_make_in_main(void *data) {
 static void _live_frame(void *data,Evas_Object *o,void *einfo) {
   Evas *evas=(Evas *)data;
   (void)o; (void)einfo;
+  E(2,"_live_frame: evas=%p\n",evas);
   if(evas)
     evas_render(evas); }
 

@@ -83,6 +83,7 @@ static void gevas_class_init(GtkgEvasClass *);
 static void gevas_render_flush(void *data,Evas *e,void *event_info) {
   GtkWidget *widget=GTK_WIDGET(data);
   (void)e; (void)event_info;
+  E(2,"gevas_render_flush: widget=%p realized=%d\n",widget,GTK_WIDGET_REALIZED(widget)?1:0);
   if(GTK_WIDGET_REALIZED(widget))
     gtk_widget_queue_draw(widget); }
 
@@ -431,6 +432,8 @@ static gint gevas_focus_out(GtkWidget *widget,GdkEventFocus *event) {
 
 
 static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
+  E(2,"gevas_paint: area %d,%d %dx%d, store %dx%d\n",
+    area->x,area->y,area->width,area->height,ev->pixels_w,ev->pixels_h);
   GtkWidget *widget;
 
   g_return_if_fail(ev!=NULL);
