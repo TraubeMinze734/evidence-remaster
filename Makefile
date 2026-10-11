@@ -281,10 +281,40 @@ lib/evidence/thumbnailer/emotion.so: src/thumbnailer/emotion/emotion.c config.h
 PLUGINS += lib/evidence/thumbnailer/emotion.so
 endif
 
+# TrueType font thumbnailer (renders "Aa Cc" in the font; freetype2 + imlib2)
+ifeq ($(IMLIB2)$(FT2),yesyes)
+lib/evidence/thumbnailer/ttf.so: src/thumbnailer/ttf/ttf.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(FT2_CFLAGS) $(IMLIB2_CFLAGS) -shared -o $@ $< $(FT2_LIBS) $(IMLIB2_LIBS) $(CORE_LIBS)
+PLUGINS += lib/evidence/thumbnailer/ttf.so
+endif
+
+# MP3/ID3 thumbnailer (extracts images embedded in the ID3 tag; id3lib + imlib2)
+ifeq ($(ID3)$(IMLIB2),yesyes)
+lib/evidence/thumbnailer/id3.so: src/thumbnailer/id3/id3.cpp config.h
+	@mkdir -p $(dir $@)
+	$(CXX) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) $(ID3_CFLAGS) -shared -o $@ $< $(ID3_LIBS) $(IMLIB2_LIBS)
+PLUGINS += lib/evidence/thumbnailer/id3.so
+endif
+
+# --- IPC ----------------------------------------------------------------------
+# ipc_main.c dlopens $PREFIX/lib/evidence/ipc/ipc_*.so; the ecore module serves
+# evsh (and examine) via a local-user socket pipe named "evidence".
+ifeq ($(ECOREIPC),yes)
+lib/evidence/ipc/ipc_ecore.so: src/ipc/ipc_ecore.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(ECOREIPC_CFLAGS) $(PLUG_LINK) -o $@ $< $(ECOREIPC_LIBS)
+PLUGINS += lib/evidence/ipc/ipc_ecore.so
+
+evsh: src/evsh.c src/evclient.c src/evclient.h config.h
+	$(CC) $(BASE_CFLAGS) $(ECOREIPC_CFLAGS) -o $@ src/evsh.c src/evclient.c $(ECOREIPC_LIBS) $(READLINE_LIBS)
+BINS += evsh
+endif
+
 plugins: $(PLUGINS) $(ENGINES)
 
 # --- rules ---------------------------------------------------------------------
-all: evidence plugins
+all: evidence plugins $(BINS)
 
 evidence: $(OBJS)
 	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(CAIRO_LIBS) $(X11_LIBS) $(LDLIBS)
@@ -318,6 +348,7 @@ install: all
 do-install:
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m 0755 evidence $(DESTDIR)$(PREFIX)/bin/evidence
+	if [ -f evsh ]; then install -m 0755 evsh $(DESTDIR)$(PREFIX)/bin/evsh; fi
 	install -d $(DESTDIR)$(PREFIX)/share/evidence
 	install -m 0644 setup/mime.types setup/mime.alii setup/mime.icons \
 	                setup/mime.handlers setup/evidence.menu \

@@ -82,6 +82,11 @@ TESTEOF
   done
 fi
 FT2=no;    if have_pc freetype2; then FT2=yes; FT2_CFLAGS=$(pc_cflags freetype2); FT2_LIBS=$(pc_libs freetype2); fi
+# readline for evsh (2005 configure.in: VL_LIB_READLINE)
+READLINE=no
+if [ -f /usr/include/readline/readline.h ] || [ -f /usr/local/include/readline/readline.h ]; then
+  READLINE=yes; READLINE_CFLAGS=""; READLINE_LIBS="-lreadline"
+fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
   say "WARNING: neither GTK2 nor EFL found -- no GUI backend will be built."
@@ -136,6 +141,8 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   [ "$TAGLIB" = yes ] && echo "#define HAVE_TAGLIB 1"
   [ "$ID3" = yes ] && echo "#define HAVE_ID3 1"
   [ "$FT2" = yes ] && echo "#define HAVE_FT2 1"
+  [ "$READLINE" = yes ] && echo "#define HAVE_LIBREADLINE 1"
+  [ "$READLINE" = yes ] && echo "#define HAVE_READLINE_READLINE_H 1"
 case "$(uname -s)" in
   Linux) echo "#define I_NOTIFY 1" ;;
 esac
@@ -207,6 +214,9 @@ esac
   echo "FT2 ?= $FT2"
   echo "FT2_CFLAGS ?= $FT2_CFLAGS"
   echo "FT2_LIBS ?= $FT2_LIBS"
+  echo "READLINE ?= $READLINE"
+  echo "READLINE_CFLAGS ?= $READLINE_CFLAGS"
+  echo "READLINE_LIBS ?= $READLINE_LIBS"
 } > config.mk
 
 say "evidence configured:"
@@ -224,6 +234,7 @@ say "  Vorbis        $VORBIS"
 say "  taglib        $TAGLIB"
 say "  id3lib        $ID3"
 say "  freetype2     $FT2"
+say "  readline      $READLINE"
 say "  Imlib2        $IMLIB2"
 say "  libpng        $PNG"
 say "  libjpeg       $JPEG"
