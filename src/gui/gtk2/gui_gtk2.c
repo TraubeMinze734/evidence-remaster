@@ -111,7 +111,8 @@ Display *get_display(void) {
   return GDK_IS_X11_DISPLAY(gd)?gdk_x11_display_get_xdisplay(gd):NULL;
 #else
   return gdk_x11_display_get_xdisplay(gdk_display_get_default());
-#endif }
+#endif
+}
 
 
 
