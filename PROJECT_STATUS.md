@@ -156,6 +156,16 @@ getestet.
   Fix: globales jobs_shutdown-Flag — wait4gui und die START-Wait
   warten waehrend des Shutdowns nie; wait_all setzt das Flag, weckt
   per cond_broadcast alle Jobs und joint erst dann.
+- Icon-View Reaktivitaet in bilderlasten Verzeichnissen: jedes fertige
+  Thumbnail feuerte MODEL_UPD -- THUMB → icon_view_rerender() →
+  icon_list_layout_all() (Voll-Layout ALLER Icons). Bei 50+ Bildern
+  serienweise Thumbnail-Events = 50+ Voll-Layouts, die die GUI
+  blockierten — Klick-Highlight reagierte erst Sekunden spaeter.
+  Fix: THUMB-Rerender geht jetzt ueber icon_view_rerender_maybe()
+  (throttled auf IV_UPDATE_EVERY, 2000ms) — derselbe Mechanismus,
+  den der freiwillige Rerender bereits nutzt. Thumbs erscheinen
+  dadurch gebuendelt alle ~2s statt einzeln, dafuer bleibt die GUI
+  fluessig. (PR #14)
 - Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
   Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
   Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:
