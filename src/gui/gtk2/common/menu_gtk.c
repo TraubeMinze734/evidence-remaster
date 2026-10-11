@@ -396,7 +396,11 @@ static int menu_create(action_context *ac,GtkWidget *menu) {
     if(ret>0) {
       gtk_widget_show_all(menu);
       g_signal_connect(G_OBJECT(menu),"selection-done",G_CALLBACK(menu_done),(gpointer)ac);
-      gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,0,0L); }}
+#if GTK_CHECK_VERSION(3,0,0)
+      gtk_menu_popup_at_pointer(GTK_MENU(menu),NULL);
+#else
+      gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,0,0L);
+#endif }}
 
   if(mime)
     free(mime);
@@ -720,7 +724,11 @@ int menu_path(noir_sess *ns,int button,long when) {
     path_menu_add_path(ns,menu,fi); }
 
   gtk_widget_show_all(menu);
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_menu_popup_at_pointer(GTK_MENU(menu),NULL);
+#else
   gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,button,when);
+#endif
 
   return NOIR_SUCC; }
 
@@ -756,7 +764,11 @@ int menu_subdirs(noir_sess *ns,file_info *pa,int button) {
     fi=file_info_get_next(fi); }
 
   gtk_widget_show_all(menu);
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_menu_popup_at_pointer(GTK_MENU(menu),NULL);
+#else
   gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,button,0);
+#endif
 
   return NOIR_SUCC; }
 
