@@ -135,19 +135,19 @@ static gint tooltip_gtk2_create(noir_sess *ns) {
     gtk_box_pack_start(GTK_BOX(tooltip->vbox),tooltip->label,TRUE,TRUE,0);
 
     g_signal_connect_object(G_OBJECT(tooltip->window),"expose_event",
-                              G_CALLBACK(tooltip_gtk2_expose),tooltip);
+                              G_CALLBACK(tooltip_gtk2_expose),tooltip,G_CONNECT_SWAPPED);
 
     g_signal_connect_object(G_OBJECT(noir_sess_get_window(ns)),"leave-notify-event",
-                              G_CALLBACK(tooltip_gtk2_leave),tooltip);
+                              G_CALLBACK(tooltip_gtk2_leave),tooltip,G_CONNECT_SWAPPED);
 
     g_signal_connect_object(G_OBJECT(tooltip->window),"leave-notify-event",
-                              G_CALLBACK(tooltip_gtk2_hide),tooltip);
+                              G_CALLBACK(tooltip_gtk2_hide),tooltip,G_CONNECT_SWAPPED);
 
     g_signal_connect_object(G_OBJECT(tooltip->window),"button_press_event",
-                              G_CALLBACK(tooltip_gtk2_hide),tooltip);
+                              G_CALLBACK(tooltip_gtk2_hide),tooltip,G_CONNECT_SWAPPED);
 
     g_signal_connect_object(G_OBJECT(tooltip->window),"key-press-event",
-                              G_CALLBACK(tooltip_gtk2_hide),tooltip);
+                              G_CALLBACK(tooltip_gtk2_hide),tooltip,G_CONNECT_SWAPPED);
 
     g_signal_connect(G_OBJECT(tooltip->window),"destroy",
                        G_CALLBACK(gtk_widget_destroyed),
