@@ -22,6 +22,7 @@
 
 #include "gui/gtk2/common/keysyms.h"
 #include "gui/gtk2/common/dnd.h"          /* file_get_from_drop(), file_drop() */
+#include "gui/gtk2/common/gtk_compat.h"
 #include "gui/gtk2/common/clipboard.h"    /* selection_update(), clipboard_get() */
 
 #include "gui/gtk2/common/tree/tree.h"         /* FILE_..., N_COLUMNS, SORT_BY_... */
@@ -231,15 +232,15 @@ static void tree_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
     gtk_tree_path_free(tp); }
 
   if(tgt) {
-    if(!selection||(selection->length<1)) {
-      E(0,"no data (%p,%d)\n",selection,selection?selection->length:-1234); }
-    else if((selection->length>=0)&&(selection->format==8)) {
-      if((a=d=malloc(selection->length+1))) {
-        strncpy(a,selection->data,selection->length);
-        a[selection->length]='\0';
+    if(!selection||(evis_seldata_length(selection)<1)) {
+      E(0,"no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
+    else if((evis_seldata_length(selection)>=0)&&(evis_seldata_format(selection)==8)) {
+      if((a=d=malloc(evis_seldata_length(selection)+1))) {
+        strncpy(a,evis_seldata_data(selection),evis_seldata_length(selection));
+        a[evis_seldata_length(selection)]='\0';
         E(0,"\"%s\" for \"%s\"\n",a,tgt);
         while((file=dnd_get_file_from_drop(&d)))
-          file_drop(ns,dc->action,info,file,tgt);
+          file_drop(ns,evis_drag_action(dc),info,file,tgt);
         g_free(a); }}
     g_free(tgt); }}
 

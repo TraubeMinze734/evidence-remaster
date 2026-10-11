@@ -9,6 +9,7 @@
 #include "thumbnailer/thumbnail.h"
 
 #include "gui/common/session.h"
+#include "gui/gtk2/common/gtk_compat.h"
 #include "gui/common/session_private.h"
 
 #if defined(HAVE_GNOMECANVAS)||defined(HAVE_EVAS2)
@@ -218,22 +219,22 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
   if(!ns||!dc)
     return;
 
-  if(!selection||(selection->length<1)) {
-    E(0,"shelf_drag_data_received: no data (%p,%d)\n",selection,selection?selection->length:-1234); }
-  else if(selection->format==8) {
+  if(!selection||(evis_seldata_length(selection)<1)) {
+    E(0,"shelf_drag_data_received: no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
+  else if(evis_seldata_format(selection)==8) {
 #  ifdef HAVE_GNOMECANVAS
     GdkPixbuf *pb;
     int no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(sv->shelf_view),x,y);
 #  else
     int no=icon_list_get_index_at(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),x,y);
 #  endif
-    gchar *_target=gdk_atom_name(selection->target);
+    gchar *_target=gdk_atom_name(evis_seldata_target(selection));
 
-    if(!(a=d=malloc(selection->length+1)))
+    if(!(a=d=malloc(evis_seldata_length(selection)+1)))
       return;
 
-    strncpy(a,selection->data,selection->length);
-    a[selection->length]='\0';
+    strncpy(a,evis_seldata_data(selection),evis_seldata_length(selection));
+    a[evis_seldata_length(selection)]='\0';
 
     if(no<0) {
       while((file=dnd_get_file_from_drop(&d))) {
@@ -263,13 +264,13 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
       char *dt=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),no)));
 #  endif
       if(dt&&*dt)
-        file_drop(ns,dc->action,info,a,dt);
+        file_drop(ns,evis_drag_action(dc),info,a,dt);
       else
         E(0,"shelf_drag_data_received: breakage in 'use'!\n"); }
     g_free(a); }
-  else if(selection->format==16) {                       /* GIMP colour drop */
+  else if(evis_seldata_format(selection)==16) {                       /* GIMP colour drop */
     char buf[8];
-    guint16 *color_vals=(guint16 *)selection->data;
+    guint16 *color_vals=(guint16 *)evis_seldata_data(selection);
     guchar r,g,b;
     r=color_vals[0]>>8;  g=color_vals[1]>>8;  b=color_vals[2]>>8;
     snprintf(buf,8,"#%02x%02x%02x",r,g,b);

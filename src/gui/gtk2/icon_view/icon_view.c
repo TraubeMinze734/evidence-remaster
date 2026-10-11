@@ -18,6 +18,7 @@
 #include "gui/common/tooltip.h"     /* info_tooltip_cancel() */
 
 #include "gui/gtk2/common/dnd.h"
+#include "gui/gtk2/common/gtk_compat.h"
 
 #include "gui/gtk2/common/tree/tree.h"
 
@@ -227,9 +228,9 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
 
   iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
 
-  if(!selection||(selection->length<1)) {
-    E(0,"no data (%p,%d)\n",selection,selection?selection->length:-1234); }
-  else if(selection->format==8) {
+  if(!selection||(evis_seldata_length(selection)<1)) {
+    E(0,"no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
+  else if(evis_seldata_format(selection)==8) {
 #  ifdef HAVE_GNOMECANVAS
     int no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),x,y);
 #  else
@@ -242,7 +243,7 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
       const char *tag=file_info_get_tag(fi);
       E(4,"dropped on extension: %d for \"%s\".\n",no,tag?tag:"<NULL>");
       if((no==NOIR_SUCC)&&tag)
-        file_drop(ns,dc->action,info,selection->data,tag);
+        file_drop(ns,evis_drag_action(dc),info,evis_seldata_data(selection),tag);
       return; }
     else
       no=il?icon_list_get_index_at(il,x,y):-1;
@@ -250,7 +251,7 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
 
     if(info==DRAGDROP_TARGET_XDS) {
 #  ifdef WITH_XDS
-      char *r=selection->data;
+      char *r=evis_seldata_data(selection);
       switch(*r) {
         case 'S':
           E(0,"XDS: success!\n");
@@ -268,16 +269,16 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
 #  endif
       return; }
 
-    if(!(a=d=malloc(selection->length+1)))
+    if(!(a=d=malloc(evis_seldata_length(selection)+1)))
       return;
 
-    strncpy(a,selection->data,selection->length);
-    a[selection->length]='\0';
+    strncpy(a,evis_seldata_data(selection),evis_seldata_length(selection));
+    a[evis_seldata_length(selection)]='\0';
 
 E(0,"%s |%s|\n",target[info].target,a);
 
     if(no<0)                                        /* dropped on background */
-      file_drop(ns,dc->action,info,a,ns->cwd);
+      file_drop(ns,evis_drag_action(dc),info,a,ns->cwd);
     else {                                                /* dropped on icon */
 #  ifdef HAVE_GNOMECANVAS
       char *dt=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(iv->icon_view),no);
@@ -287,15 +288,15 @@ E(0,"%s |%s|\n",target[info].target,a);
 #  endif
 
       if(dt&&*dt)
-        file_drop(ns,dc->action,info,a,dt);
+        file_drop(ns,evis_drag_action(dc),info,a,dt);
       else
         E(0,"breakage in 'use'!\n"); }
     free(a); }
 
   /* GIMP colour drop */
-  else if((selection->format==16)&&(info==DRAGDROP_TARGET_COLOUR)) {
+  else if((evis_seldata_format(selection)==16)&&(info==DRAGDROP_TARGET_COLOUR)) {
     char     buf[8];
-    guint16 *color_vals=(guint16 *)selection->data;
+    guint16 *color_vals=(guint16 *)evis_seldata_data(selection);
     guchar   r,g,b;
 
     r=color_vals[0]>>8;
