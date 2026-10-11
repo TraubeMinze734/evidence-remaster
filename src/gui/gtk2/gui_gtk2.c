@@ -1178,6 +1178,15 @@ noir_sess *gui_init(int argc,char *argv[]) {
 #if defined(HAVE_ECORE)
   ecore_init();
   ecore_app_args_set(argc,(const char **)argv);
+#if GTK_CHECK_VERSION(3,0,0)
+  /* we run gtk_main() under GTK3 (the old ecore-fd-hijack trick is
+     X11-only), so ecore's timers/idlers/fds must ride the GLib loop
+     -- otherwise the Emotion video thumbnailer (ecore_timer +
+     thread-safe calls) never fires and ecore_shutdown() at exit
+     wrecks half-dead objects. */
+  if(!ecore_main_loop_glib_integrate())
+    E(1,"ecore GLib integration failed; ecore timers may misbehave\n");
+#endif
   prop_bag_prop_set(props_global,"feature-ecore","engaged");
 #endif
 #ifdef HAVE_EVAS2
@@ -1309,9 +1318,11 @@ int gui_start(noir_sess *ns) {
       edje_shutdown();
       prop_bag_prop_set(props_global,"feature-edje","disengaged"); }}
 #  endif
+#if !GTK_CHECK_VERSION(3,0,0)
   ecore_event_handler_del(ecore_exit_event_handle);
   ecore_main_fd_handler_del(ecore_gtk_event_handle);
   idle_enter_remove(&ecore_gtk_update_handle);
+#endif
 #endif
 
 #if !defined(HAVE_GNOMECANVAS)&&!defined(HAVE_EVAS2)
