@@ -380,6 +380,19 @@ int thumbnail_plugin_exit(thumbnail_plugin *tp) {
   (void)tp;
 #ifdef HAVE_EVAS2
   emotion_shutdown();   /* drop the reference taken in init() */
+  /* emotion_shutdown() deinits GStreamer ASYNCHRONOUSLY: its backend
+     threads keep posting ecore events (eeze/ecore_con frames in the
+     btlogs) for a short while. If we return immediately, the caller
+     continues tearing down ecore/evas under those threads -- they
+     then post into a destroyed loop ('Eo ID not valid' flood) and
+     evas_shutdown() eventually SIGSEGVs in efl_object_shutdown().
+     Pump the mainloop for a bounded grace period so the backend
+     threads can deliver their in-flight events to a LIVE loop and
+     exit; this closes the shutdown crash seen in the wild. */
+  { int i;
+    for(i=0;i<50;i++) {   /* ~0.5s max */
+      mainloop_once();
+      usleep(10000); } }
 #endif
   return NOIR_SUCC; }
 
