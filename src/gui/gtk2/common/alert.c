@@ -603,7 +603,7 @@ void form_file_edit(const char *op,char **t) {
   gtk_widget_set_name(to,"rename_dst");
   gtk_entry_set_text(GTK_ENTRY(to),utf8);
   gtk_container_add(GTK_CONTAINER(box),to);
-  GTK_WIDGET_SET_FLAGS(to,GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default(to,TRUE);
 
   g_free(utf8);
 
@@ -616,8 +616,8 @@ void form_file_edit(const char *op,char **t) {
   g_object_set_data(G_OBJECT(win),"data",(char *)op);
 
   wi[0]=fm; wi[1]=to; wi[2]=win;
-  g_signal_connect(GTK_OBJECT(to), "activate",G_CALLBACK(form_file_edit_do),(gpointer)wi);
-  g_signal_connect(GTK_OBJECT(win),"destroy", G_CALLBACK(form_file_edit_cxl),(gpointer)&ffl);
+  g_signal_connect(G_OBJECT(to), "activate",G_CALLBACK(form_file_edit_do),(gpointer)wi);
+  g_signal_connect(G_OBJECT(win),"destroy", G_CALLBACK(form_file_edit_cxl),(gpointer)&ffl);
 
   gtk_widget_show_all(GTK_WIDGET(win));
 

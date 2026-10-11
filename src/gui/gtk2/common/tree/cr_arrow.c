@@ -38,11 +38,11 @@ static void cr_arrow_render(GtkCellRenderer *cell,GdkWindow *window,
   gint wr,wn,as=(cell_area->height-cell->ypad-cell->ypad);
 
   /* widget->window is *not* window! */
-  gdk_drawable_get_size(widget->window,&wr,NULL);
+  gdk_drawable_get_size(gtk_widget_get_window(widget),&wr,NULL);
 
   wn=wr-as;
   if(S_ISDIR(NOIR_CELL_RENDERER_ARROW(cell)->dirstat)) {
-    gtk_paint_arrow(widget->style,window,GTK_STATE_NORMAL,GTK_SHADOW_NONE,
+    gtk_paint_arrow(gtk_widget_get_style(widget),window,GTK_STATE_NORMAL,GTK_SHADOW_NONE,
                     cell_area,widget,"cellrendererarrow",GTK_ARROW_RIGHT,FALSE,
                     cell_area->x+wn,
                     cell_area->y+cell->ypad,

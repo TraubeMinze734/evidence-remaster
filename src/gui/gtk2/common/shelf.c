@@ -432,7 +432,7 @@ gboolean shelf_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
         gevas_bg_update(il,il->vis_w,il->vis_h);
         evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
         evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
-        if(GTK_WIDGET_MAPPED(widget)) {
+        if(gtk_widget_get_mapped(widget)) {
           if(!il->bg&&il->theme&&((noir_theme *)il->theme)->bg_new) {
             noir_theme *theme=il->theme;
             gtk_widget_hide(widget); gtk_widget_show(widget);
@@ -596,7 +596,7 @@ static int shelf_str_listener(noir_prop_bag *b,noir_prop *e,int tag,void *data) 
     E(1,"(%s->%s::=\"%s\", %p)\n",
       ((noir_theme *)theme)->name,key,val?val:"<null>",data);
 
-    if((GTK_WIDGET_MAPPED(sh->shelf_view))&&theme->bg_new&&!theme->bg_new(theme,il,val))
+    if((gtk_widget_get_mapped(sh->shelf_view))&&theme->bg_new&&!theme->bg_new(theme,il,val))
       il->bg=o;
     else {
       if(theme->shelf_bg)
@@ -642,9 +642,9 @@ int shelf_init(noir_sess *ns) {
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),GTK_POLICY_NEVER,GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scroll),shelf);
 
-    gtk_signal_connect(GTK_OBJECT(shelf),"button_press_event",G_CALLBACK(shelf_clicked),(gpointer)ns);
-    gtk_signal_connect(GTK_OBJECT(shelf),"button_release_event",G_CALLBACK(shelf_clicked),(gpointer)ns);
-    gtk_signal_connect(GTK_OBJECT(shelf),"select-icon",G_CALLBACK(shelf_selected),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"button_press_event",G_CALLBACK(shelf_clicked),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"button_release_event",G_CALLBACK(shelf_clicked),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"select-icon",G_CALLBACK(shelf_selected),(gpointer)ns);
 
     gtk_drag_source_set(shelf,GDK_BUTTON1_MASK|GDK_SHIFT_MASK|GDK_CONTROL_MASK,target,targets,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
 
@@ -676,13 +676,13 @@ int shelf_init(noir_sess *ns) {
 #endif
 
 #if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
-    gtk_signal_connect(GTK_OBJECT(shelf),"expose-event",G_CALLBACK(shelf_exposed),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"expose-event",G_CALLBACK(shelf_exposed),(gpointer)ns);
 
-    gtk_signal_connect(GTK_OBJECT(shelf),"drag-drop",G_CALLBACK(shelf_drop),(gpointer)ns);
-    gtk_signal_connect(GTK_OBJECT(shelf),"drag_data_get",G_CALLBACK(shelf_drag_data_get),(gpointer)ns);
-    gtk_signal_connect(GTK_OBJECT(shelf),"drag_data_received",G_CALLBACK(shelf_drag_data_received),(gpointer)ns);
-    gtk_signal_connect(GTK_OBJECT(shelf),"drag_data_delete",G_CALLBACK(file_drop_delete_from_iconlist),(gpointer)ns);
-    gtk_signal_connect(GTK_OBJECT(shelf),"drag-end",G_CALLBACK(file_drop_free),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"drag-drop",G_CALLBACK(shelf_drop),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"drag_data_get",G_CALLBACK(shelf_drag_data_get),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"drag_data_received",G_CALLBACK(shelf_drag_data_received),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"drag_data_delete",G_CALLBACK(file_drop_delete_from_iconlist),(gpointer)ns);
+    g_signal_connect(G_OBJECT(shelf),"drag-end",G_CALLBACK(file_drop_free),(gpointer)ns);
 
     gtk_drag_dest_set(shelf,GTK_DEST_DEFAULT_HIGHLIGHT|GTK_DEST_DEFAULT_MOTION,target,targets,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
 
