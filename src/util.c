@@ -681,7 +681,14 @@ int idle_enter_remove(void **h) {
 
 
 int mainloop_once(void) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_GTK3)
+  /* GTK3 runs gtk_main(): nested pumps (modal menus etc.) must drive
+     the GLib loop so GTK events -- e.g. a menu's "selection-done" --
+     actually arrive. ecore_main_loop_iterate() would only serve
+     ecore's own sources, deadlocking the modal menu loop. */
+  g_main_context_iteration(NULL,TRUE);
+  return NOIR_SUCC;
+#elif defined(HAVE_ECORE)
   ecore_main_loop_iterate();
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
