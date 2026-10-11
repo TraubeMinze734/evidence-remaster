@@ -644,7 +644,13 @@ int menu_root_context(noir_sess *ns,const char *cwd,int mb) {
         gtk_menu_item_set_submenu(si,sort); }
 
     root_menu_add(&sess,menu,NULL,NULL,NULL);
-    root_menu_add(&sess,menu,"_Preferences",(gpointer)ns,root_menu_preferences);
+    /* 'Preferences' launches the external 2005 config editor 'examine'.
+       Only show the entry if that tool is actually installed; a dead
+       menu entry yielding an error alert helps nobody. */
+    { char *exa=get_path_file(cwd,"examine");
+      if(exa) {
+        free(exa);
+        root_menu_add(&sess,menu,"_Preferences",(gpointer)ns,root_menu_preferences); } }
 
     if(af) {
       root_menu_add(&sess,menu,NULL,NULL,NULL);
