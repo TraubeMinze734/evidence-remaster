@@ -401,6 +401,30 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
 
   if(!e->origfile||!data)
     return NOIR_NODATA;
+  /* AUDIO GATE: audio files (m4a/mp4-audio & friends) are frequently
+     detected as video/mp4 by libmagic since they share the MP4
+     container. Emotion opens them, never decodes video, and the 10s
+     open-timeout burned a CPU core per file -- with the re-visit
+     retry looping on it forever (fans at full tilt). Refuse clearly
+     audio material BEFORE the machine even starts. */
+  if(e->mime) {
+    const char *m=e->mime;
+    size_t      l=strlen(e->origfile);
+    if(!strncasecmp(m,"audio/",6))
+      return NOIR_NOTSUPP;
+    /* common audio-in-mp4-container extensions libmagic may still
+       report as video/* */
+    if((l>=4&&(!strcasecmp(e->origfile+l-4,".m4a")||
+               !strcasecmp(e->origfile+l-4,".m4b")||
+               !strcasecmp(e->origfile+l-4,".aac")||
+               !strcasecmp(e->origfile+l-4,".mp3")||
+               !strcasecmp(e->origfile+l-4,".ogg")||
+               !strcasecmp(e->origfile+l-4,".opus")||
+               !strcasecmp(e->origfile+l-4,".wma")||
+               !strcasecmp(e->origfile+l-4,".mid")||
+               !strcasecmp(e->origfile+l-5,".flac")))||
+       (l>=7&&!strcasecmp(e->origfile+l-7,".flac")))
+      return NOIR_NOTSUPP; }
 
   memset(&c,0,sizeof(c));
   c.file=e->origfile;
