@@ -91,7 +91,7 @@ static void gevas_class_init(GtkgEvasClass *);
    chance for the ordinary icon-view repaints. */
 static gboolean gevas_flush_blit(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
-  ev->current_idle=0;
+  ev->flush_idle=NULL;
   if(GTK_WIDGET_MAPPED(ev)) {
     GdkRectangle area;
     area.x=area.y=0;
@@ -113,8 +113,8 @@ static void gevas_render_flush(void *data,Evas *e,void *event_info) {
   E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,GTK_WIDGET_MAPPED(ev)?1:0);
   if(GTK_WIDGET_REALIZED(ev)) {
     gtk_widget_queue_draw(GTK_WIDGET(ev));
-    if(!ev->current_idle)
-      ev->current_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
+    if(!ev->flush_idle)
+      ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
 
 
 /* allocate the backing-store and attach it to the buffer engine */
