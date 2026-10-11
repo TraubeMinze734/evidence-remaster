@@ -60,7 +60,21 @@ fi
 # --- plugin-taglib, plugin-ttf) ----------------------------------------------
 VORBIS=no; if have_pc vorbis vorbisfile; then VORBIS=yes; VORBIS_CFLAGS=$(pc_cflags vorbis vorbisfile); VORBIS_LIBS=$(pc_libs vorbis vorbisfile ogg); fi
 TAGLIB=no; if have_pc taglib; then TAGLIB=yes; TAGLIB_CFLAGS=$(pc_cflags taglib); TAGLIB_LIBS=$(pc_libs taglib); fi
-ID3=no;    if have_pc id3; then ID3=yes; ID3_CFLAGS=$(pc_cflags id3); ID3_LIBS=$(pc_libs id3); fi
+# id3lib ships no pkg-config file (never did); match the 2005
+# AC_SEARCH_LIBS(ID3Tag_CreateIterator, "id3 -lz -lstdc++") via header+lib check
+ID3=no
+if have_pc id3; then
+  ID3=yes; ID3_CFLAGS=$(pc_cflags id3); ID3_LIBS=$(pc_libs id3)
+else
+  for inc in /usr/include /usr/local/include; do
+    if [ -f "$inc/id3/tag.h" ]; then
+      if ldconfig 2>/dev/null | grep -q 'libid3\.so'; then
+        ID3=yes; ID3_CFLAGS="-I$inc"; ID3_LIBS="-lid3 -lz -lstdc++"
+        break
+      fi
+    fi
+  done
+fi
 FT2=no;    if have_pc freetype2; then FT2=yes; FT2_CFLAGS=$(pc_cflags freetype2); FT2_LIBS=$(pc_libs freetype2); fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
