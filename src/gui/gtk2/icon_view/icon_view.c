@@ -787,8 +787,13 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
               if(i->state&IE_THMB) {
                 /* if this is a monitor-event rather than the initial read so
                    we don't expect more of the same soon, update view now. */
+                /* throttle to at most one relayout per IV_UPDATE_EVERY:
+                   in image-heavy dirs a thumbnail finishes every few
+                   ms during the initial read; an unthrottled full
+                   icon_list_layout_all() per event starved the GUI
+                   (click-to-highlight lagged by seconds on 50+ files) */
                 if(!pa||(file_info_get_infobits(pa)&FF_THUMB_))
-                  icon_view_rerender(iv,il,"MODEL_UPD -- THUMB"); }
+                  icon_view_rerender_maybe(iv,il); }
 
               /* got no thumbnail, so don't pretend to have one. */
               else {
