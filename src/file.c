@@ -3629,6 +3629,16 @@ int file_init(q_head *qh,const char *be) {
  * cleanup.
  * @return an error-code
  */
+/* wait for all running async jobs to finish; called on shutdown so we
+   never dlclose() the backend or free jobs/model under a live thread */
+int file_job_wait_all(void) {
+  noir_job *job=jobs;
+  while(job) {
+    if(job->id>0)   /* async: created via backend_job_start() */
+      ff.file_job_collect(job);
+    job=job->next; }
+  return NOIR_SUCC; }
+
 int file_exit(void) {
   file_monitor_remove_all(NULL);
   ff.file_exit();

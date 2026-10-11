@@ -304,6 +304,7 @@ int main(int argc,char *argv[]) {
  no_model:
   menu_exit(ns);
   thumbnail_exit();
+  file_job_wait_all();   /* never tear down backends under a running copy job */
   file_exit();
   meta_exit();
 

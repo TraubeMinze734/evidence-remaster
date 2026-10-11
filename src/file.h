@@ -237,6 +237,7 @@ int              file_activate(void *,const char *,const char *,const char *);
 /* jobs */
 noir_job        *file_job_simple(void *session,noir_job_type type);
 int              file_job_create(void *session,noir_job_type type,action_context *files,void *data);
+int              file_job_wait_all(void);
 int              file_job_update(noir_job *,noir_job_status,int,const char *,const char *);
 int              file_job_stats(noir_job *job,ulong fbt,ulong fbc,ulong fno,ulong bt,ulong bc,ulong no);
 int              file_job_progress_show_all(void);
