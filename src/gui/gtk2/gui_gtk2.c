@@ -106,7 +106,12 @@ static int set_app_icon(noir_sess *ns);
  * get X display.
  */
 Display *get_display(void) {
-  return gdk_x11_display_get_xdisplay(gdk_display_get_default()); }
+#if GTK_CHECK_VERSION(3,0,0)
+  GdkDisplay *gd=gdk_display_get_default();
+  return GDK_IS_X11_DISPLAY(gd)?gdk_x11_display_get_xdisplay(gd):NULL;
+#else
+  return gdk_x11_display_get_xdisplay(gdk_display_get_default());
+#endif }
 
 
 
@@ -114,7 +119,8 @@ Display *get_display(void) {
  * get X root window.
  */
 Window get_root_window(void) {
-  return DefaultRootWindow(gdk_x11_display_get_xdisplay(gdk_display_get_default())); }
+  Display *d=get_display();
+  return d?DefaultRootWindow(d):None; }
 
 
 
@@ -993,9 +999,11 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   if(ns->fullscreen)
 #ifdef HAVE_X
 /*  gdk_window_set_type_hint(noir_sess_get_window(ns)->window,GDK_WINDOW_TYPE_HINT_DESKTOP); */
-    window_as_desk(gdk_x11_display_get_xdisplay(gdk_display_get_default()),
+    { Display *d=get_display();
+      if(d)
+        window_as_desk(d,
                    GDK_WINDOW_XID(gtk_widget_get_window(noir_sess_get_window(ns))),
-                   gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
+                   gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default())); }
 #else
     E(0,"cannot flag window as desktop, compiled with --enable-x=no\n");
 #endif
@@ -1245,7 +1253,7 @@ int gui_start(noir_sess *ns) {
   /***************************************************************************/
   /* mainloop */
 
-#if defined(HAVE_ECORE)&&defined(HAVE_X)
+#if defined(HAVE_ECORE)&&defined(HAVE_X)&&!GTK_CHECK_VERSION(3,0,0)
   prop_bag_prop_const(props_global,"mainloop","eCore");
 
   { Display *d=get_display();
