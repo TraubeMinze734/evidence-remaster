@@ -385,6 +385,7 @@ static void gevas_realize(GtkWidget *widget) {
     |GDK_BUTTON_RELEASE_MASK
     |GDK_ENTER_NOTIFY_MASK
     |GDK_LEAVE_NOTIFY_MASK
+    |GDK_SCROLL_MASK
     |GDK_POINTER_MOTION_MASK|GDK_POINTER_MOTION_HINT_MASK;
 
   /*  attributes.event_mask = GDK_ALL_EVENTS_MASK;  */
