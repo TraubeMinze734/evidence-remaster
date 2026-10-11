@@ -7,6 +7,7 @@ include config.mk
 .DEFAULT_GOAL := all
 
 CC      ?= cc
+CXX     ?= c++
 CSTD    ?= gnu89
 CFLAGS  ?= -O2 -g
 BASE_CFLAGS := $(CFLAGS) -std=$(CSTD) -I$(TOP) -I$(TOP)/src -I$(TOP)/src/gui/common \
@@ -150,6 +151,44 @@ lib/evidence/metadata/image.so: src/providers/image/image.c config.h
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) $(PLUG_LINK) -o $@ $< $(IMLIB2_LIBS)
 PLUGINS += lib/evidence/metadata/image.so
+endif
+
+# ogg/vorbis comment provider (read/write tags via vcedit)
+ifeq ($(VORBIS),yes)
+lib/evidence/metadata/vorbis.so: src/providers/vorbis/vorbis.c src/providers/vorbis/vcedit.c src/providers/vorbis/vcedit.h config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(VORBIS_CFLAGS) $(PLUG_LINK) -o $@ src/providers/vorbis/vorbis.c src/providers/vorbis/vcedit.c $(VORBIS_LIBS)
+PLUGINS += lib/evidence/metadata/vorbis.so
+endif
+
+# APE/Musepack tag provider (header-only parser, no external libs)
+lib/evidence/metadata/ape.so: src/providers/ape/ape.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+PLUGINS += lib/evidence/metadata/ape.so
+
+# id3lib MP3/ID3 tag editor provider
+ifeq ($(ID3),yes)
+lib/evidence/metadata/mp3.so: src/providers/mp3/mp3.cpp src/providers/mp3/genre.h config.h
+	@mkdir -p $(dir $@)
+	$(CXX) $(PLUG_CFLAGS) $(ID3_CFLAGS) $(PLUG_LINK) -o $@ $< $(ID3_LIBS)
+PLUGINS += lib/evidence/metadata/mp3.so
+endif
+
+# taglib provider (tags for MP3, Ogg-Vorbis, FLAC, ...)
+ifeq ($(TAGLIB),yes)
+lib/evidence/metadata/taglib.so: src/providers/taglib/taglib.cpp config.h
+	@mkdir -p $(dir $@)
+	$(CXX) $(PLUG_CFLAGS) $(TAGLIB_CFLAGS) $(PLUG_LINK) -o $@ $< $(TAGLIB_LIBS)
+PLUGINS += lib/evidence/metadata/taglib.so
+endif
+
+# freetype2 TrueType font info provider
+ifeq ($(FT2),yes)
+lib/evidence/metadata/ttf.so: src/providers/ttf/ttf.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(FT2_CFLAGS) $(PLUG_LINK) -o $@ $< $(FT2_LIBS)
+PLUGINS += lib/evidence/metadata/ttf.so
 endif
 lib/evidence/metadata/exif.so: src/providers/exif/exif.c
 	@mkdir -p $(dir $@)
