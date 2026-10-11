@@ -339,7 +339,7 @@ static void effigy_acl_table_rebuild(noir_file *nf,noir_meta *r,GtkWidget *table
   int          cnt=-1;
   GtkWidget   *key,
               *val,
-              *parent=table->parent;
+              *parent=gtk_widget_get_parent(table);
 #if GTK_CHECK_VERSION(3,0,0)
   GtkTooltips *tt=NULL;
 #else
@@ -450,7 +450,7 @@ static int effigy_ace_find(noir_md *md,noir_meta *r,char *key,char *qual) {
 static gboolean effigy_ace_button_clicked(GtkWidget *ebox,GdkEventButton *event,gpointer data) {
   noir_meta     *m=(noir_meta *)data;
   const char    *n=gtk_widget_get_name(ebox);
-  GtkWidget     *parent=ebox->parent,*top=parent->parent,*table=top->parent;
+  GtkWidget     *parent=gtk_widget_get_parent(ebox),*top=parent?gtk_widget_get_parent(parent):NULL,*table=top?gtk_widget_get_parent(top):NULL;
   noir_provider *prv=NULL;
   noir_file     *nf=(noir_file *)g_object_get_data(G_OBJECT(ebox),"data");
 
@@ -523,7 +523,7 @@ static gboolean effigy_ace_button_clicked(GtkWidget *ebox,GdkEventButton *event,
 
     buf.qual=NULL;
     strcpy(buf.permset,"---");
-    gtk_container_foreach(GTK_CONTAINER(top->parent),effigy_acl_check_mask,&buf);
+    gtk_container_foreach(GTK_CONTAINER(top?gtk_widget_get_parent(top):NULL),effigy_acl_check_mask,&buf);
     esprintf(&n,":%s",buf.permset);
     if(n) {
       meta_set_string(m,(char *)meta_get_prvs(m),META_OLD);
