@@ -350,6 +350,28 @@ was not found" (Stale-Timeout-Handle beim Page-Switch-Race).
 EXTRACTOR_OPTION_IN_PROCESS Helper-Kinder; stirbt eines, killte das
 SIGPIPE den Scanner-Thread (und damit evidence). GUI-Standard.
 
+### Toter Code: GnomeCanvas-Backend (Phase 3: entfernen)
+
+Der Icon-View hat historisch zwei Canvas-Backends: Evas (gevas) und
+GnomeCanvas (gnome-icon-list/gnome-icon-item, ~4.400 Zeilen). Der
+GnomeCanvas-Pfad ist seit Beginn des Remasters TOT und wird von
+KEINEM Build erreicht (auch nicht GTK2):
+
+- configure.sh setzt HAVE_GNOMECANVAS NIE (nur ein #undef-Platzhalter
+  in config.h.in; es gab nie einen Erkennungs-Schalter)
+- das Makefile kompiliert gnome-icon-*.c nicht (nur icon_view.c +
+  gevas_light.c + gevas_bind.c, den Evas-Pfad)
+- libgnomecanvas existiert auf modernen Systemen nicht mehr
+  (GTK2-only, nicht mehr in Arch-Repos)
+
+Das Backend war 2005 der Fallback fuer Systeme OHNE Evas; da evidence
+ohne EFL faktisch kein Dasein hat, lief der Pfad nie. Die Codepfade
+hinter #ifdef HAVE_GNOMECANVAS sind Praeprozessor-kaudi-gefiltert,
+entfernen aendert am Binary kein Byte -- es macht nur den Quelltext
+ehrlich. PHASE 3: gnome-icon-*.c loeschen, HAVE_GNOMECANVAS-Zweige
+und das #undef in config.h.in entfernen, Doku/Makefile-Kommentare
+aufräumen.
+
 ### GTK2-Regressionstest (nach PR #19): BESTANDEN
 
 Beide Builds (GTK2 und GTK3) laufen stabil auf CachyOS: Start, alle
