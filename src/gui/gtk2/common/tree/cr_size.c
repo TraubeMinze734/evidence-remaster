@@ -37,6 +37,8 @@ static GtkCellRendererTextClass *parent_class;
 static void cr_size_render(GtkCellRenderer *cell,cairo_t *cr,
                             GtkWidget *widget,GdkRectangle *background_area,
                             GdkRectangle *cell_area,guint flags) {
+  gint xpad,ypad;
+  gtk_cell_renderer_get_padding(cell,&xpad,&ypad);
 #else
 static void cr_size_render(GtkCellRenderer *cell,GdkWindow *window,
                             GtkWidget *widget,GdkRectangle *background_area,
@@ -65,8 +67,8 @@ static void cr_size_render(GtkCellRenderer *cell,GdkWindow *window,
 
 #if GTK_CHECK_VERSION(3,0,0)
   gtk_render_layout(gtk_widget_get_style_context(widget),cr,
-                   cell_area->x+cell_area->width-w+cell->xpad,
-                   cell_area->y+y+cell->ypad,
+                   cell_area->x+cell_area->width-w+xpad,
+                   cell_area->y+y+ypad,
                    layout);
 #else
   gtk_paint_layout(gtk_widget_get_style(widget),window,GTK_STATE_NORMAL,TRUE,cell_area,
