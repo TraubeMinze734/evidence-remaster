@@ -153,7 +153,7 @@ static void gevas_tooltip_by_request(noir_sess *ns,GtkWidget *widget,icon *i) {
     icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
     gint       x1,y1;
     gevas_tooltip_cancel(ns,TRUE);
-    gdk_window_get_origin(widget->window,&x1,&y1);
+    gdk_window_get_origin(gtk_widget_get_window(widget),&x1,&y1);
     if(widget==iv->icon_view) {
       x1+=i->x+i->w/2-il->sx;
       y1+=i->y+i->h/2-il->sy; }
@@ -246,13 +246,13 @@ int gevas_bg_update(icon_list *il,int w,int h) {
 
   if((w>0)&&(h>0)&&
      ((noir_theme *)il->theme)->bg_upd&&
-     widget&&widget->window) {
+     widget&&gtk_widget_get_window(widget)) {
     gint x,y;
 #ifdef HAVE_X
     int (* x_error_old)(Display *,XErrorEvent *);
     x_error_old=XSetErrorHandler(gevas_bg_update_x_error);
 #endif
-    gdk_window_get_origin(widget->window,&x,&y);
+    gdk_window_get_origin(gtk_widget_get_window(widget),&x,&y);
     E(7,"update evas in widget \"%s\" => %d,%d %dx%d... \n",gtk_widget_get_name(widget),x,y,w,h);
     ((noir_theme *)il->theme)->bg_upd(il,x,y,w,h);
 #ifdef HAVE_X
@@ -521,7 +521,7 @@ static gboolean gevas_motioned(GtkWidget *widget,GdkEventMotion *ev,gpointer dat
         il->rx1=x1; il->ry1=y1; il->rx2=x2; il->ry2=y2;
         ((noir_theme *)ns->theme)->rubber_set(il,x1-sx,y1-sy,x2-sx,y2-sy);
 
-        gdk_window_get_pointer(widget->window,&mx,&my,&mk);
+        gdk_window_get_pointer(gtk_widget_get_window(widget),&mx,&my,&mk);
         mk&=GDK_BUTTON1_MASK;
         if((ev->x!=mx)||(ev->y!=my))
           f=0;
@@ -563,7 +563,7 @@ static gboolean gevas_motioned(GtkWidget *widget,GdkEventMotion *ev,gpointer dat
 
     il->flags=flags; }
 
-  gdk_window_get_pointer(widget->window,NULL,NULL,NULL);
+  gdk_window_get_pointer(gtk_widget_get_window(widget),NULL,NULL,NULL);
 
   return ret; }
 
@@ -971,7 +971,7 @@ static gboolean gevas_clicked(GtkWidget *widget,GdkEventButton *ev,gpointer data
 
 
     /*************************************************************************/
-    else if(GTK_WIDGET_MAPPED(widget)) {  /* ns->icon_scroll */
+    else if(gtk_widget_get_mapped(widget)) {  /* ns->icon_scroll */
       gint       no=il?icon_list_get_index_at(il,ev->x,ev->y):-1;
       icon      *i=(il>=0)?icon_list_get_icon_by_index(il,no):NULL;
 
@@ -1226,7 +1226,7 @@ GtkWidget *gevas_icon_list_new(noir_sess *ns,const char *name,int wpad,int hpad,
   if(ns->start_in==START_IN_ICONVIEW)
     gtk_widget_show(gevas);
 
-  gtk_signal_connect(GTK_OBJECT(gevas),"size-allocate",     GTK_SIGNAL_FUNC(gevas_icon_list_resized),ns);
+  g_signal_connect(G_OBJECT(gevas),"size-allocate",     G_CALLBACK(gevas_icon_list_resized),ns);
 
   g_signal_connect(G_OBJECT(gevas), "button_press_event",   G_CALLBACK(gevas_clicked),    (gpointer)ns);
   g_signal_connect(G_OBJECT(gevas), "button_release_event", G_CALLBACK(gevas_clicked),    (gpointer)ns);
@@ -1237,7 +1237,7 @@ GtkWidget *gevas_icon_list_new(noir_sess *ns,const char *name,int wpad,int hpad,
 
   g_signal_connect(G_OBJECT(gevas), "scroll-event",         G_CALLBACK(gevas_scrolled),   (gpointer)ns);
 
-  GTK_WIDGET_SET_FLAGS(gevas,GTK_CAN_FOCUS);
+  gtk_widget_set_can_focus(gevas,TRUE);
 
   if((evas=gevas_get_evas((GtkgEvas *)gevas))) {
     evas_image_cache_set(evas,2048*1024);
