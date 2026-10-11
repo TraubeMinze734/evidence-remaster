@@ -28,7 +28,7 @@ PangoLayout *cr_text_get_size(GtkCellRenderer *cell,
       PangoFontDescription *font_desc;
       gint                  row_height;
 
-      font_desc=pango_font_description_copy(widget->style->font_desc);
+      font_desc=pango_font_description_copy(gtk_widget_get_style(widget)->font_desc);
       pango_font_description_merge(font_desc,celltext->font,TRUE);
 
       if(celltext->scale_set)

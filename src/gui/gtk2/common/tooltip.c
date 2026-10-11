@@ -62,12 +62,12 @@ struct _noir_tooltip {
  * @param tooltip  the tooltip
  */
 static gint tooltip_gtk2_expose(noir_tooltip *tooltip) {
-  gtk_paint_flat_box(tooltip->window->style,
-                     tooltip->window->window,
+  gtk_paint_flat_box(gtk_widget_get_style(tooltip->window),
+                     gtk_widget_get_window(tooltip->window),
                      GTK_STATE_NORMAL,GTK_SHADOW_OUT,
                      NULL,GTK_WIDGET(tooltip->window),
                      "tooltip bg",0,0,-1,-1);
-  if(!gdk_pointer_grab(tooltip->window->window,FALSE,
+  if(!gdk_pointer_grab(gtk_widget_get_window(tooltip->window),FALSE,
                        GDK_BUTTON_PRESS_MASK|GDK_BUTTON_RELEASE_MASK|GDK_LEAVE_NOTIFY_MASK,
                        NULL,NULL,GDK_CURRENT_TIME))
     gtk_grab_add(tooltip->window);
@@ -85,7 +85,7 @@ static gboolean tooltip_gtk2_hide(gpointer data) {
   noir_tooltip *tt=(noir_tooltip *)data;
   GtkWidget    *widget=tt->window;
 
-  if(widget&&GTK_WIDGET_VISIBLE(widget)) {
+  if(widget&&gtk_widget_get_visible(widget)) {
     gtk_grab_remove(widget); /* this shouldn't be necessary */
     gdk_pointer_ungrab(GDK_CURRENT_TIME);
     gtk_widget_hide(widget);
@@ -134,23 +134,23 @@ static gint tooltip_gtk2_create(noir_sess *ns) {
     gtk_container_add(GTK_CONTAINER(tooltip->window),tooltip->vbox);
     gtk_box_pack_start(GTK_BOX(tooltip->vbox),tooltip->label,TRUE,TRUE,0);
 
-    gtk_signal_connect_object(GTK_OBJECT(tooltip->window),"expose_event",
-                              GTK_SIGNAL_FUNC(tooltip_gtk2_expose),tooltip);
+    g_signal_connect_object(G_OBJECT(tooltip->window),"expose_event",
+                              G_CALLBACK(tooltip_gtk2_expose),tooltip);
 
-    gtk_signal_connect_object(GTK_OBJECT(noir_sess_get_window(ns)),"leave-notify-event",
+    g_signal_connect_object(G_OBJECT(noir_sess_get_window(ns)),"leave-notify-event",
                               G_CALLBACK(tooltip_gtk2_leave),tooltip);
 
-    gtk_signal_connect_object(GTK_OBJECT(tooltip->window),"leave-notify-event",
+    g_signal_connect_object(G_OBJECT(tooltip->window),"leave-notify-event",
                               G_CALLBACK(tooltip_gtk2_hide),tooltip);
 
-    gtk_signal_connect_object(GTK_OBJECT(tooltip->window),"button_press_event",
+    g_signal_connect_object(G_OBJECT(tooltip->window),"button_press_event",
                               G_CALLBACK(tooltip_gtk2_hide),tooltip);
 
-    gtk_signal_connect_object(GTK_OBJECT(tooltip->window),"key-press-event",
+    g_signal_connect_object(G_OBJECT(tooltip->window),"key-press-event",
                               G_CALLBACK(tooltip_gtk2_hide),tooltip);
 
-    gtk_signal_connect(GTK_OBJECT(tooltip->window),"destroy",
-                       GTK_SIGNAL_FUNC(gtk_widget_destroyed),
+    g_signal_connect(G_OBJECT(tooltip->window),"destroy",
+                       G_CALLBACK(gtk_widget_destroyed),
                        &tooltip->window);
 
     return NOIR_SUCC; }
@@ -385,7 +385,7 @@ int tooltip_show_for(noir_sess *ns,char *file,int x,int y) {
 #if defined(WITH_ICONVIEW)&&defined(HAVE_EVAS2)
   iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
 
-  if(iv&&iv->icon_scroll&&GTK_WIDGET_MAPPED(iv->icon_scroll)) {
+  if(iv&&iv->icon_scroll&&gtk_widget_get_mapped(iv->icon_scroll)) {
     int        doshow=0;
     gint       mx=0,my=0;
     icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_scroll);
@@ -402,7 +402,7 @@ int tooltip_show_for(noir_sess *ns,char *file,int x,int y) {
 
       tooltip->open=(theme&&theme->tt_new)?TTO_EVAS:tooltip->open;
 
-      gdk_window_get_origin(iv->icon_scroll->window,&mx,&my);
+      gdk_window_get_origin(gtk_widget_get_window(iv->icon_scroll),&mx,&my);
       tooltip->efl=(theme&&theme->tt_new)?theme->tt_new(il,x-mx,y-my,fi):NULL;
       gevas_queue_redraw((GtkgEvas *)iv->icon_view); }
 

@@ -547,7 +547,7 @@ static gboolean column_keyed(GtkWidget *widget,GdkEventKey *ev,gpointer data) {
       case GDK_i:
         if(ev->state&GDK_CONTROL_MASK) {
           gint x,y;
-          gdk_window_get_pointer(widget->window,&x,&y,NULL);
+          gdk_window_get_pointer(gtk_widget_get_window(widget),&x,&y,NULL);
           tooltip_show_for(ns,file,x,y);
           ret=TRUE; }
         break;
@@ -666,8 +666,8 @@ static noir_column *browser_view_dir(int col_no,char *title,char *path,noir_brow
     gtk_box_pack_start(GTK_BOX(hbox),image,FALSE,FALSE,0);
     gtk_widget_set_size_request(GTK_WIDGET(hbox),BROWSER_COLUMN_WIDTH,-1);
 
-    gtk_signal_connect(GTK_OBJECT(image),"drag_data_get",G_CALLBACK(icon_path_drag_data_get),(gpointer)nc);
-    gtk_signal_connect(GTK_OBJECT(image),"drag_data_received",G_CALLBACK(icon_path_drag_data_received),(gpointer)nc);
+    g_signal_connect(G_OBJECT(image),"drag_data_get",G_CALLBACK(icon_path_drag_data_get),(gpointer)nc);
+    g_signal_connect(G_OBJECT(image),"drag_data_received",G_CALLBACK(icon_path_drag_data_received),(gpointer)nc);
 
     g_signal_connect(G_OBJECT(image),"button_press_event",G_CALLBACK(icon_path_clicked),(gpointer)nc);
     g_signal_connect(G_OBJECT(image),"button_release_event",G_CALLBACK(icon_path_clicked),(gpointer)nc); }
@@ -748,9 +748,9 @@ static noir_column *browser_view_dir(int col_no,char *title,char *path,noir_brow
    g_signal_connect(G_OBJECT(tree),"button_press_event",G_CALLBACK(column_clicked),(gpointer)nc);
    g_signal_connect(G_OBJECT(tree),"button_release_event",G_CALLBACK(column_clicked),(gpointer)nc);
 
-   gtk_signal_connect(GTK_OBJECT(tree),"key-press-event",G_CALLBACK(column_keyed),(gpointer)nc);
-   gtk_signal_connect(GTK_OBJECT(tree),"drag_data_get",G_CALLBACK(browser_drag_data_get),(gpointer)nc);
-   gtk_signal_connect(GTK_OBJECT(tree),"drag_data_received",G_CALLBACK(browser_drag_data_received),(gpointer)nc);
+   g_signal_connect(G_OBJECT(tree),"key-press-event",G_CALLBACK(column_keyed),(gpointer)nc);
+   g_signal_connect(G_OBJECT(tree),"drag_data_get",G_CALLBACK(browser_drag_data_get),(gpointer)nc);
+   g_signal_connect(G_OBJECT(tree),"drag_data_received",G_CALLBACK(browser_drag_data_received),(gpointer)nc);
 
    { file_info *fi=file_info_fetch(NULL,path);
      if(fi)

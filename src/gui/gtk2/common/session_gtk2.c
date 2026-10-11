@@ -123,8 +123,8 @@ int noir_sess_redraw_window(noir_sess *ns) {
     E(3,"redraw %ld (%s)\n",noir_sess_get_serial(ns),noir_sess_get_cwd(ns));
 
     r.x=r.y=0;
-    gdk_drawable_get_size(sg->window->window,&r.width,&r.height);
-    gdk_window_invalidate_rect(sg->window->window,&r,TRUE);
+    gdk_drawable_get_size(gtk_widget_get_window(sg->window),&r.width,&r.height);
+    gdk_window_invalidate_rect(gtk_widget_get_window(sg->window),&r,TRUE);
 /*   gdk_window_process_updates(ns->window->window,TRUE); */
     return NOIR_SUCC; }
   return NOIR_FAIL; }

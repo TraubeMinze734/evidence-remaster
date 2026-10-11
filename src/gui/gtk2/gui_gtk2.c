@@ -123,7 +123,7 @@ Window get_root_window(void) {
  * @param w - the widget
  */
 Window get_widget_window(void *w) {
-  return GDK_WINDOW_XWINDOW(((GtkWidget *)w)->window); }
+  return GDK_WINDOW_XWINDOW(gtk_widget_get_window((GtkWidget *)w)); }
 
 #endif
 
@@ -257,7 +257,7 @@ int notebook_go2view(noir_sess *ns,int thepage) {
 #ifdef HAVE_EVAS2
   { noir_iconview *iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
     if((thepage==START_IN_ICONVIEW)&&(iv->icon_view)&&
-       GTK_WIDGET_MAPPED(iv->icon_view))
+       gtk_widget_get_mapped(iv->icon_view))
       gtk_widget_grab_focus(iv->icon_view); }
 #endif
 
@@ -369,7 +369,7 @@ static gboolean win_clicked(GtkWidget *widget,GdkEventButton *ev,gpointer data) 
         menu_root_context(ns,noir_sess_get_cwd(ns),3);
         return TRUE; }
 #ifdef HAVE_GNOMECANVAS
-      if(GTK_WIDGET_MAPPED(iv->icon_scroll)) {
+      if(gtk_widget_get_mapped(iv->icon_scroll)) {
         gint no=-1;
         if((no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),ev->x,ev->y))>=0) {
           icon_view_selected(GNOME_ICON_LIST(iv->icon_view),no,(GdkEvent *)ev,(gpointer)ns);
@@ -666,7 +666,7 @@ static inline int window_trans_update(noir_sess *ns) {
       gevas_bg_update(il,il->vis_w,il->vis_h);
       evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
       evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
-      if(GTK_WIDGET_MAPPED(widget))
+      if(gtk_widget_get_mapped(widget))
         evas_render(gevas_get_evas((GtkgEvas *)il->canvas)); }
 
     if(sv&&(widget=sv->shelf_view)&&(il=ICON_LIST_GET_FROM_WIDGET(widget))) {
@@ -674,7 +674,7 @@ static inline int window_trans_update(noir_sess *ns) {
       gevas_bg_update(il,il->vis_w,il->vis_h);
       evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
       evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
-      if(GTK_WIDGET_MAPPED(widget))
+      if(gtk_widget_get_mapped(widget))
         evas_render(gevas_get_evas((GtkgEvas *)il->canvas)); }}
 #endif
   return NOIR_SUCC; }
@@ -938,7 +938,7 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
     gtk_notebook_set_show_tabs(GTK_NOTEBOOK(noir_sess_get_notebook(ns)),FALSE);
   gtk_notebook_set_show_border(GTK_NOTEBOOK(noir_sess_get_notebook(ns)),FALSE);
 
-  gtk_signal_connect(GTK_OBJECT(noir_sess_get_notebook(ns)),"switch-page",G_CALLBACK(go2view_activate_page),(gpointer)ns);
+  g_signal_connect(G_OBJECT(noir_sess_get_notebook(ns)),"switch-page",G_CALLBACK(go2view_activate_page),(gpointer)ns);
 
   { noir_shelf *sv=(noir_shelf *)noir_sess_client_get_data(ns,CLIENT_SHELF);
     /* setup paned */
@@ -970,7 +970,7 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   nodeco=ns->without_decorations;
   if(ns->fullscreen) {
     nodeco=TRUE;
-    gtk_window_set_default_size(GTK_WINDOW(noir_sess_get_window(ns)),gdk_screen_width(),gdk_screen_height());
+    gtk_window_set_default_size(GTK_WINDOW(noir_sess_get_window(ns)),gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
     gtk_window_move(GTK_WINDOW(noir_sess_get_window(ns)),0,0);
     gtk_window_set_wmclass(GTK_WINDOW(noir_sess_get_window(ns)),"desktop_window","evidence");
     gtk_window_maximize(GTK_WINDOW(noir_sess_get_window(ns))); }
@@ -991,9 +991,9 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   if(ns->fullscreen)
 #ifdef HAVE_X
 /*  gdk_window_set_type_hint(noir_sess_get_window(ns)->window,GDK_WINDOW_TYPE_HINT_DESKTOP); */
-    window_as_desk(GDK_WINDOW_XDISPLAY(noir_sess_get_window(ns)->window),
-                   GDK_WINDOW_XWINDOW(noir_sess_get_window(ns)->window),
-                   gdk_screen_width(),gdk_screen_height());
+    window_as_desk(GDK_WINDOW_XDISPLAY(gtk_widget_get_window(noir_sess_get_window(ns))),
+                   GDK_WINDOW_XWINDOW(gtk_widget_get_window(noir_sess_get_window(ns))),
+                   gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
 #else
     E(0,"cannot flag window as desktop, compiled with --enable-x=no\n");
 #endif
@@ -1036,7 +1036,7 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   ns->start_in=page;
 
 #ifdef HAVE_X
-  gdk_window_add_filter(noir_sess_get_window(ns)->window,(GdkFilterFunc)win_event,(gpointer)ns);
+  gdk_window_add_filter(gtk_widget_get_window(noir_sess_get_window(ns)),(GdkFilterFunc)win_event,(gpointer)ns);
 #endif
 
   E(1,"new session: %ld-|%s|\n",ns->serial,ns->cwd);

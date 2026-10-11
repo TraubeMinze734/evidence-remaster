@@ -211,7 +211,7 @@ static inline GtkWidget *effigy_make_label(noir_meta *m) {
 
   if(meta_get_user1(m)) {  /* make label clickable (for popup) */
     key=gtk_button_new_with_label(utf8);
-    g_signal_connect_swapped(GTK_OBJECT(key),"clicked",G_CALLBACK(effigy_popbutton_clicked),m); }
+    g_signal_connect_swapped(G_OBJECT(key),"clicked",G_CALLBACK(effigy_popbutton_clicked),m); }
   else {          /* boring non-clickable label */
     key=gtk_label_new(utf8);
     gtk_misc_set_alignment(GTK_MISC(key),0,1); }
@@ -237,7 +237,7 @@ static inline void effigy_table_add_row(GtkWidget *table,
   if(meta_get_user1(m))
     meta_set_user3(m,val);
 
-  if(GTK_WIDGET_NO_WINDOW(key)) {
+  if(!gtk_widget_get_has_window(key)) {
     GtkWidget *w=gtk_event_box_new();
     if(w) {
       gtk_container_add(GTK_CONTAINER(w),key);
@@ -246,7 +246,7 @@ static inline void effigy_table_add_row(GtkWidget *table,
   /* note original key on value-widget */
   g_object_set_data(G_OBJECT(val),"data",key);
 
-  if(GTK_WIDGET_NO_WINDOW(val)) {
+  if(!gtk_widget_get_has_window(val)) {
     GtkWidget *w=gtk_event_box_new();
     if(w) {
       gtk_container_add(GTK_CONTAINER(w),val);
@@ -872,13 +872,13 @@ static void effigy_dial_populate(noir_file *nf) {
   /* button "Apply" */
   button=gtk_button_new_from_stock(GTK_STOCK_APPLY); /* Apply Button */
   nf->apply=(GtkButton *)button;
-  g_signal_connect_swapped(GTK_OBJECT(button),"clicked",G_CALLBACK(effigy_dial_clicked),nf);
+  g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(effigy_dial_clicked),nf);
   gtk_container_add(GTK_CONTAINER(bbox),button);
 
   /* button "Close" */
   button=gtk_button_new_from_stock(GTK_STOCK_CLOSE); /* Close Button */
   nf->close=(GtkButton *)button;
-  g_signal_connect_swapped(GTK_OBJECT(button),"clicked",G_CALLBACK(effigy_dial_clicked),nf);
+  g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(effigy_dial_clicked),nf);
   gtk_container_add(GTK_CONTAINER(bbox),button);
 
   /* Add widgets to their parents */
@@ -893,7 +893,7 @@ static void effigy_dial_populate(noir_file *nf) {
   gtk_window_resize(GTK_WINDOW(window),302,552);
   gtk_window_set_title(GTK_WINDOW(window),nf->file);
   gtk_container_set_border_width(GTK_CONTAINER(window),5);
-  g_signal_connect_swapped(GTK_OBJECT(window),"destroy",
+  g_signal_connect_swapped(G_OBJECT(window),"destroy",
                            G_CALLBACK(effigy_dial_destroyed),nf);
 
   gtk_widget_show_all(GTK_WIDGET(window)); }

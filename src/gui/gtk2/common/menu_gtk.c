@@ -395,7 +395,7 @@ static int menu_create(action_context *ac,GtkWidget *menu) {
     gtk_container_foreach(GTK_CONTAINER(menu),menu_count_items,(gpointer)&ret);
     if(ret>0) {
       gtk_widget_show_all(menu);
-      gtk_signal_connect(GTK_OBJECT(menu),"selection-done",G_CALLBACK(menu_done),(gpointer)ac);
+      g_signal_connect(G_OBJECT(menu),"selection-done",G_CALLBACK(menu_done),(gpointer)ac);
       gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,0,0L); }}
 
   if(mime)
