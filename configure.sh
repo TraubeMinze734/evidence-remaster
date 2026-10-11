@@ -61,17 +61,23 @@ fi
 VORBIS=no; if have_pc vorbis vorbisfile; then VORBIS=yes; VORBIS_CFLAGS=$(pc_cflags vorbis vorbisfile); VORBIS_LIBS=$(pc_libs vorbis vorbisfile ogg); fi
 TAGLIB=no; if have_pc taglib; then TAGLIB=yes; TAGLIB_CFLAGS=$(pc_cflags taglib); TAGLIB_LIBS=$(pc_libs taglib); fi
 # id3lib ships no pkg-config file (never did); match the 2005
-# AC_SEARCH_LIBS(ID3Tag_CreateIterator, "id3 -lz -lstdc++") via header+lib check
+# AC_SEARCH_LIBS(ID3Tag_CreateIterator, "id3 -lz -lstdc++") by trying an
+# actual test-link against -lid3 -lz -lstdc++ with the id3/tag.h we found.
 ID3=no
 if have_pc id3; then
   ID3=yes; ID3_CFLAGS=$(pc_cflags id3); ID3_LIBS=$(pc_libs id3)
 else
   for inc in /usr/include /usr/local/include; do
     if [ -f "$inc/id3/tag.h" ]; then
-      if ldconfig 2>/dev/null | grep -q 'libid3\.so'; then
+      cat > /tmp/evidence_id3test.$$ <<'TESTEOF'
+#include <id3/tag.h>
+int main(void) { ID3Tag *t = ID3Tag_New(); (void)t; return 0; }
+TESTEOF
+      if cc -I"$inc" /tmp/evidence_id3test.$$ -lid3 -lz -lstdc++ -o /tmp/evidence_id3test.$$.out 2>/dev/null; then
         ID3=yes; ID3_CFLAGS="-I$inc"; ID3_LIBS="-lid3 -lz -lstdc++"
-        break
       fi
+      rm -f /tmp/evidence_id3test.$$ /tmp/evidence_id3test.$$.out
+      [ "$ID3" = yes ] && break
     fi
   done
 fi
