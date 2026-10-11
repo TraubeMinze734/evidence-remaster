@@ -32,6 +32,11 @@
 #  include <sys/stat.h>
 #  include <stdlib.h>
 
+#    include "gui/common/icon_list.h"
+#    include "gui/gtk2/icon_view/gevas_bind.h"
+#    include "gui/gtk2/icon_view/gevas_light.h"   /* GtkgEvas */
+
+typedef enum { SH_BG, SH_PADX, SH_PADY, SH_PADW, SH_PADH } sh_tag_type;
 
 #  define MODULE "shelf"
 
@@ -71,6 +76,12 @@ static int shelf_load(noir_sess *ns) {
               /* no. maybe, there's still one in the disk-cache? */
               thumbnail_find_for(h,&thumb); }
 
+          icon_list_icon_append(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),
+                                icon_path_get_always(h,mime),
+                                h,
+                                name,
+                                thumb,
+                                NULL,NULL,TRUE);
           ret++;
           E(2,"adding \"%s\" to shelf...\n",h); }}
       free(sd); }
@@ -81,10 +92,6 @@ static int shelf_load(noir_sess *ns) {
 
 
 
-#    endif
-#    endif
-#    endif
-#    endif
 
 
 
@@ -116,6 +123,7 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
   if(!selection||(evis_seldata_length(selection)<1)) {
     E(0,"shelf_drag_data_received: no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
   else if(evis_seldata_format(selection)==8) {
+    int no=icon_list_get_index_at(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),x,y);
     gchar *_target=gdk_atom_name(evis_seldata_target(selection));
 
     if(!(a=d=malloc(evis_seldata_length(selection)+1)))
@@ -130,8 +138,11 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
 
         E(1,"shelf_drag_data_received: add (%s => %s) \"%s\"\n",_target,mime?mime:"<unknown>",file);
 
+        name=(name=strrchr(file,'/'))?name+1:file;
+        icon_list_icon_append(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),icon_path_get_always(file,mime),file,name,ns->thumbnails_in_shelf?file:NULL,NULL,NULL,TRUE);
         }}
     else {
+      char *dt=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),no)));
       if(dt&&*dt)
         file_drop(ns,evis_drag_action(dc),info,a,dt);
       else
@@ -172,6 +183,14 @@ static void shelf_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelectio
 
     ac=action_context_new(noir_sess_get_serial(ns),noir_sess_get_cwd(ns));
 
+#if defined(HAVE_EVAS2)
+    icon_list *il=ICON_LIST_GET_FROM_WIDGET(sv->shelf_view);
+    icon *i=il->icons;
+
+    while(i) {
+      if(i->state&IE_SEL) {
+        file=ICON_GET_FILENAME(i);
+#endif
 
       action_file_new(ac,file);
 
@@ -179,15 +198,15 @@ static void shelf_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelectio
         reply=dnd_send_string(reply,file);
       else if((info==DRAGDROP_TARGET_NETSCAPE_URL)||(info==DRAGDROP_TARGET_URL))
         reply=dnd_send_URL(reply,file);
-#  ifdef HAVE_EVAS2
+#ifdef HAVE_EVAS2
       }
       i=i->next; }
 
  /* gdk_drag_context_unref(il->dc); */
     il->dc=NULL;
-#  else
+#else
     }
-#  endif
+#endif
 
     if(action_context_get_1st(ac)) {
       gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
@@ -198,7 +217,7 @@ static void shelf_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelectio
     if(reply)
       free(reply); }}
 
-#  else
+#else
 
 /**
  * DND: drop target asks for data. collect and send.
@@ -212,7 +231,7 @@ static void shelf_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelectio
 static void shelf_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelectionData *selectionData,guint info,guint t,gpointer data) {
 }
 
-#  endif
+#endif
 
 
 
@@ -237,10 +256,12 @@ static gboolean shelf_drop(GtkWidget *widget,GdkDragContext *dc,gint x,gint y,gu
 
   sv=(noir_shelf *)noir_sess_client_get_data(ns,CLIENT_SHELF);
 
+  no=icon_list_get_index_at(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),x,y);
 
   if(no<0)
     ret=move?FALSE:TRUE;
   else {
+    char *dt=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),no)));
     if(!dt||!*dt||!(ms=file_exists(dt))||(!S_ISDIR(ms)&&move))
       ret=FALSE; }
 
@@ -278,7 +299,7 @@ gboolean shelf_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
 #endif
   noir_sess *ns=(noir_sess *)data;
   if(ns) {
-#  ifdef HAVE_EVAS2
+#ifdef HAVE_EVAS2
     { icon_list *il=ICON_LIST_GET_FROM_WIDGET(widget);
       if(il) {
         gevas_bg_update(il,il->vis_w,il->vis_h);
@@ -292,7 +313,7 @@ gboolean shelf_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
             shelf_load(ns);
             E(0,"delayed background creation %s\n",il->bg?"succeeded.":"failed!?"); }
           evas_render(gevas_get_evas((GtkgEvas *)il->canvas)); }}}
-#  endif
+#endif
   }
   return FALSE; }
 
@@ -484,6 +505,30 @@ int shelf_init(noir_sess *ns) {
   memset(sv,0,sizeof(noir_shelf));
 
   if(!ns->without_shelf) {
+#if defined(HAVE_EVAS2)
+    GtkWidget  *wtoy,*shelf;
+    icon_list  *il;
+    noir_theme *t;
+
+    if(!(wtoy=gevas_icon_list_new(ns,MODULE, 24,16, 0)))
+      return NOIR_FAIL;
+
+    il=ICON_LIST_GET_FROM_WIDGET(wtoy);
+
+/*  ((noir_theme *)ns->theme)->bg_new(((noir_theme *)ns->theme),il,((noir_theme *)ns->theme)->shelf_bg); */
+
+    shelf=sv->shelf_view=il->canvas;
+    sv->shelf_scroll=wtoy;
+
+    t=(noir_theme *)il->theme;
+    if(t->sb_new) {
+      if(!il->sb_v)
+	il->sb_v=t->sb_new(t,il->canvas);
+      t->sb_set(il->canvas,(icon *)il->sb_v,il->width,il->height,il->vis_h,il->sy); }
+#else
+    sv->shelf_view=NULL;
+    sv->shelf_scroll=NULL;
+#endif
 
 #if defined(HAVE_EVAS2)
 #if GTK_CHECK_VERSION(3,0,0)
