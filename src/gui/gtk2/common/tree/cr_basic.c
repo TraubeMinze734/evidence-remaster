@@ -26,19 +26,17 @@ PangoLayout *cr_text_get_size(GtkCellRenderer *cell,
   gboolean              calc_fixed_height=FALSE;
   gint                  fw,fh;
 
-  /* GtkCellRendererText is opaque in GTK3; read the properties instead
-     of the struct members the 2005 code used. g_object_get covers both
-     build paths. */
-  g_object_get(celltext,
-               "text",&text,
-               "font-desc",&font_desc,
-               "font-scale",&font_scale,
-               "scale-set",&scale_set,
-               "fixed-height-rows",&fixed_height_rows,
+  /* GtkCellRendererText is opaque in GTK3. "text" is a real property
+     on both; the font/scale/fixed-height fields were never properties,
+     only GTK2 struct members, so they are read directly under GTK2. */
+  g_object_get(celltext,"text",&text,NULL);
 #if !GTK_CHECK_VERSION(3,0,0)
-               "calc-fixed-height",&calc_fixed_height,
+  font_desc=celltext->font;
+  font_scale=celltext->font_scale;
+  scale_set=celltext->scale_set;
+  fixed_height_rows=celltext->fixed_height_rows;
+  calc_fixed_height=celltext->calc_fixed_height;
 #endif
-               NULL);
 
   gtk_cell_renderer_get_padding(cell,&xpad,&ypad);
   gtk_cell_renderer_get_fixed_size(cell,&fw,&fh);
@@ -98,7 +96,5 @@ PangoLayout *cr_text_get_size(GtkCellRenderer *cell,
 
   if(text)
     g_free(text);
-  if(font_desc)
-    pango_font_description_free(font_desc);
 
   return layout; }
