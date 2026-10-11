@@ -43,10 +43,6 @@
 #  include "icon_view/gevas_light.h"
 #  include "icon_view/gevas_bind.h"
 #endif
-#ifdef HAVE_GNOMECANVAS
-#  include "icon_view/gnome-icon-list.h"
-#  include "icon_view/gnome-icon-list.h"
-#endif
 
 #ifdef HAVE_GTK2
 #  include <gtk/gtk.h>
@@ -356,9 +352,6 @@ void closed(GtkWidget *w,noir_sess *ns) {
  */
 static gboolean win_clicked(GtkWidget *widget,GdkEventButton *ev,gpointer data) {
   noir_sess     *ns=(noir_sess *)data;
-#ifdef HAVE_GNOMECANVAS
-  noir_iconview *iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
-#endif
 
   if((ev->type!=GDK_BUTTON_RELEASE)&&(ev->type!=GDK_BUTTON_PRESS))
     return FALSE;
@@ -375,13 +368,6 @@ static gboolean win_clicked(GtkWidget *widget,GdkEventButton *ev,gpointer data) 
       if(ev->state&GDK_CONTROL_MASK) {
         menu_root_context(ns,noir_sess_get_cwd(ns),3);
         return TRUE; }
-#ifdef HAVE_GNOMECANVAS
-      if(gtk_widget_get_mapped(iv->icon_scroll)) {
-        gint no=-1;
-        if((no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),ev->x,ev->y))>=0) {
-          icon_view_selected(GNOME_ICON_LIST(iv->icon_view),no,(GdkEvent *)ev,(gpointer)ns);
-          return TRUE; }}
-#endif
 /*    menu_root_context(ns,noir_sess_get_cwd(ns),ev->button); */
       return TRUE; }}
 
@@ -894,7 +880,7 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   else
 /* #endif */
   {
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
 
 #  ifdef HAVE_EVAS2
     if(ns->fullscreen)
@@ -1034,7 +1020,7 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   /* desktop is always in iconview, but if the user gave some other
      mode, we'll save that for further windows... */
   page=ns->start_in;
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
   if(ns->fullscreen)
     ns->start_in=START_IN_ICONVIEW;
 
@@ -1340,7 +1326,7 @@ int gui_start(noir_sess *ns) {
 #endif
 #endif
 
-#if !defined(HAVE_GNOMECANVAS)&&!defined(HAVE_EVAS2)
+#if !defined(HAVE_EVAS2)
 #  warning compiling without a canvas
 #endif
 

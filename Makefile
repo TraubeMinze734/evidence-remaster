@@ -62,9 +62,8 @@ BASE_CFLAGS += $(GTK2_CFLAGS)
 GUI_SRC += $(wildcard src/gui/gtk2/*.c)
 GTK2_SUBDIRS := src/gui/gtk2/common src/gui/gtk2/common/tree \
                 src/gui/gtk2/browser_view src/gui/gtk2/tree_view
-# icon_view/shelf need Evas2 (gevas) or GnomeCanvas; gui_gtk2.c only calls
-# them behind #if HAVE_EVAS2 || HAVE_GNOMECANVAS, so leave them out of a
-# canvas-less build
+# icon_view/shelf need Evas2 (gevas); gui_gtk2.c only calls them behind
+# #if HAVE_EVAS2, so leave them out of a canvas-less build
 ifneq ($(EFL),yes)
 GUI_SRC += $(foreach d,$(GTK2_SUBDIRS),$(filter-out %shelf.c,$(wildcard $(d)/*.c))) \
            src/gui/gtk2/about/about.c

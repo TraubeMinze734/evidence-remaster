@@ -8,10 +8,6 @@ if BUILD_WITH_ICONLIST
 SHELF_SRC=shelf.c shelf.h
 endif
 
-if BUILD_WITH_GNOMECANVAS
-CANVAS_CFLAGS = @gnomecanvas_cflags@
-CANVAS_LIBS   = @gnonecanvas_libs@
-endif
 
 # A list of all the files in the current directory which can be regenerated
 MAINTAINERCLEANFILES = Makefile.in
@@ -34,12 +30,10 @@ libevidence_gui_gtk2_common_la_SOURCES = \
 	$(SHELF_SRC)
 
 libevidence_gui_gtk2_common_la_CFLAGS = \
-	$(CANVAS_CFLAGS) \
 	@GTK_CFLAGS@
 
 libevidence_gui_gtk2_common_la_LIBADD = \
 	$(LDFLAGS) \
-	$(CANVAS_LIBS) \
 	@GTK_LIBS@ \
 	tree/libevidence_gui_gtk2_tree.la
 

@@ -88,8 +88,6 @@
 /* use glib2 mainloop */
 #undef HAVE_GLIB2
 
-/* Use gnomecanvas for canvas (no theming) */
-#undef HAVE_GNOMECANVAS
 
 /* use GTK2 GUI toolkit */
 #undef HAVE_GTK2
