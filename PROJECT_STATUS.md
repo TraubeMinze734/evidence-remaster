@@ -1,6 +1,6 @@
 # evidence-remaster — Projektstatus & Fallstricke
 
-Stand: nach PR #9 (Theme-Stability). Alles hier Genannte ist auf dem
+Stand: nach PR #22 (Metadata-Provider/Thumbnailer/IPC komplett). Alles hier Genannte ist auf dem
 Ziel-Rechner (CachyOS, GCC 14, aktuelles EFL aus den Distri-Repositories)
 getestet.
 
@@ -63,8 +63,9 @@ getestet.
   Make playlist, searchable) funktionieren wieder. tag2name linkt mit
   GTK2-CFLAGS (inkludiert gtk/gtk.h), die restlichen brauchen nur Core.
   ACHTUNG: tag2name/name2tag/sortkey2name setzen sortkey-/Tag-Metadaten
-  voraus — die spezialisierten Metadata-Provider (mp3/vorbis/ape/exif/ttf/
-  image) sind noch nicht portiert, libextractor deckt das weitgehend ab.
+  voraus — die spezialisierten Metadata-Provider sind jetzt ALLE gebaut
+  (PR #22, siehe "Metadata-Provider & Thumbnailer komplett" unten);
+  libextractor deckt als Fallback-Provider ("*") weiterhin ab.
 - searchable/searchable_r: libdoodle gibt es nicht mehr in Arch/AUR.
   search.c hat deshalb im Nicht-Doodle-Build einen search_scan_dir-
   Stub (NOIR_NOTSUPP), damit die Plugins laden und eine klare Meldung
@@ -220,6 +221,53 @@ getestet.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
+
+### Metadata-Provider & Thumbnailer komplett (PR #22)
+
+Alle schlafenden 2005er Provider/Thumbnailer sind wieder im Build. Wer
+ein `no` in der configure.sh-Ausgabe sieht, bekommt das Plugin STILL-
+SCHWEIGEND nicht (kein Build-Fehler!): ACLs, Vorbis, taglib, id3lib,
+freetype2, readline pruefen.
+
+- **ACL-Editor** (Properties-Dialog): configure.sh definiert HAVE_LIBACL
+  wieder (pkg-config libacl, Fallback sys/acl.h). Der ACL-Tab erscheint
+  NUR bei nicht-trivialen ACLs (setfacl) — nur rwx-Bits = kein Tab ist
+  ORIGINAL-Verhalten (acl_equiv_mode-Check in backend_get_meta), kein Bug.
+  libacl wird zur Laufzeit DLOPENt (libacl_init): `nm -D posix.so |
+  grep acl_` bleibt leer, das ist normal; Gegencheck per
+  `strings posix.so | grep -i "access control"`.
+- **Provider**: image (Imlib2-Tab, Width/Height schreibbar — Apply
+  RESIZED DAS BILD, nur an Kopien testen!), vorbis (vcedit,
+  lesend+schreibend), ape (Header-Parser, keine Lib), mp3 (id3lib, C++),
+  taglib (MP3/Ogg/FLAC), ttf (freetype2). ttf.c inkludiert jetzt
+  "config.h" statt "../config.h".
+- **id3lib-Erkennung**: id3lib liefert NIEMALS eine pkg-config-Datei.
+  configure.sh macht daher einen echten C++-Test-Link gegen -lid3 -lz
+  mit #include <id3.h> (Regenschirm-Header; ID3Tag_New ist C-API aus
+  id3/globals.h, NICHT in id3/tag.h deklariert — deshalb test-linkt
+  tag.h-Include immer fehl).
+- **Thumbnailer**: ttf.so (Font-Vorschau "Aa Cc"), id3.so (Cover-Art aus
+  ID3-Tags). Beide AUCH erst nach GUI-Neustart aktiv (Plugin-Dlopen beim
+  Start + Metadaten-Cache).
+- **evsh + ipc_ecore.so**: ipc_main.c dlopent $PREFIX/lib/evidence/ipc/
+  ipc_*.so (Verzeichnis wurde zuvor nie befuellt). evsh ist der CLI-
+  Client (win-list, dir, theme, ...; readline-History). evsh linkt
+  ECORE_LIBS explizit (ecore_main_loop_quit in libecore: modernes ld
+  verlangt die DSO auf der Kommandozeile, "DSO missing from command
+  line"). IPC-Pipe: lokaler User-Socket "evidence".
+
+### Bewusst NICHT reaktiviert (DONTs, PR #22)
+
+- epeg.so: Lib ~2008 aus EFL entfernt; der configure.in-Check war 2005
+  schon AUSKOMMENTIERT. Imlib2 deckt JPEG-Thumbs ab.
+- xine.so / mpeg3.c / avifile.so: von emotion.so abgeloest (Projekt-
+  Entscheidung, s.o.); libmpeg3/avifile praktisch tot.
+- ipc_dcop.so: KDE3-DCOP existiert nicht mehr (KDE4+ = D-Bus).
+- ipc_dbus.so: 2005er Pre-1.0-D-Bus-API; war selbst 2005 default-off.
+  Bei Bedarf NEU schreiben, nicht portieren.
+- file_efsd / file_gnomevfs / file_kio: Backend-Entscheidung (s.o.).
+- Neue Provider/Thumbnailer NIE ohne zugehoerige setup/evidence.providers-
+  Eintraege aktivieren — sonst laedt der Kern sie nie.
 
 ### Warnungen
 - Etwa 26 Typsicherheits-Warnungen behoben. 59 Deprecated-Hinweise
