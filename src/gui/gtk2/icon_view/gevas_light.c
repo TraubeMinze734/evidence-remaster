@@ -441,9 +441,21 @@ static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
   if(!GTK_WIDGET_DRAWABLE(widget))
     return;
 
-  /* make sure the backing-store matches the canvas size */
-  if((area->width!=ev->pixels_w)||(area->height!=ev->pixels_h))
-    return;   /* resize pending; will be repainted on size-allocate */
+  /* clamp the area to the backing-store rather than dropping it:
+     after a window resize GTK sends partial exposes whose area does
+     not exactly match the (already reconfigured) backing-store; the
+     old 'return' rejected those paints forever, so anything rendered
+     by plugins between size-allocates (e.g. the live-video thumbnail
+     calling evas_render() per decoded frame) never reached the
+     screen -- video kept playing audio-only after a resize. */
+  if(area->x<0) { area->width+=area->x; area->x=0; }
+  if(area->y<0) { area->height+=area->y; area->y=0; }
+  if((area->x+area->width)>ev->pixels_w)
+    area->width=ev->pixels_w-area->x;
+  if((area->y+area->height)>ev->pixels_h)
+    area->height=ev->pixels_h-area->y;
+  if((area->width<1)||(area->height<1))
+    return;   /* nothing left to paint */
 
   evas_damage_rectangle_add(ev->evas,area->x,area->y,area->width,area->height);
   evas_obscured_clear(ev->evas);
