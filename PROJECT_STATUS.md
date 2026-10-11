@@ -144,6 +144,18 @@ getestet.
   (Symptom: Fenster erscheint auch nach dem Lock-Fix nicht). START
   feuert nur einmal pro Job — Handshake dort ist gratis. EDIT/
   QUESTION/DONE/START = Handshake; PROGRESS/ADD/DEL = nur datalock.
+  DRITTE Stolperfalle (cc652bb): Der START-Handshake allein reicht
+  NICHT — der Backend setzt START, rennt weiter, und das naechste
+  PROGRESS ueberschreibt START, bevor der 250ms-Pulse ihn sieht
+  (Fenster nie sichtbar, Pulse loggt "copy progress!" ohne Widgets).
+  Der Fast-Path braucht eine gezielte konditionale Wait: PROGRESS/
+  ADD/DEL duerfen einen unkonsumierten START nie ueberschreiben
+  (while status==START: cond_wait). Kostet eine Pulse-Warte pro Job.
+  PLUS Shutdown-Deadlock: file_job_wait_all() joint Threads, die im
+  Handshake auf den bereits toten GUI-Pulse warten → SIGKILL noetig.
+  Fix: globales jobs_shutdown-Flag — wait4gui und die START-Wait
+  warten waehrend des Shutdowns nie; wait_all setzt das Flag, weckt
+  per cond_broadcast alle Jobs und joint erst dann.
 - Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
   Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
   Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:
