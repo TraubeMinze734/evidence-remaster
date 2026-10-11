@@ -64,7 +64,6 @@
 
 
 static GtkWidgetClass *parent_class=NULL;
-static void gevas_queue_redraw(GtkgEvas *gevas);   /* fwd: used by gevas_render_flush() */
 static void gevas_paint(GtkgEvas *ev,GdkRectangle *area);   /* fwd: used by gevas_flush_blit() */
 
 
