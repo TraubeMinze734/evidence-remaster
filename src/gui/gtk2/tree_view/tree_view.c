@@ -573,7 +573,12 @@ int tree_view_expand(GtkTreeView *treeview,GtkTreeIter *arg_iter,GtkTreePath *ar
   if(f1) {
     file_info *fi=file_info_fetch(NULL,f1);
     if(fi) {
-      if((fi->have&FF_FIRST)&&!fi->child)
+      /* only report "empty" once the scan actually finished (FF_NAME_ is set
+         when the scanner completes a directory). FF_FIRST alone is set as soon
+         as the scan *starts* -- flagging a still-loading or unreadable dir as
+         empty here was a 2005 bug: expanding e.g. /etc showed the alert even
+         though the content arrives right after. */
+      if((fi->have&FF_NAME_)&&!fi->child)
         form_alert(ns,"Sorry, directory \"%s\" is empty.\n"
                       "There is nothing to see here.",fi->name);
       else {
