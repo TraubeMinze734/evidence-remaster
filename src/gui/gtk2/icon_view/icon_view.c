@@ -365,7 +365,7 @@ static void icon_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelection
 #  endif
 
     if(reply&&action_context_get_1st(ac)) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       file_drop_remember(ns,dc,ac); }
     if(reply)
       free(reply); }
