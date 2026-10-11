@@ -51,7 +51,9 @@ getestet.
   in `~/.evidence/thumbnails/`.
 - Kontextmenü mit Delete, Rename, New folder, Properties. Doppelklick
   öffnet Dateien über xdg-open. inotify aktualisiert Views bei
-  Verzeichnisänderungen. libextractor liefert Metadaten im Tooltip
+  Verzeichnisänderungen — inkl. Live-Rename im Icon-View (PR #11:
+  inotify-Namen gegen Watch-Dir aufgelöst, DEL/NEW-Events mit korrekten
+  Pfaden im Modell, Double-Unref bei DEL behoben). libextractor liefert Metadaten im Tooltip
   (GStreamer-Plugin davon ausgenommen, Reentrancy-Probleme). libcurl und
   libmagic aktiv. Animierte Icon-Effekte, Rubberband-Selektion, Drag&Drop.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
@@ -180,6 +182,31 @@ getestet.
     installiert alte, kaputte Plugins wieder und die Symptome sehen aus
     wie neue Bugs (Video-Thumbs "plötzlich wieder kaputt"). Vor Tests:
     `git branch --show-current` und alle relevanten PRs in main mergen.
+
+## Monitor-Layer (inotify): Hinweise aus PR #11
+
+- inotify liefert in `event->name` NUR den nackten Dateinamen. Die
+  inotify-Route in `file_direct.c` muss ihn gegen das überwachte
+  Verzeichnis (`m->have`) auflösen, bevor er an `file_monitor_event()`
+  geht — die FAM-Route macht das äquivalent. Bei Events ohne `name`
+  (IN_DELETE_SELF, MOVED_FROM auf dem Watch-Dir selbst) ist `m->have`
+  selbst der Tag.
+- `file_monitor_event()`: Bei NEW/CHG für ein NICHT im Modell vorhandenes
+  Item MUSS `file_info_insert(NULL,tag)` verwendet werden (nicht
+  `file_info_new()`) — nur so bekommt das Item einen Parent und die
+  Views akzeptieren es (`icon_view.c` verwirft Events ohne Parent==cwd).
+  Nur DEL nutzt ein Wegwerf-Item via `file_info_new()`, da
+  `model_evt(MODEL_DEL)` es in jedem Fall zerstört und unref't.
+- `model_evt(fi,MODEL_DEL,...)` unref't und zerstört das übergebene
+  `file_info` selbst. Wer ein eigenes temporäres Item übergibt, darf
+  es danach NICHT nochmal unref'en (war Double-Unref -> subzero
+  refcount, UAF, SIGSEGV beim Fenster-Schließen).
+- Rename ist im Modell ein DEL+NEW-Paar (alter Name raus, neuer rein).
+  Wenn nach einem Rename das Icon verschwindet: NEW-Event erreicht das
+  Modell nicht mit Parent — Punkt 2 oben prüfen.
+- Kontrollpunkte im Log: INOTIFY-Events müssen VOLLE Pfade zeigen
+  (`... for "/abs/pfad/datei"`), keine nackten Namen; keine Zeile
+  "subzero refcount".
 
 ## Bekannt und harmlos
 
