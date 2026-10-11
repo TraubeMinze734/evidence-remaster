@@ -230,7 +230,7 @@ static void icon_path_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSele
       reply=file_to_URL((gchar *)g_object_get_data(G_OBJECT(widget),"user_data"));
 
     if(reply) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       g_free(reply); }}}
 
 
@@ -326,7 +326,7 @@ static void browser_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelect
     else if((info==DRAGDROP_TARGET_NETSCAPE_URL)||(info==DRAGDROP_TARGET_URL)) {
       gtk_tree_selection_selected_foreach(selection,tree_send_URL,&reply); }
     if(reply) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       g_free(reply); }}}
 
 

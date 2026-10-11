@@ -271,7 +271,7 @@ static void tree_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelection
     else if((info==DRAGDROP_TARGET_NETSCAPE_URL)||(info==DRAGDROP_TARGET_URL)) {
       gtk_tree_selection_selected_foreach(selection,tree_send_URL,&reply); }
     if(reply) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       g_free(reply); }}}
 
 
