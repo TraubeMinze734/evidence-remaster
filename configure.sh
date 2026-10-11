@@ -69,14 +69,14 @@ if have_pc id3; then
 else
   for inc in /usr/include /usr/local/include; do
     if [ -f "$inc/id3/tag.h" ]; then
-      cat > /tmp/evidence_id3test.$$ <<'TESTEOF'
-#include <id3/tag.h>
-int main(void) { ID3Tag *t = ID3Tag_New(); (void)t; return 0; }
+      cat > /tmp/evidence_id3test.$$.cpp <<'TESTEOF'
+#include <id3.h>
+int main() { ID3Tag *t = ID3Tag_New(); (void)t; return 0; }
 TESTEOF
-      if cc -I"$inc" /tmp/evidence_id3test.$$ -lid3 -lz -lstdc++ -o /tmp/evidence_id3test.$$.out 2>/dev/null; then
+      if c++ -I"$inc" /tmp/evidence_id3test.$$.cpp -lid3 -lz -o /tmp/evidence_id3test.$$.out 2>/dev/null; then
         ID3=yes; ID3_CFLAGS="-I$inc"; ID3_LIBS="-lid3 -lz -lstdc++"
       fi
-      rm -f /tmp/evidence_id3test.$$ /tmp/evidence_id3test.$$.out
+      rm -f /tmp/evidence_id3test.$$.cpp /tmp/evidence_id3test.$$.out
       [ "$ID3" = yes ] && break
     fi
   done
