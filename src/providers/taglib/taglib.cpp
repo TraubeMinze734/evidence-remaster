@@ -37,7 +37,8 @@ extern "C" {
  */
 static int meta_make_sortkey(noir_md *ret,noir_provider *prov) {
   noir_meta *x;
-  char      *t=NULL,*a=NULL,*s=NULL;
+  char      *t=NULL,*s=NULL;
+  const char *a=NULL;
 
   if((x=meta_in_group(ret,"title",MY_NAME))&&meta_get_val(x))
     t=(char *)meta_get_val(x);

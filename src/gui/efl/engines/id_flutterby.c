@@ -268,7 +268,9 @@ int idle_func(void **data) {
       n++;
       a=a->next; }
 
-    (void)evas_render_updates(c->evas); }   /* render updates */
+    { Eina_List *ev_up=evas_render_updates(c->evas);
+      if(ev_up)
+        evas_render_updates_free(ev_up); } }   /* render updates */
 
   else {
     D("Have no butterflies, re-scanning list...\n")

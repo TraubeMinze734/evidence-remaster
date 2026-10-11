@@ -392,7 +392,7 @@ static int thumbnail_plugins_setup_load(const char *path,const char *file,thumbn
   char             *cp=file_compose_path(path,TNS_DIR,file,NULL),*p,*p3;
   FILE             *fh=NULL;
   int               ret=NOIR_SUCC;
-  char              l[MIME_MAX_LEN];
+  char              l[PATH_MAX+64];
   thumbnail_plugin *tp=NULL;
   tnp_register     *tnp=NULL;
 
@@ -407,7 +407,7 @@ static int thumbnail_plugins_setup_load(const char *path,const char *file,thumbn
     ret=NOIR_NOFILE;
     goto done; }
 
-  while(fgets(l,PATH_MAX+64,fh)) {
+  while(fgets(l,sizeof(l),fh)) {
     if(util_parse_line(l,&p,&p3,NULL,NULL)==2) {
       if(!(tp=hash_table_fetch(ht_plugins,p3)))
         tp=thumbnail_plugin_new(p3);

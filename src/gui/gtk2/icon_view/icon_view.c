@@ -5,6 +5,7 @@
  */
 
 #include "config.h"
+#include <stdint.h>     /* intptr_t for icon-index -> pointer casts */
 
 #ifdef HAVE_BTRACE
 #  include <btrace.h>
@@ -488,7 +489,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
             while(oi) {
               if(((oi->x+oi->w)>il->sx)&&((oi->y+oi->h)>il->sy)) {
                 succ=TRUE;
-                dcd_set(pa,cf,(void *)oi->index);
+                dcd_set(pa,cf,(void *)(intptr_t)oi->index);
                 oi=NULL; }
               else
                 oi=oi->next; }

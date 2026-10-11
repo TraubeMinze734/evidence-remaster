@@ -123,7 +123,7 @@ static void gevas_blit(GtkgEvas *ev,GdkRectangle *area) {
 static gboolean gevas_flush_blit(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
   ev->flush_idle=NULL;
-  if(gtk_widget_get_mapped(ev)) {
+  if(gtk_widget_get_mapped(GTK_WIDGET(ev))) {
     GdkRectangle area;
     ulong t=now(0);
     /* coalesce: if the last blit is younger than the interval, wait out
@@ -149,8 +149,8 @@ static gboolean gevas_flush_blit(gpointer data) {
 static void gevas_render_flush(void *data,Evas *e,void *event_info) {
   GtkgEvas *ev=(GtkgEvas *)data;
   (void)e; (void)event_info;
-  E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,gtk_widget_get_mapped(ev)?1:0);
-  if(gtk_widget_get_realized(ev)) {
+  E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,gtk_widget_get_mapped(GTK_WIDGET(ev))?1:0);
+  if(gtk_widget_get_realized(GTK_WIDGET(ev))) {
     gtk_widget_queue_draw(GTK_WIDGET(ev));
     if(!ev->flush_idle)
       ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
@@ -609,7 +609,7 @@ gint gevas_view_redraw(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
   GdkRectangle area;
 
-  if(!gtk_widget_get_mapped(ev))
+  if(!gtk_widget_get_mapped(GTK_WIDGET(ev)))
     return FALSE;
 
   area.x=area.y=0;
@@ -622,7 +622,7 @@ gint gevas_view_redraw(gpointer data) {
 
 
 void gevas_queue_redraw(GtkgEvas *gevas) {
-  if(!gevas||!gtk_widget_get_realized(gevas)||!gtk_widget_get_mapped(gevas))
+  if(!gevas||!gtk_widget_get_realized(GTK_WIDGET(gevas))||!gtk_widget_get_mapped(GTK_WIDGET(gevas)))
     return;
 
   idle_enter_remove(&gevas->current_idle);
