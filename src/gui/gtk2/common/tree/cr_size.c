@@ -33,10 +33,18 @@ static GtkCellRendererTextClass *parent_class;
  * @param expose_area - rectangle describing what needs a redraw
  * @param flags - flags
  */
+#if GTK_CHECK_VERSION(3,0,0)
+static void cr_size_render(GtkCellRenderer *cell,cairo_t *cr,
+                            GtkWidget *widget,GdkRectangle *background_area,
+                            GdkRectangle *cell_area,guint flags) {
+  gint xpad,ypad;
+  gtk_cell_renderer_get_padding(cell,&xpad,&ypad);
+#else
 static void cr_size_render(GtkCellRenderer *cell,GdkWindow *window,
                             GtkWidget *widget,GdkRectangle *background_area,
                             GdkRectangle *cell_area,GdkRectangle *expose_area,
                             guint flags) {
+#endif
   static char          buf[TREE_SIZE_MAX];
   posixmd             *st=NOIR_CELL_RENDERER_SIZE(cell)->st;
   GtkCellRendererText *celltext=(GtkCellRendererText *)cell;
@@ -54,14 +62,21 @@ static void cr_size_render(GtkCellRenderer *cell,GdkWindow *window,
   util_size(buf);
 #endif
 
-  celltext->text=buf;
+  g_object_set(celltext,"text",buf,NULL);
   layout=cr_text_get_size(cell,widget,cell_area,&x,&y,&w,&h);
 
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_render_layout(gtk_widget_get_style_context(widget),cr,
+                   cell_area->x+cell_area->width-w+xpad,
+                   cell_area->y+y+ypad,
+                   layout);
+#else
   gtk_paint_layout(gtk_widget_get_style(widget),window,GTK_STATE_NORMAL,TRUE,cell_area,
                    widget,"size",
                    cell_area->x+cell_area->width-w+cell->xpad,
                    cell_area->y+y+cell->ypad,
                    layout);
+#endif
 
   g_object_unref(layout); }
 
@@ -92,8 +107,14 @@ static void cr_size_set_property(GObject *object,guint param_id,const GValue *va
 
 
 static void cr_size_finalize (GObject *object) {
+#if !GTK_CHECK_VERSION(3,0,0)
   GtkCellRendererText *celltext=GTK_CELL_RENDERER_TEXT(object);
-  pango_font_description_free(celltext->font); }
+  pango_font_description_free(celltext->font);
+#else
+  /* GtkCellRendererText is opaque in GTK3 and owns its font-desc. */
+  (void)object;
+#endif
+}
 
 
 

@@ -56,6 +56,8 @@ Atom rootpmap=None,xpixmap=None,xcolor=None;
  * @param app  our application-window
  */
 Window get_desk(Window app) {
+  if(!get_display())   /* not on X11 (e.g. Wayland session) */
+    return None;
   /* this routine inspired by some code from Eterm */
   Atom           type;
   int            format;

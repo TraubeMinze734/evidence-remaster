@@ -1,10 +1,7 @@
 /** @file  cr_basic.c
- *  @brief common routines for cell-renderers in cr_*.c
- */
+ *  @brief common routines for cell-renderers in cr_*.c */
 
 #include <gtk/gtk.h>
-
-
 
 /**
  * get extents of a string.
@@ -17,54 +14,87 @@ PangoLayout *cr_text_get_size(GtkCellRenderer *cell,
                               gint            *y_offset,
                               gint            *width,
                               gint            *height) {
-
   GtkCellRendererText *celltext=(GtkCellRendererText *)cell;
-  PangoRectangle       rect;
-  PangoLayout         *layout;
+  PangoRectangle        rect;
+  PangoLayout          *layout;
+  gint                  xpad,ypad;
+  gchar                *text=NULL;
+  PangoFontDescription *font_desc=NULL;
+  gfloat                font_scale=1.0;
+  gboolean              scale_set=FALSE;
+  gint                  fixed_height_rows=-1;
+  gboolean              calc_fixed_height=FALSE;
+  gint                  fw,fh;
 
-  if(celltext->calc_fixed_height) {
-      PangoContext         *context;
-      PangoFontMetrics     *metrics;
-      PangoFontDescription *font_desc;
-      gint                  row_height;
+  /* GtkCellRendererText is opaque in GTK3. "text" is a real property
+     on both; the font/scale/fixed-height fields were never properties,
+     only GTK2 struct members, so they are read directly under GTK2. */
+  g_object_get(celltext,"text",&text,NULL);
+#if !GTK_CHECK_VERSION(3,0,0)
+  font_desc=celltext->font;
+  font_scale=celltext->font_scale;
+  scale_set=celltext->scale_set;
+  fixed_height_rows=celltext->fixed_height_rows;
+  calc_fixed_height=celltext->calc_fixed_height;
+#endif
 
-      font_desc=pango_font_description_copy(gtk_widget_get_style(widget)->font_desc);
-      pango_font_description_merge(font_desc,celltext->font,TRUE);
+  gtk_cell_renderer_get_padding(cell,&xpad,&ypad);
+  gtk_cell_renderer_get_fixed_size(cell,&fw,&fh);
 
-      if(celltext->scale_set)
-	pango_font_description_set_size(font_desc,celltext->font_scale*pango_font_description_get_size(font_desc));
+  if(calc_fixed_height) {
+    PangoContext     *context;
+    PangoFontMetrics *metrics;
+    gint             row_height;
 
+    if(font_desc) {
+      PangoFontDescription *fd=pango_font_description_copy(gtk_widget_get_style(widget)->font_desc);
+      pango_font_description_merge(fd,font_desc,TRUE);
+      if(scale_set)
+        pango_font_description_set_size(fd,font_scale*pango_font_description_get_size(fd));
       context=gtk_widget_get_pango_context(widget);
+      metrics=pango_context_get_metrics(context,fd,pango_context_get_language(context));
+      pango_font_description_free(fd); }
+    else {
+      context=gtk_widget_get_pango_context(widget);
+      metrics=pango_context_get_metrics(context,gtk_widget_get_style(widget)->font_desc,pango_context_get_language(context)); }
 
-      metrics=pango_context_get_metrics(context,font_desc,pango_context_get_language(context));
-      row_height=(pango_font_metrics_get_ascent(metrics)+
-                  pango_font_metrics_get_descent(metrics));
-      pango_font_metrics_unref(metrics);
-      
-      gtk_cell_renderer_set_fixed_size(cell,cell->width,2*cell->ypad+
-                                       celltext->fixed_height_rows*
-                                       PANGO_PIXELS(row_height));
+    row_height=(pango_font_metrics_get_ascent(metrics)+
+                pango_font_metrics_get_descent(metrics));
+    pango_font_metrics_unref(metrics);
 
-      if(height) {
-        *height=cell->height;
-        height=NULL; }
-      celltext->calc_fixed_height=FALSE; }
+    gtk_cell_renderer_set_fixed_size(cell,fw,2*ypad+
+                                     fixed_height_rows*
+                                     PANGO_PIXELS(row_height));
 
-  layout=gtk_widget_create_pango_layout(widget,celltext->text);
+    if(height) {
+      gtk_cell_renderer_get_fixed_size(cell,&fw,&fh);
+      *height=fh;
+      height=NULL; }
+
+#if !GTK_CHECK_VERSION(3,0,0)
+    g_object_set(celltext,"calc-fixed-height",FALSE,NULL);
+#endif
+  }
+
+  layout=gtk_widget_create_pango_layout(widget,text?text:"");
   pango_layout_get_pixel_extents(layout,NULL,&rect);
 
   if(width)
-    *width=GTK_CELL_RENDERER(celltext)->xpad*2+rect.width;
-
+    *width=xpad*2+rect.width;
   if(height)
-    *height=GTK_CELL_RENDERER(celltext)->ypad*2+rect.height;
+    *height=ypad*2+rect.height;
 
   if(cell_area) {
+    gfloat xalign,yalign;
+    gtk_cell_renderer_get_alignment(cell,&xalign,&yalign);
     if(x_offset) {
-      *x_offset=cell->xalign*(cell_area->width-rect.width-(2*cell->xpad));
+      *x_offset=xalign*(cell_area->width-rect.width-(2*xpad));
       *x_offset=MAX(*x_offset,0); }
     if(y_offset) {
-      *y_offset=cell->yalign*(cell_area->height-rect.height-(2*cell->ypad));
-      *y_offset=MAX(*y_offset,0); }}
+      *y_offset=yalign*(cell_area->height-rect.height-(2*ypad));
+      *y_offset=MAX(*y_offset,0); } }
+
+  if(text)
+    g_free(text);
 
   return layout; }

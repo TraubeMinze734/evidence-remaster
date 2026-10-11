@@ -978,13 +978,15 @@ static int thumbnailer_cxl(Evidence_Thumbnailer *t) {
 
   if(t->flags&QUEUE_ZOMBIE) {
     E(0,"sent cxl to thumbnailer @ %p/%lu/$%x...\n",t,(long)t->thumbnailer,t->flags);  /* ,t->current?t->current->origfile:"" */
-    if((ret=pthread_join(t->thumbnailer,NULL))) {
-      E(0,"failed to join thread (%ld:%d): #%d - %s\n",(long)t->thumbnailer,t->flags,ret,strerror(ret));
-      ret=NOIR_PARTIAL; }
-    else {
-      E(3,"finished.\n");
-      ret=NOIR_SUCC; }
-    t->flags=QUEUE_NONE; }
+    /* DO NOT join here. The Emotion plugin defers cancellation while it
+       handshakes with an ecore_timer in THIS (GUI/main) thread: blocking
+       on pthread_join() would deadlock the very loop that must fire the
+       timer so the worker can finish (seen as a hang in the wild).
+       Leave the thread flagged QUEUE_ZOMBIE instead; the next
+       thumbnailer_start() joins it via its existing ZOMBIE path once it
+       has actually terminated, and the plugin's bounded timeout
+       (EMOTION_OPEN_TIMEOUT) guarantees termination. */
+    ret=NOIR_SUCC; }
 
  done:
   pthread_mutex_unlock(&t->qchg);
@@ -1014,11 +1016,14 @@ static int thumbnailer_gc(Evidence_Thumbnailer *t) {
   if(cxl) {
     E(2,"thumbnailer %p stuck, sending cancel (at %ld)...\n",t,time(NULL));
     if((ret=thumbnailer_cxl(t))==NOIR_SUCC) {
-      E(2,"restarting thumbnailer...\n");
-      /* restart here. if we don't, the thread will be down until the next
-         time an item is enqueue to be thumbnailed (that also restarts the
-         thread as needed). */
-      thumbnailer_start(t); }}
+      /* The old 'restarting thumbnailer...' called thumbnailer_start()
+         right here, which joins a ZOMBIE thread -- but a zombie may
+         still be unwinding its (deferred-cancelled) handshake, which
+         needs THIS GUI thread's mainloop to run. Joining here deadlocks
+         (seen as a hang). The thumbnailer auto-restarts on the next
+         thumbnail_enqueue() anyway, which is the path normal operation
+         takes; the queue is preserved until then. */
+      E(2,"cancel sent; thumbnailer will restart on next enqueue\n"); }}
 
   return ret; }
 

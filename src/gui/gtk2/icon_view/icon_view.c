@@ -18,6 +18,7 @@
 #include "gui/common/tooltip.h"     /* info_tooltip_cancel() */
 
 #include "gui/gtk2/common/dnd.h"
+#include "gui/gtk2/common/gtk_compat.h"
 
 #include "gui/gtk2/common/tree/tree.h"
 
@@ -118,7 +119,11 @@ int icon_view_set_selection(void *data) {
  * @param ev      the GDK expose-event
  * @param data    the session
  */
+#if GTK_CHECK_VERSION(3,0,0)
+gboolean icon_view_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
+#else
 gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
+#endif
 #if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
   noir_sess *ns=(noir_sess *)data;
   if(ns) {
@@ -223,9 +228,9 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
 
   iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
 
-  if(!selection||(selection->length<1)) {
-    E(0,"no data (%p,%d)\n",selection,selection?selection->length:-1234); }
-  else if(selection->format==8) {
+  if(!selection||(evis_seldata_length(selection)<1)) {
+    E(0,"no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
+  else if(evis_seldata_format(selection)==8) {
 #  ifdef HAVE_GNOMECANVAS
     int no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),x,y);
 #  else
@@ -238,7 +243,7 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
       const char *tag=file_info_get_tag(fi);
       E(4,"dropped on extension: %d for \"%s\".\n",no,tag?tag:"<NULL>");
       if((no==NOIR_SUCC)&&tag)
-        file_drop(ns,dc->action,info,selection->data,tag);
+        file_drop(ns,evis_drag_action(dc),info,evis_seldata_data(selection),tag);
       return; }
     else
       no=il?icon_list_get_index_at(il,x,y):-1;
@@ -246,7 +251,7 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
 
     if(info==DRAGDROP_TARGET_XDS) {
 #  ifdef WITH_XDS
-      char *r=selection->data;
+      char *r=evis_seldata_data(selection);
       switch(*r) {
         case 'S':
           E(0,"XDS: success!\n");
@@ -264,16 +269,16 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
 #  endif
       return; }
 
-    if(!(a=d=malloc(selection->length+1)))
+    if(!(a=d=malloc(evis_seldata_length(selection)+1)))
       return;
 
-    strncpy(a,selection->data,selection->length);
-    a[selection->length]='\0';
+    strncpy(a,evis_seldata_data(selection),evis_seldata_length(selection));
+    a[evis_seldata_length(selection)]='\0';
 
 E(0,"%s |%s|\n",target[info].target,a);
 
     if(no<0)                                        /* dropped on background */
-      file_drop(ns,dc->action,info,a,ns->cwd);
+      file_drop(ns,evis_drag_action(dc),info,a,ns->cwd);
     else {                                                /* dropped on icon */
 #  ifdef HAVE_GNOMECANVAS
       char *dt=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(iv->icon_view),no);
@@ -283,15 +288,15 @@ E(0,"%s |%s|\n",target[info].target,a);
 #  endif
 
       if(dt&&*dt)
-        file_drop(ns,dc->action,info,a,dt);
+        file_drop(ns,evis_drag_action(dc),info,a,dt);
       else
         E(0,"breakage in 'use'!\n"); }
     free(a); }
 
   /* GIMP colour drop */
-  else if((selection->format==16)&&(info==DRAGDROP_TARGET_COLOUR)) {
+  else if((evis_seldata_format(selection)==16)&&(info==DRAGDROP_TARGET_COLOUR)) {
     char     buf[8];
-    guint16 *color_vals=(guint16 *)selection->data;
+    guint16 *color_vals=(guint16 *)evis_seldata_data(selection);
     guchar   r,g,b;
 
     r=color_vals[0]>>8;
@@ -360,7 +365,7 @@ static void icon_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelection
 #  endif
 
     if(reply&&action_context_get_1st(ac)) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       file_drop_remember(ns,dc,ac); }
     if(reply)
       free(reply); }
@@ -626,7 +631,10 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
               dcd_set(pa,cf,NULL); }
 
           iv->next_update=now(IV_UPDATE_EVERY/4);
-          icon_list_rst(il); }
+          icon_list_rst(il);
+          if(iv->cwd_shown)
+            free(iv->cwd_shown);
+          iv->cwd_shown=strdup(file_info_get_tag(fi)); }
 
 #elif defined(HAVE_GNOMECANVAS)
         if(iv->icon_view)
@@ -652,6 +660,18 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
       else {                      /* post */
 #ifdef HAVE_EVAS2
         file_info *fc;
+
+        /* view was paused during the cd (another notebook page was
+           active) so the pre-CWD (icon_list_rst) never ran: clear the
+           stale folder before replaying, or both folders' icons end
+           up in the same view */
+        { const char *tag=file_info_get_tag(fi);
+          if(!iv->cwd_shown||strcmp(iv->cwd_shown,tag)) {
+            E(2,"icon-view missed pre-CWD for \"%s\" (was paused?), clearing stale view...\n",tag);
+            icon_list_rst(il);
+            if(iv->cwd_shown) {
+              free(iv->cwd_shown);
+              iv->cwd_shown=NULL; } } }
 
         /* update ".." icon */
         if((pa=file_info_get_parent(fi))) {
@@ -1059,7 +1079,11 @@ int icon_view_init(noir_sess *ns) {
   iv->session=ns;
   iv->serial=noir_sess_get_serial(ns);
 
+#if GTK_CHECK_VERSION(3,0,0)
+  g_signal_connect(G_OBJECT(scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#else
   g_signal_connect(G_OBJECT(scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#endif
 
   iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
 
@@ -1091,7 +1115,11 @@ int icon_view_init(noir_sess *ns) {
   gtk_widget_set_name(iv->icon_scroll,"icon_scroll");
   gtk_widget_set_name(iv->icon_view,  "icon_view");
 
+#if GTK_CHECK_VERSION(3,0,0)
+  g_signal_connect(G_OBJECT(iv->icon_scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#else
   g_signal_connect(G_OBJECT(iv->icon_scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#endif
 
   iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
 

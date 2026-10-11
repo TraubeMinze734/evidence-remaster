@@ -19,7 +19,7 @@ derives from the same `PREFIX`.
 | feature    | pkg-config modules            | notes                                  |
 |------------|-------------------------------|----------------------------------------|
 | GLib2      | glib-2.0                      | optional; util.c falls back to POSIX   |
-| GTK2 GUI   | gtk+-2.0                      | GTK2 backend                           |
+| GTK GUI    | gtk+-2.0 or gtk+-3.0           | GTK backend (--with-gtk3 for GTK3)    |
 | EFL GUI    | evas, ecore, ecore-evas, edje | EFL backend (buffer-engine port)       |
 | cairo      | cairo                         | blits the Evas buffer into the GdkWindow |
 | Emotion    | emotion                       | live/static video thumbnails (needs a backend: gstreamer or xine) |
@@ -41,7 +41,10 @@ useful for CI and core testing.
 ## Status / roadmap
 
 1. [x] New build system (`configure.sh` + `Makefile`), core builds headless
-2. [ ] GTK2 backend build (needs gtk+-2.0 dev packages; code unchanged)
+2. [x] GTK2 backend build (needs gtk+-2.0 dev packages; code unchanged)  // verified on CachyOS (PR #18)
+   2b. [~] GTK3 build: `./configure.sh --with-gtk3` switches the GTK backend
+       to gtk+-3.0 (config.h gets HAVE_GTK3; all GTK3-removed APIs are behind
+       GTK_CHECK_VERSION(3,0,0) guards). GTK2 remains the default/tested path.
 3. [~] EFL backend: GTK2 icon-view/shelf embed an Evas canvas again.
        The raw X11 engine setup was replaced by Evas' buffer engine, which
        renders into a backing-store blitted to the GdkWindow via cairo

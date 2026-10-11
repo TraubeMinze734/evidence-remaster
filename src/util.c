@@ -586,8 +586,24 @@ void qsrt(void *a[],void *data,int lo,int hi,int (*compare)(const void *,const v
  * @return 0 for no, !0 for yes
  */
 int events_pending(void) {
-#if defined(HAVE_ECORE)
-  return ecore_main_loop_iterate(), 0;
+#if defined(HAVE_GTK3)
+  /* pure query, no side effects -- must be callable from any thread.
+     The old HAVE_ECORE branch did ecore_main_loop_iterate() as a side
+     effect (iterate the loop, return 0): called from backend scanner
+     threads this corrupts modern EFL's per-thread EO domains
+     ("Eo ID is not a valid object" spam) and eventually SIGSEGVs
+     ecore_main_loop_begin() in the GUI thread. */
+  return g_main_context_pending(NULL);
+#elif defined(HAVE_ECORE)
+  /* iterate-as-poll was the 2005 design, but modern EFL keeps the loop
+     object in per-thread EO domains: iterating from a worker (backend
+     scanner threads call this via model_pulse!) corrupts ecore and
+     eventually SIGSEGVs the GUI thread. Only the thread that owns the
+     ecore mainloop may iterate it. */
+  { extern pthread_t main_thread;
+    if(!pthread_equal(pthread_self(),main_thread))
+      return 0;
+    return ecore_main_loop_iterate(), 0; }
 #elif defined(HAVE_GTK2)
   return gdk_events_pending();
 #elif defined(HAVE_GLIB2)
@@ -608,7 +624,12 @@ int events_pending(void) {
  * @param data - user-data to hand to "fun" when it is called
  */
 void *timeout_add(uint f,int(*fun)(void *),void *data) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_GTK3)
+  /* GTK3 runs gtk_main(); GLib timers survive the ecore/GLib split and
+     fire regardless of ecore's loop state (ecore timers would only fire
+     while ecore is being pumped -- fragile during shutdown). */
+  return (void *)(uintptr_t)g_timeout_add((guint)f,(GSourceFunc)fun,(gpointer)data);
+#elif defined(HAVE_ECORE)
 /* void *h=(void*)ecore_timer_add(f/1000.0,fun,data); E(0,"%p\n",h); return h; */
   return (void *)ecore_timer_add(((float)f)/1000.0,(Ecore_Task_Cb)fun,data);
 #elif defined(HAVE_GLIB2)
@@ -637,7 +658,11 @@ int timeout_remove(void **h) {
     E(0,"handle: %p\n",handle);
     E(0,"handle: { %lx, %lx }\n",p[0],p[1]); }
 #endif
-#ifdef HAVE_ECORE
+#if defined(HAVE_GTK3)
+  /* timeout_add() yields a GLib source id under GTK3; ecore_timer_del
+     would treat the id as an Ecore_Timer pointer (SIGSEGV) */
+  return g_source_remove((guint)(uintptr_t)handle)?NOIR_SUCC:NOIR_FAIL;
+#elif defined(HAVE_ECORE)
   ecore_timer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
@@ -648,7 +673,9 @@ int timeout_remove(void **h) {
 
 
 void *idle_enter_add(int prio,int (*fun)(void *),void *data) {
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  { (void)prio; return (void *)(uintptr_t)g_idle_add((GSourceFunc)fun,data); }
+#elif defined(HAVE_ECORE)
   return ecore_idle_enterer_add((Ecore_Task_Cb)fun,data);
 #elif defined(HAVE_GLIB2)
   { (void)prio; return (void *)(uintptr_t)g_idle_add((GSourceFunc)fun,data); }
@@ -666,7 +693,11 @@ int idle_enter_remove(void **h) {
   if(!(handle=*h))
     return NOIR_IGNORED;
   *h=NULL;
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  /* idle_enter_add() yields a GLib source id under GTK3 */
+  g_source_remove((guint)(uintptr_t)handle);
+  return NOIR_SUCC;
+#elif defined(HAVE_ECORE)
   ecore_idle_enterer_del(handle);
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
@@ -681,7 +712,14 @@ int idle_enter_remove(void **h) {
 
 
 int mainloop_once(void) {
-#ifdef HAVE_ECORE
+#if defined(HAVE_GTK3)
+  /* GTK3 runs gtk_main(): nested pumps (modal menus etc.) must drive
+     the GLib loop so GTK events -- e.g. a menu's "selection-done" --
+     actually arrive. ecore_main_loop_iterate() would only serve
+     ecore's own sources, deadlocking the modal menu loop. */
+  g_main_context_iteration(NULL,TRUE);
+  return NOIR_SUCC;
+#elif defined(HAVE_ECORE)
   ecore_main_loop_iterate();
   return NOIR_SUCC;
 #elif defined(HAVE_GLIB2)
@@ -693,7 +731,13 @@ int mainloop_once(void) {
 
 
 int mainloop_quit(void) {
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  /* under GTK3 we run gtk_main() (the ecore loop is only integrated
+     into GLib, not the other way round) -- quitting ecore would be
+     a no-op and gtk_main() would never return. */
+  gtk_main_quit();
+  return NOIR_SUCC;
+#elif defined(HAVE_ECORE)
   ecore_main_loop_quit();
   return NOIR_SUCC;
 #elif defined(HAVE_GTK2)

@@ -11,6 +11,7 @@
 #include <sys/stat.h>     /* S_ISDIR */
 
 #include "src/gui/common/session.h"
+#include "src/gui/gtk2/common/gtk_compat.h"
 
 #ifdef WITH_BROWSERVIEW
 #  include "file.h"         /* file_get_from_drop(), file_monitor_remove_all(), file_activate() */
@@ -169,25 +170,25 @@ static void icon_path_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gi
 
   tgt=(char *)g_object_get_data(G_OBJECT(widget),"user_data");
 
-  if(!selection||(selection->length<1)) {
-    E(0,"icon_path_drag_data_received: no data (%p,%d)\n",selection,selection?selection->length:-1234); }
-  else if((selection->length>=0)&&(selection->format==8)) {
+  if(!selection||(evis_seldata_length(selection)<1)) {
+    E(0,"icon_path_drag_data_received: no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
+  else if((evis_seldata_length(selection)>=0)&&(evis_seldata_format(selection)==8)) {
     char *n;
 
     if(!(n=strdup(noir_sess_get_cwd(ns))))
       return;
 
-    if(!(a=d=malloc(selection->length+1))) {
+    if(!(a=d=malloc(evis_seldata_length(selection)+1))) {
       free(n);
       return; }
 
-    strncpy(a,selection->data,selection->length);
-    a[selection->length]='\0';
+    strncpy(a,evis_seldata_data(selection),evis_seldata_length(selection));
+    a[evis_seldata_length(selection)]='\0';
 
     E(0,"browser_drag_data_received \"%s\" for \"%s\"\n",a,tgt);
 
     while((file=dnd_get_file_from_drop(&d))) {
-      if(dc->action==GDK_ACTION_MOVE) {
+      if(evis_drag_action(dc)==GDK_ACTION_MOVE) {
         size_t l=strlen(file);
         if(!strcmp(n,file)||(!strncmp(n,file,l)&&(n[l]==DIR_DELIMITER))) {
           char *p;
@@ -196,7 +197,7 @@ static void icon_path_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gi
           } while(n[l]==DIR_DELIMITER);
           if((p=strrchr(n,DIR_DELIMITER)))
             *p='\0'; }}
-      file_drop(ns,dc->action,info,file,tgt); }
+      file_drop(ns,evis_drag_action(dc),info,file,tgt); }
 
     noir_sess_redraw_window(ns);
     free(n);
@@ -229,7 +230,7 @@ static void icon_path_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSele
       reply=file_to_URL((gchar *)g_object_get_data(G_OBJECT(widget),"user_data"));
 
     if(reply) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       g_free(reply); }}}
 
 
@@ -272,16 +273,16 @@ static void browser_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint
     gtk_tree_path_free(tp); }
 
   if(tgt) {
-    if(!selection||(selection->length<1)) {
-      E(0,"browser_drag_data_received: no data (%p,%d)\n",selection,selection?selection->length:-1234); }
-    else if((selection->length>=0)&&(selection->format==8)) {
+    if(!selection||(evis_seldata_length(selection)<1)) {
+      E(0,"browser_drag_data_received: no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
+    else if((evis_seldata_length(selection)>=0)&&(evis_seldata_format(selection)==8)) {
       char *n;
 
-      if((n=strdup(noir_sess_get_cwd(ns)))&&(a=d=g_strdup(selection->data))) {
+      if((n=strdup(noir_sess_get_cwd(ns)))&&(a=d=g_strdup(evis_seldata_data(selection)))) {
         E(0,"browser_drag_data_received \"%s\" for \"%s\"\n",a,tgt);
 
         while((file=dnd_get_file_from_drop(&d))) {
-          if(dc->action==GDK_ACTION_MOVE) {
+          if(evis_drag_action(dc)==GDK_ACTION_MOVE) {
             size_t l=strlen(file);
             if(!strcmp(n,file)||(!strncmp(n,file,l)&&(n[l]==DIR_DELIMITER))) {
               char *p;
@@ -290,7 +291,7 @@ static void browser_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint
               } while(n[l]==DIR_DELIMITER);
               if((p=strrchr(n,DIR_DELIMITER)))
                 *p='\0'; }}
-          file_drop(ns,dc->action,info,file,tgt); }
+          file_drop(ns,evis_drag_action(dc),info,file,tgt); }
 
         noir_sess_redraw_window(ns);
         free(n);
@@ -325,7 +326,7 @@ static void browser_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelect
     else if((info==DRAGDROP_TARGET_NETSCAPE_URL)||(info==DRAGDROP_TARGET_URL)) {
       gtk_tree_selection_selected_foreach(selection,tree_send_URL,&reply); }
     if(reply) {
-      gtk_selection_data_set(selectionData,selectionData->target,8,reply,strlen(reply));
+      gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
       g_free(reply); }}}
 
 
@@ -815,7 +816,9 @@ static inline void browser_view_drop_column(noir_browser *bv,noir_column *nc) {
   if(bv->icon_path&&nc->icon) {  /* throw out folder-icon */
     gtk_container_remove(GTK_CONTAINER(bv->icon_path),nc->icon); }
   if(nc->view) {                 /* throw out list-view */
-    gtk_container_remove(GTK_CONTAINER(nc->view->parent->parent),nc->view->parent); }
+    { GtkWidget *par=gtk_widget_get_parent(nc->view);
+      if(par)
+        gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(par)),par); } }
 
   /* release administrative info of the column */
   browser_view_release_column(nc); }
@@ -1009,7 +1012,11 @@ static int browser_view_focus(noir_browser *bv,file_info *fi) {
   if(bv->browser_paned)
     ih=gtk_paned_get_position(GTK_PANED(bv->browser_paned));
 
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_widget_hide(bv->browser_scroll);   /* hide_all removed in GTK3 */
+#else
   gtk_widget_hide_all(bv->browser_scroll);
+#endif
 
   if(bv->browser_box&&bv->browser_padding)
     gtk_container_remove(GTK_CONTAINER(bv->browser_box),bv->browser_padding);
@@ -1091,7 +1098,11 @@ static int browser_view_focus(noir_browser *bv,file_info *fi) {
        previously hidden, in which case we'll keep it hidden) */
     GtkRequisition r;
     if(ih)
+#if GTK_CHECK_VERSION(3,0,0)
+      gtk_widget_get_preferred_size(bv->icon_path,&r,NULL);
+#else
       gtk_widget_size_request(bv->icon_path,&r);
+#endif
     else
       r.height=0;
     gtk_paned_set_position(GTK_PANED(bv->browser_paned),r.height); }

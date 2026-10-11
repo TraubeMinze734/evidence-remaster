@@ -106,7 +106,13 @@ static int set_app_icon(noir_sess *ns);
  * get X display.
  */
 Display *get_display(void) {
-  return GDK_DISPLAY(); }
+#if GTK_CHECK_VERSION(3,0,0)
+  GdkDisplay *gd=gdk_display_get_default();
+  return GDK_IS_X11_DISPLAY(gd)?gdk_x11_display_get_xdisplay(gd):NULL;
+#else
+  return gdk_x11_display_get_xdisplay(gdk_display_get_default());
+#endif
+}
 
 
 
@@ -114,7 +120,8 @@ Display *get_display(void) {
  * get X root window.
  */
 Window get_root_window(void) {
-  return GDK_ROOT_WINDOW(); }
+  Display *d=get_display();
+  return d?DefaultRootWindow(d):None; }
 
 
 
@@ -123,7 +130,7 @@ Window get_root_window(void) {
  * @param w - the widget
  */
 Window get_widget_window(void *w) {
-  return GDK_WINDOW_XWINDOW(gtk_widget_get_window((GtkWidget *)w)); }
+  return GDK_WINDOW_XID(gtk_widget_get_window((GtkWidget *)w)); }
 
 #endif
 
@@ -143,7 +150,7 @@ Window get_widget_window(void *w) {
  * @param page_index - the page we're switching to
  * @param data - the session
  */
-static int go2view_activate_page(GtkNotebook *notebook,GtkNotebookPage *page_ptr,
+static int go2view_activate_page(GtkNotebook *notebook,gpointer page_ptr,
                                  guint page_index,gpointer data) {
   noir_sess     *ns=(noir_sess *)data;
   noir_treeview *tv=(noir_treeview *)noir_sess_client_get_data(ns,CLIENT_TREEVIEW);
@@ -972,7 +979,9 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
     nodeco=TRUE;
     gtk_window_set_default_size(GTK_WINDOW(noir_sess_get_window(ns)),gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
     gtk_window_move(GTK_WINDOW(noir_sess_get_window(ns)),0,0);
+#if !GTK_CHECK_VERSION(3,0,0)
     gtk_window_set_wmclass(GTK_WINDOW(noir_sess_get_window(ns)),"desktop_window","evidence");
+#endif
     gtk_window_maximize(GTK_WINDOW(noir_sess_get_window(ns))); }
   else
     gtk_window_set_default_size(GTK_WINDOW(noir_sess_get_window(ns)),800,600);
@@ -991,9 +1000,11 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   if(ns->fullscreen)
 #ifdef HAVE_X
 /*  gdk_window_set_type_hint(noir_sess_get_window(ns)->window,GDK_WINDOW_TYPE_HINT_DESKTOP); */
-    window_as_desk(GDK_WINDOW_XDISPLAY(gtk_widget_get_window(noir_sess_get_window(ns))),
-                   GDK_WINDOW_XWINDOW(gtk_widget_get_window(noir_sess_get_window(ns))),
-                   gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default()));
+    { Display *d=get_display();
+      if(d)
+        window_as_desk(d,
+                   GDK_WINDOW_XID(gtk_widget_get_window(noir_sess_get_window(ns))),
+                   gdk_screen_get_width(gdk_screen_get_default()),gdk_screen_get_height(gdk_screen_get_default())); }
 #else
     E(0,"cannot flag window as desktop, compiled with --enable-x=no\n");
 #endif
@@ -1028,7 +1039,11 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
     ns->start_in=START_IN_ICONVIEW;
 
   if(ns->start_in==START_IN_ICONVIEW)
+#if GTK_CHECK_VERSION(3,0,0)
+    icon_view_exposed(((noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW))->icon_view,(cairo_t *)NULL,ns);
+#else
     icon_view_exposed(((noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW))->icon_view,NULL,ns);
+#endif
 #endif
 
   notebook_go2view(ns,template->start_in);
@@ -1087,6 +1102,14 @@ static int set_app_icon(noir_sess *ns) {
 
 
 #ifdef HAVE_ECORE
+
+#if GTK_CHECK_VERSION(3,0,0)
+/* fallback when ecore_main_loop_glib_integrate() is unavailable:
+   give ecore a slice of the GLib mainloop every 10ms */
+static gboolean ecore_glib_pump(gpointer data) {
+  ecore_main_loop_iterate();
+  return TRUE; }
+#endif
 
 static Eina_Bool ecore_gtk_event_handler(void *data,Ecore_Fd_Handler *fd_handler) {
   while(gdk_events_pending())
@@ -1163,6 +1186,22 @@ noir_sess *gui_init(int argc,char *argv[]) {
 #if defined(HAVE_ECORE)
   ecore_init();
   ecore_app_args_set(argc,(const char **)argv);
+#if GTK_CHECK_VERSION(3,0,0)
+  /* we run gtk_main() under GTK3 (the old ecore-fd-hijack trick is
+     X11-only), so ecore's timers/idlers/fds must ride the GLib loop
+     -- otherwise the Emotion video thumbnailer (ecore_timer +
+     thread-safe calls) never fires and ecore_shutdown() at exit
+     wrecks half-dead objects. */
+  if(ecore_main_loop_glib_integrate())
+    E(2,"ecore rides the GLib mainloop\n");
+  else {
+    /* integration unavailable (ecore built without glib support):
+       pump ecore manually from a GLib timer so ecore_timer-driven
+       machinery (Emotion thumbnails, live video) still makes
+       progress and thread-safe calls get dispatched. */
+    E(0,"ecore GLib integration failed; installing manual pump\n");
+    g_timeout_add(10,ecore_glib_pump,NULL); }
+#endif
   prop_bag_prop_set(props_global,"feature-ecore","engaged");
 #endif
 #ifdef HAVE_EVAS2
@@ -1239,7 +1278,7 @@ int gui_start(noir_sess *ns) {
   /***************************************************************************/
   /* mainloop */
 
-#if defined(HAVE_ECORE)&&defined(HAVE_X)
+#if defined(HAVE_ECORE)&&defined(HAVE_X)&&!GTK_CHECK_VERSION(3,0,0)
   prop_bag_prop_const(props_global,"mainloop","eCore");
 
   { Display *d=get_display();
@@ -1294,9 +1333,11 @@ int gui_start(noir_sess *ns) {
       edje_shutdown();
       prop_bag_prop_set(props_global,"feature-edje","disengaged"); }}
 #  endif
+#if !GTK_CHECK_VERSION(3,0,0)
   ecore_event_handler_del(ecore_exit_event_handle);
   ecore_main_fd_handler_del(ecore_gtk_event_handle);
   idle_enter_remove(&ecore_gtk_update_handle);
+#endif
 #endif
 
 #if !defined(HAVE_GNOMECANVAS)&&!defined(HAVE_EVAS2)

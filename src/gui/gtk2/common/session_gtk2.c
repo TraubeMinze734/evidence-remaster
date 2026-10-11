@@ -123,7 +123,12 @@ int noir_sess_redraw_window(noir_sess *ns) {
     E(3,"redraw %ld (%s)\n",noir_sess_get_serial(ns),noir_sess_get_cwd(ns));
 
     r.x=r.y=0;
+#if GTK_CHECK_VERSION(3,0,0)
+    r.width=gdk_window_get_width(gtk_widget_get_window(sg->window));
+    r.height=gdk_window_get_height(gtk_widget_get_window(sg->window));
+#else
     gdk_drawable_get_size(gtk_widget_get_window(sg->window),&r.width,&r.height);
+#endif
     gdk_window_invalidate_rect(gtk_widget_get_window(sg->window),&r,TRUE);
 /*   gdk_window_process_updates(ns->window->window,TRUE); */
     return NOIR_SUCC; }
