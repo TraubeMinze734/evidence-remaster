@@ -129,6 +129,13 @@ getestet.
   Pflicht — jetzt ueberspringen PROGRESS/START/ADD/DEL ihn komplett.
   Ebenfalls unit_size() in util.c gefixt (dividierte MB, labelte GB,
   gleicher Bug wie file_job_bytes): TB/GB/MB-Schwellen korrekt.
+  ACHTUNG Folgefehler (Version c2ac366): file_job_wait4gui() NIMMT
+  datalock (pthread_cond_wait) — das Funktions-ende von file_job_update()
+  gibt ihn immer frei. Wer den Handshake-Skip einbaut, muss fuer die
+  Nicht-Handshake-Zweige SELBST locken (else if(job->async)
+  pthread_mutex_lock(&job->datalock)), sonst: Unlock eines nie
+  genommenen Mutex + ungeschuetzte Writes gegen den GUI-Leser
+  (Symptom: Progress-Fenster erscheint gar nicht mehr).
 - Progress-Fenster (PR #13): Schliessen per WM-X ist KEIN Cancel — der Job
   laeuft weiter, das Fenster wird nur weggeklickt. Der 2005-destroy-Handler
   (form_modeless_destroyed) setzte nur user1=NULL; user2..user6 (box, label,
