@@ -693,7 +693,13 @@ int mainloop_once(void) {
 
 
 int mainloop_quit(void) {
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  /* under GTK3 we run gtk_main() (the ecore loop is only integrated
+     into GLib, not the other way round) -- quitting ecore would be
+     a no-op and gtk_main() would never return. */
+  gtk_main_quit();
+  return NOIR_SUCC;
+#elif defined(HAVE_ECORE)
   ecore_main_loop_quit();
   return NOIR_SUCC;
 #elif defined(HAVE_GTK2)
