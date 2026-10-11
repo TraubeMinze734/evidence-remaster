@@ -816,7 +816,9 @@ static inline void browser_view_drop_column(noir_browser *bv,noir_column *nc) {
   if(bv->icon_path&&nc->icon) {  /* throw out folder-icon */
     gtk_container_remove(GTK_CONTAINER(bv->icon_path),nc->icon); }
   if(nc->view) {                 /* throw out list-view */
-    gtk_container_remove(GTK_CONTAINER(nc->view->parent->parent),nc->view->parent); }
+    { GtkWidget *par=gtk_widget_get_parent(nc->view);
+      if(par)
+        gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(par)),par); } }
 
   /* release administrative info of the column */
   browser_view_release_column(nc); }
