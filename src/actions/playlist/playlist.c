@@ -49,6 +49,11 @@ int efun(long serial,char *filename,noir_md *md,action_context *ac) {
   if(!(path=file_dirname(filename)))
     return NOIR_OOM;
 
+  /* no selection (right-clicked a single file): act on that file */
+  if(!action_context_get_selection(ac)&&
+     (sf=action_context_get_single(ac)))
+    action_file_new(ac,action_file_get_tag(sf));
+
   if(!msg) {
     free(path);
     return NOIR_OOM; }
