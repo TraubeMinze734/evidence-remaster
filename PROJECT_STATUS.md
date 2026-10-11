@@ -156,6 +156,16 @@ getestet.
   Fix: globales jobs_shutdown-Flag — wait4gui und die START-Wait
   warten waehrend des Shutdowns nie; wait_all setzt das Flag, weckt
   per cond_broadcast alle Jobs und joint erst dann.
+- Live-Video im Tooltip nach Fenster-Resize (nur Ton, kein Bild):
+  gevas_paint() warf JEDE Paint-Area weg, die nicht exakt
+  pixels_w x pixels_h entsprach ("resize pending"). Nach einem
+  Resize sendet GTK aber Teil-Exposes, deren Area von der
+  (bereits neu konfigurierten) Backing-Store-Groesse abweicht —
+  alle weiteren Paints wurden fuer immer verworfen. Der
+  Live-Video-Thumbnail rendert pro dekodiertem Frame selbst
+  (evas_render im frame_decode-Callback), d.h. die Frames lagen im
+  Buffer, erreichten den Screen aber nie. Fix: Area an den
+  Backing-Store clampen statt verwerfen.
 - Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
   Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
   Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:
