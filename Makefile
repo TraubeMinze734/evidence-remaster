@@ -7,6 +7,7 @@ include config.mk
 .DEFAULT_GOAL := all
 
 CC      ?= cc
+CXX     ?= c++
 CSTD    ?= gnu89
 CFLAGS  ?= -O2 -g
 BASE_CFLAGS := $(CFLAGS) -std=$(CSTD) -I$(TOP) -I$(TOP)/src -I$(TOP)/src/gui/common \
@@ -142,6 +143,53 @@ endif
 lib/evidence/metadata/folder.so: src/providers/folder/folder.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+
+# imlib2 image meta-data provider (Width/Height/Alpha/Format tab in the
+# properties dialog; evidence.providers references it for image/*)
+ifeq ($(IMLIB2),yes)
+lib/evidence/metadata/image.so: src/providers/image/image.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) $(PLUG_LINK) -o $@ $< $(IMLIB2_LIBS)
+PLUGINS += lib/evidence/metadata/image.so
+endif
+
+# ogg/vorbis comment provider (read/write tags via vcedit)
+ifeq ($(VORBIS),yes)
+lib/evidence/metadata/vorbis.so: src/providers/vorbis/vorbis.c src/providers/vorbis/vcedit.c src/providers/vorbis/vcedit.h config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(VORBIS_CFLAGS) $(PLUG_LINK) -o $@ src/providers/vorbis/vorbis.c src/providers/vorbis/vcedit.c $(VORBIS_LIBS)
+PLUGINS += lib/evidence/metadata/vorbis.so
+endif
+
+# APE/Musepack tag provider (header-only parser, no external libs)
+lib/evidence/metadata/ape.so: src/providers/ape/ape.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+PLUGINS += lib/evidence/metadata/ape.so
+
+# id3lib MP3/ID3 tag editor provider
+ifeq ($(ID3),yes)
+lib/evidence/metadata/mp3.so: src/providers/mp3/mp3.cpp src/providers/mp3/genre.h config.h
+	@mkdir -p $(dir $@)
+	$(CXX) $(PLUG_CFLAGS) $(ID3_CFLAGS) $(PLUG_LINK) -o $@ $< $(ID3_LIBS)
+PLUGINS += lib/evidence/metadata/mp3.so
+endif
+
+# taglib provider (tags for MP3, Ogg-Vorbis, FLAC, ...)
+ifeq ($(TAGLIB),yes)
+lib/evidence/metadata/taglib.so: src/providers/taglib/taglib.cpp config.h
+	@mkdir -p $(dir $@)
+	$(CXX) $(PLUG_CFLAGS) $(TAGLIB_CFLAGS) $(PLUG_LINK) -o $@ $< $(TAGLIB_LIBS)
+PLUGINS += lib/evidence/metadata/taglib.so
+endif
+
+# freetype2 TrueType font info provider
+ifeq ($(FT2),yes)
+lib/evidence/metadata/ttf.so: src/providers/ttf/ttf.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(FT2_CFLAGS) $(PLUG_LINK) -o $@ $< $(FT2_LIBS)
+PLUGINS += lib/evidence/metadata/ttf.so
+endif
 lib/evidence/metadata/exif.so: src/providers/exif/exif.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
@@ -233,10 +281,40 @@ lib/evidence/thumbnailer/emotion.so: src/thumbnailer/emotion/emotion.c config.h
 PLUGINS += lib/evidence/thumbnailer/emotion.so
 endif
 
+# TrueType font thumbnailer (renders "Aa Cc" in the font; freetype2 + imlib2)
+ifeq ($(IMLIB2)$(FT2),yesyes)
+lib/evidence/thumbnailer/ttf.so: src/thumbnailer/ttf/ttf.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(FT2_CFLAGS) $(IMLIB2_CFLAGS) -shared -o $@ $< $(FT2_LIBS) $(IMLIB2_LIBS) $(CORE_LIBS)
+PLUGINS += lib/evidence/thumbnailer/ttf.so
+endif
+
+# MP3/ID3 thumbnailer (extracts images embedded in the ID3 tag; id3lib + imlib2)
+ifeq ($(ID3)$(IMLIB2),yesyes)
+lib/evidence/thumbnailer/id3.so: src/thumbnailer/id3/id3.cpp config.h
+	@mkdir -p $(dir $@)
+	$(CXX) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) $(ID3_CFLAGS) -shared -o $@ $< $(ID3_LIBS) $(IMLIB2_LIBS)
+PLUGINS += lib/evidence/thumbnailer/id3.so
+endif
+
+# --- IPC ----------------------------------------------------------------------
+# ipc_main.c dlopens $PREFIX/lib/evidence/ipc/ipc_*.so; the ecore module serves
+# evsh (and examine) via a local-user socket pipe named "evidence".
+ifeq ($(ECOREIPC),yes)
+lib/evidence/ipc/ipc_ecore.so: src/ipc/ipc_ecore.c config.h
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(ECOREIPC_CFLAGS) $(PLUG_LINK) -o $@ $< $(ECOREIPC_LIBS)
+PLUGINS += lib/evidence/ipc/ipc_ecore.so
+
+evsh: src/evsh.c src/evclient.c src/evclient.h config.h
+	$(CC) $(BASE_CFLAGS) $(ECOREIPC_CFLAGS) -o $@ src/evsh.c src/evclient.c $(ECORE_LIBS) $(ECOREIPC_LIBS) $(READLINE_LIBS)
+BINS += evsh
+endif
+
 plugins: $(PLUGINS) $(ENGINES)
 
 # --- rules ---------------------------------------------------------------------
-all: evidence plugins
+all: evidence plugins $(BINS)
 
 evidence: $(OBJS)
 	$(CC) $(BASE_CFLAGS) -o $@ $(OBJS) $(CORE_LIBS) $(GTK2_LIBS) $(EVAS_LIBS) $(CAIRO_LIBS) $(X11_LIBS) $(LDLIBS)
@@ -270,6 +348,7 @@ install: all
 do-install:
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m 0755 evidence $(DESTDIR)$(PREFIX)/bin/evidence
+	if [ -f evsh ]; then install -m 0755 evsh $(DESTDIR)$(PREFIX)/bin/evsh; fi
 	install -d $(DESTDIR)$(PREFIX)/share/evidence
 	install -m 0644 setup/mime.types setup/mime.alii setup/mime.icons \
 	                setup/mime.handlers setup/evidence.menu \

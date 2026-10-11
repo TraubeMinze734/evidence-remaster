@@ -4,7 +4,7 @@
  *  get TrueType Font info
  */
 
-#include "../config.h"
+#include "config.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
