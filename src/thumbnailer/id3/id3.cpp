@@ -46,7 +46,7 @@ extern "C" {
  * @param pictype  index of the picture-type (cover, artist, ...)
  */
 static const char *pic_type(int pictype) {
-  char *pt[]={
+  const char *pt[]={
           "Other", "icon (32x32 PNG)", "file icon",
           "Cover (front)", "Cover (back)",
           "Leaflet page",
@@ -75,7 +75,7 @@ static const char *pic_type(int pictype) {
 static Imlib_Image evidence_thumb_imlib_image_preview(Evidence_Thumb *e,char *tmpfile) {
   Imlib_Image      tmp=NULL;
   Imlib_Load_Error err;
-  static char *em[]={ "","file not found","dir","may not read file",
+  static const char *em[]={ "","file not found","dir","may not read file",
                       "no loader for format","path too long",
                       "non-existant element in path","non-dir in path",
                       "funky path","nlinks","out of memory","out of FDs",

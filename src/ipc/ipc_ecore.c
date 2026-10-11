@@ -171,7 +171,7 @@ static int handle_request(Ecore_Ipc_Server *server,Ecore_Ipc_Event_Client_Data *
 /**
  * callback: client has connected.  mostly informational.
  */
-static int ipc_client_add(void *data,int type,void *event) {
+static Eina_Bool ipc_client_add(void *data,int type,void *event) {
   Ecore_Ipc_Server           **server=(Ecore_Ipc_Server **)data;
   E(1,"Client connected. @ %p\n",server);
   return 1; }
@@ -181,7 +181,7 @@ static int ipc_client_add(void *data,int type,void *event) {
 /**
  * callback: client has disconnected.  mostly informational.
  */
-static int ipc_client_del(void *data, int type, void *event) {
+static Eina_Bool ipc_client_del(void *data, int type, void *event) {
   Ecore_Ipc_Server           **server=(Ecore_Ipc_Server **)data;
   E(1,"Client disconnected. @ %p\n",server);
   return 1; }
@@ -191,7 +191,7 @@ static int ipc_client_del(void *data, int type, void *event) {
 /**
  * callback: client sent us a request.  handle it.
  */
-static int ipc_client_sent(void *data,int type,void *event) {
+static Eina_Bool ipc_client_sent(void *data,int type,void *event) {
   Ecore_Ipc_Server            **server=(Ecore_Ipc_Server **)data;
   Ecore_Ipc_Event_Client_Data  *e=(Ecore_Ipc_Event_Client_Data *)event;
   handle_request(*server,e);

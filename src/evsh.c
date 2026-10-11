@@ -126,7 +126,7 @@ int debug=1;
  * @param type event-type
  * @param event the event
  */
-int ev_ipc_server_con(void *data,int type,void *event) {
+Eina_Bool ev_ipc_server_con(void *data,int type,void *event) {
   connstate                  *cs=(connstate *)data;
   *cs=ONLINE;
   E(1,"Connected to " ECORE_IPC_PIPE ".\n");
@@ -140,7 +140,7 @@ int ev_ipc_server_con(void *data,int type,void *event) {
  * @param type event-type
  * @param event the event
  */
-int ev_ipc_server_dis(void *data,int type,void *event) {
+Eina_Bool ev_ipc_server_dis(void *data,int type,void *event) {
   connstate                  *cs=(connstate *)data;
   *cs=OFFLINE;
   ecore_main_loop_quit();
@@ -155,7 +155,7 @@ int ev_ipc_server_dis(void *data,int type,void *event) {
  * @param type event-type
  * @param event the event
  */
-int ev_ipc_server_sent(void *data,int type,void *event) {
+Eina_Bool ev_ipc_server_sent(void *data,int type,void *event) {
   Ecore_Ipc_Event_Server_Data *e=(Ecore_Ipc_Event_Server_Data *)event;
   E(2,"evidence sent: %2d.%02d  #%03d=>#%03d  \"%s\".%d\n",
     e->major,e->minor,0,0,(char *)e->data,e->size);

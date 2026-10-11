@@ -118,6 +118,8 @@ HDRNAME() { echo "$1" | sed 's|/|_|; s|\.|_|' | tr 'a-z' 'A-Z'; }
   echo "#define HAVE_MEMSET 1"
   echo "#define HAVE_STATFS 1"
   echo "#define HAVE_STATVFS 1"
+  echo "#define HAVE_ST_BLKSIZE 1"
+  echo "#define HAVE_ST_BLOCKS 1"
   echo "#define HAVE_STRTOL 1"
   echo "#define HAVE_STRTOLL 1"
   echo "#define HAVE_STRTOK_R 1"
