@@ -307,7 +307,7 @@ lib/evidence/ipc/ipc_ecore.so: src/ipc/ipc_ecore.c config.h
 PLUGINS += lib/evidence/ipc/ipc_ecore.so
 
 evsh: src/evsh.c src/evclient.c src/evclient.h config.h
-	$(CC) $(BASE_CFLAGS) $(ECOREIPC_CFLAGS) -o $@ src/evsh.c src/evclient.c $(ECOREIPC_LIBS) $(READLINE_LIBS)
+	$(CC) $(BASE_CFLAGS) $(ECOREIPC_CFLAGS) -o $@ src/evsh.c src/evclient.c $(ECORE_LIBS) $(ECOREIPC_LIBS) $(READLINE_LIBS)
 BINS += evsh
 endif
 
