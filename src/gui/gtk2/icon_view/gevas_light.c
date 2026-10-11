@@ -385,6 +385,9 @@ static void gevas_unrealize(GtkWidget *widget) {
   ev=GTK_GEVAS(widget);
 
   idle_enter_remove(&ev->current_idle);
+  if(ev->flush_idle) {   /* GTK idle, not ecore: remove via g_source_remove */
+    g_source_remove((guint)(uintptr_t)ev->flush_idle);
+    ev->flush_idle=NULL; }
 
   if(ev->gevasobjlist) {
     g_slist_free(ev->gevasobjlist);
