@@ -38,6 +38,7 @@ CAIRO=no; if have_pc cairo; then CAIRO=yes; CAIRO_CFLAGS=$(pc_cflags cairo); CAI
 EFL=no;   if have_pc evas ecore ecore-evas edje; then EFL=yes; EVAS_CFLAGS=$(pc_cflags evas ecore ecore-evas edje); EVAS_LIBS=$(pc_libs evas ecore ecore-evas edje); fi
 IMLIB2=no; if have_pc imlib2; then IMLIB2=yes; IMLIB2_CFLAGS=$(pc_cflags imlib2); IMLIB2_LIBS=$(pc_libs imlib2); fi
 ECOREIPC=no; if have_pc ecore-ipc; then ECOREIPC=yes; ECOREIPC_CFLAGS=$(pc_cflags ecore-ipc); ECOREIPC_LIBS=$(pc_libs ecore-ipc); fi
+ECORE=no;   if have_pc ecore; then ECORE=yes; ECORE_LIBS=$(pc_libs ecore); fi
 PNG=no;   if have_pc libpng; then PNG=yes; PNG_CFLAGS=$(pc_cflags libpng); PNG_LIBS=$(pc_libs libpng); fi
 JPEG=no;  if have_pc libjpeg; then JPEG=yes; JPEG_CFLAGS=$(pc_cflags libjpeg); JPEG_LIBS=$(pc_libs libjpeg); fi
 PCRE=no;  if have_pc libpcre; then PCRE=yes; PCRE_CFLAGS=$(pc_cflags libpcre); PCRE_LIBS=$(pc_libs libpcre); fi
@@ -176,6 +177,7 @@ esac
   echo "ECOREIPC ?= $ECOREIPC"
   echo "ECOREIPC_CFLAGS ?= $ECOREIPC_CFLAGS"
   echo "ECOREIPC_LIBS ?= $ECOREIPC_LIBS"
+  echo "ECORE_LIBS ?= $ECORE_LIBS"
   echo "PNG ?= $PNG"
   echo "PNG_CFLAGS ?= $PNG_CFLAGS"
   echo "PNG_LIBS ?= $PNG_LIBS"
