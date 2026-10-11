@@ -882,11 +882,11 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   {
 #if defined(HAVE_EVAS2)
 
-#  ifdef HAVE_EVAS2
+#ifdef HAVE_EVAS2
     if(ns->fullscreen)
       ((noir_theme *)ns->theme)->sb_new=NULL;
     E(2,"theme \"%s\" (%s) initialized...\n",((noir_theme *)ns->theme)->name,((noir_theme *)ns->theme)->path);
-#  endif
+#endif
 
     /* icon-view */
     icon_view_init(ns);
@@ -1283,9 +1283,9 @@ int gui_start(noir_sess *ns) {
       E(0,"FAIL ECORE\n"); }
 
 #else
-#  ifdef HAVE_GTHREAD
+#ifdef HAVE_GTHREAD
   gdk_threads_enter();
-#  endif
+#endif
 
   setenv("WIDGETSET","GTK2",1);
   prop_bag_prop_const(props_global,"widgetset","GTK2");
@@ -1293,9 +1293,9 @@ int gui_start(noir_sess *ns) {
 
   gtk_main();
 
-#  ifdef HAVE_GTHREAD
+#ifdef HAVE_GTHREAD
   gdk_threads_leave();
-#  endif
+#endif
 #endif
 
 
@@ -1313,12 +1313,12 @@ int gui_start(noir_sess *ns) {
   /* exit toolkit */
 
 #ifdef HAVE_ECORE
-#  ifdef HAVE_EDJE
+#ifdef HAVE_EDJE
   { char *edje_state=prop_get_string(prop_bag_prop_get(props_global,"feature-edje"));
     if(edje_state&&!strcmp(edje_state,"engaged")) {
       edje_shutdown();
       prop_bag_prop_set(props_global,"feature-edje","disengaged"); }}
-#  endif
+#endif
 #if !GTK_CHECK_VERSION(3,0,0)
   ecore_event_handler_del(ecore_exit_event_handle);
   ecore_main_fd_handler_del(ecore_gtk_event_handle);

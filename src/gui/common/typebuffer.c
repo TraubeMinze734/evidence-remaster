@@ -85,10 +85,10 @@ struct _typebuffer {
   tb_flags    tb_flags;
   history    *tb_history;
   hist_entry *tb_histlast;
-#  ifdef HAVE_PCRE
+#ifdef HAVE_PCRE
   pcre       *tb_re;        /**< typebuffer: regex */
   pcre_extra *tb_pe;        /**< typebuffer: regex */
-#  endif
+#endif
 };
 
 

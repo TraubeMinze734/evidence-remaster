@@ -45,6 +45,7 @@
 #  include "gui/efl/icon_view/evas_bind.h"
 #  include "gevas_light.h"
 #  include "gevas_bind.h"
+#endif
 
 /* ### FIXME */
 #define DIR_PARENT ".."
@@ -90,6 +91,9 @@ int icon_view_set_selection(void *data) {
   E(0,"icon-view has no icon-list!?\n");
   return NOIR_FAIL;
 
+#else
+  return NOIR_IGNORED;
+#endif
 }
 
 
@@ -117,7 +121,7 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
 #if defined(HAVE_EVAS2)
   noir_sess *ns=(noir_sess *)data;
   if(ns) {
-#  ifdef HAVE_EVAS2
+#ifdef HAVE_EVAS2
     { icon_list *il=ICON_LIST_GET_FROM_WIDGET(widget);
       if(il&&il->canvas) {
         gevas_bg_update(il,il->vis_w,il->vis_h);
@@ -134,7 +138,7 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
             E(1,"%dx%d\n",il->vis_w,il->vis_h);
             E(1,"delayed background creation %s\n",il->bg?"succeeded.":"failed!?"); }
           evas_render(gevas_get_evas((GtkgEvas *)il->canvas)); }}}
-#  endif
+#endif
   }
 #endif
   return FALSE; }
@@ -156,17 +160,23 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
 static char *icon_path_at(noir_sess *ns,int x,int y) {
   noir_iconview *iv;
   int            no;
-#  ifdef HAVE_EVAS2
+#ifdef HAVE_EVAS2
   icon_list *il;
-#  endif
+#endif
 
   if(!ns||!(iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW)))
     return NULL;
 
+  il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
+  no=il?icon_list_get_index_at(il,x,y):-1;
 
   if(no<0)                                          /* dropped on background */
     return ns->cwd;
   else {                                                  /* dropped on icon */
+#if defined(HAVE_EVAS2)
+    icon *i=(il>=0)?icon_list_get_icon_by_index(il,no):NULL;
+    return ICON_GET_FILENAME(i);
+#endif
   }}
 
 
@@ -209,9 +219,22 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
   if(!selection||(evis_seldata_length(selection)<1)) {
     E(0,"no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
   else if(evis_seldata_format(selection)==8) {
+    icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
+    int        no;
+    void      *rp;
+
+    if((no=evas_ext_evt(il,x,y,1,EV_DROPPED,EV_MOD_NONE,ns,NULL,&rp))!=NOIR_NOTFOUND) {
+      file_info  *fi=(file_info *)rp;
+      const char *tag=file_info_get_tag(fi);
+      E(4,"dropped on extension: %d for \"%s\".\n",no,tag?tag:"<NULL>");
+      if((no==NOIR_SUCC)&&tag)
+        file_drop(ns,evis_drag_action(dc),info,evis_seldata_data(selection),tag);
+      return; }
+    else
+      no=il?icon_list_get_index_at(il,x,y):-1;
 
     if(info==DRAGDROP_TARGET_XDS) {
-#  ifdef WITH_XDS
+#ifdef WITH_XDS
       char *r=evis_seldata_data(selection);
       switch(*r) {
         case 'S':
@@ -227,7 +250,7 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
         default:
           E(0,"XDS: invalid op-code '%c'!?\n",*r);
           break; }
-#  endif
+#endif
       return; }
 
     if(!(a=d=malloc(evis_seldata_length(selection)+1)))
@@ -241,6 +264,10 @@ E(0,"%s |%s|\n",target[info].target,a);
     if(no<0)                                        /* dropped on background */
       file_drop(ns,evis_drag_action(dc),info,a,ns->cwd);
     else {                                                /* dropped on icon */
+#if defined(HAVE_EVAS2)
+      icon *i=(il>=0)?icon_list_get_icon_by_index(il,no):NULL;
+      char *dt=ICON_GET_FILENAME(i);
+#endif
 
       if(dt&&*dt)
         file_drop(ns,evis_drag_action(dc),info,a,dt);
@@ -286,6 +313,14 @@ static void icon_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelection
 
     ac=action_context_new(noir_sess_get_serial(ns),noir_sess_get_cwd(ns));
 
+#if defined(HAVE_EVAS2)
+    icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
+    icon      *i=il->icons;
+
+    while(i) {
+      if(i->state&IE_SEL) {
+        file=ICON_GET_FILENAME(i);
+#endif
 
       action_file_new(ac,file);
 
@@ -297,15 +332,15 @@ static void icon_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelection
         E(0,"peer requests colour.  not quite sure what to do about that (yet), come up with something, or stop offering colours and only accept them!\n"); /* ### FIXME */
       else
         E(0,"peer requests data we don't handle but did offer!?  (%d)\n",info);
-#  ifdef HAVE_EVAS2
+#ifdef HAVE_EVAS2
       }
       i=i->next; }
 
  /* gdk_drag_context_unref(il->dc); */
     il->dc=NULL;
-#  else
+#else
     }
-#  endif
+#endif
 
     if(reply&&action_context_get_1st(ac)) {
       gtk_selection_data_set(selectionData,evis_seldata_target(selectionData),8,reply,strlen(reply));
@@ -344,6 +379,11 @@ void icon_view_connect(noir_sess *ns) {
                      "drag-end",G_CALLBACK(file_drop_free),(gpointer)ns);
 
   gtk_drag_dest_set(GTK_WIDGET(iv->icon_view),GTK_DEST_DEFAULT_ALL,target,targets_xds,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
+#if defined(HAVE_EVAS2)
+  { /* icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
+    sb_update(il,TRUE); */
+  }
+#endif
  }
 
 
@@ -461,6 +501,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
             free(iv->cwd_shown);
           iv->cwd_shown=strdup(file_info_get_tag(fi)); }
 
+#endif
       }
 
       else if(!(fi=file_info_fetch(NULL,file_info_get_tag(fi))))
@@ -578,6 +619,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
         /* update icon for file */
         i=icon_list_icon_insert_sorted(il,ifile,file_info_get_tag(fi),name,file_info_get_thumbfile(fi),file_info_get_intrinsic(fi),fi,FALSE);
 
+#endif
         goto done; }
 
 
@@ -587,6 +629,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
            (!pa||(file_info_get_infobits(pa)&FF_MIME_))) {
 /* E(0,"%s, %x (%s, $%x)\n",fi->tag,fi->have,pa?pa->tag:"???",pa?pa->have:0); */
           icon_view_rerender(iv,il,"MODEL_UPD -- STAT/MIME"); }}
+#endif
 
       if(changed&FF_THUMB) {
 #ifdef HAVE_EVAS2
@@ -617,6 +660,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
           /* event was unrelated to this view!? */
           else
             E(0,"FF_THUMB ignored for \"%s\"!?\n",file_info_get_tag(fi)); }
+#endif
       }
       break;
 
@@ -629,6 +673,7 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
         icon_list_icon_remove(il,i,TRUE);
         icon_view_rerender(iv,il,"MODEL_DEL"); }
       break;
+#endif
 
     default:
       break; }
@@ -662,15 +707,15 @@ static int icon_view_evt(file_info *fi,model_event type,file_flags changed,void 
   client_funs   *cf;
   int            ret;
 
-#  if 0
-#    ifdef HAVE_BTRACE
+#if 0
+#ifdef HAVE_BTRACE
   fprintf(stderr,"\n");
   fflush(stderr);
   btrace_print();
-#    endif
+#endif
   { char *mon[]={ "???", "UPD", "DEL", "CWD", "MSC" };
     E(0,"%s/$%06x   \"%s\"\n",mon[type],changed,file_info_get_tag(fi)); }
-#  endif
+#endif
 
   /* extra mutex to detect nested calls */
   if((ret=pthread_mutex_trylock(&iv->viewlock))) {
@@ -847,7 +892,59 @@ static int icon_view_str_listener(noir_prop_bag *b,noir_prop *e,int tag,void *da
  */
 int icon_view_init(noir_sess *ns) {
   noir_iconview *iv;
+#if defined(HAVE_EVAS2)
+  GtkWidget  *wtoy;
+  icon_list  *il;
+
+  if(!(iv=(noir_iconview *)malloc(sizeof(noir_iconview))))
+    return NOIR_OOM;
+  memset(iv,0,sizeof(noir_iconview));
+
+  if(!ns||!(wtoy=gevas_icon_list_new(ns,MODULE, 24,16, 0))) {
+    free(iv);
+    return NOIR_FAIL; }
+
+  il=ICON_LIST_GET_FROM_WIDGET(wtoy);
+
+/*  ((noir_theme *)ns->theme)->bg_new(((noir_theme *)ns->theme),il,((noir_theme *)ns->theme)->iconview_bg); */
+
+  iv->icon_view=il->canvas;
+  iv->icon_scroll=wtoy;
+  iv->session=ns;
+  iv->serial=noir_sess_get_serial(ns);
+
+  gtk_widget_set_name(iv->icon_scroll,"icon_scroll");
+  gtk_widget_set_name(iv->icon_view,  "icon_view");
+
+#if GTK_CHECK_VERSION(3,0,0)
+  g_signal_connect(G_OBJECT(iv->icon_scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#else
+  g_signal_connect(G_OBJECT(iv->icon_scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
 #endif
+
+  iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
+
+  icon_view_connect(ns);
+
+  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-x",  "12",-64,64,1);
+  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-y",   "8",-64,64,1);
+  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-w",  "24",-32,32,1);
+  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-h",  "16",-32,32,1);
+  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-spatial", "0",  0, 1,1);
+
+#  define LISTENER "icon_view{evas}"
+  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE,           icon_view_str_listener,IV_BG,  ns);
+  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-x",  icon_view_num_listener,IV_PADX,   il);
+  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-y",  icon_view_num_listener,IV_PADY,   il);
+  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-w",  icon_view_num_listener,IV_PADW,   il);
+  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-h",  icon_view_num_listener,IV_PADH,   il);
+  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-spatial",icon_view_num_listener,IV_SPATIAL,il);
+
+  il->extensions=(void *)((noir_theme *)ns->theme)->areas;
+
+  return NOIR_SUCC;
+#else
+  return NOIR_FAIL;
 #endif
 }
 
