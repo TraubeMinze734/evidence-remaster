@@ -56,6 +56,26 @@ getestet.
   Pfaden im Modell, Double-Unref bei DEL behoben). libextractor liefert Metadaten im Tooltip
   (GStreamer-Plugin davon ausgenommen, Reentrancy-Probleme). libcurl und
   libmagic aktiv. Animierte Icon-Effekte, Rubberband-Selektion, Drag&Drop.
+- Action-Plugins komplett: neben delete/rename/mkdir/info_dial/newwindow/
+  backdrop/tile jetzt auch tag2name, name2tag, sortkey2name, playlist,
+  searchable, searchable_r. Die vorher toten Eintraege aus evidence.menu
+  (Rename from Ogg/ID3/APE-tag, tag from file-name, Rename from sortkey,
+  Make playlist, searchable) funktionieren wieder. tag2name linkt mit
+  GTK2-CFLAGS (inkludiert gtk/gtk.h), die restlichen brauchen nur Core.
+  ACHTUNG: tag2name/name2tag/sortkey2name setzen sortkey-/Tag-Metadaten
+  voraus — die spezialisierten Metadata-Provider (mp3/vorbis/ape/exif/ttf/
+  image) sind noch nicht portiert, libextractor deckt das weitgehend ab.
+- searchable/searchable_r: libdoodle gibt es nicht mehr in Arch/AUR.
+  search.c hat deshalb im Nicht-Doodle-Build einen search_scan_dir-
+  Stub (NOIR_NOTSUPP), damit die Plugins laden und eine klare Meldung
+  kommen statt "undefined symbol". Wird libdoodle je wieder verfuegbar,
+  HAVE_DOODLE in configure.sh erkennen und der Stub verschwindet.
+- playlist.so: menu_file_context() setzt bei Einzelklick NUR ac->single,
+  die Selection-Liste bleibt leer. playlist.c iteriert aber nur ueber
+  die Selection. Fix in playlist.c: bei leerer Selection das Single-File
+  per action_file_new(ac,tag) in die Selection aufnehmen. Das generische
+  Audio-Icon sagt nichts ueber den MIME aus (kommt aus mime.icons
+  Wildcards); MIME selbst bestimmen mime.types/libmagic.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
