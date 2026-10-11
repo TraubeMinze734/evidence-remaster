@@ -2818,7 +2818,14 @@ int file_job_update(noir_job *job,noir_job_status s,int e,const char *src,const 
   if((s==NOIR_JOB_UNCHANGED)&&(e==NOIR_NOERRORCODE)&&!src&&!dst)
     return NOIR_IGNORED;
 
-  file_job_wait4gui(job);
+  /* PROGRESS/START/ADD/DEL updates don't need the GUI handshake: nothing
+     waits for a reply, the pulse just reads the fields under datalock.
+     the 2005 code slept here until the 250ms GUI pulse consumed EVERY
+     update -- with one per file/dir that throttled copy jobs to a few
+     files per second.  EDIT/QUESTION/DONE keep the handshake (dialogs
+     need an answer, DONE dests the job). */
+  if((s==NOIR_JOB_EDIT)||(s==NOIR_JOB_QUESTION)||(s==NOIR_JOB_DONE))
+    file_job_wait4gui(job);
 
   E(4,"locked job (%ld)...\n",job->id);
 
