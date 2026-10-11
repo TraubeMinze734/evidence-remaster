@@ -586,7 +586,15 @@ void qsrt(void *a[],void *data,int lo,int hi,int (*compare)(const void *,const v
  * @return 0 for no, !0 for yes
  */
 int events_pending(void) {
-#if defined(HAVE_ECORE)
+#if defined(HAVE_GTK3)
+  /* pure query, no side effects -- must be callable from any thread.
+     The old HAVE_ECORE branch did ecore_main_loop_iterate() as a side
+     effect (iterate the loop, return 0): called from backend scanner
+     threads this corrupts modern EFL's per-thread EO domains
+     ("Eo ID is not a valid object" spam) and eventually SIGSEGVs
+     ecore_main_loop_begin() in the GUI thread. */
+  return g_main_context_pending(NULL);
+#elif defined(HAVE_ECORE)
   return ecore_main_loop_iterate(), 0;
 #elif defined(HAVE_GTK2)
   return gdk_events_pending();
