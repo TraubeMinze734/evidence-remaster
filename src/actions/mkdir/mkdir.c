@@ -82,13 +82,13 @@ int efun(long serial,char *filename,noir_md *md,action_context *ac) {
   gtk_widget_set_name(win,"mkdir_window");
   gtk_widget_set_name(ent,"mkdir_entry");
   gtk_window_set_title(GTK_WINDOW(win),"New folder...");
-  GTK_WIDGET_SET_FLAGS(ent,GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default(ent,TRUE);
   gtk_entry_set_activates_default(GTK_ENTRY(ent),TRUE);
   gtk_container_add(GTK_CONTAINER(win),ent);
   gtk_window_set_default(GTK_WINDOW(win),ent);
   g_object_set_data(G_OBJECT(ent),"data",(gpointer)fn);
-  g_signal_connect(GTK_OBJECT(ent),"activate",G_CALLBACK(mkdir_do),(gpointer)win);
-  g_signal_connect(GTK_OBJECT(win),"destroy",G_CALLBACK(mkdir_cxl),(gpointer)fn);
+  g_signal_connect(G_OBJECT(ent),"activate",G_CALLBACK(mkdir_do),(gpointer)win);
+  g_signal_connect(G_OBJECT(win),"destroy",G_CALLBACK(mkdir_cxl),(gpointer)fn);
   gtk_widget_show_all(GTK_WIDGET(win));
 
   return NOIR_SUCC; }

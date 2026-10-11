@@ -128,7 +128,7 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
         gevas_bg_update(il,il->vis_w,il->vis_h);
         evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
         evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
-        if(GTK_WIDGET_MAPPED(widget)) {
+        if(gtk_widget_get_mapped(widget)) {
           if(!il->bg) {
             noir_theme *theme=il->theme;
 
@@ -384,15 +384,15 @@ void icon_view_connect(noir_sess *ns) {
     E(0,"failed! %p, %p\n",ns,iv);
     return; }
 
-  gtk_signal_connect(GTK_OBJECT(iv->icon_view),
+  g_signal_connect(G_OBJECT(iv->icon_view),
                      "drag_data_get",G_CALLBACK(icon_drag_data_get),(gpointer)ns);
-  gtk_signal_connect(GTK_OBJECT(iv->icon_view),
+  g_signal_connect(G_OBJECT(iv->icon_view),
                      "drag_data_received",G_CALLBACK(icon_drag_data_received),(gpointer)ns);
-  gtk_signal_connect(GTK_OBJECT(iv->icon_view),
+  g_signal_connect(G_OBJECT(iv->icon_view),
                      "drag_drop",G_CALLBACK(icon_drag_drop),(gpointer)ns);
-  gtk_signal_connect(GTK_OBJECT(iv->icon_view),
+  g_signal_connect(G_OBJECT(iv->icon_view),
                      "drag_data_delete",G_CALLBACK(file_drop_delete_from_iconlist),(gpointer)ns);
-  gtk_signal_connect(GTK_OBJECT(iv->icon_view),
+  g_signal_connect(G_OBJECT(iv->icon_view),
                      "drag-end",G_CALLBACK(file_drop_free),(gpointer)ns);
 
   gtk_drag_dest_set(GTK_WIDGET(iv->icon_view),GTK_DEST_DEFAULT_ALL,target,targets_xds,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
@@ -635,8 +635,8 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
         iv->icon_view=gnome_icon_list_new(ICON_SIZE_IN_LIST,iv->icon_adj,0);
         iv->session->icon_view_last_tooltip=-1;
 
-        gtk_signal_connect(GTK_OBJECT(iv->icon_view),"select-icon",G_CALLBACK(icon_view_selected),(gpointer)iv->session);
-        gtk_signal_connect(GTK_OBJECT(iv->icon_view),"motion-notify-event",G_CALLBACK(icon_view_make_tooltip),(gpointer)iv->session);
+        g_signal_connect(G_OBJECT(iv->icon_view),"select-icon",G_CALLBACK(icon_view_selected),(gpointer)iv->session);
+        g_signal_connect(G_OBJECT(iv->icon_view),"motion-notify-event",G_CALLBACK(icon_view_make_tooltip),(gpointer)iv->session);
 
         gnome_icon_list_set_selection_mode(GNOME_ICON_LIST(iv->icon_view),GTK_SELECTION_MULTIPLE);
         gnome_icon_list_set_separators(GNOME_ICON_LIST(iv->icon_view),"- \'\"/ \t\n\r_.");
@@ -1006,7 +1006,7 @@ static int icon_view_str_listener(noir_prop_bag *b,noir_prop *e,int tag,void *da
           return NOIR_NOTFOUND; }
       val=x; }
 
-    if((GTK_WIDGET_MAPPED(iv->icon_view))&&theme->bg_new&&!theme->bg_new(theme,il,val)) {
+    if((gtk_widget_get_mapped(iv->icon_view))&&theme->bg_new&&!theme->bg_new(theme,il,val)) {
       E(0,"failed to update background...\n");
       il->bg=o; }
     else {
@@ -1059,7 +1059,7 @@ int icon_view_init(noir_sess *ns) {
   iv->session=ns;
   iv->serial=noir_sess_get_serial(ns);
 
-  gtk_signal_connect(GTK_OBJECT(scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+  g_signal_connect(G_OBJECT(scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
 
   iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
 
@@ -1091,7 +1091,7 @@ int icon_view_init(noir_sess *ns) {
   gtk_widget_set_name(iv->icon_scroll,"icon_scroll");
   gtk_widget_set_name(iv->icon_view,  "icon_view");
 
-  gtk_signal_connect(GTK_OBJECT(iv->icon_scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+  g_signal_connect(G_OBJECT(iv->icon_scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
 
   iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
 

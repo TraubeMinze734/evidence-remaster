@@ -365,7 +365,7 @@ static gboolean tree_keyed(GtkWidget *widget,GdkEventKey *ev,gpointer data) {
           break;
         case GDK_i: {
           gint x,y;
-          gdk_window_get_pointer(widget->window,&x,&y,NULL);
+          gdk_window_get_pointer(gtk_widget_get_window(widget),&x,&y,NULL);
           tooltip_show_for(ns,file,x,y); }
           ret=TRUE;
           break;
@@ -573,7 +573,12 @@ int tree_view_expand(GtkTreeView *treeview,GtkTreeIter *arg_iter,GtkTreePath *ar
   if(f1) {
     file_info *fi=file_info_fetch(NULL,f1);
     if(fi) {
-      if((fi->have&FF_FIRST)&&!fi->child)
+      /* only report "empty" once the scan actually finished (FF_NAME_ is set
+         when the scanner completes a directory). FF_FIRST alone is set as soon
+         as the scan *starts* -- flagging a still-loading or unreadable dir as
+         empty here was a 2005 bug: expanding e.g. /etc showed the alert even
+         though the content arrives right after. */
+      if((fi->have&FF_NAME_)&&!fi->child)
         form_alert(ns,"Sorry, directory \"%s\" is empty.\n"
                       "There is nothing to see here.",fi->name);
       else {
@@ -722,7 +727,7 @@ static fid_result tree_view_find_in_dir(file_info *fi,noir_treeview *tv,int crea
         gtk_tree_store_append(GTK_TREE_STORE(tv->store),tv->ci,tv->pi);
 	gtk_tree_store_set(GTK_TREE_STORE(tv->store),tv->ci,FILE_NAME,fi->name,FILE_FILE,fi->tag,-1);
 
-        if(GTK_WIDGET_REALIZED(tv->tree_view)&&tv->realized&&
+        if(gtk_widget_get_realized(tv->tree_view)&&tv->realized&&
            tv->ci&&tv->ci->user_data) {
           GtkTreePath *tp=gtk_tree_model_get_path(GTK_TREE_MODEL(tv->store),tv->ci);
 
@@ -1111,15 +1116,15 @@ int tree_view_init(noir_sess *ns) {
    selection=gtk_tree_view_get_selection(GTK_TREE_VIEW(tree));
    gtk_tree_selection_set_mode(selection,GTK_SELECTION_MULTIPLE);
 
-   gtk_signal_connect(GTK_OBJECT(tree),"button_press_event",    G_CALLBACK(tree_clicked),(gpointer)ns);
-   gtk_signal_connect(GTK_OBJECT(tree),"button_release_event",  G_CALLBACK(tree_clicked),(gpointer)ns);
-   gtk_signal_connect(GTK_OBJECT(tree),"key-press-event",       G_CALLBACK(tree_keyed),(gpointer)ns);
+   g_signal_connect(G_OBJECT(tree),"button_press_event",    G_CALLBACK(tree_clicked),(gpointer)ns);
+   g_signal_connect(G_OBJECT(tree),"button_release_event",  G_CALLBACK(tree_clicked),(gpointer)ns);
+   g_signal_connect(G_OBJECT(tree),"key-press-event",       G_CALLBACK(tree_keyed),(gpointer)ns);
 
    gtk_tree_view_enable_model_drag_source(GTK_TREE_VIEW(tree),1,target,targets,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
    gtk_tree_view_enable_model_drag_dest(GTK_TREE_VIEW(tree),target,targets,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
 
-   gtk_signal_connect(GTK_OBJECT(tree),"drag_data_get",         G_CALLBACK(tree_drag_data_get),(gpointer)ns);
-   gtk_signal_connect(GTK_OBJECT(tree),"drag_data_received",    G_CALLBACK(tree_drag_data_received),(gpointer)ns);
+   g_signal_connect(G_OBJECT(tree),"drag_data_get",         G_CALLBACK(tree_drag_data_get),(gpointer)ns);
+   g_signal_connect(G_OBJECT(tree),"drag_data_received",    G_CALLBACK(tree_drag_data_received),(gpointer)ns);
 
    { GtkTreeSelection *sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(tree));
      g_signal_connect(G_OBJECT(sel),"changed",               G_CALLBACK(tree_selection_changed),(gpointer)ns); }

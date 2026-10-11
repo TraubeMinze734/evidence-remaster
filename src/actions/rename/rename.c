@@ -159,7 +159,7 @@ int efun(long serial,char *filename,noir_md *md,action_context *ac) {
 
   gtk_window_set_default_size(GTK_WINDOW(win),400,10);
 
-  GTK_WIDGET_SET_FLAGS(ent,GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default(ent,TRUE);
   gtk_entry_set_activates_default(GTK_ENTRY(ent),TRUE);
   gtk_entry_set_text(GTK_ENTRY(ent),utf8);
   g_free(utf8);
@@ -168,8 +168,8 @@ int efun(long serial,char *filename,noir_md *md,action_context *ac) {
 
   gtk_window_set_default(GTK_WINDOW(win),ent);
 
-  g_signal_connect(GTK_OBJECT(ent),"activate",G_CALLBACK(rename_do),(gpointer)rc);
-  g_signal_connect(GTK_OBJECT(win),"destroy",G_CALLBACK(rename_cxl),(gpointer)rc);
+  g_signal_connect(G_OBJECT(ent),"activate",G_CALLBACK(rename_do),(gpointer)rc);
+  g_signal_connect(G_OBJECT(win),"destroy",G_CALLBACK(rename_cxl),(gpointer)rc);
 
   gtk_widget_show_all(GTK_WIDGET(win));
 
