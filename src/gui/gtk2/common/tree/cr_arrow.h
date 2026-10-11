@@ -1,5 +1,5 @@
 #include <glib-object.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 #define NOIR_TYPE_CELL_RENDERER_ARROW	         (noir_cell_renderer_arrow_get_type())
 #define NOIR_CELL_RENDERER_ARROW(obj)	         ((G_TYPE_CHECK_INSTANCE_CAST((obj),NOIR_TYPE_CELL_RENDERER_ARROW,NoirCellRendererArrow)))

@@ -141,6 +141,12 @@ typedef struct {
 
 static void _emotion_make_finish(emotion_make_ctx *c) {
   if(c->timer) {
+    /* If we are called from _emotion_make_timer (which returns
+       ECORE_CALLBACK_CANCEL right after us), ecore will already have
+       taken the timer off the list -- deleting it here as well gives
+       'destroying a timer which seems dead already'. Only delete when
+       the timer is genuinely still armed (finish from a non-timer
+       path). */
     ecore_timer_del(c->timer);
     c->timer=NULL; }
   if(c->em) {
@@ -212,6 +218,11 @@ static Eina_Bool _emotion_make_timer(void *data) {
       return ECORE_CALLBACK_RENEW;
     E(1,"couldn't render a frame for \"%s\"...\n",c->file); }
  done:
+  /* we are INSIDE the timer callback: ecore takes the timer off its list
+     as soon as we return CANCEL. NULL the handle so finish() will not
+     ecore_timer_del() the already-dying timer ('seems dead already'),
+     and so no other thread can stomp on it. */
+  c->timer=NULL;
   _emotion_make_finish(c);
   return ECORE_CALLBACK_CANCEL; }
 
@@ -369,6 +380,19 @@ int thumbnail_plugin_exit(thumbnail_plugin *tp) {
   (void)tp;
 #ifdef HAVE_EVAS2
   emotion_shutdown();   /* drop the reference taken in init() */
+  /* emotion_shutdown() deinits GStreamer ASYNCHRONOUSLY: its backend
+     threads keep posting ecore events (eeze/ecore_con frames in the
+     btlogs) for a short while. If we return immediately, the caller
+     continues tearing down ecore/evas under those threads -- they
+     then post into a destroyed loop ('Eo ID not valid' flood) and
+     evas_shutdown() eventually SIGSEGVs in efl_object_shutdown().
+     Pump the mainloop for a bounded grace period so the backend
+     threads can deliver their in-flight events to a LIVE loop and
+     exit; this closes the shutdown crash seen in the wild. */
+  { int i;
+    for(i=0;i<50;i++) {   /* ~0.5s max */
+      mainloop_once();
+      usleep(10000); } }
 #endif
   return NOIR_SUCC; }
 
@@ -390,12 +414,48 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
 
   if(!e->origfile||!data)
     return NOIR_NODATA;
+  /* AUDIO GATE: audio files (m4a/mp4-audio & friends) are frequently
+     detected as video/mp4 by libmagic since they share the MP4
+     container. Emotion opens them, never decodes video, and the 10s
+     open-timeout burned a CPU core per file -- with the re-visit
+     retry looping on it forever (fans at full tilt). Refuse clearly
+     audio material BEFORE the machine even starts. */
+  if(e->mime) {
+    const char *m=e->mime;
+    size_t      l=strlen(e->origfile);
+    if(!strncasecmp(m,"audio/",6))
+      return NOIR_NOTSUPP;
+    /* common audio-in-mp4-container extensions libmagic may still
+       report as video/* */
+    if((l>=4&&(!strcasecmp(e->origfile+l-4,".m4a")||
+               !strcasecmp(e->origfile+l-4,".m4b")||
+               !strcasecmp(e->origfile+l-4,".aac")||
+               !strcasecmp(e->origfile+l-4,".mp3")||
+               !strcasecmp(e->origfile+l-4,".ogg")||
+               !strcasecmp(e->origfile+l-4,".opus")||
+               !strcasecmp(e->origfile+l-4,".wma")||
+               !strcasecmp(e->origfile+l-4,".mid")||
+               !strcasecmp(e->origfile+l-5,".flac")))||
+       (l>=7&&!strcasecmp(e->origfile+l-7,".flac")))
+      return NOIR_NOTSUPP; }
 
   memset(&c,0,sizeof(c));
   c.file=e->origfile;
 
   pthread_mutex_init(&c.mtx,NULL);
   pthread_cond_init(&c.cond,NULL);
+
+  /* CANCEL-SAFETY: the make-machine runs an ecore_timer in the GUI
+     thread that dereferences THIS stack frame (c) until it signals
+     c.done.  The thumbnailer GC pthread_cancel()s stuck workers with
+     PTHREAD_CANCEL_ASYNCHRONOUS -- if that hit us mid-handshake, the
+     timer would keep running against a dead stack (futex error /
+     SIGABRT, as seen in the wild).  Deferred cancellation (the POSIX
+     default) makes us die only at well-defined cancellation points,
+     which none of the code below reaches before the handshake
+     completes; the GC's own join() then sees us exit cleanly. */
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED,NULL);
   /* _emotion_make_in_main only starts the machine; the worker waits here
      until the main-loop timer finishes (frame grabbed or timed out).  the
      mainloop stays responsive the whole time, and the timeout bounds the
@@ -418,6 +478,7 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
   IMLIB_ACQUIRE;
   pthread_mutex_destroy(&c.mtx);
   pthread_cond_destroy(&c.cond);
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
 
 
   if(!c.frame) {

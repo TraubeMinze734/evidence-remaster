@@ -261,8 +261,14 @@ int form_modeless_new(void **win,void **box) {
     gtk_window_set_decorated(GTK_WINDOW(window),TRUE);
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_MOUSE);  /* GTK_WIN_POS_CENTER_ON_PARENT */
     gtk_window_set_modal(GTK_WINDOW(window),FALSE);
+#if !GTK_CHECK_VERSION(3,0,0)
     gtk_window_set_wmclass(GTK_WINDOW(window),"progress_indicator","evidence");
+#endif
+#if GTK_CHECK_VERSION(3,0,0)
+    gtk_window_set_resizable(GTK_WINDOW(window),FALSE);
+#else
     gtk_window_set_policy(GTK_WINDOW(window),FALSE,FALSE,TRUE);
+#endif
     gtk_container_set_border_width(GTK_CONTAINER(window),8);
 /*  gdk_window_set_decorations(GTK_WIDGET(window)->window,GDK_DECOR_BORDER); */
     gtk_widget_set_name(window,"modeless_window");

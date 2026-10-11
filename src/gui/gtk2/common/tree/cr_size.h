@@ -1,5 +1,5 @@
 #include <glib-object.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #include <sys/stat.h>
 
 #include "meta.h"

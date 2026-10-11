@@ -169,7 +169,11 @@ char *dnd_get_file_from_drop(char **drop) {
  * @param tgt  the target-type we want to check for
  */
 gboolean dnd_src_speaks(GdkDragContext *dc,GdkAtom tgt) {
+#if GTK_CHECK_VERSION(3,0,0)
+  GList *tl=(GList *)gdk_drag_context_list_targets(dc);
+#else
   GList *tl=dc->targets;
+#endif
   while(tl&&((GdkAtom)tl->data!=tgt))
     tl=tl->next;
   return (tl!=NULL); }
@@ -222,7 +226,11 @@ gboolean dnd_drag_drop(GtkWidget *widget,GdkDragContext *dc,guint timestamp,char
     int    n=0;
 
     while(n<targets) {
-      tl=dc->targets;;
+#if GTK_CHECK_VERSION(3,0,0)
+      tl=(GList *)gdk_drag_context_list_targets(dc);
+#else
+      tl=dc->targets;
+#endif
       while(tl&&((GdkAtom)tl->data!=target_atoms[n]))
         tl=tl->next;
       if(!tl)
@@ -492,7 +500,11 @@ static int dropactions_menu(dt_menu *dtm) {
   dropactions_add(menu,dtm,"Copy",GDK_ACTION_COPY);
 
   gtk_widget_show_all(menu);
+#if GTK_CHECK_VERSION(3,0,0)
+  gtk_menu_popup_at_pointer(GTK_MENU(menu),NULL);
+#else
   gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,1,0);
+#endif
 
   return NOIR_SUCC; }
 

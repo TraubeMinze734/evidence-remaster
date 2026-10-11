@@ -15,6 +15,7 @@ typedef struct _noir_iconview {
   GtkAdjustment   *icon_adj;    /* scroll info for icon-view if gnome-canvas is used */
   unsigned long    next_update;
   pthread_mutex_t  viewlock;    /* view mutex */
+  char            *cwd_shown;  /* tag the pre-CWD (icon_list_rst) ran for */
 } noir_iconview;
 
 #define    ICON_LIST_GET_FROM_WIDGET(w)  ((icon_list *)(w?g_object_get_data(G_OBJECT(w),"user_data"):NULL))
@@ -27,7 +28,11 @@ gboolean  icon_view_make_tooltip(GtkWidget *,GdkEventMotion *,gpointer);
 #  endif
 #endif
 
+#if GTK_CHECK_VERSION(3,0,0)
+gboolean  icon_view_exposed(GtkWidget *,cairo_t *,gpointer);
+#else
 gboolean  icon_view_exposed(GtkWidget *,GdkEventExpose *,gpointer);
+#endif
 
 void      icon_view_connect(noir_sess *);
 

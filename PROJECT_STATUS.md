@@ -225,6 +225,139 @@ getestet.
 - Etwa 26 Typsicherheits-Warnungen behoben. 59 Deprecated-Hinweise
   (GTK1-Relikte) bewusst offen gelassen.
 
+## GTK3-Backend (Phase 1+2, PR #18/#19)
+
+Der GTK-Teil baut jetzt gegen **GTK2 (Default) oder GTK3**:
+
+    ./configure.sh                # GTK2, unverändertes 2005er-Verhalten
+    ./configure.sh --with-gtk3    # GTK3 (HAVE_GTK3 in config.h)
+
+GTK2 bleibt der getestete Default-Pfad; alle GTK3-Weichen stehen
+hinter `GTK_CHECK_VERSION(3,0,0)`-Guards bzw. `HAVE_GTK3`.
+
+### Architektur-Unterschied GTK3 (der wichtigste Punkt!)
+
+- **GTK2:** evidence läuft in der *ecore*-Mainloop; GTK wird über den
+  X11-Connection-fd in die ecore-Loop gepumpt (2005er-Trick, X11-only).
+- **GTK3:** evidence läuft in `gtk_main()` (GLib-Loop). ecore wird per
+  `ecore_main_loop_glib_integrate()` in die GLib-Loop integriert;
+  schlägt das fehl (ecore ohne glib-Support gebaut, z.B. Arch/CachyOS),
+  übernimmt ein 10ms-GLib-Timer (`ecore_glib_pump`) als Fallback-Pumpe.
+  Diagnose: `--debug 2`, dann "ecore rides the GLib mainloop" (Integration
+  OK) vs "installing manual pump" (Fallback aktiv).
+- GTK3 läuft damit auch unter **Wayland**; alle X11-Zugriffe
+  (`get_display()`, `get_root_window()`, `get_desk()`, `window_as_desk()`)
+  sind NULL-sicher -- auf Wayland liefert get_display() NULL, Pseudo-
+  Transparenz meldet "kein Desktop", statt Xlib zu crashen.
+
+### Die Dispatcher-Krankheit (util.c) -- WICHTIGE FALLE
+
+util.c hat sechs Wrapper mit `HAVE_ECORE`-Präzedenz, die unter GTK3
+ALLE falsch lagen, weil dort ecore nicht mehr die GUI-Loop ist. Alle
+sechs sind jetzt `HAVE_GTK3`-first:
+
+| Funktion | GTK3 jetzt | Symptom wenn falsch |
+|---|---|---|
+| `mainloop_quit()` | `gtk_main_quit()` | Exit haengt ewig |
+| `mainloop_once()` | `g_main_context_iteration()` | Rechtsklick-Menue friert ein |
+| `timeout_add/remove()` | GLib-Timer/`g_source_remove()` | Exit haengt; SIGSEGV beim Start (GLib-ID an ecore) |
+| `idle_enter_add/remove()` | GLib-Idle/`g_source_remove()` | dito |
+| `events_pending()` | `g_main_context_pending()` | **SIGSEGV**: Arbeiter-Threads (Scanner!) iterierten ecore -> EO-Domain-Korruption, Crash in `ecore_main_loop_begin()` |
+
+Faustregel: **jede neue Code-Stelle, die Mainloop/Timers/Idles dispatcht,
+muss HAVE_GTK3 vor HAVE_ECORE pruefen.** Und: `events_pending()` unter
+HAVE_ECORE iteriert als Side-Effect die Loop -- nur vom besitzenden
+Thread (main_thread-Guard eingebaut), moderne EFL kennt per-Thread-
+EO-Domains.
+
+### `#endif`-Falle (5 Vorfälle in dieser Session!)
+
+NIEMALS Code auf dieselbe Zeile wie eine Preprocessor-Direktive
+legen: `#endif }` -- die Klammer wird mit der Direktive verschluckt,
+die Funktion bleibt offen, der Parser frisst alles Folgende
+("ungueltige Speicherklasse fuer Funktion"). Beim Editieren mit
+Guards: Klammern immer auf EIGENE Zeile. Vor jedem Commit:
+`grep -rn "endif }" src/` + Preprocessor-faehige Klammer-Balance-
+Pruefung fuer BEIDE Pfade (GTK2/GTK3).
+
+### GTK3-Port-Einzelheiten (PR #19)
+
+- Keysyms: `gdkkeysyms-compat.h` (GTK3 nennt alles GDK_KEY_*;
+  compat-Header in common/keysyms.h eingebunden)
+- Menues: `gtk_menu_popup_at_pointer()` statt `gtk_menu_popup()`
+  (GTK3/Wayland braucht Anker, sonst haengt die modale Menue-Loop)
+- gevas-Widget: draw-vfunc (Cairo clip-extents), get_preferred_*,
+  destroy in GtkWidgetClass, realize ohne Colormap/BackPixmap
+- Cell-Renderer: GTK3-render-Signatur (cairo_t*), Padding/Alignment/
+  FixedSize nur noch ueber Getter; `GtkCellRendererText` ist OPAQUE
+  (nur "text" ist ein echtes Property! font/scale/fixed-height sind
+  GTK2-Struct-Member -- g_object_get gibt CRITICALs)
+- DnD: `GtkSelectionData`/`GdkDragContext` opaque -> Compat-Header
+  `src/gui/gtk2/common/gtk_compat.h` (evis_seldata_*(), evis_drag_action)
+- GDK_SCROLL_MASK im gevas-realize nachtragen (GTK3 liefert sonst
+  keine Mausrad-Events an das Widget)
+- GtkWidget->parent privat -> gtk_widget_get_parent()
+- GtkTooltips weg -> gtk_widget_set_tooltip_text (info_dial)
+- 'Preferences'-Menueeintrag nur wenn externes Tool 'examine'
+  existiert (get_path_file-Probe beim Menueaufbau)
+
+### Emotion-Thumbnailer: Stabilitaetssaegen dieser Session
+
+Der Video-Thumbnailer hatte vier Crash/Hanger-Klassen, ALLE
+durch Backtraces des Users aufgeklaert:
+
+1. **Timer-Selbstmord:** `_emotion_make_timer` loeschte im Timeout-Pfad
+   den Timer, in dessen Callback es lief ("destroying a timer which
+   seems dead already") -> Objektfreigabe-Race -> EO-Fehlerflut.
+   Fix: `c->timer=NULL` vor dem finish, ecore raeumt bei CANCEL selbst.
+2. **Stack-Riss:** thumbnailer_gc pthread_cancel(ASYNCHRONOUS) traf den
+   Worker im Handshake, waehrend der ecore_timer im GUI-Thread dessen
+   Stack-Frame (ctx ist lokal!) weiter nutzte -> futex-Fehler, SIGABRT.
+   Fix: Plugin laeuft mit PTHREAD_CANCEL_DISABLE (deferred).
+3. **GUI-Selbst-Deadlock:** cxl/GC jointen den deferred-cancelled Worker
+   aus dem GUI-Thread, der aber selbst die Loop fuellen muesste, damit
+   der Worker fertig wird. Fix: nach Cancel nur QUEUE_ZOMBIE setzen;
+   Join/Restart ueberlaesst thumbnailer_start() (naechster enqueue).
+4. **Audio-in-mp4-Endlosschleife:** .m4a/.m4v (nur Audio) wird von
+   libmagic als video/mp4 erkannt (gleicher Container) -> Emotion-
+   Timeout 10s -> Re-Visit-Retry -> Endlos, ein CPU-Kern bei 100%.
+   Fix: Audio-Gate im Plugin (audio/*-MIME + Audio-Extensions ->
+   NOIR_NOTSUPP, kein FAIL-Eintrag, generisches Audio-Icon).
+5. **Exit-Crash:** emotion_shutdown() deinizialisiert GStreamer
+   asynchron; Backend-Threads posteten nach evas_shutdown() in den
+   toten Loop -> SIGSEGV in efl_object_shutdown(). Fix: ~0.5s
+   Mainloop-Pump-Gnadenfrist im Plugin-Exit.
+
+BEKANNTES RESTVERHALTEN (kein Bug): Dateien mit NUR Audio in Video-
+Containern (z.B. .m4v) bekommen nach dem 10s-Timeout KEIN statisches
+Thumbnail (generisches Video-Icon + FAIL_ME); der Live-Tooltip spielt
+das Audio ab -- korrekt, denn nur der Dekoder weiss, dass kein
+Videostream existiert. Feintuning am Seek-Settle spaeter moeglich.
+
+### Icon-View: gemischte Ansicht beim View-Wechsel (gefixt)
+
+Notebook-Wechsel (Icon->Browser->Icon) mit Ordnerwechsel dazwischen
+mischte beide Ordner in eine Ansicht: der pre-CWD (icon_list_rst)
+erreicht pausierte Views nicht, und `noir_sess_focus` verschluckte
+den Nachhole-Fokus ("already in focus()"). Fix: `iv->cwd_shown`
+merkt sich den geleerten Ordner; post-CWD raeumt nach, wenn der pre
+fuer DEN Ordner nie lief. Offen/harmlos: "GLib-CRITICAL: Source ID
+was not found" (Stale-Timeout-Handle beim Page-Switch-Race).
+
+### SIGPIPE (beide Builds!)
+
+`signal(SIGPIPE,SIG_IGN)` in main(): libextractor forked trotz
+EXTRACTOR_OPTION_IN_PROCESS Helper-Kinder; stirbt eines, killte das
+SIGPIPE den Scanner-Thread (und damit evidence). GUI-Standard.
+
+### GTK2-Regressionstest (nach PR #19): BESTANDEN
+
+Beide Builds (GTK2 und GTK3) laufen stabil auf CachyOS: Start, alle
+Views, Menues, Video-Thumbnails, Live-Tooltips, Scrollen, Drag&Drop,
+sauberer Exit. Die GTK2-Abstuerze (events_pending/Scanner-Thread)
+waren uebrigens derselbe EFL-Threading-Bug wie GTK3 -- kein
+GTK2-vs-GTK3-Unterschied, sondern modernes EFL trifft 2005er-Design.
+
 ## Kritische Fallstricke, die Änderungen schnell verschlimmbessern würden
 
 1. `file_if_local()` in file.c gibt KEINE Kopie zurück, sondern einen
