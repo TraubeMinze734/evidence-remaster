@@ -169,7 +169,11 @@ char *dnd_get_file_from_drop(char **drop) {
  * @param tgt  the target-type we want to check for
  */
 gboolean dnd_src_speaks(GdkDragContext *dc,GdkAtom tgt) {
+#if GTK_CHECK_VERSION(3,0,0)
+  GList *tl=(GList *)gdk_drag_context_list_targets(dc);
+#else
   GList *tl=dc->targets;
+#endif
   while(tl&&((GdkAtom)tl->data!=tgt))
     tl=tl->next;
   return (tl!=NULL); }
@@ -222,7 +226,11 @@ gboolean dnd_drag_drop(GtkWidget *widget,GdkDragContext *dc,guint timestamp,char
     int    n=0;
 
     while(n<targets) {
-      tl=dc->targets;;
+#if GTK_CHECK_VERSION(3,0,0)
+      tl=(GList *)gdk_drag_context_list_targets(dc);
+#else
+      tl=dc->targets;
+#endif
       while(tl&&((GdkAtom)tl->data!=target_atoms[n]))
         tl=tl->next;
       if(!tl)
