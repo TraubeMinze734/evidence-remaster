@@ -121,6 +121,14 @@ getestet.
      Fixes: Stats nur noch ~alle 100ms + einmal final pro Datei;
      dir_copy/dir_move nutzen UNCHANGED-Updates (kein Handshake).
      Kopieren laeuft damit nahe an Platten-/read()-Geschwindigkeit.
+  (2. Runde, nach User-Test mit neuem Build noch immer langsam): Das war
+  noch nicht alles — file_job_update() wartete bei JEDEM Statuswechsel
+  (PROGRESS pro Datei via file_copy/dir_copy, START, ADD beim Prescan)
+  im file_job_wait4gui-Handshake auf den GUI-Pulse. Der Handshake ist
+  nur fuer EDIT/QUESTION (Antwort noetig) und DONE (Job wird zerstoert)
+  Pflicht — jetzt ueberspringen PROGRESS/START/ADD/DEL ihn komplett.
+  Ebenfalls unit_size() in util.c gefixt (dividierte MB, labelte GB,
+  gleicher Bug wie file_job_bytes): TB/GB/MB-Schwellen korrekt.
 - Progress-Fenster (PR #13): Schliessen per WM-X ist KEIN Cancel — der Job
   laeuft weiter, das Fenster wird nur weggeklickt. Der 2005-destroy-Handler
   (form_modeless_destroyed) setzte nur user1=NULL; user2..user6 (box, label,

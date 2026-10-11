@@ -514,9 +514,12 @@ char *unit_size(char *size) {
 #endif
 
   if(s>=1024) {
-    if((s>(1024*1024*1024))) {
+    if((s>(1024LL*1024*1024*1024))) {
+      unit="TB";
+      s=(unsigned long long)(s/(1024LL*1024*1024*1024)); }
+    else if((s>(1024LL*1024*1024))) {
       unit="GB";
-      s=(unsigned long long)(s/(1024*1024)); }
+      s=(unsigned long long)(s/(1024LL*1024*1024)); }
     else if((s>(1024*1024))) {
       unit="MB";
       s=(unsigned long long)(s/1024); }
