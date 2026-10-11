@@ -400,7 +400,8 @@ static int menu_create(action_context *ac,GtkWidget *menu) {
       gtk_menu_popup_at_pointer(GTK_MENU(menu),NULL);
 #else
       gtk_menu_popup(GTK_MENU(menu),NULL,NULL,NULL,NULL,0,0L);
-#endif }}
+#endif
+  }}
 
   if(mime)
     free(mime);
