@@ -420,7 +420,8 @@ static void gevas_realize(GtkWidget *widget) {
 #if !GTK_CHECK_VERSION(3,0,0)
   /* FIXME: Maybe we can do something better than single buffering? */
   gtk_widget_set_double_buffered(widget,0);
-#endif }
+#endif
+}
 
 
 
