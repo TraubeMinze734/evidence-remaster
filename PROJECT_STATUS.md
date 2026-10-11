@@ -166,6 +166,16 @@ getestet.
   den der freiwillige Rerender bereits nutzt. Thumbs erscheinen
   dadurch gebuendelt alle ~2s statt einzeln, dafuer bleibt die GUI
   fluessig. (PR #14)
+- EXIF-Metadaten-Provider (src/providers/exif/exif.c, PR #17): Der 2005er
+  Code ist ein eigenstaendiger, JHead-adaptierter EXIF-Parser (KEIN libexif
+  noetig!). Er wurde nie ins plain-Makefile uebernommen, obwohl
+  setup/evidence.providers exif.so fuer image/jpx referenziert. Jetzt
+  gebaut als lib/evidence/metadata/exif.so — Plugin-Contract wie folder.so
+  (meta_get_for_file + layoutp, meta_plugin_init optional, undef Symbole
+  sind Teilmenge der core-Exporte via -rdynamic). Getestet mit handgebautem
+  JPEG: Parser liest Model/DateTime/ExposureTime korrekt. WICHTIG beim
+  Testen: Der Parser toleriert FirstOffset 8..16 (Pentax-Workaround von
+  2002) und warnt nur — Debug-Log "Suspicious offset" ist keine Fehler.
 - unit_size() (util.c, zeigt Dateigroessen in Tooltips/Properties): Der
   2005-Code stapelte ZWEI Divisionsschemata — die Einheiten-Auswahl
   dividierte schon, der Formatter dividierte ERNEUT durch 1024. Bei

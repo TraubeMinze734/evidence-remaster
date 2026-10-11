@@ -107,6 +107,7 @@ endif
 # NOTE: 'all' must stay the first target in this file
 PLUGINS := lib/evidence/backend/posix.so lib/evidence/backend/null.so \
            lib/evidence/metadata/folder.so \
+           lib/evidence/metadata/exif.so \
            lib/evidence/actions/null.so \
            lib/evidence/action/delete.so \
            lib/evidence/action/rename.so \
@@ -140,6 +141,9 @@ lib/evidence/metadata/extractor.so: src/providers/extractor/extractor.c config.h
 PLUGINS += lib/evidence/metadata/extractor.so
 endif
 lib/evidence/metadata/folder.so: src/providers/folder/folder.c
+	@mkdir -p $(dir $@)
+	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+lib/evidence/metadata/exif.so: src/providers/exif/exif.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
 
