@@ -108,6 +108,19 @@ getestet.
      gnome-copied-files/uri-list zwingend percent-dekodieren
      (clipboard_uri_decode in clipboard.c), sonst "Datei nicht
      gefunden" bei Namen mit Spaces.
+- Copy-Jobs / Fortschrittsanzeige (PR #13):
+  1. file_job_bytes() dividierte MB, labelte aber "GB" — Total zeigte
+     GB ab 100MB. Jetzt: GB erst ab 100GB, korrekt /1024^3.
+  2. file_job_scan() hatte "job->total_bytes=ch->size" (= statt +=):
+     das Total war immer nur das LETZTE Top-Level-Kind, Copied aber
+     akkumuliert ueber alles → Balken ueber 100% ("158/138 GB").
+  3. Langsamkeit: posix_copy_data() rief file_job_stats() (Mutex +
+     GUI-Handshake) nach JEDEM 4K-Block, dir_copy()/dir_move() riefen
+     file_job_update(PROGRESS) pro Verzeichniseintrag — jedes Mal wartete
+     der Backend-Thread auf den 250ms-GUI-Pulse (file_job_wait4gui).
+     Fixes: Stats nur noch ~alle 100ms + einmal final pro Datei;
+     dir_copy/dir_move nutzen UNCHANGED-Updates (kein Handshake).
+     Kopieren laeuft damit nahe an Platten-/read()-Geschwindigkeit.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
