@@ -56,6 +56,15 @@ getestet.
   Pfaden im Modell, Double-Unref bei DEL behoben). libextractor liefert Metadaten im Tooltip
   (GStreamer-Plugin davon ausgenommen, Reentrancy-Probleme). libcurl und
   libmagic aktiv. Animierte Icon-Effekte, Rubberband-Selektion, Drag&Drop.
+- Action-Plugins komplett: neben delete/rename/mkdir/info_dial/newwindow/
+  backdrop/tile jetzt auch tag2name, name2tag, sortkey2name, playlist,
+  searchable, searchable_r. Die vorher toten Eintraege aus evidence.menu
+  (Rename from Ogg/ID3/APE-tag, tag from file-name, Rename from sortkey,
+  Make playlist, searchable) funktionieren wieder. tag2name linkt mit
+  GTK2-CFLAGS (inkludiert gtk/gtk.h), die restlichen brauchen nur Core.
+  ACHTUNG: tag2name/name2tag/sortkey2name setzen sortkey-/Tag-Metadaten
+  voraus — die spezialisierten Metadata-Provider (mp3/vorbis/ape/exif/ttf/
+  image) sind noch nicht portiert, libextractor deckt das weitgehend ab.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
