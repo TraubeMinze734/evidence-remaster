@@ -136,6 +136,14 @@ getestet.
   pthread_mutex_lock(&job->datalock)), sonst: Unlock eines nie
   genommenen Mutex + ungeschuetzte Writes gegen den GUI-Leser
   (Symptom: Progress-Fenster erscheint gar nicht mehr).
+  ZWEITE Stolperfalle (Version c86b83d): Der Handshake-Skip darf START
+  NICHT einschliessen — das Progress-Fenster wird ausschliesslich im
+  NOIR_JOB_START-Fall von file_job_progress_show() erzeugt. Ohne
+  Handshake rennt der Backend-Thread in 250ms am START vorbei, das
+  Fenster entsteht nie, alle Folgebetrifft treffen NULL-Slots
+  (Symptom: Fenster erscheint auch nach dem Lock-Fix nicht). START
+  feuert nur einmal pro Job — Handshake dort ist gratis. EDIT/
+  QUESTION/DONE/START = Handshake; PROGRESS/ADD/DEL = nur datalock.
 - Exit mit laufendem Copy-Job: evidence.c riss file_exit() (dlclose des
   Backends, Hash-Tabellen weg) und das Modell unter dem noch kopierenden
   Backend-Thread ab → SIGSEGV beim Beenden waehrend eines Jobs. Fix:

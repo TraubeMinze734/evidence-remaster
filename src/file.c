@@ -2824,7 +2824,13 @@ int file_job_update(noir_job *job,noir_job_status s,int e,const char *src,const 
      update -- with one per file/dir that throttled copy jobs to a few
      files per second.  EDIT/QUESTION/DONE keep the handshake (dialogs
      need an answer, DONE dests the job). */
-  if((s==NOIR_JOB_EDIT)||(s==NOIR_JOB_QUESTION)||(s==NOIR_JOB_DONE))
+  /* START must keep the handshake: the progress window is only created
+     when the GUI consumes the START update (file_job_progress_show,
+     NOIR_JOB_START case).  without the handshake the backend races past
+     START within the 250ms pulse interval, the window is never created,
+     and every later update hits NULL widget slots.  it fires once per
+     job, so the cost is negligible. */
+  if((s==NOIR_JOB_EDIT)||(s==NOIR_JOB_QUESTION)||(s==NOIR_JOB_DONE)||(s==NOIR_JOB_START))
     file_job_wait4gui(job);
   else if(job->async)
     pthread_mutex_lock(&job->datalock);   /* protect fields, but don't
