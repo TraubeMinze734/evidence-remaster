@@ -463,11 +463,8 @@ static gboolean win_keyed(GtkWidget *widget,GdkEventKey *ev,gpointer data) {
         typebuffer_set(ns,"\0");
         typebuffer_update(ns); }
       else if(noir_sess_get_selection(ns)) {
-        /* get primary selection, copy to clipboard, clear selections */
-        gchar *cb=gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-        if(cb) {
-          gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),cb,-1);
-          g_free(cb); }
+        /* put the files on the CLIPBOARD selection as a cuttable file-list */
+        clipboard_files_set(noir_sess_get_selection(ns),1);
         noir_sess_set_selection(ns,NULL);
         selection_update(ns,NULL); }
       else
@@ -477,10 +474,9 @@ static gboolean win_keyed(GtkWidget *widget,GdkEventKey *ev,gpointer data) {
       if(typebuffer_is_open(ns))
         clipboard_set(GDK_SELECTION_CLIPBOARD,typebuffer_get(ns));
       else if(noir_sess_get_selection(ns)) {
-        gchar *cb=gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_PRIMARY));
-        if(cb) {
-          gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),cb,-1);
-          g_free(cb); }}
+        /* put the files on the CLIPBOARD selection in a format other
+           file-managers (Dolphin, Nautilus, ...) understand */
+        clipboard_files_set(noir_sess_get_selection(ns),0); }
       else
         form_alert(ns,"No selection to copy to clipboard...");
       break;
@@ -489,8 +485,8 @@ static gboolean win_keyed(GtkWidget *widget,GdkEventKey *ev,gpointer data) {
       if((ev->state&GDK_CONTROL_MASK)) {  /* ^V  - paste */
         if(typebuffer_is_open(ns))
           clipboard_get((ev->keyval==GDK_b)?GDK_SELECTION_PRIMARY:GDK_SELECTION_CLIPBOARD,ns);
-        else
-          form_alert(ns,"Cannot paste to view (yet), only to typebuffer..."); }
+        else if(ev->keyval==GDK_v)
+          clipboard_paste(ns,GDK_SELECTION_CLIPBOARD); }
       else if(ev->keyval==GDK_b)
         notebook_go2view(ns,START_IN_BROWSER);
       else
