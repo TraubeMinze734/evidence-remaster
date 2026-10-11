@@ -128,8 +128,8 @@ getestet.
   im file_job_wait4gui-Handshake auf den GUI-Pulse. Der Handshake ist
   nur fuer EDIT/QUESTION (Antwort noetig) und DONE (Job wird zerstoert)
   Pflicht — jetzt ueberspringen PROGRESS/START/ADD/DEL ihn komplett.
-  Ebenfalls unit_size() in util.c gefixt (dividierte MB, labelte GB,
-  gleicher Bug wie file_job_bytes): TB/GB/MB-Schwellen korrekt.
+  Ebenfalls unit_size() in util.c gefixt (Details im eigenen Abschnitt
+  weiter unten): TB/GB/MB-Schwellen korrekt.
   ACHTUNG Folgefehler (Version c2ac366): file_job_wait4gui() NIMMT
   datalock (pthread_cond_wait) — das Funktions-ende von file_job_update()
   gibt ihn immer frei. Wer den Handshake-Skip einbaut, muss fuer die
@@ -266,8 +266,12 @@ freetype2, readline pruefen.
 - ipc_dbus.so: 2005er Pre-1.0-D-Bus-API; war selbst 2005 default-off.
   Bei Bedarf NEU schreiben, nicht portieren.
 - file_efsd / file_gnomevfs / file_kio: Backend-Entscheidung (s.o.).
-- Neue Provider/Thumbnailer NIE ohne zugehoerige setup/evidence.providers-
-  Eintraege aktivieren — sonst laedt der Kern sie nie.
+- Neue METADATA-Provider NIE ohne zugehoerigen setup/evidence.providers-
+  Eintrag aktivieren (MIME->Plugin-Mapping in meta_handle_file) — sonst
+  laedt der Kern sie nie. Thumbnailer sind davon NICHT betroffen: sie
+  werden per Verzeichnis-Scan (TNP_DIR, lib/evidence/thumbnailer) plus
+  ~/.evidence/thumbnailers/*.lst-Registry-Cache geladen, es gibt kein
+  setup/-Mapping fuer sie (ttf.so/id3.so laufen ohne providers-Eintrag).
 
 ### Warnungen
 - Etwa 26 Typsicherheits-Warnungen behoben. 59 Deprecated-Hinweise
@@ -376,9 +380,12 @@ durch Backtraces des Users aufgeklaert:
    toten Loop -> SIGSEGV in efl_object_shutdown(). Fix: ~0.5s
    Mainloop-Pump-Gnadenfrist im Plugin-Exit.
 
-BEKANNTES RESTVERHALTEN (kein Bug): Dateien mit NUR Audio in Video-
-Containern (z.B. .m4v) bekommen nach dem 10s-Timeout KEIN statisches
-Thumbnail (generisches Video-Icon + FAIL_ME); der Live-Tooltip spielt
+BEKANNTES RESTVERHALTEN (kein Bug, kein Widerspruch zum Audio-Gate in
+Punkt 4): Dateien, deren reiner Audio-Inhalt das Gate NICHT erkennt
+(MIME/Extension nicht als audio/* klassifiziert, z.B. manche .m4v),
+laufen erst in den 10s-Emotion-Timeout — erst DANN gibt es generisches
+Video-Icon + FAIL_ME. Das Gate selbst setzt NOCH keinen FAIL-Eintrag.
+Der Live-Tooltip spielt
 das Audio ab -- korrekt, denn nur der Dekoder weiss, dass kein
 Videostream existiert. Feintuning am Seek-Settle spaeter moeglich.
 
