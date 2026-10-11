@@ -26,7 +26,7 @@
 #ifndef INC_GTK_GEVAS_H
 #define INC_GTK_GEVAS_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #include <Evas.h>
 
 
@@ -87,13 +87,13 @@ struct _GtkgEvasClass {
   GtkWidgetClass parent_class;
 
   /** protected **/
-  void (*_register_gevasobj)( GtkgEvas* thisp, GtkObject* gobj );
+  void (*_register_gevasobj)( GtkgEvas* thisp, GtkWidget* gobj );
 
   /** public **/
-  GtkObject* (*get_object_under_mouse)( GtkgEvas* ev );
-  GtkObject* (*object_in_rect)(GtkgEvas* ev, double x, double y, double w, double h);
-  GtkObject* (*object_at_position)(GtkgEvas* ev, double x, double y);
-  GtkObject* (*object_get_named)(GtkgEvas* ev, char *name);
+  GtkWidget* (*get_object_under_mouse)( GtkgEvas* ev );
+  GtkWidget* (*object_in_rect)(GtkgEvas* ev, double x, double y, double w, double h);
+  GtkWidget* (*object_at_position)(GtkgEvas* ev, double x, double y);
+  GtkWidget* (*object_get_named)(GtkgEvas* ev, char *name);
 };
 
 

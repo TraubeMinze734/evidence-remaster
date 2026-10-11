@@ -106,7 +106,7 @@ static int set_app_icon(noir_sess *ns);
  * get X display.
  */
 Display *get_display(void) {
-  return GDK_DISPLAY(); }
+  return gdk_x11_display_get_xdisplay(gdk_display_get_default()); }
 
 
 
@@ -114,7 +114,7 @@ Display *get_display(void) {
  * get X root window.
  */
 Window get_root_window(void) {
-  return GDK_ROOT_WINDOW(); }
+  return DefaultRootWindow(gdk_x11_display_get_xdisplay(gdk_display_get_default())); }
 
 
 
