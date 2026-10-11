@@ -17,7 +17,6 @@ libevidence_gui_gtk2_la_SOURCES = gui_gtk2.c
 
 libevidence_gui_gtk2_la_CFLAGS = \
 	@GTK_CFLAGS@ \
-	@gnomecanvas_cflags@ \
 	@edje_cflags@ \
 	@ecore_cflags@
 
@@ -28,7 +27,7 @@ libevidence_gui_gtk2_la_LIBADD = \
 	tree_view/libevidence_gui_gtk2_treeview.la \
 	browser_view/libevidence_gui_gtk2_browser.la \
 	icon_view/libevidence_gui_gtk2_iconview.la \
-	@GTK_LIBS@ @gnomecanvas_libs@ \
+	@GTK_LIBS@ \
 	@edje_libs@ @ecore_libs@
 
 libevidence_gui_gtk2_la_DEPENDENCIES = \
