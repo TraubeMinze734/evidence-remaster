@@ -98,6 +98,16 @@ getestet.
      free(): invalid pointer). Ausserdem gehoert das ZIEL-Verzeichnis
      als single in den Context (Muster wie file_drop_do), sonst hat
      der Job keinen dst_path.
+  3. gtk_clipboard_set_with_data() ruft beim Uebergang des Ownership
+     den clear-Handler des VORbesitzers auf — das sind wir selbst.
+     Den Snapshot der Dateien erst NACH set_with_data() committen,
+     sonst loescht der eigene clear-Handler die frischen Daten und
+     jede zweite Strg+C-Kopie liefert ein leeres Clipboard.
+  4. Clipboard-URIs sind percent-escapet ("%20" fuer Leerzeichen).
+     file_if_local() dekodiert NICHT. Empfangene Pfade aus
+     gnome-copied-files/uri-list zwingend percent-dekodieren
+     (clipboard_uri_decode in clipboard.c), sonst "Datei nicht
+     gefunden" bei Namen mit Spaces.
 - Versteckte Dateien: `WITH_DOT_DIR` steckt sie in einen virtuellen
   `.files`-Ordner (Tag `/dir/.`). `file_info_insert` legt diesen on-demand
   an, wenn der Scanner ihn noch nicht angelegt hat.
