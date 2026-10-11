@@ -423,7 +423,11 @@ static gboolean shelf_drop(GtkWidget *widget,GdkDragContext *dc,gint x,gint y,gu
  * @param ev      the GDK expose-event
  * @param data    the session
  */
+#if GTK_CHECK_VERSION(3,0,0)
+gboolean shelf_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
+#else
 gboolean shelf_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
+#endif
   noir_sess *ns=(noir_sess *)data;
   if(ns) {
 #  ifdef HAVE_EVAS2
@@ -676,7 +680,11 @@ int shelf_init(noir_sess *ns) {
 #endif
 
 #if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect(G_OBJECT(shelf),"draw",G_CALLBACK(shelf_exposed),(gpointer)ns);
+#else
     g_signal_connect(G_OBJECT(shelf),"expose-event",G_CALLBACK(shelf_exposed),(gpointer)ns);
+#endif
 
     g_signal_connect(G_OBJECT(shelf),"drag-drop",G_CALLBACK(shelf_drop),(gpointer)ns);
     g_signal_connect(G_OBJECT(shelf),"drag_data_get",G_CALLBACK(shelf_drag_data_get),(gpointer)ns);

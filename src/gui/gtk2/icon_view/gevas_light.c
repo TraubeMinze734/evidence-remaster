@@ -376,7 +376,9 @@ static void gevas_realize(GtkWidget *widget) {
     attributes.height=allocation.height; }
   attributes.wclass=GDK_INPUT_OUTPUT;
   attributes.visual=gtk_widget_get_visual(widget);
+#if !GTK_CHECK_VERSION(3,0,0)
   attributes.colormap=gtk_widget_get_colormap(widget);
+#endif
   attributes.event_mask=gtk_widget_get_events(widget)|GDK_EXPOSURE_MASK;
   attributes.event_mask|=GDK_EXPOSURE_MASK
     |GDK_BUTTON_PRESS_MASK
@@ -386,18 +388,24 @@ static void gevas_realize(GtkWidget *widget) {
     |GDK_POINTER_MOTION_MASK|GDK_POINTER_MOTION_HINT_MASK;
 
   /*  attributes.event_mask = GDK_ALL_EVENTS_MASK;  */
+#if GTK_CHECK_VERSION(3,0,0)
+  attributes_mask=GDK_WA_X|GDK_WA_Y|GDK_WA_VISUAL;
+#else
   attributes_mask=GDK_WA_X|GDK_WA_Y|GDK_WA_VISUAL|GDK_WA_COLORMAP;
+#endif
 
   gtk_widget_set_window(widget,gdk_window_new(gtk_widget_get_parent_window(widget),
                                 &attributes,attributes_mask));
   gdk_window_set_user_data(gtk_widget_get_window(widget),widget);
   evas=ev->evas;
 
+#if !GTK_CHECK_VERSION(3,0,0)
   /* Style */
   gtk_widget_style_attach(widget);
   gtk_style_set_background(gtk_widget_get_style(widget),gtk_widget_get_window(widget),GTK_STATE_NORMAL);
 
   gdk_window_set_back_pixmap(gtk_widget_get_window(widget),NULL,FALSE);
+#endif
 
   { GtkAllocation allocation; gtk_widget_get_allocation(widget,&allocation);
     evas_output_size_set(evas,allocation.width,allocation.height);
@@ -409,8 +417,10 @@ static void gevas_realize(GtkWidget *widget) {
 
   evas_event_callback_add(evas,EVAS_CALLBACK_RENDER_FLUSH_POST,gevas_render_flush,ev);
 
+#if !GTK_CHECK_VERSION(3,0,0)
   /* FIXME: Maybe we can do something better than single buffering? */
-  gtk_widget_set_double_buffered(widget,0); }
+  gtk_widget_set_double_buffered(widget,0);
+#endif }
 
 
 
@@ -450,6 +460,14 @@ static void gevas_unrealize(GtkWidget *widget) {
 
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void gevas_get_preferred_width(GtkWidget *widget,gint *minimal,gint *natural) {
+  GtkgEvas *ev=GTK_GEVAS(widget);
+  *minimal=*natural=ev->size_request_x; }
+static void gevas_get_preferred_height(GtkWidget *widget,gint *minimal,gint *natural) {
+  GtkgEvas *ev=GTK_GEVAS(widget);
+  *minimal=*natural=ev->size_request_y; }
+#else
 static void gevas_size_request(GtkWidget *widget,GtkRequisition *requisition) {
   GtkgEvas *ev;
 
@@ -459,6 +477,7 @@ static void gevas_size_request(GtkWidget *widget,GtkRequisition *requisition) {
 
   requisition->width=ev->size_request_x;
   requisition->height=ev->size_request_y; }
+#endif
 
 
 
@@ -555,6 +574,20 @@ static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
 
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+static gboolean gevas_draw(GtkWidget *widget,cairo_t *cr) {
+  g_return_val_if_fail(widget!=NULL,FALSE);
+  g_return_val_if_fail(GTK_IS_GEVAS(widget),FALSE);
+  if(cairo_status(cr))
+    return FALSE;
+  { double x1,y1,x2,y2;
+    GdkRectangle area;
+    cairo_clip_extents(cr,&x1,&y1,&x2,&y2);
+    area.x=(int)x1; area.y=(int)y1;
+    area.width=(int)(x2-x1); area.height=(int)(y2-y1);
+    gevas_paint(GTK_GEVAS(widget),&area); }
+  return TRUE; }
+#else
 static gint gevas_expose(GtkWidget *widget,GdkEventExpose *event) {
   GtkgEvas *ev;
 
@@ -562,15 +595,13 @@ static gint gevas_expose(GtkWidget *widget,GdkEventExpose *event) {
   g_return_val_if_fail(GTK_IS_GEVAS(widget),0);
 
   ev=GTK_GEVAS(widget);
-
   if(event->window==gtk_widget_get_window(widget)) {
     gevas_paint(GTK_GEVAS(widget),&event->area); }
   else
     g_assert_not_reached();
 
   return TRUE; }
-
-
+#endif
 
 gint gevas_view_redraw(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
@@ -602,7 +633,11 @@ Evas *gevas_get_evas(GtkgEvas *gevas) {
 
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void gevas_destroy(GtkWidget *object) {
+#else
 static void gevas_destroy(GtkObject *object) {
+#endif
   GtkgEvas *ev;
 
   if((object!=NULL)&&GTK_IS_GEVAS(object)) {
@@ -618,11 +653,37 @@ static void gevas_destroy(GtkObject *object) {
       ev->pixels=NULL;
       ev->pixels_w=ev->pixels_h=0; }}
 
+#if GTK_CHECK_VERSION(3,0,0)
+  GTK_WIDGET_CLASS(parent_class)->destroy(object); }
+#else
   GTK_OBJECT_CLASS(parent_class)->destroy(object); }
+#endif
 
 
 
 
+#if GTK_CHECK_VERSION(3,0,0)
+static void gevas_class_init(GtkgEvasClass *klass) {
+  GtkWidgetClass *widget_class;
+  GObjectClass   *go;
+
+  go=(GObjectClass*)klass;
+  widget_class=(GtkWidgetClass*)klass;
+  parent_class=g_type_class_peek(GTK_TYPE_WIDGET);
+
+  widget_class->realize=gevas_realize;
+  widget_class->unrealize=gevas_unrealize;
+  widget_class->get_preferred_width=gevas_get_preferred_width;
+  widget_class->get_preferred_height=gevas_get_preferred_height;
+  widget_class->size_allocate=gevas_size_allocate;
+  widget_class->map=gevas_map;
+  widget_class->event=gevas_event; /* NULL; */
+  widget_class->draw=gevas_draw;
+  widget_class->focus_in_event=gevas_focus_in;
+  widget_class->focus_out_event=gevas_focus_out;
+
+  widget_class->destroy=gevas_destroy; }
+#else
 static void gevas_class_init(GtkgEvasClass *klass) {
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
@@ -644,6 +705,7 @@ static void gevas_class_init(GtkgEvasClass *klass) {
   widget_class->focus_out_event=gevas_focus_out;
 
   object_class->destroy=gevas_destroy; }
+#endif
 
 
 

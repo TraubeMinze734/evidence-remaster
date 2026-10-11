@@ -7,6 +7,11 @@
 #include "userconfig.h"
 
 #include <gtk/gtk.h>
+#if GTK_CHECK_VERSION(3,0,0)
+/* GtkTooltips was replaced by the widget-owned GtkTooltip API in GTK3;
+   keep a void typedef so the (unused under GTK3) plumbing compiles. */
+typedef void GtkTooltips;
+#endif
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -254,8 +259,14 @@ static inline void effigy_table_add_row(GtkWidget *table,
 
   if(tt&&meta_get_desc(m)) {
     const char *mdesc=meta_get_desc(m);
+#if GTK_CHECK_VERSION(3,0,0)
+    gtk_widget_set_tooltip_text(key,mdesc);
+    gtk_widget_set_tooltip_text(val,mdesc);
+    (void)tt; }
+#else
     gtk_tooltips_set_tip(GTK_TOOLTIPS(tt),key,mdesc,mdesc);
     gtk_tooltips_set_tip(GTK_TOOLTIPS(tt),val,mdesc,mdesc); }
+#endif
 
 
   gtk_table_attach(GTK_TABLE(table),key,0,1,cnt,cnt+1,
@@ -329,7 +340,11 @@ static void effigy_acl_table_rebuild(noir_file *nf,noir_meta *r,GtkWidget *table
   GtkWidget   *key,
               *val,
               *parent=table->parent;
+#if GTK_CHECK_VERSION(3,0,0)
+  GtkTooltips *tt=NULL;
+#else
   GtkTooltips *tt=gtk_tooltips_new();
+#endif
 
   gtk_container_remove(GTK_CONTAINER(parent),GTK_WIDGET(table));
 
@@ -775,9 +790,11 @@ static void effigy_dial_populate(noir_file *nf) {
     if(!grp||!meta_get_group(m)||strcmp(grp,meta_get_group(m))) {
       grp=(char *)meta_get_group(m);
 
+#if !GTK_CHECK_VERSION(3,0,0)
       if(tt)
         gtk_tooltips_enable(tt);
       tt=gtk_tooltips_new();
+#endif
 
       /* (inner) table */
       if(mime&&!strcmp(meta_get_val(mime),MIME_FOLDER))
@@ -857,8 +874,10 @@ static void effigy_dial_populate(noir_file *nf) {
 
   /***************************************************************************/
 
+#if !GTK_CHECK_VERSION(3,0,0)
   if(tt)
     gtk_tooltips_enable(tt);
+#endif
 
   outer_table=gtk_table_new(3,3,FALSE);
   gtk_table_set_row_spacings(GTK_TABLE(outer_table),2);

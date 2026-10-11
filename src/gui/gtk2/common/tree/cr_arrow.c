@@ -30,6 +30,21 @@ static GtkCellRendererTextClass *parent_class;
  * @param expose_area - rectangle describing what needs a redraw
  * @param flags - flags
  */
+#if GTK_CHECK_VERSION(3,0,0)
+static void cr_arrow_render(GtkCellRenderer *cell,cairo_t *cr,
+                            GtkWidget *widget,GdkRectangle *background_area,
+                            GdkRectangle *cell_area,guint flags) {
+  gint wr,wn,as=(cell_area->height-cell->ypad-cell->ypad);
+  wr=gdk_window_get_width(gtk_widget_get_window(widget));
+  wn=wr-as;
+  if(S_ISDIR(NOIR_CELL_RENDERER_ARROW(cell)->dirstat)) {
+    gtk_render_arrow(gtk_widget_get_style_context(widget),cr,GTK_ARROW_RIGHT,
+                     cell_area->x+wn,
+                     cell_area->y+cell->ypad,
+                     as);
+    cell_area->width=wn+4; }
+  GTK_CELL_RENDERER_CLASS(parent_class)->render(cell,cr,widget,background_area,cell_area,flags); }
+#else
 static void cr_arrow_render(GtkCellRenderer *cell,GdkWindow *window,
                             GtkWidget *widget,GdkRectangle *background_area,
                             GdkRectangle *cell_area,GdkRectangle *expose_area,
@@ -50,6 +65,7 @@ static void cr_arrow_render(GtkCellRenderer *cell,GdkWindow *window,
                     as);
     cell_area->width=wn+4; }
   GTK_CELL_RENDERER_CLASS(parent_class)->render(cell,window,widget,background_area,cell_area,expose_area,flags); }
+#endif
 
 
 

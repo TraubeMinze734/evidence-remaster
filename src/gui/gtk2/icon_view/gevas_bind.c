@@ -178,7 +178,12 @@ static void gevas_tooltip_by_request(noir_sess *ns,GtkWidget *widget,icon *i) {
  * @param ev the expose-event
  * @param data the icon-list shown in this window
  */
+#if GTK_CHECK_VERSION(3,0,0)
+gboolean gevas_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
+#define ev  ((void *)cr)
+#else
 gboolean gevas_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
+#endif
   icon_list *il=ICON_LIST_GET_FROM_WIDGET(widget);
 
   if(il&&ev&&widget) {
@@ -197,6 +202,9 @@ gboolean gevas_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
     gtk_widget_grab_focus(widget);
     gevas_queue_redraw((GtkgEvas *)widget); }
   return FALSE; }
+#if GTK_CHECK_VERSION(3,0,0)
+#undef ev
+#endif
 
 
 
@@ -1231,7 +1239,11 @@ GtkWidget *gevas_icon_list_new(noir_sess *ns,const char *name,int wpad,int hpad,
   g_signal_connect(G_OBJECT(gevas), "button_press_event",   G_CALLBACK(gevas_clicked),    (gpointer)ns);
   g_signal_connect(G_OBJECT(gevas), "button_release_event", G_CALLBACK(gevas_clicked),    (gpointer)ns);
   g_signal_connect(G_OBJECT(gevas), "motion-notify-event",  G_CALLBACK(gevas_motioned),   (gpointer)ns);
+#if GTK_CHECK_VERSION(3,0,0)
+  g_signal_connect(G_OBJECT(gevas), "draw",               G_CALLBACK(gevas_exposed),    (gpointer)ns);
+#else
   g_signal_connect(G_OBJECT(gevas), "expose-event",         G_CALLBACK(gevas_exposed),    (gpointer)ns);
+#endif
   g_signal_connect(G_OBJECT(gevas), "destroy",              G_CALLBACK(gevas_destroyed),  (gpointer)il);
   g_signal_connect(G_OBJECT(gevas), "key-press-event",      G_CALLBACK(gevas_keyed),      (gpointer)ns);
 

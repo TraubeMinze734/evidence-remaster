@@ -118,7 +118,11 @@ int icon_view_set_selection(void *data) {
  * @param ev      the GDK expose-event
  * @param data    the session
  */
+#if GTK_CHECK_VERSION(3,0,0)
+gboolean icon_view_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
+#else
 gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
+#endif
 #if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
   noir_sess *ns=(noir_sess *)data;
   if(ns) {
@@ -1059,7 +1063,11 @@ int icon_view_init(noir_sess *ns) {
   iv->session=ns;
   iv->serial=noir_sess_get_serial(ns);
 
+#if GTK_CHECK_VERSION(3,0,0)
+  g_signal_connect(G_OBJECT(scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#else
   g_signal_connect(G_OBJECT(scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#endif
 
   iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
 
@@ -1091,7 +1099,11 @@ int icon_view_init(noir_sess *ns) {
   gtk_widget_set_name(iv->icon_scroll,"icon_scroll");
   gtk_widget_set_name(iv->icon_view,  "icon_view");
 
+#if GTK_CHECK_VERSION(3,0,0)
+  g_signal_connect(G_OBJECT(iv->icon_scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#else
   g_signal_connect(G_OBJECT(iv->icon_scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
+#endif
 
   iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
 

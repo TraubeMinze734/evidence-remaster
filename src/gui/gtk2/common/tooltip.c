@@ -61,12 +61,23 @@ struct _noir_tooltip {
  * @return FALSE
  * @param tooltip  the tooltip
  */
+#if GTK_CHECK_VERSION(3,0,0)
+static gint tooltip_gtk2_expose(noir_tooltip *tooltip) {
+  GtkWidget *widget=tooltip->window;
+  cairo_t *cr;
+  if((cr=gdk_cairo_create(gtk_widget_get_window(widget)))) {
+    GtkStyleContext *context=gtk_widget_get_style_context(widget);
+    gtk_style_context_set_state(context,GTK_STATE_FLAG_NORMAL);
+    gtk_render_background(context,cr,0,0,-1,-1);
+    cairo_destroy(cr); }
+#else
 static gint tooltip_gtk2_expose(noir_tooltip *tooltip) {
   gtk_paint_flat_box(gtk_widget_get_style(tooltip->window),
                      gtk_widget_get_window(tooltip->window),
                      GTK_STATE_NORMAL,GTK_SHADOW_OUT,
                      NULL,GTK_WIDGET(tooltip->window),
                      "tooltip bg",0,0,-1,-1);
+#endif
   if(!gdk_pointer_grab(gtk_widget_get_window(tooltip->window),FALSE,
                        GDK_BUTTON_PRESS_MASK|GDK_BUTTON_RELEASE_MASK|GDK_LEAVE_NOTIFY_MASK,
                        NULL,NULL,GDK_CURRENT_TIME))
@@ -122,7 +133,11 @@ static gint tooltip_gtk2_create(noir_sess *ns) {
     tooltip->window=gtk_window_new(GTK_WINDOW_POPUP);
 
     gtk_widget_set_app_paintable(tooltip->window,TRUE);
+#if GTK_CHECK_VERSION(3,0,0)
+    gtk_window_set_resizable(GTK_WINDOW(tooltip->window),FALSE);
+#else
     gtk_window_set_policy(GTK_WINDOW(tooltip->window),FALSE,FALSE,TRUE);
+#endif
     gtk_widget_set_name(tooltip->window,"tooltip");
     gtk_container_set_border_width(GTK_CONTAINER(tooltip->window),4);
 
@@ -134,8 +149,13 @@ static gint tooltip_gtk2_create(noir_sess *ns) {
     gtk_container_add(GTK_CONTAINER(tooltip->window),tooltip->vbox);
     gtk_box_pack_start(GTK_BOX(tooltip->vbox),tooltip->label,TRUE,TRUE,0);
 
+#if GTK_CHECK_VERSION(3,0,0)
+    g_signal_connect_object(G_OBJECT(tooltip->window),"draw",
+                              G_CALLBACK(tooltip_gtk2_expose),tooltip,G_CONNECT_SWAPPED);
+#else
     g_signal_connect_object(G_OBJECT(tooltip->window),"expose_event",
                               G_CALLBACK(tooltip_gtk2_expose),tooltip,G_CONNECT_SWAPPED);
+#endif
 
     g_signal_connect_object(G_OBJECT(noir_sess_get_window(ns)),"leave-notify-event",
                               G_CALLBACK(tooltip_gtk2_leave),tooltip,G_CONNECT_SWAPPED);
@@ -439,7 +459,11 @@ int tooltip_show_for(noir_sess *ns,char *file,int x,int y) {
       gtk_box_pack_start(GTK_BOX(tooltip->vbox),tooltip->icon,TRUE,TRUE,0);
 
     gtk_widget_show_all(tooltip->vbox);
+#if GTK_CHECK_VERSION(3,0,0)
+    gtk_widget_get_preferred_size(tooltip->window,&requisition,NULL);
+#else
     gtk_widget_size_request(tooltip->window,&requisition);
+#endif
     w=requisition.width;
     h=requisition.height;
 

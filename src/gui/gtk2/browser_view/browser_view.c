@@ -1091,7 +1091,11 @@ static int browser_view_focus(noir_browser *bv,file_info *fi) {
        previously hidden, in which case we'll keep it hidden) */
     GtkRequisition r;
     if(ih)
+#if GTK_CHECK_VERSION(3,0,0)
+      gtk_widget_get_preferred_size(bv->icon_path,&r,NULL);
+#else
       gtk_widget_size_request(bv->icon_path,&r);
+#endif
     else
       r.height=0;
     gtk_paned_set_position(GTK_PANED(bv->browser_paned),r.height); }

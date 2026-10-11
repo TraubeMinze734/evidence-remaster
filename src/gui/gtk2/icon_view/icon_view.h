@@ -27,7 +27,11 @@ gboolean  icon_view_make_tooltip(GtkWidget *,GdkEventMotion *,gpointer);
 #  endif
 #endif
 
+#if GTK_CHECK_VERSION(3,0,0)
+gboolean  icon_view_exposed(GtkWidget *,cairo_t *,gpointer);
+#else
 gboolean  icon_view_exposed(GtkWidget *,GdkEventExpose *,gpointer);
+#endif
 
 void      icon_view_connect(noir_sess *);
 
