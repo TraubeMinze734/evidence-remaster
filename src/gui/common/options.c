@@ -220,7 +220,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 
 
   ns->without_shelf=TRUE;
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
   ns->start_in=START_IN_ICONVIEW;
   ns->without_notebook=TRUE;
   ns->thumbnails_in_iconlist=ns->thumbnails_in_shelf=TRUE;
@@ -368,7 +368,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 #endif
       break;
     case 'i':
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
       ns->start_in=START_IN_ICONVIEW;
 #else
       E(0,"icon-view not available, as evidence was compiled without it.\n");
@@ -390,7 +390,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
       break;
 
     case 'T':
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
       /* want theme-dir. if theme-dir/theme-setup was given, cut. */
       if(((noir_theme *)ns->theme)) {
         size_t l;
@@ -448,7 +448,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 
   E(1,"verbosity set to %d...\n",debug);
 
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
   if(((noir_theme *)ns->theme)&&!((noir_theme *)ns->theme)->name)
     ((noir_theme *)ns->theme)->name="default";
 

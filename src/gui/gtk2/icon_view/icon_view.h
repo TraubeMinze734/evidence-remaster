@@ -21,11 +21,6 @@ typedef struct _noir_iconview {
 #define    ICON_LIST_GET_FROM_WIDGET(w)  ((icon_list *)(w?g_object_get_data(G_OBJECT(w),"user_data"):NULL))
 
 #if 0
-#  ifdef HAVE_GNOMECANVAS
-#    include "gnome-icon-list.h"
-void      icon_view_selected(GnomeIconList *,gint,GdkEvent *,gpointer);
-gboolean  icon_view_make_tooltip(GtkWidget *,GdkEventMotion *,gpointer);
-#  endif
 #endif
 
 #if GTK_CHECK_VERSION(3,0,0)

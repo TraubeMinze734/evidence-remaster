@@ -68,9 +68,6 @@ GtkWidget *about_init(noir_sess *ns,char *about) {
     "special greetings to chimou and #e.\n\n"
 
     "may contain parts of efsd by cK.\n"
-#ifdef HAVE_GNOMECANVAS
-    "may contain parts of libGnomeUI.\n"
-#endif
 #ifdef HAVE_EVAS2
     "may contain traces of gevas2 by monkeyIQ.\n"
     "uses evas and epeg by the rasterman.\n"

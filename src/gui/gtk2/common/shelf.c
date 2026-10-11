@@ -12,7 +12,7 @@
 #include "gui/gtk2/common/gtk_compat.h"
 #include "gui/common/session_private.h"
 
-#if defined(HAVE_GNOMECANVAS)||defined(HAVE_EVAS2)
+#if defined(HAVE_EVAS2)
 #  include "gui/gtk2/icon_view/icon_view.h"
 #  include "gui/gtk2/tree_view/tree_view.h"
 #  include "gui/gtk2/common/shelf.h"
@@ -32,20 +32,6 @@
 #  include <sys/stat.h>
 #  include <stdlib.h>
 
-#  ifdef HAVE_GNOMECANVAS
-#    include "gui/common/menu.h" /* menu_root_context(), menu_file_context() */
-#    include <gtk/gtk.h>
-#    include "gui/gtk2/icon_view/gnome-icon-list.h"
-#    include "icon.h"               /* pixbuf_get_by_path_and_resize() */
-/* #    include "info.h" */              /* info_action_menu() */
-#    include "tooltip.h"            /* tooltip_show_for() */
-#  else
-#    include "gui/common/icon_list.h"
-#    include "gui/gtk2/icon_view/gevas_bind.h"
-#    include "gui/gtk2/icon_view/gevas_light.h"   /* GtkgEvas */
-
-typedef enum { SH_BG, SH_PADX, SH_PADY, SH_PADW, SH_PADH } sh_tag_type;
-#  endif
 
 #  define MODULE "shelf"
 
@@ -85,24 +71,6 @@ static int shelf_load(noir_sess *ns) {
               /* no. maybe, there's still one in the disk-cache? */
               thumbnail_find_for(h,&thumb); }
 
-#  ifdef HAVE_GNOMECANVAS
-        { GdkPixbuf  *pb=NULL;
-          const char *tag=file_info_get_tag(fi),*mime=file_info_get_mime(fi);
-          if(ns->thumbnails_in_shelf) {
-            if(!(pb=pixbuf_get_by_path_and_resize(tag,ICON_SIZE_IN_LIST,GDK_INTERP_BILINEAR)))
-              pb=pixbuf_get_by_path_and_resize(icon_path_get_always(tag,mime),ICON_SIZE_IN_LIST,GDK_INTERP_BILINEAR); }
-          else
-            pb=pixbuf_get_by_path_no_resize(icon_path_get_always(tag,mime));
-          if(pb)
-            gnome_icon_list_append_pixbuf(GNOME_ICON_LIST(sv->shelf_view),pb,h,name); }
-#  else
-          icon_list_icon_append(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),
-                                icon_path_get_always(h,mime),
-                                h,
-                                name,
-                                thumb,
-                                NULL,NULL,TRUE);
-#  endif
           ret++;
           E(2,"adding \"%s\" to shelf...\n",h); }}
       free(sd); }
@@ -113,84 +81,10 @@ static int shelf_load(noir_sess *ns) {
 
 
 
-#  ifdef HAVE_GNOMECANVAS
-
-/**
- * shelf/GNOME: callback for icon-selection events
- * @param il    the icon-list
- * @param no    the index of the icon that was selected
- * @param ev    the event that led to the selection of this icon
- * @param data  the session
- */
-#    ifdef HAVE_GNOMECANVAS
-static void shelf_selected(GnomeIconList *il,gint no,GdkEvent *event,gpointer data) {
-#    else
-static void shelf_selected(icon_list *il,gint no,GdkEvent *event,gpointer data) {
 #    endif
-  noir_sess *ns=(noir_sess *)data;
-
-  if(!ns)
-    return;
-
-  if(event) {
-#    ifdef HAVE_GNOMECANVAS
-    char *file=strdup(gnome_icon_list_get_icon_filename(il,no));
-#    else
-    char *file=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(il),no)));
 #    endif
-    int is_dir;
-    if(((GdkEventButton *)event)->button==1) {
-      if((is_dir=file_exists(file))>0) {
-        if(event->type==GDK_2BUTTON_PRESS) {
-          if(S_ISDIR(is_dir)) {
-            E(1,"focusing on %s\n",file);
-            noir_sess_focus((noir_sess *)data,file); }
-          else
-            file_activate(ns,file,NULL,NULL); }
-        else if(((GdkEventButton*)event)->button==3)
-          menu_file_context(ns,noir_sess_get_cwd(ns),file); }
-      else
-        E(0,"file \"%s\" (%d) not found!?\n",file,no);
-      free(file); }}}
-
-
-
-/**
- * shelf/GNOME: callback for mouse-button events
- * @param widget  reserved
- * @param event   the button-event
- * @param data    the session
- */
-static gboolean shelf_clicked(GtkWidget *widget,GdkEventButton *event,gpointer data) {
-  noir_sess *ns=(noir_sess *)data;
-
-  if(!ns)
-    return FALSE;
-
-  if(event&&(event->type==GDK_BUTTON_RELEASE)&&(((GdkEventButton *)event)->button==2)) {
-    noir_shelf *sv=(noir_shelf *)noir_sess_client_get_data(ns,CLIENT_SHELF);
-#    ifdef HAVE_GNOMECANVAS
-    int no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(sv->shelf_view),(gint)((GdkEventButton *)event)->x,(gint)((GdkEventButton *)event)->y);
-#    else
-    int no=icon_list_get_index_at(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),(gint)((GdkEventButton *)event)->x,(gint)((GdkEventButton *)event)->y);
 #    endif
-    if(no>=0) {
-#    ifdef HAVE_GNOMECANVAS
-      char *file=strdup(gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(sv->shelf_view),no));
-#    else
-      char *file=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),no)));
 #    endif
-      if(file) {
-        ns->tooltip_x=(gint)((GdkEventButton *)event)->x_root;
-        ns->tooltip_y=(gint)((GdkEventButton *)event)->y_root;
-        tooltip_show_for(ns,file);
-        free(file); }}
-    else if((event->button!=2)&&(event->type==GDK_BUTTON_RELEASE)) {
-      E(0,"root menu for shelf...\n");
-      menu_root_context(ns,NULL,event->button); }}
-  return FALSE; }
-
-#  endif
 
 
 
@@ -222,12 +116,6 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
   if(!selection||(evis_seldata_length(selection)<1)) {
     E(0,"shelf_drag_data_received: no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
   else if(evis_seldata_format(selection)==8) {
-#  ifdef HAVE_GNOMECANVAS
-    GdkPixbuf *pb;
-    int no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(sv->shelf_view),x,y);
-#  else
-    int no=icon_list_get_index_at(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),x,y);
-#  endif
     gchar *_target=gdk_atom_name(evis_seldata_target(selection));
 
     if(!(a=d=malloc(evis_seldata_length(selection)+1)))
@@ -242,27 +130,8 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
 
         E(1,"shelf_drag_data_received: add (%s => %s) \"%s\"\n",_target,mime?mime:"<unknown>",file);
 
-#  ifdef HAVE_GNOMECANVAS
-        pb=NULL;
-        if(ns->thumbnails_in_shelf) {
-          if(!(pb=pixbuf_get_by_path_and_resize(file,ICON_SIZE_IN_LIST,GDK_INTERP_BILINEAR)))
-            pb=pixbuf_get_by_path_and_resize(icon_path_get_always(file,mime),ICON_SIZE_IN_LIST,GDK_INTERP_BILINEAR); }
-        else
-          pb=pixbuf_get_by_path_no_resize(icon_path_get_always(file,mime));
-        if(pb) {
-          name=(name=strrchr(file,'/'))?name+1:file;
-          gnome_icon_list_append_pixbuf(GNOME_ICON_LIST(sv->shelf_view),pb,file,name); }
-#  else
-        name=(name=strrchr(file,'/'))?name+1:file;
-        icon_list_icon_append(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),icon_path_get_always(file,mime),file,name,ns->thumbnails_in_shelf?file:NULL,NULL,NULL,TRUE);
-#  endif
         }}
     else {
-#  ifdef HAVE_GNOMECANVAS
-      char *dt=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(sv->shelf_view),no);
-#  else
-      char *dt=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),no)));
-#  endif
       if(dt&&*dt)
         file_drop(ns,evis_drag_action(dc),info,a,dt);
       else
@@ -279,7 +148,7 @@ static void shelf_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x
 
 
 
-#  if defined(HAVE_GNOMECANVAS)||defined(HAVE_EVAS2)
+#if defined(HAVE_EVAS2)
 
 /**
  * DND: drop target asks for data. collect and send.
@@ -303,18 +172,6 @@ static void shelf_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelectio
 
     ac=action_context_new(noir_sess_get_serial(ns),noir_sess_get_cwd(ns));
 
-#  ifdef HAVE_GNOMECANVAS
-    GList *l;
-    for(l=gnome_icon_list_get_selection(GNOME_ICON_LIST(sv->shelf_view));l;l=l->next) {
-      file=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(sv->shelf_view),GPOINTER_TO_INT(l->data));
-#  elif defined(HAVE_EVAS2)
-    icon_list *il=ICON_LIST_GET_FROM_WIDGET(sv->shelf_view);
-    icon *i=il->icons;
-
-    while(i) {
-      if(i->state&IE_SEL) {
-        file=ICON_GET_FILENAME(i);
-#  endif
 
       action_file_new(ac,file);
 
@@ -380,20 +237,10 @@ static gboolean shelf_drop(GtkWidget *widget,GdkDragContext *dc,gint x,gint y,gu
 
   sv=(noir_shelf *)noir_sess_client_get_data(ns,CLIENT_SHELF);
 
-#  ifdef HAVE_GNOMECANVAS
-  no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(sv->shelf_view),x,y);
-#  else
-  no=icon_list_get_index_at(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),x,y);
-#  endif
 
   if(no<0)
     ret=move?FALSE:TRUE;
   else {
-#  ifdef HAVE_GNOMECANVAS
-    char *dt=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(sv->shelf_view),no);
-#  else
-    char *dt=strdup(ICON_GET_FILENAME(icon_list_get_icon_by_index(ICON_LIST_GET_FROM_WIDGET(sv->shelf_view),no)));
-#  endif
     if(!dt||!*dt||!(ms=file_exists(dt))||(!S_ISDIR(ms)&&move))
       ret=FALSE; }
 
@@ -637,50 +484,8 @@ int shelf_init(noir_sess *ns) {
   memset(sv,0,sizeof(noir_shelf));
 
   if(!ns->without_shelf) {
-#ifdef HAVE_GNOMECANVAS
-    GtkAdjustment  *va=(GtkAdjustment*)gtk_adjustment_new(0,0,100,1,10,10);
-    GtkWidget      *shelf=gnome_icon_list_new(ICON_SIZE_IN_LIST,va,0);
-    GtkWidget      *scroll=gtk_scrolled_window_new(NULL,va);
 
-    gnome_icon_list_set_selection_mode(GNOME_ICON_LIST(shelf),GTK_SELECTION_MULTIPLE);
-    gnome_icon_list_set_separators(GNOME_ICON_LIST(shelf),"-. _");
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),GTK_POLICY_NEVER,GTK_POLICY_AUTOMATIC);
-    gtk_container_add(GTK_CONTAINER(scroll),shelf);
-
-    g_signal_connect(G_OBJECT(shelf),"button_press_event",G_CALLBACK(shelf_clicked),(gpointer)ns);
-    g_signal_connect(G_OBJECT(shelf),"button_release_event",G_CALLBACK(shelf_clicked),(gpointer)ns);
-    g_signal_connect(G_OBJECT(shelf),"select-icon",G_CALLBACK(shelf_selected),(gpointer)ns);
-
-    gtk_drag_source_set(shelf,GDK_BUTTON1_MASK|GDK_SHIFT_MASK|GDK_CONTROL_MASK,target,targets,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
-
-    sv->shelf_view=shelf;
-    sv->shelf_scroll=scroll;
-#elif defined(HAVE_EVAS2)
-    GtkWidget  *wtoy,*shelf;
-    icon_list  *il;
-    noir_theme *t;
-
-    if(!(wtoy=gevas_icon_list_new(ns,MODULE, 24,16, 0)))
-      return NOIR_FAIL;
-
-    il=ICON_LIST_GET_FROM_WIDGET(wtoy);
-
-/*  ((noir_theme *)ns->theme)->bg_new(((noir_theme *)ns->theme),il,((noir_theme *)ns->theme)->shelf_bg); */
-
-    shelf=sv->shelf_view=il->canvas;
-    sv->shelf_scroll=wtoy;
-
-    t=(noir_theme *)il->theme;
-    if(t->sb_new) {
-      if(!il->sb_v)
-	il->sb_v=t->sb_new(t,il->canvas);
-      t->sb_set(il->canvas,(icon *)il->sb_v,il->width,il->height,il->vis_h,il->sy); }
-#else
-    sv->shelf_view=NULL;
-    sv->shelf_scroll=NULL;
-#endif
-
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
 #if GTK_CHECK_VERSION(3,0,0)
     g_signal_connect(G_OBJECT(shelf),"draw",G_CALLBACK(shelf_exposed),(gpointer)ns);
 #else

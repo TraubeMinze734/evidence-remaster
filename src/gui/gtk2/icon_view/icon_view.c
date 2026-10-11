@@ -45,11 +45,6 @@
 #  include "gui/efl/icon_view/evas_bind.h"
 #  include "gevas_light.h"
 #  include "gevas_bind.h"
-#elif defined(HAVE_GNOMECANVAS)
-#  include "monitors.h"
-#  include "gui/gtk2/common/icon.h" /* pixbuf_get_by_path_no_resize() */
-#  include "gnome-icon-list.h"
-#endif
 
 /* ### FIXME */
 #define DIR_PARENT ".."
@@ -95,11 +90,6 @@ int icon_view_set_selection(void *data) {
   E(0,"icon-view has no icon-list!?\n");
   return NOIR_FAIL;
 
-#elif defined(HAVE_GNOMECANVAS)
-  return NOIR_IGNORED;
-#else
-  return NOIR_IGNORED;
-#endif
 }
 
 
@@ -124,7 +114,7 @@ gboolean icon_view_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
 #else
 gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
 #endif
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
   noir_sess *ns=(noir_sess *)data;
   if(ns) {
 #  ifdef HAVE_EVAS2
@@ -155,7 +145,7 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
 
 
 
-#if defined(HAVE_EVAS2)||defined(HAVE_GNOMECANVAS)
+#if defined(HAVE_EVAS2)
 
 /**
  * get path at given position
@@ -173,22 +163,10 @@ static char *icon_path_at(noir_sess *ns,int x,int y) {
   if(!ns||!(iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW)))
     return NULL;
 
-#  ifdef HAVE_GNOMECANVAS
-  no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),x,y);
-#  else
-  il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
-  no=il?icon_list_get_index_at(il,x,y):-1;
-#  endif
 
   if(no<0)                                          /* dropped on background */
     return ns->cwd;
   else {                                                  /* dropped on icon */
-#  ifdef HAVE_GNOMECANVAS
-    return gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(iv->icon_view),no);
-#  elif defined(HAVE_EVAS2)
-    icon *i=(il>=0)?icon_list_get_icon_by_index(il,no):NULL;
-    return ICON_GET_FILENAME(i);
-#  endif
   }}
 
 
@@ -231,23 +209,6 @@ static void icon_drag_data_received(GtkWidget *widget,GdkDragContext *dc,gint x,
   if(!selection||(evis_seldata_length(selection)<1)) {
     E(0,"no data (%p,%d)\n",selection,selection?evis_seldata_length(selection):-1234); }
   else if(evis_seldata_format(selection)==8) {
-#  ifdef HAVE_GNOMECANVAS
-    int no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),x,y);
-#  else
-    icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
-    int        no;
-    void      *rp;
-
-    if((no=evas_ext_evt(il,x,y,1,EV_DROPPED,EV_MOD_NONE,ns,NULL,&rp))!=NOIR_NOTFOUND) {
-      file_info  *fi=(file_info *)rp;
-      const char *tag=file_info_get_tag(fi);
-      E(4,"dropped on extension: %d for \"%s\".\n",no,tag?tag:"<NULL>");
-      if((no==NOIR_SUCC)&&tag)
-        file_drop(ns,evis_drag_action(dc),info,evis_seldata_data(selection),tag);
-      return; }
-    else
-      no=il?icon_list_get_index_at(il,x,y):-1;
-#  endif
 
     if(info==DRAGDROP_TARGET_XDS) {
 #  ifdef WITH_XDS
@@ -280,12 +241,6 @@ E(0,"%s |%s|\n",target[info].target,a);
     if(no<0)                                        /* dropped on background */
       file_drop(ns,evis_drag_action(dc),info,a,ns->cwd);
     else {                                                /* dropped on icon */
-#  ifdef HAVE_GNOMECANVAS
-      char *dt=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(iv->icon_view),no);
-#  elif defined(HAVE_EVAS2)
-      icon *i=(il>=0)?icon_list_get_icon_by_index(il,no):NULL;
-      char *dt=ICON_GET_FILENAME(i);
-#  endif
 
       if(dt&&*dt)
         file_drop(ns,evis_drag_action(dc),info,a,dt);
@@ -331,18 +286,6 @@ static void icon_drag_data_get(GtkWidget *widget,GdkDragContext *dc,GtkSelection
 
     ac=action_context_new(noir_sess_get_serial(ns),noir_sess_get_cwd(ns));
 
-#  ifdef HAVE_GNOMECANVAS
-    GList *l;
-    for(l=gnome_icon_list_get_selection(GNOME_ICON_LIST(iv->icon_view));l;l=l->next) {
-      file=gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(iv->icon_view),GPOINTER_TO_INT(l->data));
-#  elif defined(HAVE_EVAS2)
-    icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
-    icon      *i=il->icons;
-
-    while(i) {
-      if(i->state&IE_SEL) {
-        file=ICON_GET_FILENAME(i);
-#  endif
 
       action_file_new(ac,file);
 
@@ -401,13 +344,6 @@ void icon_view_connect(noir_sess *ns) {
                      "drag-end",G_CALLBACK(file_drop_free),(gpointer)ns);
 
   gtk_drag_dest_set(GTK_WIDGET(iv->icon_view),GTK_DEST_DEFAULT_ALL,target,targets_xds,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
-#  ifdef HAVE_GNOMECANVAS
-  gtk_drag_source_set(GTK_WIDGET(iv->icon_view),GDK_BUTTON1_MASK|GDK_SHIFT_MASK|GDK_CONTROL_MASK,target,targets,GDK_ACTION_LINK|GDK_ACTION_COPY|GDK_ACTION_MOVE);
-#  elif defined(HAVE_EVAS2)
-  { /* icon_list *il=ICON_LIST_GET_FROM_WIDGET(iv->icon_view);
-    sb_update(il,TRUE); */
-  }
-#  endif
  }
 
 
@@ -416,117 +352,6 @@ void icon_view_connect(noir_sess *ns) {
 
 
 
-#  ifdef HAVE_GNOMECANVAS
-
-/**
- * icon-view/GNOME: handle clicks on icon-view's icon
- * @param il    the icon-list
- * @param no    the index of the icon that was selected
- * @param ev    the event that led to the selection of this icon
- * @param data  the session
- */
-void icon_view_selected(GnomeIconList *il,gint no,GdkEvent *ev,gpointer data) {
-  noir_sess *ns=(noir_sess *)data;
-
-  if(!ns)
-    return;
-  if(!ns->cwd) {
-    ns->cwd=strdup("/"); /* failsafe, should never happen */
-    E(0,"icon_view: ns->cwd not set!?\n"); }
-
-  if(ev) {
-    char *file=strdup(gnome_icon_list_get_icon_filename(il,no));
-    int is_dir;
-
-    info_tooltip_cancel(NULL,NULL,NULL);
-
-    if(((GdkEventButton *)ev)->button==2)
-      menu_path(ns,((GdkEventButton *)ev)->button,((GdkEventButton *)ev)->time);
-    else {
-      if(!strcmp(gnome_icon_list_get_icon_text_item(il,no)->text,DIR_PARENT)) {
-        file_info *fi=file_info_fetch(NULL,file);
-
-        if(fi&&(fi=file_info_get_parent(fi))) {
-          char *p=strdup(file_info_get_tag(fi));
-          if(p) {
-            file_monitor_remove(ns,file);
-            free(file);
-            file=p; }}}
-
-      if((is_dir=file_exists(file))>0) {
-        if(ev->type==GDK_2BUTTON_PRESS) {
-          if(S_ISDIR(is_dir)) {
-            E(1,"icon_view: focussing on %s\n",file);
-            if(((GdkEventButton *)ev)->state&(GDK_MOD1_MASK|GDK_CONTROL_MASK))
-              noir_sess_create(SESSION_COPY,ns,file);
-            else {
-              noir_sess_focus(ns,file);
-              file_monitor_add(ns,NOIR_MONITOR_DIR,file); }} /* clear semaphore */
-          else
-            file_activate(ns,file,NULL,NULL); }
-        else if((ev->type==GDK_BUTTON_RELEASE)&&((GdkEventButton*)ev)->button==3)
-          menu_file_context(ns,noir_sess_get_cwd(ns),file); }
-      else if(((GdkEventButton *)ev)->button!=2) {
-        if(ev->type==GDK_BUTTON_RELEASE)
-          menu_root_context(ns,noir_sess_get_cwd(ns),((GdkEventButton *)ev)->button); }
-      else
-        E(0,"evidence::icon_view: file \"%s\" (%d) not found!?\n",file,no);
-      free(file); }}}
-
-
-
-/****************************************************************************/
-
-
-
-/**
- * icon-view/GNOME: callback for mouse-motion (prepare tooltip)
- * @return FALSE
- * @param widget  widget that mouse was moved over
- * @param ev      GDK motion-event
- * @param data    the session
- */
-gboolean icon_view_make_tooltip(GtkWidget *widget,GdkEventMotion *ev,gpointer data) {
-  noir_sess     *ns=(noir_sess *)data;
-  noir_iconview *iv;
-  int no;
-
-  if(!ns||!ev||
-     !(iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW)))
-    return FALSE;
-
-  if(((no=gnome_icon_list_get_icon_at(GNOME_ICON_LIST(iv->icon_view),ev->x,ev->y))>=0)&&(no!=ns->icon_view_last_tooltip)) {
-    char *file=strdup(gnome_icon_list_get_icon_filename(GNOME_ICON_LIST(iv->icon_view),no));
-    int is_dir;
-
-    ns->icon_view_last_tooltip=no;
-
-    if(file) {
-      if(!strcmp(gnome_icon_list_get_icon_text_item(GNOME_ICON_LIST(iv->icon_view),no)->text,DIR_PARENT)) {
-        char *p;
-        strcpy(file,ns->cwd);
-        if((p=strrchr(file,'/'))) {
-          if(!p[1]&&(p>file)) { /* bah, trailing slash */
-            *p='\0';
-            p=strrchr(file,'/'); }
-           if(p) {
-             if(p>file)
-               *p='\0';
-             else
-               p[1]='\0'; }}}
-      if((is_dir=file_exists(file))>0) {
-        gint x,y;
-        gdk_window_get_pointer(NULL,&x,&y,NULL);
-        info_tooltip(ns,file,x,y); }
-      else
-        E(0,"evidence::icon_view_make_tooltip: file \"%s\" not found!?\n",file);
-      free(file); }}
-  else if(no<0)
-    info_tooltip_cancel(NULL,NULL,NULL);
-
-  return FALSE; }
-
-#  endif
 
 #endif
 
@@ -636,23 +461,6 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
             free(iv->cwd_shown);
           iv->cwd_shown=strdup(file_info_get_tag(fi)); }
 
-#elif defined(HAVE_GNOMECANVAS)
-        if(iv->icon_view)
-          gtk_container_remove(GTK_CONTAINER(iv->icon_scroll),iv->icon_view);
-
-        iv->icon_view=gnome_icon_list_new(ICON_SIZE_IN_LIST,iv->icon_adj,0);
-        iv->session->icon_view_last_tooltip=-1;
-
-        g_signal_connect(G_OBJECT(iv->icon_view),"select-icon",G_CALLBACK(icon_view_selected),(gpointer)iv->session);
-        g_signal_connect(G_OBJECT(iv->icon_view),"motion-notify-event",G_CALLBACK(icon_view_make_tooltip),(gpointer)iv->session);
-
-        gnome_icon_list_set_selection_mode(GNOME_ICON_LIST(iv->icon_view),GTK_SELECTION_MULTIPLE);
-        gnome_icon_list_set_separators(GNOME_ICON_LIST(iv->icon_view),"- \'\"/ \t\n\r_.");
-
-        gtk_widget_set_name(iv->icon_view,"icon_view");
-
-        gtk_container_add(GTK_CONTAINER(iv->icon_scroll),iv->icon_view);
-#endif
       }
 
       else if(!(fi=file_info_fetch(NULL,file_info_get_tag(fi))))
@@ -770,16 +578,6 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
         /* update icon for file */
         i=icon_list_icon_insert_sorted(il,ifile,file_info_get_tag(fi),name,file_info_get_thumbfile(fi),file_info_get_intrinsic(fi),fi,FALSE);
 
-#elif defined(HAVE_GNOMECANVAS)
-        { GdkPixbuf  *pb=NULL;
-          if(iv->session->thumbnails_in_iconlist) {
-            if(!(pb=pixbuf_get_by_path_and_resize(tag,ICON_SIZE_IN_LIST,GDK_INTERP_BILINEAR)))
-              pb=pixbuf_get_by_path_and_resize(ifile,ICON_SIZE_IN_LIST,GDK_INTERP_BILINEAR); }
-          else
-            pb=pixbuf_get_by_path_no_resize(ifile);
-          if(pb)
-            gnome_icon_list_append_pixbuf(GNOME_ICON_LIST(iv->icon_view),pb,tag,name); }
-#endif
         goto done; }
 
 
@@ -789,10 +587,6 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
            (!pa||(file_info_get_infobits(pa)&FF_MIME_))) {
 /* E(0,"%s, %x (%s, $%x)\n",fi->tag,fi->have,pa?pa->tag:"???",pa?pa->have:0); */
           icon_view_rerender(iv,il,"MODEL_UPD -- STAT/MIME"); }}
-#elif defined(HAVE_GNOMECANVAS)
-      if(changed&(FF_STAT|FF_MIME)) {
-      }
-#endif
 
       if(changed&FF_THUMB) {
 #ifdef HAVE_EVAS2
@@ -823,8 +617,6 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
           /* event was unrelated to this view!? */
           else
             E(0,"FF_THUMB ignored for \"%s\"!?\n",file_info_get_tag(fi)); }
-#elif defined(HAVE_GNOMECANVAS)
-#endif
       }
       break;
 
@@ -837,9 +629,6 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
         icon_list_icon_remove(il,i,TRUE);
         icon_view_rerender(iv,il,"MODEL_DEL"); }
       break;
-#elif defined(HAVE_GNOMECANVAS)
-#  warning handler for icon-del missing for gnome-icon-list
-#endif
 
     default:
       break; }
@@ -1058,92 +847,7 @@ static int icon_view_str_listener(noir_prop_bag *b,noir_prop *e,int tag,void *da
  */
 int icon_view_init(noir_sess *ns) {
   noir_iconview *iv;
-#ifdef HAVE_GNOMECANVAS
-  GtkAdjustment *va=(GtkAdjustment*)gtk_adjustment_new(0,0,100,1,10,10);
-  GtkWidget     *scroll=gtk_scrolled_window_new(NULL,va);
-
-  gtk_widget_set_name(scroll,"icon_scroll");
-
-  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
-                                 GTK_POLICY_NEVER,GTK_POLICY_AUTOMATIC);
-
-  if(!ns)
-    return NOIR_FAIL;
-
-  if(!(iv=(noir_iconview *)malloc(sizeof(noir_iconview))))
-    return NOIR_OOM;
-  memset(iv,0,sizeof(noir_iconview));
-
-  iv->icon_scroll=scroll;
-  iv->icon_adj=va;
-  iv->session=ns;
-  iv->serial=noir_sess_get_serial(ns);
-
-#if GTK_CHECK_VERSION(3,0,0)
-  g_signal_connect(G_OBJECT(scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
-#else
-  g_signal_connect(G_OBJECT(scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
 #endif
-
-  iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
-
-  pthread_mutex_init(&iv->viewlock,NULL);
-
-  return NOIR_SUCC;
-
-#elif defined(HAVE_EVAS2)
-  GtkWidget  *wtoy;
-  icon_list  *il;
-
-  if(!(iv=(noir_iconview *)malloc(sizeof(noir_iconview))))
-    return NOIR_OOM;
-  memset(iv,0,sizeof(noir_iconview));
-
-  if(!ns||!(wtoy=gevas_icon_list_new(ns,MODULE, 24,16, 0))) {
-    free(iv);
-    return NOIR_FAIL; }
-
-  il=ICON_LIST_GET_FROM_WIDGET(wtoy);
-
-/*  ((noir_theme *)ns->theme)->bg_new(((noir_theme *)ns->theme),il,((noir_theme *)ns->theme)->iconview_bg); */
-
-  iv->icon_view=il->canvas;
-  iv->icon_scroll=wtoy;
-  iv->session=ns;
-  iv->serial=noir_sess_get_serial(ns);
-
-  gtk_widget_set_name(iv->icon_scroll,"icon_scroll");
-  gtk_widget_set_name(iv->icon_view,  "icon_view");
-
-#if GTK_CHECK_VERSION(3,0,0)
-  g_signal_connect(G_OBJECT(iv->icon_scroll),"draw",G_CALLBACK(icon_view_exposed),(gpointer)ns);
-#else
-  g_signal_connect(G_OBJECT(iv->icon_scroll),"expose-event",G_CALLBACK(icon_view_exposed),(gpointer)ns);
-#endif
-
-  iv->client=noir_sess_client_register_full(ns,CLIENT_ICONVIEW,(void *)iv,icon_view_evt,icon_view_dst,icon_view_set_selection);
-
-  icon_view_connect(ns);
-
-  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-x",  "12",-64,64,1);
-  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-y",   "8",-64,64,1);
-  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-w",  "24",-32,32,1);
-  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-pad-h",  "16",-32,32,1);
-  prop_bag_prop_default(((noir_theme *)ns->theme)->data,MODULE "-spatial", "0",  0, 1,1);
-
-#  define LISTENER "icon_view{evas}"
-  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE,           icon_view_str_listener,IV_BG,  ns);
-  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-x",  icon_view_num_listener,IV_PADX,   il);
-  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-y",  icon_view_num_listener,IV_PADY,   il);
-  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-w",  icon_view_num_listener,IV_PADW,   il);
-  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-pad-h",  icon_view_num_listener,IV_PADH,   il);
-  prop_bag_prop_listen(((noir_theme *)ns->theme)->data,LISTENER,MODULE "-spatial",icon_view_num_listener,IV_SPATIAL,il);
-
-  il->extensions=(void *)((noir_theme *)ns->theme)->areas;
-
-  return NOIR_SUCC;
-#else
-  return NOIR_FAIL;
 #endif
 }
 
