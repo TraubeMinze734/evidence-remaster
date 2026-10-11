@@ -3131,7 +3131,7 @@ static int file_job_scan(noir_job *job,const char *path) {
     job->total_files=1;  /* count copy-root! */
 
     while(ch) {
-      job->total_bytes=ch->size;
+      job->total_bytes+=ch->size;   /* was '=', so the total was only ever the LAST top-level child */
       job->total_files+=ch->descendents+1;
       ch=ch->next; }
 

@@ -35,6 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "file.h"
 #include "file_direct.h"
 #include "errors.h"
+#include "util.h"               /* now() */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -177,6 +178,9 @@ static inline int posix_copy_data(noir_job *job,const char *src_path,struct stat
     E(0,"Using holes, buffer size %i\n",block_size);
 
   buf=malloc(block_size);
+  { long last_stats=-1;   /* mtime of last progress update; the 2005 code called
+                             file_job_stats() (mutex + GUI handshake) for
+                             EVERY 4K block, which dominated copy time */
 
   for(;;) {
     int  i;
@@ -226,7 +230,12 @@ static inline int posix_copy_data(noir_job *job,const char *src_path,struct stat
 
       hole_at_end=FALSE; }
 
-    file_job_stats(job,src_st->st_size,got,0,0,0,0); }
+    { long tme=now(0);
+      if(last_stats!=tme/100) {   /* ~every 100ms, and ... */
+        file_job_stats(job,src_st->st_size,got,0,0,0,0);
+        last_stats=tme/100; } } }
+
+  file_job_stats(job,src_st->st_size,got,0,0,0,0);   /* ... final update so the file counts fully */
   
   /* Make sure things end properly at destination file */
 
@@ -255,6 +264,7 @@ static inline int posix_copy_data(noir_job *job,const char *src_path,struct stat
     close(dst_fd);
   
   return ret; }
+  }  /* end of last_stats scope */
 
 
 
@@ -610,7 +620,8 @@ static int dir_copy(noir_job *job,const char *src_path,struct stat *src_st,const
     snprintf(src_ptr,MAXPATHLEN-src_len,"%s",de_ptr->d_name);
     snprintf(dst_ptr,MAXPATHLEN-dst_len,"%s",de_ptr->d_name);
 
-    file_job_update(job,NOIR_JOB_PROGRESS,NOIR_NOERRORCODE,src,dst);
+    /* UNCHANGED + NOERRORCODE: update src/dst without GUI handshake */
+    file_job_update(job,NOIR_JOB_UNCHANGED,NOIR_NOERRORCODE,src,dst);
 
     if(lstat(src,&src_st2)<0)
       continue;
@@ -723,7 +734,10 @@ static int dir_move(noir_job *job,const char *src_path,const char *dst_path) {
     snprintf(src_ptr,MAXPATHLEN-src_len,"%s",de_ptr->d_name);
     snprintf(dst_ptr,MAXPATHLEN-dst_len,"%s",de_ptr->d_name);
 
-    file_job_update(job,NOIR_JOB_PROGRESS,NOIR_NOERRORCODE,src,dst);
+    /* status UNCHANGED + NOERRORCODE only updates src/dst without the
+       GUI handshake -- dir_copy() fires one of these per entry, and the
+       2005 code slept until the 250ms GUI pulse had consumed each one */
+    file_job_update(job,NOIR_JOB_UNCHANGED,NOIR_NOERRORCODE,src,dst);
 
     if(lstat(src,&src_st)<0) {
       E(0,"source \"%s\" not stat()able!\n",src);
