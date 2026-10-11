@@ -1368,8 +1368,21 @@ static int inotify_check(void) {
           if(e==NOIR_MONITOR_DK)
             E(0,"INOTIFY event $%x for \"%s\" ignored...\n",(int)event->mask,event->name);
           else {
-            E(0,"INOTIFY event $%x for \"%s\"...\n",(int)e,event->name);
-            file_monitor_event(m,e,event->name); }
+            char *tag=m->have;
+            /* for events on a directory-watch, inotify only reports the
+               name of the child that changed.  like the FAM path above, we
+               must resolve it against the watched directory, or the monitor
+               layer cannot find the item in the model (relative tag).  for
+               events carrying no name (IN_DELETE_SELF, IN_MOVED_FROM for
+               the watched dir itself), fall back to the watched path. */
+            if(event->len&&event->name[0]&&(m->type==NOIR_MONITOR_DIR)) {
+              char *t=NULL;
+              if(esprintf(&t,"%s/%s",m->have,event->name))
+                tag=t; }
+            E(0,"INOTIFY event $%x for \"%s\"...\n",(int)e,tag);
+            file_monitor_event(m,e,tag);
+            if(tag!=m->have)
+              free(tag); }
           cnt++;
           break; }   /* one monitor per wd */
         m=m->next; } } }
