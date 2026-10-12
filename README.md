@@ -12,7 +12,7 @@ Some parts of the program could not be ported since they relied on old backends 
 
 The AI also reworked the clipboard functionality and added GTK3 as a new backend, thats probably unstable tho.
 
-For more details, you can take a look at the pull requests if you want to. These are written by Mistal as well tho, so maybe they are messy.
+For more details, you can take a look at the pull requests if you want to. These are written by Mistral as well tho, so maybe they are messy.
 
 ## Build
 
