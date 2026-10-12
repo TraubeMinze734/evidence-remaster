@@ -18,8 +18,6 @@ The makefile also now installes a .destkop file for Evidence.
 
 According to the AI, there was a functionality to play Videos inside the file manager using emotion. It looks a bit out of place, so im not sure if it was actually there or if its an hallucination. Its in there now.
 
-For more details, you can take a look at the pull requests if you want to. These are written by Mistral as well tho, so maybe they are messy.
-
 ## Build
 
 ```
