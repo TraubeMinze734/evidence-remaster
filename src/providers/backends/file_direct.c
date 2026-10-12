@@ -378,7 +378,8 @@ static int download(const char *url,const char *lcl) {
 
   if(!(th=fopen(lcl,"wb"))) {
     if(errno==EISDIR) {
-      char *tf,*p;
+      char *tf;
+      const char *p;
       if((p=strrchr(url,'/'))&&(tf=file_compose_path(lcl,p+1,NULL))) {
         th=fopen(tf,"wb");
         free(tf);
@@ -1166,7 +1167,7 @@ static const char *mime_get_by_magic(const char *file) {
  * @param file  a file-name
  */
 static const char *mime_get_by_ext(const char *origfile) {
-  char       *ext;
+  const char *ext;
   const char *p,*ret=NULL;
 
   if(origfile&&*origfile&&!(ret=mime_chk_backup(origfile))) {
@@ -1175,7 +1176,7 @@ static const char *mime_get_by_ext(const char *origfile) {
          copy -- do not free it */
       if((p=strrchr(origfile,DIR_DELIMITER))&&
          (ext=strrchr(origfile,'.'))&&(p<ext))
-        ret=(char *)hash_table_fetch(ht_mime,&ext[1]); }}
+        ret=hash_table_fetch(ht_mime,&ext[1]); }}
   return ret; }
 
 
@@ -1422,7 +1423,7 @@ static void fnotify_handler(int sig,siginfo_t *si,void *data) {
   static int    sigio_warn=0;
 
   while(e) {
-    if(fnotify_fd==((int)e->handle)) {
+    if(fnotify_fd==(int)(intptr_t)e->handle) {
       e->data=(void *)(intptr_t)(((int)(intptr_t)e->data)+1);
       if((sig==SIGIO)&&!(sigio_warn&1)) {
         sigio_warn|=1;
@@ -1791,7 +1792,7 @@ int backend_monitor_add(noir_monitor *m) {
     int fd=inotify_add(m->have);
     if(fd>=0) {
       m->system=mon_inotify;
-      m->handle=(void *)fd;
+      m->handle=(void *)(intptr_t)fd;
       return NOIR_SUCC; }
     else if(fd!=NOIR_NOTSUPP) { /* not supported by kernel, try next method */
       return fd; }}
@@ -1802,7 +1803,7 @@ int backend_monitor_add(noir_monitor *m) {
     int fd=fnotify_add(m->have);
     if(fd>=0) {
       m->system=mon_fnotify;
-      m->handle=(void *)fd;
+      m->handle=(void *)(intptr_t)fd;
       return NOIR_SUCC; }
     else if(fd!=NOIR_NOTSUPP) { /* not supported by kernel, try next method */
       return fd; }}

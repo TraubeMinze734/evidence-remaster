@@ -219,7 +219,9 @@ int idle_func(void **data) {
     if(ctl->fish->x>ctl->il->vis_w)
       unmake_fish(ctl); }
 
-  (void)evas_render_updates(ctl->evas);
+  { Eina_List *ev_up=evas_render_updates(ctl->evas);
+    if(ev_up)
+      evas_render_updates_free(ev_up); }
 
   return TRUE; }  /* TRUE==success.  failure will remove handler. */
 

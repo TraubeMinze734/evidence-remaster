@@ -72,7 +72,8 @@ noir_meta *meta_init_mp3(noir_md *a,meta_flags flags,meta_type type,const char *
  */
 static int meta_make_sortkey(noir_md *ret,noir_provider *prov) {
   noir_meta *x;
-  char      *t=NULL,*a=NULL,*s=NULL;
+  char      *t=NULL,*s=NULL;
+  const char *a=NULL;
 
   if((x=meta_in_group(ret,"title",MY_NAME))&&meta_get_val(x))
     t=(char *)meta_get_val(x);
@@ -127,7 +128,7 @@ static char *genre_name_normalize(char *c) {
  * @param pre  pre-normalized 1st name
  * @param now  not normalized 2nd name (not modified)
  */
-static int genre_name_cmp(char *pre,char *now) {
+static int genre_name_cmp(char *pre,const char *now) {
   int   ret;
   char *p=strdup(now);
 
@@ -212,15 +213,15 @@ static char *genre_index_to_name(char *t) {
 
 /* key xlation entry */
 typedef struct _kxe {
-  int   id;
-  char *name; } kxe;
+  int         id;
+  const char *name; } kxe;
 
 /**
  * translate ID3v2 field-name into something human readable
  * @return  the "better" name
  * @param id  the ID of the field
  */
-static inline char *key_xlate(int id) {
+static inline const char *key_xlate(int id) {
   kxe tab[]= {{ ID3FID_TITLE,       "Title" },
               { ID3FID_BAND,        "Band" },
               { ID3FID_LEADARTIST,  "Artist" },
@@ -333,7 +334,7 @@ int cpp_meta_get_for_file(noir_md *ret,char *file,noir_provider *prov) {
 
   if((mp3info=myTag.GetMp3HeaderInfo())) {
     estring *t=estring_new(1024);
-    char *v,*l;
+    const char *v,*l;
 
     switch(mp3info->version) {
       case MPEGVERSION_1:
@@ -409,19 +410,20 @@ int cpp_meta_get_for_file(noir_md *ret,char *file,noir_provider *prov) {
             break; }}}
 
         if(type!=META_OLD) {
-          char       *p,*i="XXX ID3v1 Comment ";
+          char       *p;
+          const char *cs="XXX ID3v1 Comment ";
           const char *k;
           size_t      l;
 
-          if(!strncmp(p=ESTRING_GET_CSTRING(s),i,strlen(i)))
-            p+=strlen(i);
-          while((l=strlen(p))&&(i=&p[l-1])&&(isspace(*i)))
-            *i='\0';
+          if(!strncmp(p=ESTRING_GET_CSTRING(s),cs,strlen(cs)))
+            p+=strlen(cs);
+          while((l=strlen(p))&&isspace(p[l-1]))
+            p[l-1]='\0';
           if(!(k=key_xlate(myFrame->GetID())))
              k=desc; // myFrame->GetTextID();
           meta_add(ret,META_RW,META_STR,k,desc,MY_NAME,p,prov);
           if((x=meta_in_group(ret,k,MY_NAME))) {
-            meta_set_user1(x,(myFrame->GetID()==ID3FID_CONTENTTYPE)?genre_table:NULL);
+            meta_set_user1(x,(myFrame->GetID()==ID3FID_CONTENTTYPE)?(void *)genre_table:NULL);
             meta_set_user2(x,(long)myFrame->GetID()); }}}
 
       delete iter2; }

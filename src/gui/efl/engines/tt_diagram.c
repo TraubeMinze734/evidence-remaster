@@ -30,6 +30,8 @@
 
 /* the usual suspects */
 #define  RND(lessthan)  (((float)lessthan)*rand()/RAND_MAX)
+#undef   MAX
+#undef   MIN
 #define  MAX(a,b)       ((a)>(b))?(a):(b)
 #define  MIN(a,b)       ((a)<(b))?(a):(b)
 
