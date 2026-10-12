@@ -73,6 +73,9 @@ struct _GtkgEvas {
   ulong           flush_last;        /* ms-timestamp of the last flush blit (rate-limit) */
 
   GdkEvent      *current_event;     /* so that evas callbacks can get the gdk event.*/
+  int            in_paint;          /* >0 while gevas_paint() runs evas_render();
+                                       keeps RENDER_FLUSH_POST from queueing a draw
+                                       for a render GTK itself initiated (repaint loop) */
 
   gboolean       updating;
 	

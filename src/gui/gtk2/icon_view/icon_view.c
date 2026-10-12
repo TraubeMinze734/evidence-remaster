@@ -114,7 +114,23 @@ int icon_view_set_selection(void *data) {
  * @param ev      the GDK expose-event
  * @param data    the session
  */
-static gboolean iv_bg_created=FALSE;
+static gboolean iv_bg_created=FALSE;   /* one-shot startup fix scheduled */
+
+static gboolean iv_startup_bg_fix(gpointer data) {
+  icon_list *il=(icon_list *)data;
+  noir_theme *theme;
+  if(!il||!(theme=il->theme))
+    return FALSE;
+  /* runs once, from the idle loop AFTER the startup draw cycle: at the
+     time of the very first draw the widget allocation is often not final
+     yet, so creating the background and laying out the icons from inside
+     the draw handler left a grey, misplaced view that only a manual
+     window resize would heal -- the resize was merely the first event
+     that re-ran the layout with the real dimensions. */
+  theme->bg_new(theme,il,theme->iconview_bg);
+  gevas_icon_list_force(il);          /* re-layout at the final size */
+  gtk_widget_queue_draw(GTK_WIDGET(il->canvas));
+  return FALSE; }
 
 #if GTK_CHECK_VERSION(3,0,0)
 gboolean icon_view_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
@@ -131,19 +147,20 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
         evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
         evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
         if(gtk_widget_get_mapped(widget)) {
+          /* the 2005 code re-ran the delayed background creation on
+             EVERY draw until it succeeded; when it never succeeded
+             (pseudo-transparency without wallpaper) the hide/show/
+             grab_focus dance in it queued ever more draws and fed the
+             GTK3 repaint storm at 100% CPU.  now it runs ONCE, as an
+             idle after the startup draw cycle, when the allocation is
+             final; bg_new() failing then simply means no background. */
           if(!il->bg&&!iv_bg_created) {
-            noir_theme *theme=il->theme;
-            /* try the delayed background creation ONCE.  this handler
-               runs on every draw of the scroll-widget -- under GTK3 that
-               is once per frame, so a bg_new() that returns NULL bg
-               (e.g. pseudo-transparency without a wallpaper) retried
-               the hide/show/grab_focus dance on EVERY frame, which
-               queues more draws and keeps the loop alive. */
             iv_bg_created=TRUE;
-            theme->bg_new(theme,il,theme->iconview_bg);
-            E(1,"%dx%d\n",il->vis_w,il->vis_h);
-            E(1,"delayed background creation %s\n",il->bg?"succeeded.":"failed!?"); }
-          evas_render(gevas_get_evas((GtkgEvas *)il->canvas)); }}}
+            g_idle_add(iv_startup_bg_fix,il); }
+          { GtkgEvas *gv=GTK_GEVAS(il->canvas);
+            gv->in_paint++;              /* this render was GTK's idea, too -- */
+            evas_render(gevas_get_evas(gv));  /* don't answer it with a queue_draw */
+            gv->in_paint--; } }}}
 #endif
   }
 #endif
