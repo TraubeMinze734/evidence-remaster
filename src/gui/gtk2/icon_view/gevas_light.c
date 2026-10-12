@@ -151,25 +151,7 @@ static void gevas_render_flush(void *data,Evas *e,void *event_info) {
   (void)e; (void)event_info;
   E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,gtk_widget_get_mapped(GTK_WIDGET(ev))?1:0);
   if(gtk_widget_get_realized(GTK_WIDGET(ev))) {
-    /* RENDER_FLUSH_POST fires after EVERY evas_render() -- including
-       the one gevas_paint() performs on GTK's behalf inside the
-       draw/expose path.  queue_draw() from here for THAT render made
-       GTK schedule another draw, which rendered again, which queued
-       another draw ... an endless full-canvas repaint loop that kept
-       a CPU core at 100% forever (GTK3 draws the whole widget chain
-       per frame; GTK2 exposed only damaged windows, so it only
-       surfaced under GTK3).
-       Renders plugins initiate on their own (live video per decoded
-       frame, tooltip fade-ins, background updates) are NOT followed
-       by a GTK draw, so those DO need the queue_draw as a second
-       chance -- otherwise the fresh frame sits in the backing-store
-       unseen (grey view after startup until the first resize).
-       in_paint tells the two cases apart.  the idle blit alone is
-       not enough at startup: before the first expose GTK has no
-       damage region to repaint, and the buffer blit can only add to
-       what GTK draws. */
-    if(!ev->in_paint)
-      gtk_widget_queue_draw(GTK_WIDGET(ev));
+    gtk_widget_queue_draw(GTK_WIDGET(ev));
     if(!ev->flush_idle)
       ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
 
@@ -569,9 +551,7 @@ static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
 
   evas_damage_rectangle_add(ev->evas,area->x,area->y,area->width,area->height);
   evas_obscured_clear(ev->evas);
-  ev->in_paint++;                 /* this render was GTK's idea -- RENDER_FLUSH_POST must not */
-  evas_render(ev->evas);          /* answer it with another queue_draw (repaint loop) */
-  ev->in_paint--;
+  evas_render(ev->evas);
 
   /* blit the rendered buffer into the GdkWindow.  the evas buffer engine
      writes premultiplied native-endian ARGB, which is exactly what cairo's
