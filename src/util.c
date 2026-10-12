@@ -1067,7 +1067,7 @@ int estring_truncate(estring *e,int size) {
  * @param fmt - the format-string, as per printf()
  * @param ... - the variables for the %-substitutions in the format-string
  */
-int estring_printf(estring *e,char *fmt, ...) {
+int estring_printf(estring *e,const char *fmt, ...) {
   int      need;
   va_list  ap;
   char    *p;
@@ -1107,7 +1107,7 @@ retry:
  * @param fmt - the format-string, as per printf()
  * @param ... - the variables for the %-substitutions in the format-string
  */
-int estring_appendf(estring *e,char *fmt, ...) {
+int estring_appendf(estring *e,const char *fmt, ...) {
   int      need;
   va_list  ap;
   char    *p;
@@ -1203,7 +1203,7 @@ int estring_appendb(estring *e,size_t len,char *bytes) {
  * @param fmt - the format-string to use in composition, see printf()
  * @param ... - the parameters for the %-substitutions in the format-string, see printf()
  */
-int esprintf(char **result,char *fmt, ...) {
+int esprintf(char **result,const char *fmt, ...) {
   int      need,have;
   va_list  ap;
   char    *n;
@@ -1248,7 +1248,7 @@ retry:
  * @param fmt - the format-string to use in composition, see printf()
  * @param ... - the parameters for the %-substitutions in the format-string, see printf()
  */
-int eappendf(char **result,char *fmt, ...) {
+int eappendf(char **result,const char *fmt, ...) {
   int      need,have,old=0;
   va_list  ap;
   char    *n;

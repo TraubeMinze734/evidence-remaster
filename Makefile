@@ -13,6 +13,7 @@ CFLAGS  ?= -O2 -g
 BASE_CFLAGS := $(CFLAGS) -std=$(CSTD) -I$(TOP) -I$(TOP)/src -I$(TOP)/src/gui/common \
                -Wno-implicit-function-declaration -Wno-int-conversion -Wno-sign-compare \
                -rdynamic -fPIC
+BASE_CXXFLAGS := $(CFLAGS) -I$(TOP) -I$(TOP)/src -I$(TOP)/src/gui/common -rdynamic -fPIC
 LDLIBS  += -lpthread -ldl -lm
 
 # --- core objects -----------------------------------------------------------
@@ -171,7 +172,7 @@ PLUGINS += lib/evidence/metadata/ape.so
 ifeq ($(ID3),yes)
 lib/evidence/metadata/mp3.so: src/providers/mp3/mp3.cpp src/providers/mp3/genre.h config.h
 	@mkdir -p $(dir $@)
-	$(CXX) $(PLUG_CFLAGS) $(ID3_CFLAGS) $(PLUG_LINK) -o $@ $< $(ID3_LIBS)
+	$(CXX) $(BASE_CXXFLAGS) $(CORE_CFLAGS) $(ID3_CFLAGS) $(PLUG_LINK) -o $@ $< $(ID3_LIBS)
 PLUGINS += lib/evidence/metadata/mp3.so
 endif
 
@@ -179,7 +180,7 @@ endif
 ifeq ($(TAGLIB),yes)
 lib/evidence/metadata/taglib.so: src/providers/taglib/taglib.cpp config.h
 	@mkdir -p $(dir $@)
-	$(CXX) $(PLUG_CFLAGS) $(TAGLIB_CFLAGS) $(PLUG_LINK) -o $@ $< $(TAGLIB_LIBS)
+	$(CXX) $(BASE_CXXFLAGS) $(CORE_CFLAGS) $(TAGLIB_CFLAGS) $(PLUG_LINK) -o $@ $< $(TAGLIB_LIBS)
 PLUGINS += lib/evidence/metadata/taglib.so
 endif
 
@@ -293,7 +294,7 @@ endif
 ifeq ($(ID3)$(IMLIB2),yesyes)
 lib/evidence/thumbnailer/id3.so: src/thumbnailer/id3/id3.cpp config.h
 	@mkdir -p $(dir $@)
-	$(CXX) $(PLUG_CFLAGS) $(IMLIB2_CFLAGS) $(ID3_CFLAGS) -shared -o $@ $< $(ID3_LIBS) $(IMLIB2_LIBS)
+	$(CXX) $(BASE_CXXFLAGS) $(CORE_CFLAGS) $(IMLIB2_CFLAGS) $(ID3_CFLAGS) -shared -o $@ $< $(ID3_LIBS) $(IMLIB2_LIBS)
 PLUGINS += lib/evidence/thumbnailer/id3.so
 endif
 

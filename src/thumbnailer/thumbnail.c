@@ -282,7 +282,7 @@ char *evidence_thumbnail_path(thumbnaildir td,const char *file,const char *ext) 
 static inline int evidence_thumb_hash_name(Evidence_Thumb *e) {
   int               n;
   MD5_CTX           ctx;
-  char              md5out[32];
+  char              md5out[2*MD5_HASHBYTES+1];
   unsigned char     hash[MD5_HASHBYTES];
   static const char hex[]="0123456789abcdef";
 

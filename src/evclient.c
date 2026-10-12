@@ -116,7 +116,7 @@ int ev_ipc_exit(Ecore_Ipc_Server **srv) {
 /**
  * dummy signal-handler for eCore (to ignore ^C)
  */
-int ev_ipc_sigexit(void *data, int type, void *event) {
+Eina_Bool ev_ipc_sigexit(void *data, int type, void *event) {
   return 0; }
 
 

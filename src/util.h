@@ -84,14 +84,14 @@ estring *estring_dst(estring *e);
 char    *estring_disown(estring *e);
 char    *estring_free(estring *e,int release_payload);   /* glib compat */
 size_t   estring_length(estring *e);
-int      estring_printf(estring *e,char *fmt, ...);
-int      estring_appendf(estring *e,char *fmt, ...);
+int      estring_printf(estring *e,const char *fmt, ...);
+int      estring_appendf(estring *e,const char *fmt, ...);
 int      estring_appendb(estring *e,size_t len,char *bytes);
 int      estring_truncate(estring *e,int size);
 #define  ESTRING_GET_CSTRING(a) ((a)->str)
 
-int      esprintf(char **result,char *fmt, ...);
-int      eappendf(char **result,char *fmt, ...);
+int      esprintf(char **result,const char *fmt, ...);
+int      eappendf(char **result,const char *fmt, ...);
 int      ejoin(char **result,char *delim, ...);
 int      ecat(char **result, ...);
 

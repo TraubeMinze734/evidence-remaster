@@ -152,8 +152,12 @@ struct _noir_job {
 
 
 /* get POSIXly correct readdir_r() prototypes on Suns */
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 199506L
+#endif
+#ifndef _POSIX_PTHREAD_SEMANTICS
 #define _POSIX_PTHREAD_SEMANTICS
+#endif
 
 
 

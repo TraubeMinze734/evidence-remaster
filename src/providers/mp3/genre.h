@@ -21,7 +21,7 @@
 #ifndef __GENRE_H__
 #define __GENRE_H__
 
-char *genre_table[] = {"Blues",
+const char *const genre_table[] = {"Blues",
                        "Classic Rock",
                        "Country",
                        "Dance",

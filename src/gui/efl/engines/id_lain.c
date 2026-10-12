@@ -197,7 +197,9 @@ int idle_func(void **data) {
 #endif
     evas_object_text_text_set(ctl->timer2,t2); }
 
-  (void)evas_render_updates(ctl->evas);
+  { Eina_List *ev_up=evas_render_updates(ctl->evas);
+    if(ev_up)
+      evas_render_updates_free(ev_up); }
 
   ctl->state=state;
 
