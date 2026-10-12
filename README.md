@@ -3,6 +3,7 @@
 This is an AI rewrite of the Evidence file manager for Enlightenment using GTK2 and EFL, which was originally written by Azundris in 2005.
 
 The original project for reference: https://sourceforge.net/projects/evidence/
+
 All credits for the original program go to Azundris!
 
 I used the Mistral-hosted GLM-5.3. I did this for fun and as a proof of concept for myself. Personally, I love the look of the old program and wanted to use it on my modern CachyOS. So it’s most likely unstable code since I have no idea what I’m doing! 
