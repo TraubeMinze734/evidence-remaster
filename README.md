@@ -14,7 +14,9 @@ Some parts of the program could not be ported since they relied on old backends 
 
 The AI also reworked the clipboard functionality and added GTK3 as a new backend, thats probably unstable tho.
 
-The makefile now installes a .destkop file for Evidence.
+The makefile also now installes a .destkop file for Evidence.
+
+According to the AI, there was a functionality to play Videos inside the file manager using emotion. It looks a bit out of place, so im not sure if it was actually there or if its an hallucination. Its in there now.
 
 For more details, you can take a look at the pull requests if you want to. These are written by Mistral as well tho, so maybe they are messy.
 
