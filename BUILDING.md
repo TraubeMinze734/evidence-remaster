@@ -32,26 +32,3 @@ derives from the same `PREFIX`.
 | libjpeg    | libjpeg                       | JPEG thumbnails                        |
 | PCRE       | libpcre                       | regex provider                         |
 | X11        | x11                           | desktop/window helpers                 |
-
-If neither GTK2 nor EFL is found, a **headless** stub backend
-(`src/gui/headless.c`) is linked instead: the core (model, filesystem,
-metadata, thumbnailer, IPC) runs, all GUI calls become no-ops. This is
-useful for CI and core testing.
-
-## Status / roadmap
-
-1. [x] New build system (`configure.sh` + `Makefile`), core builds headless
-2. [x] GTK2 backend build (needs gtk+-2.0 dev packages; code unchanged)  // verified on CachyOS (PR #18)
-   2b. [~] GTK3 build: `./configure.sh --with-gtk3` switches the GTK backend
-       to gtk+-3.0 (config.h gets HAVE_GTK3; all GTK3-removed APIs are behind
-       GTK_CHECK_VERSION(3,0,0) guards). GTK2 remains the default/tested path.
-3. [~] EFL backend: GTK2 icon-view/shelf embed an Evas canvas again.
-       The raw X11 engine setup was replaced by Evas' buffer engine, which
-       renders into a backing-store blitted to the GdkWindow via cairo
-       (modern EFL no longer installs the X11 engine headers).  The legacy
-       gradient API (`evas_object_gradient_*`), removed from modern EFL, is
-       reimplemented on top of EvasVG (see src/gui/efl/common/evas_compat.*);
-       the original theme engines build against it unmodified.  Engines
-       depending on dead libs (Edb, Ebits, Ebg) are not built.
-4. [ ] Replace/remove dead deps: Ebits, Edb (removed from EFL ~2004)
-5. [ ] Re-enable plugins (providers/actions/thumbnailer plugins)
