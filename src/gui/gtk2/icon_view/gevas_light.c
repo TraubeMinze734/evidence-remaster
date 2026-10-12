@@ -151,7 +151,17 @@ static void gevas_render_flush(void *data,Evas *e,void *event_info) {
   (void)e; (void)event_info;
   E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,gtk_widget_get_mapped(GTK_WIDGET(ev))?1:0);
   if(gtk_widget_get_realized(GTK_WIDGET(ev))) {
-    gtk_widget_queue_draw(GTK_WIDGET(ev));
+    /* only blit, never queue_draw() here.  this callback fires after
+       EVERY evas_render() -- including the one gevas_paint() performs
+       on GTK's behalf inside the draw/expose path.  queue_draw() from
+       here made GTK schedule another draw, which rendered again,
+       which queued another draw ... an endless full-canvas repaint
+       loop that kept a CPU core at 100% forever (GTK3 draws the whole
+       widget chain per frame, GTK2 exposed only damaged windows, so
+       this only surfaced under GTK3).  the blit covers frames plugins
+       render on their own (live video, tooltip fades) -- those must
+       reach the screen without an expose, which is exactly what the
+       idle blit does. */
     if(!ev->flush_idle)
       ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
 
