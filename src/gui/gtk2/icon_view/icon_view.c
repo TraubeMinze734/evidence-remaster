@@ -114,6 +114,8 @@ int icon_view_set_selection(void *data) {
  * @param ev      the GDK expose-event
  * @param data    the session
  */
+static gboolean iv_bg_created=FALSE;
+
 #if GTK_CHECK_VERSION(3,0,0)
 gboolean icon_view_exposed(GtkWidget *widget,cairo_t *cr,gpointer data) {
 #else
@@ -129,13 +131,16 @@ gboolean icon_view_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
         evas_obscured_rectangle_add(gevas_get_evas((GtkgEvas *)il->canvas),0,0,il->vis_w,il->vis_h);
         evas_obscured_clear((gevas_get_evas((GtkgEvas *)il->canvas)));
         if(gtk_widget_get_mapped(widget)) {
-          if(!il->bg) {
+          if(!il->bg&&!iv_bg_created) {
             noir_theme *theme=il->theme;
-
-            gtk_widget_hide(widget); gtk_widget_show(widget); gtk_widget_grab_focus(widget);
-
+            /* try the delayed background creation ONCE.  this handler
+               runs on every draw of the scroll-widget -- under GTK3 that
+               is once per frame, so a bg_new() that returns NULL bg
+               (e.g. pseudo-transparency without a wallpaper) retried
+               the hide/show/grab_focus dance on EVERY frame, which
+               queues more draws and keeps the loop alive. */
+            iv_bg_created=TRUE;
             theme->bg_new(theme,il,theme->iconview_bg);
-
             E(1,"%dx%d\n",il->vis_w,il->vis_h);
             E(1,"delayed background creation %s\n",il->bg?"succeeded.":"failed!?"); }
           evas_render(gevas_get_evas((GtkgEvas *)il->canvas)); }}}
