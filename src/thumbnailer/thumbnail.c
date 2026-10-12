@@ -2378,12 +2378,30 @@ E(0,"E\n");
  * @param h - the suggested height
  */
 Evas_Object *evas_thumbnail_dead_or_alive(void *t,Evas *evas,file_info *fi,int w,int h) {
-  Evas_Object *result=evas_thumbnail_live(t,evas,fi,w,h);
+  const char *mime=NULL,*tag=NULL;
+
+  /* big previews in the tooltip are for VIDEOS only:  for images, the
+     icon already shows the (scaled) picture, and a poster-sized still
+     in the tooltip hides the interesting part -- the metadata -- behind
+     a wall of pixels.  this function is only ever called from the
+     tooltip engines; the icon factories use evas_thumbnail_dead()
+     directly and are NOT affected by this gate. */
+  if(!fi)
+    return NULL;
+  tag=file_info_get_tag(fi);
+  if(!(mime=file_info_get_mime(fi)))
+    mime=tag?file_get_mime(tag):NULL;
+  if(!mime||strncasecmp(mime,"video/",6)) {
+    E(4,"no big preview for \"%s\" (%s) in tooltip -- videos only.\n",
+      tag?tag:"?",mime?mime:"unknown");
+    return NULL; }
+
+  { Evas_Object *result=evas_thumbnail_live(t,evas,fi,w,h);
   if(result) {
     E(0,"have live thumb...\n");
     return result; }
   E(0,"don't have live thumb, falling back on static thumbnail...\n");
-  return evas_thumbnail_dead(t,evas,fi); }
+  return evas_thumbnail_dead(t,evas,fi); } }
 
 
 
