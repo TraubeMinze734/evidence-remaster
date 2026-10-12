@@ -6,6 +6,8 @@ The original project for reference: https://sourceforge.net/projects/evidence/
 
 All credits for the original program go to Azundris and contributors!
 
+The latest source tarball was used for this: https://sourceforge.net/projects/evidence/files/evidence%20source/0.9.8/evidence-0.9.8-20050905.src.rpm
+
 I used the Mistral-hosted GLM-5.3. I did this for fun and as a proof of concept for myself. Personally, I love the look of the old program and wanted to use it on my modern CachyOS. So it’s most likely unstable code since I have no idea what I’m doing! 
 
 Some parts of the program could not be ported since they relied on old backends that dont exist anymore like gnomecanvas, epeg and ebg. Some themes are not gonna be installed by the makefile for similiar reasons.
