@@ -1,6 +1,6 @@
 # evidence-remaster
 
-This is an AI rewrite of the Evidence file manager for Enlightenment using GTK2 and EFL, which was originally written by Azundris in 2005.
+This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
 The original project for reference: https://sourceforge.net/projects/evidence/
 
