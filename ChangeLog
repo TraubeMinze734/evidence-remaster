@@ -1,3 +1,9 @@
+20xx/xx/xx  TraubeMinze734
+
+* remaster: removed dead weight -- 2003 autotools build, RPM/LSM/texinfo
+            packaging leftovers, generated 2005 Doxygen output, CVS metadata
+* README: new project README (removed, new, kept from the original)
+
 2005/07/28  Azundris                                 <evidence@azundris.com>
 
 * gevas_light: adjusted to match evas-API a/o 07/2005
