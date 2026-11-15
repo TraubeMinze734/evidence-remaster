@@ -1,5 +1,7 @@
 # evidence-remaster
 
+Current version: **10.0** (remaster of the original evidence 0.9.8).
+
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
 The original project for reference: https://sourceforge.net/projects/evidence/
