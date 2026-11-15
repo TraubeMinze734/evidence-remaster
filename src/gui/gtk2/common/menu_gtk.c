@@ -492,6 +492,27 @@ static gint root_menu_grid(GtkWidget *item,gpointer data) {
 
 
 
+/** request-packet for root_menu_switch2_idle() */
+typedef struct {
+  noir_sess *sess;
+  int        view;
+} switch2_req;
+
+
+
+/**
+ * deferred view-switch, runs as an idle in the plain main loop.
+ * @return FALSE (run once)
+ */
+static int root_menu_switch2_idle(void *data) {
+  switch2_req *r=(switch2_req *)data;
+  if(r) {
+    notebook_go2view(r->sess,r->view);
+    free(r); }
+  return FALSE; }
+
+
+
 /**
  * switch views from "root-menu".
  * @param item  the GTK menu-item that was activated.
@@ -499,9 +520,22 @@ static gint root_menu_grid(GtkWidget *item,gpointer data) {
  * @param data  the session.
  */
 static gint root_menu_switch2(GtkWidget *item,gpointer data) {
-  noir_sess **sess=(noir_sess **)data;
-  gpointer    para=g_object_get_data(G_OBJECT(item),"data");
-  notebook_go2view(*sess,GPOINTER_TO_INT(para));
+  noir_sess   **sess=(noir_sess **)data;
+  gpointer     para=g_object_get_data(G_OBJECT(item),"data");
+  switch2_req *r;
+
+  /* do NOT switch synchronously here: this handler runs inside the
+     menu's nested main-loop (menu_run() pumps mainloop_once()), and
+     gtk_notebook_set_current_page() -> switch-page -> noir_sess_focus()
+     -> do_cwd() ... then blocks on main-loop progress (scanner/GUI
+     handshake, nested loop iteration) -- freezing the menu and the UI.
+     deferring to an idle runs the switch in the plain main loop, exactly
+     like clicking the notebook tab. */
+  if((r=malloc(sizeof(switch2_req)))) {
+    r->sess=*sess;
+    r->view=GPOINTER_TO_INT(para);
+    idle_enter_add(0,root_menu_switch2_idle,r); }
+
   return FALSE; }
 
 
