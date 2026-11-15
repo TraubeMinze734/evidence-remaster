@@ -150,6 +150,9 @@ static void gevas_render_flush(void *data,Evas *e,void *event_info) {
   GtkgEvas *ev=(GtkgEvas *)data;
   (void)e; (void)event_info;
   E(4,"gevas_render_flush: ev=%p mapped=%d\n",ev,gtk_widget_get_mapped(GTK_WIDGET(ev))?1:0);
+  if(ev->in_paint)
+    return;   /* our own gevas_paint() render: it blits itself, and queue_draw()
+                 here would start the paint/render/expose feedback loop */
   if(gtk_widget_get_realized(GTK_WIDGET(ev))) {
     gtk_widget_queue_draw(GTK_WIDGET(ev));
     if(!ev->flush_idle)
@@ -551,7 +554,13 @@ static void gevas_paint(GtkgEvas *ev,GdkRectangle *area) {
 
   evas_damage_rectangle_add(ev->evas,area->x,area->y,area->width,area->height);
   evas_obscured_clear(ev->evas);
+  /* mark our own render: gevas_render_flush() must not queue_draw() for it
+     (we blit ourselves below) -- otherwise paint -> render -> queue_draw ->
+     expose -> paint becomes a self-sustaining full-canvas repaint loop
+     that starves the main loop (UI freeze) */
+  ev->in_paint=1;
   evas_render(ev->evas);
+  ev->in_paint=0;
 
   /* blit the rendered buffer into the GdkWindow.  the evas buffer engine
      writes premultiplied native-endian ARGB, which is exactly what cairo's

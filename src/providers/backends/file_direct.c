@@ -111,6 +111,9 @@ static void           *ht_mime=NULL,
 #ifdef HAVE_LIBMAGIC
 struct _libmagic      *libmagic=NULL;
 magic_t                magic=NULL;
+/* serializes magic_file() on the shared "magic" handle (libmagic is not
+   thread-safe; thumbnailer workers call file_get_mime() too) */
+static pthread_mutex_t magic_mutex=PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #ifdef HAVE_LIBSHAREDMIME
@@ -1118,7 +1121,15 @@ static inline char *mime_chk_backup(const char *file) {
 static inline const char *libmagic_get_mime(const char *file) {
   if(magic) {
     const char *m;
-    if((m=libmagic->magic_file(magic,file)))
+    /* one global magic_t handle is shared by all callers -- and with the
+       thumbnailer worker pool, worker threads reach this too (via
+       file_get_mime()).  libmagic is NOT thread-safe on a shared handle
+       (concurrent magic_file() corrupts its regex state -- seen as SIGABRT
+       inside re_compile_fastmap), so serialize the lookup. */
+    pthread_mutex_lock(&magic_mutex);
+    m=libmagic->magic_file(magic,file);
+    pthread_mutex_unlock(&magic_mutex);
+    if(m)
       return (char *)m; }
   return MIME_DK_TYPE; }
 #endif

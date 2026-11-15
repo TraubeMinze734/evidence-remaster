@@ -71,6 +71,9 @@ struct _GtkgEvas {
                                         MUST NOT be mixed up with current_idle: idle_enter_remove() would
                                         feed a GTK guint to ecore_idle_enterer_del() (SIGSEGV) */
   ulong           flush_last;        /* ms-timestamp of the last flush blit (rate-limit) */
+  int             in_paint;          /* inside gevas_paint()'s evas_render(): the RENDER_FLUSH_POST
+                                        callback must not queue_draw() then -- paint -> render ->
+                                        queue_draw -> expose -> paint would loop forever */
 
   GdkEvent      *current_event;     /* so that evas callbacks can get the gdk event.*/
 

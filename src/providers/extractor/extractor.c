@@ -15,8 +15,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include <stdio.h>
+
+/* libextractor keeps global state (plugin list, keyword tables) and is not
+   thread-safe; with the thumbnailer worker pool, meta extraction can be
+   triggered from worker threads (file_info_fetch()) while the GUI thread
+   scans a directory -- serialize all EXTRACTOR_* calls */
+static pthread_mutex_t extractor_mutex=PTHREAD_MUTEX_INITIALIZER;
 
 
 
@@ -152,7 +159,9 @@ int meta_get_for_file(noir_md *ret,char *file,noir_provider *prov) {
   if(meta_in_group(ret,"sortkey",NULL))
     return NOIR_IGNORED;
 
+  pthread_mutex_lock(&extractor_mutex);
   EXTRACTOR_extract(extractors,file,NULL,0,meta_add_cb,ret);
+  pthread_mutex_unlock(&extractor_mutex);
 
   return NOIR_SUCC; }
 

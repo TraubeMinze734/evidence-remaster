@@ -16,7 +16,10 @@
 #include "userconfig.h"
 
 /* how many seconds a thumbnailer gets before it is consider "stuck" and killed */
-#define THUMBNAILER_TIMEOUT 6
+/* watchdog per worker: must exceed the slowest legit thumbnailer operation
+   (emotion's EMOTION_OPEN_TIMEOUT is 10s + seek-settle), otherwise a batch
+   of slow videos trips the GC and the whole pool gets cancelled mid-flight */
+#define THUMBNAILER_TIMEOUT 30
 
 #include "errors.h"
 #include "thumbnail.h"
@@ -123,11 +126,15 @@ typedef struct _thumb_worker_arg {
 typedef struct _Evidence_Thumbnailer {
   pthread_mutex_t               qchg;   /**< frontend and backend shouldn't
                                              modify the Q at the same time */
+  pthread_cond_t                qmore;  /**< signalled on enqueue: workers wait on
+                                             this (with timeout) instead of exiting
+                                             immediately when the Q runs dry */
   queue_flags                   flags;  /**< engaged? */
   pthread_t                    *threads; /**< worker pool (THUMB_POOL_MAX slots) */
   int                           nspawned; /**< workers spawned in the current run */
   int                           active;   /**< workers still inside their loop */
   Evidence_Thumb              **current; /**< per-worker item currently processed */
+  time_t                       *ts_cur;  /**< per-worker start-time of current item (GC watchdog) */
   thumb_worker_arg             *wargs;   /**< per-worker thread args */
   time_t                        ts;     /**< when did thumbnailing the current file start? */
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
@@ -951,13 +958,16 @@ Evidence_Thumbnailer *thumbnailer_new(void) {
     E(0,"failed to initialize mutex: #%d - %s\n",errno,strerror(errno));
     free(t);
     return NULL; }
+  pthread_cond_init(&t->qmore,NULL);
 
   if(!(t->threads=calloc(THUMB_POOL_MAX,sizeof(pthread_t)))||
      !(t->current=calloc(THUMB_POOL_MAX,sizeof(Evidence_Thumb *)))||
+     !(t->ts_cur=calloc(THUMB_POOL_MAX,sizeof(time_t)))||
      !(t->wargs=calloc(THUMB_POOL_MAX,sizeof(thumb_worker_arg)))) {
     E(0,"failed to allocate worker-pool arrays: #%d - %s\n",errno,strerror(errno));
     free(t->threads);
     free(t->current);
+    free(t->ts_cur);
     free(t->wargs);
     pthread_mutex_destroy(&t->qchg);
     free(t);
@@ -1071,30 +1081,36 @@ static int thumbnailer_cxl(Evidence_Thumbnailer *t) {
  * @param t  the thumbnailer to check
  */
 static int thumbnailer_gc(Evidence_Thumbnailer *t) {
-  int ret=NOIR_IGNORED,cxl;
+  int    ret=NOIR_IGNORED,s,ncxl=0;
+  int    cxl[THUMB_POOL_MAX];
+  time_t now=time(NULL);
 
   if(!t)
     return NOIR_FAIL;
 
-  /* have we been trying to thumbnail for a long time? */
+  /* with a worker pool, "stuck" is per worker, not per queue: a batch of
+     slow-but-legit video opens must not trip the watchdog for the whole
+     pool (that mass-cancelled 16 workers mid-handshake and thrashed).
+     collect the stuck slots under qchg, cancel after unlocking (a worker
+     cancelled while holding qchg would deadlock the queue) */
   pthread_mutex_lock(&t->qchg);
-  cxl=((t->flags&QUEUE_SCANNING)&&((t->ts+THUMBNAILER_TIMEOUT)<time(NULL)))
-      ?TRUE
-      :FALSE;
+  if(t->flags&QUEUE_SCANNING)
+    for(s=0;s<t->nspawned;s++)
+      if(t->current[s]&&t->ts_cur[s]&&(t->ts_cur[s]+THUMBNAILER_TIMEOUT)<now) {
+        Evidence_Thumb *thumb=t->current[s];
+        E(2,"worker %d stuck on \"%s\" for >%ds, cancelling it (at %ld)...\n",
+          s,thumb->origfile?thumb->origfile:"???",THUMBNAILER_TIMEOUT,(long)now);
+        /* put the item back on the Q so it is retried (and free()'d) properly */
+        thumb->next=t->anchor;
+        t->anchor=thumb;
+        t->current[s]=NULL;
+        t->ts_cur[s]=0;
+        cxl[ncxl++]=s; }
   pthread_mutex_unlock(&t->qchg);
 
-  /* ...yes. cancel thumbnailer. */
-  if(cxl) {
-    E(2,"thumbnailer %p stuck, sending cancel (at %ld)...\n",t,time(NULL));
-    if((ret=thumbnailer_cxl(t))==NOIR_SUCC) {
-      /* The old 'restarting thumbnailer...' called thumbnailer_start()
-         right here, which joins a ZOMBIE thread -- but a zombie may
-         still be unwinding its (deferred-cancelled) handshake, which
-         needs THIS GUI thread's mainloop to run. Joining here deadlocks
-         (seen as a hang). The thumbnailer auto-restarts on the next
-         thumbnail_enqueue() anyway, which is the path normal operation
-         takes; the queue is preserved until then. */
-      E(2,"cancel sent; thumbnailer will restart on next enqueue\n"); }}
+  for(s=0;s<ncxl;s++)
+    if(!pthread_cancel(t->threads[cxl[s]]))
+      ret=NOIR_SUCC;
 
   return ret; }
 
@@ -1120,6 +1136,7 @@ Evidence_Thumbnailer *thumbnailer_dst(Evidence_Thumbnailer *t) {
     t->flags=QUEUE_NONE; }
 
   pthread_mutex_destroy(&t->qchg);
+  pthread_cond_destroy(&t->qmore);
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
   pthread_mutex_destroy(&t->task_wait);
@@ -1134,6 +1151,7 @@ Evidence_Thumbnailer *thumbnailer_dst(Evidence_Thumbnailer *t) {
       evidence_thumb_free(o); }}
   free(t->threads);
   free(t->current);
+  free(t->ts_cur);
   free(t->wargs);
   free(t);
 
@@ -1161,6 +1179,8 @@ int thumbnailer_enqueue(Evidence_Thumbnailer *t,Evidence_Thumb *thumb) {
 
   thumb->next=NULL;    /* leave this in. might be anything if item was
                           sent here from another queue! */
+
+  pthread_cond_broadcast(&t->qmore);   /* wake workers waiting on empty Q */
 
   pthread_mutex_unlock(&t->qchg);
 
@@ -1442,7 +1462,22 @@ static void *thumbnailer_generator(void *arg) {
   queue->active++;
   pthread_mutex_unlock(&queue->qchg);
 
-  while((thumb=thumbnailer_dequeue(queue))) {
+  for(;;) {
+    thumb=thumbnailer_dequeue(queue);
+    if(!thumb) {
+      /* Q ran dry: don't exit immediately -- items trickle in one by one
+         from the scanner, and a fresh pool that finds an empty Q would
+         shrink to a single worker.  wait a grace period, then give up. */
+      struct timespec wto;
+      clock_gettime(CLOCK_REALTIME,&wto);
+      wto.tv_sec+=2;
+      pthread_mutex_lock(&queue->qchg);
+      if(!queue->anchor)
+        pthread_cond_timedwait(&queue->qmore,&queue->qchg,&wto);
+      pthread_mutex_unlock(&queue->qchg);
+      if(!(thumb=thumbnailer_dequeue(queue)))
+        break; }
+
     E(3,"worker %d thumbnailing \"%s\"...\n",slot,thumb->origfile);
 
     /* if the thumbnailer-plugin hasn't been loaded yet, do it now --
@@ -1452,6 +1487,7 @@ static void *thumbnailer_generator(void *arg) {
 
     pthread_mutex_lock(&queue->qchg);
     queue->ts=time(NULL);
+    queue->ts_cur[slot]=queue->ts;
     queue->current[slot]=thumb;
     pthread_mutex_unlock(&queue->qchg);
 
@@ -1469,6 +1505,7 @@ static void *thumbnailer_generator(void *arg) {
 
     pthread_mutex_lock(&queue->qchg);
     queue->current[slot]=NULL;
+    queue->ts_cur[slot]=0;
     pthread_mutex_unlock(&queue->qchg);
 
     if(ret==NOIR_SUCC) {
