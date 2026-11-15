@@ -1,6 +1,6 @@
 # evidence-remaster
 
-Current version: **10.0** (remaster of the original evidence 0.9.8).
+Current version: **10.1** (remaster of the original evidence 0.9.8).
 
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
@@ -28,3 +28,19 @@ According to the AI, there was a functionality to play Videos inside the file ma
 make
 make install
 ```
+
+## Release notes
+
+### 10.1 (2026-11-15)
+
+- Real **Cancel button** in the job progress window: aborts running copy/move/delete jobs and removes partial copies; closing the window still just hides it
+- Credits dialog notes that this is a continuation of the original program, further developed with AI assistance
+- Icon lookup by file name is O(1) (hash table) instead of a linear scan per file event
+- Duplicate thumbnail requests are deduplicated instead of being rendered twice
+- `events_pending()` fallback for minimal builds no longer emits a `#warning`
+
+### 10.0 (2026-11-15)
+
+- Version 10.0
+- Build fixes: compiles with libpng but without Imlib2, `-Werror=format-security` error in the GTK dialogs fixed, `size_t` format warning fixed
+- `configure.sh` options: `--with-<feature>` / `--without-<feature>` for all optional dependencies, `--without-gtk2`/`--without-gtk3` (headless build), `--prefix=DIR`, `--help`
