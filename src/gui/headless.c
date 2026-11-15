@@ -85,6 +85,15 @@ int tooltip_cancel(noir_sess *ns) { (void)ns; return NOIR_SUCC; }
 noir_theme *theme_new(noir_sess *session) { (void)session; return NULL; }
 int theme_exit(noir_sess *ns) { (void)ns; return NOIR_SUCC; }
 int theme_idle_destall(noir_sess *ns) { (void)ns; return NOIR_SUCC; }
+int theme_get_iconsize(const noir_theme *t,int *w,int *h) { (void)t; if(w) *w=0; if(h) *h=0; return NOIR_FAIL; }
+ic_mode theme_get_iconmode(const noir_theme *t) { (void)t; return IC_NONE; }
+
+#ifdef HAVE_X
+#  include "gui/common/x11.h"
+Display *get_display(void)          { return NULL; }
+Window   get_root_window(void)      { return 0; }
+Window   get_widget_window(void *w) { (void)w; return 0; }
+#endif
 
 void icon_el_data_dst(void *data) { (void)data; }
 void icon_move(icon *i,int x,int y) { (void)i; (void)x; (void)y; }

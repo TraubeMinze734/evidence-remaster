@@ -81,10 +81,6 @@ endif
 ifneq ($(EFL),yes)
 GUI_SRC += src/gui/efl/common/theme.c src/gui/efl/common/theme_bind.c
 endif
-# without a canvas there is no icon-list backend; provide no-op stubs
-ifneq ($(EFL),yes)
-GUI_SRC += src/gui/iconlist_stub.c
-endif
 endif
 
 # efl backend
@@ -101,6 +97,9 @@ OBJS := $(CORE_OBJ) $(GUI_COMMON_OBJ) $(THUMBNAILER_OBJ) $(GUI_SRC:.c=.o) \
 
 ifeq ($(GTK2)$(EFL),nono)
 OBJS += src/gui/headless.o
+else ifneq ($(GTK2)$(EFL),yesyes)
+# no gevas canvas (needs GTK+Evas): no-op icon-list stubs satisfy the linker
+OBJS += src/gui/iconlist_stub.o
 endif
 
 # --- plugins -----------------------------------------------------------------
@@ -111,18 +110,23 @@ PLUGINS := lib/evidence/backend/posix.so lib/evidence/backend/null.so \
            lib/evidence/metadata/exif.so \
            lib/evidence/actions/null.so \
            lib/evidence/action/delete.so \
-           lib/evidence/action/rename.so \
-           lib/evidence/action/mkdir.so \
-           lib/evidence/action/info_dial.so \
            lib/evidence/action/newwindow.so \
            lib/evidence/action/backdrop.so \
            lib/evidence/action/tile.so \
-           lib/evidence/action/tag2name.so \
            lib/evidence/action/name2tag.so \
            lib/evidence/action/sortkey2name.so \
            lib/evidence/action/playlist.so \
            lib/evidence/action/searchable.so \
            lib/evidence/action/searchable_r.so
+
+# actions showing GTK dialogs (rename/mkdir/tag2name/info_dial) only exist
+# in a GTK build
+ifeq ($(GTK2),yes)
+PLUGINS += lib/evidence/action/rename.so \
+           lib/evidence/action/mkdir.so \
+           lib/evidence/action/tag2name.so \
+           lib/evidence/action/info_dial.so
+endif
 
 PLUG_CFLAGS := $(BASE_CFLAGS) $(CORE_CFLAGS)
 PLUG_LINK    := -shared -fPIC $(CORE_LIBS)
@@ -201,12 +205,14 @@ lib/evidence/actions/null.so: src/actions/null/null.c
 lib/evidence/action/delete.so: src/actions/delete/delete.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+ifeq ($(GTK2),yes)
 lib/evidence/action/rename.so: src/actions/rename/rename.c
 	@mkdir -p $(dir $@)
-	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
 lib/evidence/action/mkdir.so: src/actions/mkdir/mkdir.c
 	@mkdir -p $(dir $@)
-	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
+endif
 lib/evidence/action/newwindow.so: src/actions/newwindow/newwindow.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
@@ -216,9 +222,11 @@ lib/evidence/action/backdrop.so: src/actions/backdrop/backdrop.c
 lib/evidence/action/tile.so: src/actions/tile/tile.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
+ifeq ($(GTK2),yes)
 lib/evidence/action/tag2name.so: src/actions/tag2name/tag2name.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
+endif
 lib/evidence/action/name2tag.so: src/actions/name2tag/name2tag.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
@@ -236,9 +244,11 @@ lib/evidence/action/searchable_r.so: src/actions/searchable_r/searchable_r.c
 	$(CC) $(PLUG_CFLAGS) $(PLUG_LINK) -o $@ $<
 # properties dialog is GTK2-only; keep the plugin under action/ where
 # evidence.menu's internal handlers expect it
+ifeq ($(GTK2),yes)
 lib/evidence/action/info_dial.so: src/actions/properties/info_dial.c
 	@mkdir -p $(dir $@)
 	$(CC) $(PLUG_CFLAGS) $(GTK2_CFLAGS) $(PLUG_LINK) -o $@ $<
+endif
 
 # --- EFL theme engines -------------------------------------------------------
 # engine plugins (scrollbars, tooltips, icon frames, rubber-bands, ...) are
@@ -327,7 +337,7 @@ evidence: $(OBJS)
 	  -c -o $@ $<
 
 config.h config.mk: configure.sh
-	./configure.sh
+	./configure.sh $(CONFIGURE_ARGS)
 
 clean:
 	rm -f $(OBJS) evidence

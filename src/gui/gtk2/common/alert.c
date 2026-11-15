@@ -357,7 +357,7 @@ int form_dial(void *ns,alert_type at,alert_buttons ab,const char *msg,const char
 
   dialog=gtk_message_dialog_new(ns?GTK_WINDOW(noir_sess_get_window(ns)):NULL,
                                 GTK_DIALOG_DESTROY_WITH_PARENT,
-                                type,buttons,escaped);
+                                type,buttons,"%s",escaped);
 
   if(btxt) {
     if((butt=strdup(btxt))) {

@@ -10,9 +10,33 @@ works with modern toolchains. Use the new lightweight build instead:
 `configure.sh` uses pkg-config to detect optional dependencies and writes
 `config.h` and `config.mk`. Run `make install` to install the binary, setup files (mime.types,
 menus, providers), themes, icon-sets, plugins and theme engines below
-`PREFIX` (default `/usr/local`, override with `PREFIX=/usr make install`).
+`PREFIX` (default `/usr/local`, override with `--prefix=DIR`, `PREFIX=/usr make install`,
+or the `PREFIX` environment variable).
 The program finds its data via `PACKAGE_DATA_DIR`, which configure.sh
 derives from the same `PREFIX`.
+
+## Configure options
+
+Run `./configure.sh --help` for the full list. Every optional dependency is
+auto-detected by default and can be forced on or off:
+
+    ./configure.sh --with-gtk3                 # GTK3 instead of GTK2 GUI
+    ./configure.sh --without-imlib2            # build without Imlib2
+    ./configure.sh --without-gtk2 --without-gtk3   # no GTK frontend (headless build)
+    ./configure.sh --with-emotion --without-x11   # force one, disable another
+
+`--with-<feature>` fails with an error if the library is not found;
+`--without-<feature>` skips it even if present. Known features:
+`glib2 cairo efl imlib2 ecore-ipc ecore png jpeg pcre magic emotion extractor
+curl x11 acl vorbis taglib id3 freetype2 readline gtk`.
+
+Notes:
+
+- GTK is the window frontend; EFL is only used as the canvas inside it
+  (gevas). Without GTK there is no GUI, so `--without-gtk*` builds the
+  headless core (plus `evsh` if ecore-ipc is available).
+- The chosen options are stored in `config.mk` (`CONFIGURE_ARGS`), so a
+  plain `make` re-runs configure with the same options if needed.
 
 ## Detected dependencies
 

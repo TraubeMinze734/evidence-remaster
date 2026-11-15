@@ -548,7 +548,7 @@ int file_drop(noir_sess *ns,int type,guint info,const char *files,const char *tg
       default:
         break; }
 
-    E(2,"got |%s| %d\n",file,strlen(file));
+    E(2,"got |%s| %ld\n",file,(long)strlen(file));
 
     if(!l)
       ;

@@ -36,9 +36,21 @@
 
 #include <errno.h>
 #include <string.h>    /* memset() */
+#include <pthread.h>
 
 #include <fcntl.h>    /* O_RDONLY */
 #include <ctype.h>    /* tolower() */
+
+#include "imlib.h"                 /* IMLIB_ACQUIRE/RELEASE (no-ops without HAVE_IMLIB2) */
+#ifdef HAVE_IMLIB2
+#  define X_DISPLAY_MISSING
+#  include <Imlib2.h>
+#endif
+
+/** frontend and backend shouldn't use imlib2 at the same time, it's not
+ *  threadsafe.  we will always have the mutex, even if evidence proper
+ *  is not compiled with imlib2 support. */
+pthread_mutex_t       imlib_mutex=PTHREAD_MUTEX_INITIALIZER;
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
 #  include <sys/types.h>
@@ -57,11 +69,7 @@
 #  include "md5.h"
 #  include "file.h"
 
-#  ifdef HAVE_IMLIB2
-#    define X_DISPLAY_MISSING
-#    include "imlib.h"
-#    include <Imlib2.h>
-#  else
+#  ifndef HAVE_IMLIB2
 #    define DATA32 unsigned int
 #  endif
 #  include <limits.h>
@@ -120,10 +128,6 @@ typedef struct _Evidence_Thumbnailer {
 
 
 
-/** frontend and backend shouldn't use imlib2 at the same time, it's not
- *  threadsafe.  we will always have the mutex, even if evidence proper
- *  is not compiled with imlib2 support. */
-pthread_mutex_t       imlib_mutex;
 Evidence_Thumbnailer *thumbnailers=NULL,         /**< list of thumbnailers (one for now) */
                      *thumbnails_complete=NULL;  /**< list of complete thumbnails */
 
@@ -1556,9 +1560,7 @@ int thumbnail_init(const char *setup) {
   if(!(thumbnails_complete=thumbnailer_new()))
     return NOIR_FAIL;
 
-  if(pthread_mutex_init(&imlib_mutex,NULL)) {
-    E(0,"failed to initialize mutex: #%d - %s\n",errno,strerror(errno));
-    return NOIR_FAIL; }
+  /* imlib_mutex is statically initialized (PTHREAD_MUTEX_INITIALIZER) */
 
   do {
     if((p=evidence_thumbnail_path(dirs[i],NULL,NULL))) {
@@ -2413,6 +2415,7 @@ Evas_Object *evas_thumbnail_dead_or_alive(void *t,Evas *evas,file_info *fi,int w
  */
 Evas_Object *evas_object_from_imlib_image(Evas *evas,void *im) {
   Evas_Object *ret=NULL;
+#ifdef HAVE_IMLIB2
   int          w,h;
 
   if(im)
@@ -2436,6 +2439,11 @@ Evas_Object *evas_object_from_imlib_image(Evas *evas,void *im) {
     evas_object_color_set(ret,255,255,255, 255); }
 
   imlib_free_image();
+#else
+  /* no imlib2, no imlib images -- nothing we could convert */
+  (void)evas;
+  (void)im;
+#endif
   return ret; }
 
 

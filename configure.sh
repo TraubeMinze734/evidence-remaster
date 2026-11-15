@@ -11,82 +11,211 @@ PKG=${PKG_CONFIG:-pkg-config}
 say() { printf '%s\n' "$*"; }
 die() { say "ERROR: $*"; exit 1; }
 
-command -v "$PKG" >/dev/null 2>&1 || die "pkg-config not found. Install pkg-config first."
+usage() {
+  cat <<'USAGE'
+usage: ./configure.sh [options]
+
+GUI backend:
+  --with-gtk2              build the GTK2 GUI backend (default)
+  --with-gtk3              build the GTK3 GUI backend
+  --without-gtk            disable the GTK GUI backend
+  --without-gtk2           disable the GTK2 GUI backend
+  --without-gtk3           disable the GTK3 GUI backend
+
+optional features (auto-detected by default; override per feature):
+  --with-<feature>         require <feature> (error if not found)
+  --without-<feature>      disable <feature>
+  features: glib2 cairo efl imlib2 ecore-ipc ecore png jpeg pcre magic
+            emotion extractor curl x11 acl vorbis taglib id3 freetype2
+            readline gtk
+
+misc:
+  --prefix=DIR             installation prefix (default: /usr/local or $PREFIX)
+  --help                   show this help and exit
+
+environment:
+  PREFIX=DIR               same as --prefix=DIR
+  PKG_CONFIG=path          pkg-config binary to use
+USAGE
+}
+
+WITH_FEATURES=""
+WITHOUT_FEATURES=""
+CONFIGURE_ARGS="$*"
+
 for arg in "$@"; do
   case "$arg" in
-    --with-gtk3) GTK_MAJOR=3 ;;
-    --with-gtk2) GTK_MAJOR=2 ;;
-    *) die "unknown option: $arg (supported: --with-gtk2, --with-gtk3)" ;;
+    --help|-h)      usage; exit 0 ;;
+    --prefix=*)     PREFIX="${arg#--prefix=}" ;;
+    --with-gtk2)    GTK_MAJOR=2; WITH_FEATURES="$WITH_FEATURES gtk2" ;;
+    --with-gtk3)    GTK_MAJOR=3; WITH_FEATURES="$WITH_FEATURES gtk3" ;;
+    --without-gtk)  WITHOUT_FEATURES="$WITHOUT_FEATURES gtk" ;;
+    --without-gtk2) WITHOUT_FEATURES="$WITHOUT_FEATURES gtk2" ;;
+    --without-gtk3) WITHOUT_FEATURES="$WITHOUT_FEATURES gtk3" ;;
+    --with-*)       WITH_FEATURES="$WITH_FEATURES ${arg#--with-}" ;;
+    --without-*)    WITHOUT_FEATURES="$WITHOUT_FEATURES ${arg#--without-}" ;;
+    *) die "unknown option: $arg (try --help)" ;;
   esac
 done
+
+# known optional features (anything else in --with-/--without- is a typo)
+KNOWN_FEATURES="gtk gtk2 gtk3 glib2 cairo efl imlib2 ecore-ipc ecore png jpeg pcre magic emotion extractor curl x11 acl vorbis taglib id3 freetype2 readline"
+for _f in $WITH_FEATURES $WITHOUT_FEATURES; do
+  case " $KNOWN_FEATURES " in
+    *" $_f "*) ;;
+    *) die "unknown feature: --$_f (known: $KNOWN_FEATURES)" ;;
+  esac
+done
+
+# feat <name> -> on (--with-<name>), off (--without-<name>), auto (default)
+feat() {
+  case " $WITHOUT_FEATURES " in *" $1 "*) echo off; return ;; esac
+  case " $WITH_FEATURES " in *" $1 "*) echo on; return ;; esac
+  echo auto
+}
+
+command -v "$PKG" >/dev/null 2>&1 || die "pkg-config not found. Install pkg-config first."
 
 have_pc() { "$PKG" --exists "$@" 2>/dev/null; }
 pc_cflags() { "$PKG" --cflags "$@" 2>/dev/null; }
 pc_libs() { "$PKG" --libs "$@" 2>/dev/null; }
 
-GLIB2=no; if have_pc glib-2.0; then GLIB2=yes; GLIB2_CFLAGS=$(pc_cflags glib-2.0); GLIB2_LIBS=$(pc_libs glib-2.0); fi
+# detect <feature> <VAR> <pkg-config module...>
+#   auto: enable <VAR> if pkg-config finds all modules
+#   on:   require them (die if missing); off: skip detection entirely
+detect() {
+  _f=$1
+  _v=$2
+  shift 2
+  eval "${_v}=no; ${_v}_CFLAGS=; ${_v}_LIBS="
+  _st=$(feat "$_f")
+  if [ "$_st" = off ]; then
+    return 0
+  fi
+  if have_pc "$@"; then
+    _c=$(pc_cflags "$@")
+    _l=$(pc_libs "$@")
+    eval "${_v}=yes; ${_v}_CFLAGS=\$_c; ${_v}_LIBS=\$_l"
+  elif [ "$_st" = on ]; then
+    die "--with-$_f was requested, but pkg-config could not find: $*"
+  fi
+}
 
-# --- optional ------------------------------------------------------------
+# --- optional dependencies (each may be forced via --with-/--without-<feature>)
+detect glib2 GLIB2 glib-2.0
+
+# GTK GUI backend: --with-gtk2/--with-gtk3 select the major version,
+# --without-gtk/--without-gtk2/--without-gtk3 disable it; an explicit
+# --with-gtkN (or --with-gtk) requires the library and fails if missing
 GTK_PC=gtk+-2.0
 if [ "$GTK_MAJOR" = 3 ]; then GTK_PC=gtk+-3.0; fi
 GTK2=no
-if have_pc $GTK_PC; then GTK2=yes; GTK2_CFLAGS=$(pc_cflags $GTK_PC); GTK2_LIBS=$(pc_libs $GTK_PC); fi
-if [ "$GTK_MAJOR" = 3 ] && [ "$GTK2" = no ]; then
-  die "GTK3 requested (--with-gtk3) but gtk+-3.0 was not found by pkg-config."
+if [ "$(feat gtk)" != off ] && [ "$(feat "gtk$GTK_MAJOR")" != off ]; then
+  if have_pc $GTK_PC; then GTK2=yes; GTK2_CFLAGS=$(pc_cflags $GTK_PC); GTK2_LIBS=$(pc_libs $GTK_PC); fi
 fi
-CAIRO=no; if have_pc cairo; then CAIRO=yes; CAIRO_CFLAGS=$(pc_cflags cairo); CAIRO_LIBS=$(pc_libs cairo); fi
-EFL=no;   if have_pc evas ecore ecore-evas edje; then EFL=yes; EVAS_CFLAGS=$(pc_cflags evas ecore ecore-evas edje); EVAS_LIBS=$(pc_libs evas ecore ecore-evas edje); fi
-IMLIB2=no; if have_pc imlib2; then IMLIB2=yes; IMLIB2_CFLAGS=$(pc_cflags imlib2); IMLIB2_LIBS=$(pc_libs imlib2); fi
-ECOREIPC=no; if have_pc ecore-ipc; then ECOREIPC=yes; ECOREIPC_CFLAGS=$(pc_cflags ecore-ipc); ECOREIPC_LIBS=$(pc_libs ecore-ipc); fi
-ECORE=no;   if have_pc ecore; then ECORE=yes; ECORE_LIBS=$(pc_libs ecore); fi
-PNG=no;   if have_pc libpng; then PNG=yes; PNG_CFLAGS=$(pc_cflags libpng); PNG_LIBS=$(pc_libs libpng); fi
-JPEG=no;  if have_pc libjpeg; then JPEG=yes; JPEG_CFLAGS=$(pc_cflags libjpeg); JPEG_LIBS=$(pc_libs libjpeg); fi
-PCRE=no;  if have_pc libpcre; then PCRE=yes; PCRE_CFLAGS=$(pc_cflags libpcre); PCRE_LIBS=$(pc_libs libpcre); fi
-LIBMAGIC=no; if have_pc libmagic; then LIBMAGIC=yes; LIBMAGIC_CFLAGS=$(pc_cflags libmagic); LIBMAGIC_LIBS=$(pc_libs libmagic); fi
-EMOTION=no; if have_pc emotion; then EMOTION=yes; EMOTION_CFLAGS=$(pc_cflags emotion); EMOTION_LIBS=$(pc_libs emotion); fi
-EXTRACTOR=no; for ex in extractor libextractor; do if have_pc $ex; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=$(pc_cflags $ex); EXTRACTOR_LIBS=$(pc_libs $ex); break; fi; done
-if [ "$EXTRACTOR" = no ] && [ -f /usr/include/extractor.h ]; then EXTRACTOR=yes; EXTRACTOR_CFLAGS=""; EXTRACTOR_LIBS="-lextractor"; fi
-LIBCURL=no; if have_pc libcurl; then LIBCURL=yes; LIBCURL_CFLAGS=$(pc_cflags libcurl); LIBCURL_LIBS=$(pc_libs libcurl); fi
-X11=no;   if have_pc x11; then X11=yes; X11_CFLAGS=$(pc_cflags x11); X11_LIBS=$(pc_libs x11); fi
+if [ "$GTK2" = no ] && { [ "$(feat gtk)" = on ] || [ "$(feat "gtk$GTK_MAJOR")" = on ]; }; then
+  die "$GTK_PC was requested but was not found by pkg-config."
+fi
+
+detect cairo     CAIRO     cairo
+# EFL's flags live in EVAS_CFLAGS/EVAS_LIBS (not EFL_*), see config.mk
+detect efl       EFL       evas ecore ecore-evas edje
+if [ "$EFL" = yes ]; then
+  EVAS_CFLAGS=$(pc_cflags evas ecore ecore-evas edje)
+  EVAS_LIBS=$(pc_libs evas ecore ecore-evas edje)
+fi
+# EFL is only used as the canvas inside the GTK frontend (gevas); without a
+# GTK window system there is no GUI, so the build falls back to headless
+if [ "$GTK2" = no ] && [ "$EFL" = yes ]; then
+  say "note: no GTK frontend -- EFL canvas not used, building headless"
+  EFL=no
+  EVAS_CFLAGS=
+  EVAS_LIBS=
+fi
+detect imlib2    IMLIB2    imlib2
+detect ecore-ipc ECOREIPC  ecore-ipc
+detect ecore     ECORE     ecore
+detect png       PNG       libpng
+detect jpeg      JPEG      libjpeg
+detect pcre      PCRE      libpcre
+detect magic     LIBMAGIC  libmagic
+detect emotion   EMOTION   emotion
+detect curl      LIBCURL   libcurl
+detect x11       X11       x11
+detect freetype2 FT2       freetype2
+
+# libextractor: pkg-config module may be named extractor or libextractor,
+# plus the plain-header fallback
+EXTRACTOR=no
+if [ "$(feat extractor)" != off ]; then
+  if have_pc extractor; then
+    EXTRACTOR=yes; EXTRACTOR_CFLAGS=$(pc_cflags extractor); EXTRACTOR_LIBS=$(pc_libs extractor)
+  elif have_pc libextractor; then
+    EXTRACTOR=yes; EXTRACTOR_CFLAGS=$(pc_cflags libextractor); EXTRACTOR_LIBS=$(pc_libs libextractor)
+  elif [ -f /usr/include/extractor.h ]; then
+    EXTRACTOR=yes; EXTRACTOR_CFLAGS=""; EXTRACTOR_LIBS="-lextractor"
+  elif [ "$(feat extractor)" = on ]; then
+    die "--with-extractor was requested, but libextractor was not found."
+  fi
+fi
 # libacl is dlopen()ed at run-time (libacl_init in the posix backend), so we
 # only need the headers at compile time -- matching the 2005 configure.in
 # logic (--enable-acls, AC_CHECK_HEADER(sys/acl.h)).
 LIBACL=no
-if have_pc libacl; then
-  LIBACL=yes
-elif [ -f /usr/include/sys/acl.h ] || [ -f /usr/local/include/sys/acl.h ]; then
-  LIBACL=yes
+if [ "$(feat acl)" != off ]; then
+  if have_pc libacl; then
+    LIBACL=yes
+  elif [ -f /usr/include/sys/acl.h ] || [ -f /usr/local/include/sys/acl.h ]; then
+    LIBACL=yes
+  elif [ "$(feat acl)" = on ]; then
+    die "--with-acl was requested, but libacl was not found."
+  fi
 fi
 # --- meta-data provider libs (2005 configure.in: plugin-vorbis, plugin-id3, ---
 # --- plugin-taglib, plugin-ttf) ----------------------------------------------
-VORBIS=no; if have_pc vorbis vorbisfile; then VORBIS=yes; VORBIS_CFLAGS=$(pc_cflags vorbis vorbisfile); VORBIS_LIBS=$(pc_libs vorbis vorbisfile ogg); fi
-TAGLIB=no; if have_pc taglib; then TAGLIB=yes; TAGLIB_CFLAGS=$(pc_cflags taglib); TAGLIB_LIBS=$(pc_libs taglib); fi
+VORBIS=no
+if [ "$(feat vorbis)" != off ]; then
+  if have_pc vorbis vorbisfile; then
+    VORBIS=yes; VORBIS_CFLAGS=$(pc_cflags vorbis vorbisfile); VORBIS_LIBS=$(pc_libs vorbis vorbisfile ogg)
+  elif [ "$(feat vorbis)" = on ]; then
+    die "--with-vorbis was requested, but pkg-config could not find vorbis/vorbisfile."
+  fi
+fi
+detect taglib TAGLIB taglib
 # id3lib ships no pkg-config file (never did); match the 2005
 # AC_SEARCH_LIBS(ID3Tag_CreateIterator, "id3 -lz -lstdc++") by trying an
 # actual test-link against -lid3 -lz -lstdc++ with the id3/tag.h we found.
 ID3=no
-if have_pc id3; then
-  ID3=yes; ID3_CFLAGS=$(pc_cflags id3); ID3_LIBS=$(pc_libs id3)
-else
-  for inc in /usr/include /usr/local/include; do
-    if [ -f "$inc/id3/tag.h" ]; then
-      cat > /tmp/evidence_id3test.$$.cpp <<'TESTEOF'
+if [ "$(feat id3)" != off ]; then
+  if have_pc id3; then
+    ID3=yes; ID3_CFLAGS=$(pc_cflags id3); ID3_LIBS=$(pc_libs id3)
+  else
+    for inc in /usr/include /usr/local/include; do
+      if [ -f "$inc/id3/tag.h" ]; then
+        cat > /tmp/evidence_id3test.$$.cpp <<'TESTEOF'
 #include <id3.h>
 int main() { ID3Tag *t = ID3Tag_New(); (void)t; return 0; }
 TESTEOF
-      if c++ -I"$inc" /tmp/evidence_id3test.$$.cpp -lid3 -lz -o /tmp/evidence_id3test.$$.out 2>/dev/null; then
-        ID3=yes; ID3_CFLAGS="-I$inc"; ID3_LIBS="-lid3 -lz -lstdc++"
+        if c++ -I"$inc" /tmp/evidence_id3test.$$.cpp -lid3 -lz -o /tmp/evidence_id3test.$$.out 2>/dev/null; then
+          ID3=yes; ID3_CFLAGS="-I$inc"; ID3_LIBS="-lid3 -lz -lstdc++"
+        fi
+        rm -f /tmp/evidence_id3test.$$.cpp /tmp/evidence_id3test.$$.out
+        if [ "$ID3" = yes ]; then break; fi
       fi
-      rm -f /tmp/evidence_id3test.$$.cpp /tmp/evidence_id3test.$$.out
-      [ "$ID3" = yes ] && break
-    fi
-  done
+    done
+  fi
+  if [ "$ID3" = no ] && [ "$(feat id3)" = on ]; then
+    die "--with-id3 was requested, but id3lib was not found."
+  fi
 fi
-FT2=no;    if have_pc freetype2; then FT2=yes; FT2_CFLAGS=$(pc_cflags freetype2); FT2_LIBS=$(pc_libs freetype2); fi
 # readline for evsh (2005 configure.in: VL_LIB_READLINE)
 READLINE=no
-if [ -f /usr/include/readline/readline.h ] || [ -f /usr/local/include/readline/readline.h ]; then
-  READLINE=yes; READLINE_CFLAGS=""; READLINE_LIBS="-lreadline"
+if [ "$(feat readline)" != off ]; then
+  if [ -f /usr/include/readline/readline.h ] || [ -f /usr/local/include/readline/readline.h ]; then
+    READLINE=yes; READLINE_CFLAGS=""; READLINE_LIBS="-lreadline"
+  elif [ "$(feat readline)" = on ]; then
+    die "--with-readline was requested, but readline headers were not found."
+  fi
 fi
 
 if [ "$GTK2" = no ] && [ "$EFL" = no ]; then
@@ -163,6 +292,7 @@ esac
 {
   echo "# generated by configure.sh -- do not edit"
   echo "PREFIX ?= $PREFIX"
+  echo "CONFIGURE_ARGS ?= $CONFIGURE_ARGS"
   echo "GLIB2_CFLAGS ?= $GLIB2_CFLAGS"
   echo "GLIB2_LIBS ?= $GLIB2_LIBS"
   echo "GTK2 ?= $GTK2"
@@ -244,4 +374,10 @@ say "  libpng        $PNG"
 say "  libjpeg       $JPEG"
 say "  PCRE          $PCRE"
 say "  X11           $X11"
+if [ -n "$WITH_FEATURES" ]; then
+  say "  forced on:   $WITH_FEATURES"
+fi
+if [ -n "$WITHOUT_FEATURES" ]; then
+  say "  forced off:  $WITHOUT_FEATURES"
+fi
 say "Now run: make"
