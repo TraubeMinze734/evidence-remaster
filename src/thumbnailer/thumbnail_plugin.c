@@ -124,7 +124,15 @@ int thumbnail_plugin_load(thumbnail_plugin *tp) {
       const char *err;
       if(!(err=dlerror()))
         err="???";
-      E(0,"failed to load \"%s\": %s\n",tp->file,err);
+      /* a missing runtime dependency (e.g. libid3-3.8.so.3 after id3lib
+         was removed) is a deployment issue, not a plugin bug -- don't
+         scream at level 0 on every list-regenerate.  dlerror() text is
+         locale-dependent, so match both English and German glibc wording */
+      if(strstr(err,"shared object")||strstr(err,"Shared-Object")||
+         strstr(err,"shared library")||strstr(err,"Shared library"))
+        E(1,"skipping thumbnailer \"%s\", missing dependency: %s\n",tp->file,err);
+      else
+        E(0,"failed to load \"%s\": %s\n",tp->file,err);
       ret=NOIR_FAIL;
       goto fail; }}
 

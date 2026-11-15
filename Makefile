@@ -394,6 +394,13 @@ do-install:
 	cd $(DESTDIR)$(PREFIX)/share/evidence/icons && ln -sfn rephormed default
 	tar -xzf icons/emblems.tar.gz -C $(DESTDIR)$(PREFIX)/share/evidence/icons/ || true
 	install -d $(DESTDIR)$(PREFIX)/lib/evidence
+	# prune stale plugins from earlier installs first: a feature that is no
+	# longer built (e.g. id3.so when id3lib is gone) must not linger in the
+	# install dir -- the plugin loader would try it on every list-regenerate
+	# and fail on its missing dependencies.  symlinks (fsxs.so) are kept.
+	cd $(DESTDIR)$(PREFIX)/lib/evidence && find . -name '*.so' -type f | while read f; do \
+	  [ -f "$(CURDIR)/lib/evidence/$$f" ] || { echo "pruning stale plugin $$f"; rm -f "$$f"; }; \
+	done
 	cp -r lib/evidence/* $(DESTDIR)$(PREFIX)/lib/evidence/
 	cd $(DESTDIR)$(PREFIX)/lib/evidence/backend && ln -sfn posix.so fsxs.so
 
