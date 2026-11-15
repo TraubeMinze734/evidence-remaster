@@ -1575,6 +1575,18 @@ thumb_done:
 /* PUBLIC */
 /**********/
 
+static char *deferred_plugins_setup=NULL;
+
+static int thumbnail_plugins_init_idle(void *data) {
+  (void)data;
+  if(deferred_plugins_setup) {
+    thumbnail_plugins_init(deferred_plugins_setup);
+    free(deferred_plugins_setup);
+    deferred_plugins_setup=NULL; }
+  return FALSE; }   /* run once */
+
+
+
 /**
  * creates the directories we need for thumbnailing.
  * @return an error-code
@@ -1607,7 +1619,16 @@ int thumbnail_init(const char *setup) {
       free(p); }
   } while(dirs[i++]!=TD_FAIL_ME);
 
-  thumbnail_plugins_init(setup);
+  /* defer plugin loading until the main loop is running: on a cold cache
+     thumbnail_plugins_init() dlopen()s every thumbnailer and calls its
+     init -- e.g. emotion_init(), which creates EO objects.  doing that
+     before gui_start() (i.e. before the loop and its EO domain exist)
+     produces "Eo ID ... is not a valid object" floods and can crash later;
+     lazy loads afterwards happen with the loop already up. */
+  if(deferred_plugins_setup)
+    free(deferred_plugins_setup);
+  deferred_plugins_setup=strdup(setup?setup:"");
+  idle_enter_add(0,thumbnail_plugins_init_idle,NULL);
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
   /* default OFF: the fork()ed task process is fundamentally incompatible

@@ -486,7 +486,8 @@ int thumbnail_plugins_exit(void) {
     if(ht_mappings[c])
       hash_table_dst(&ht_mappings[c]);
 
-  hash_table_dst(&ht_plugins);
+  if(ht_plugins)   /* may be NULL if plugins were never inited (no main loop) */
+    hash_table_dst(&ht_plugins);
 
   return c; }
 

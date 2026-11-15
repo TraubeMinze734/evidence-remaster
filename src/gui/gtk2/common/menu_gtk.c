@@ -410,6 +410,12 @@ static int menu_create(action_context *ac,GtkWidget *menu) {
 
 
 
+/* >0 while menu_run()'s nested main loop is pumping; used to defer work
+   that must not run inside that nested loop (see root_menu_switch2_idle) */
+static int menu_loop_depth=0;
+
+
+
 /**
  * handle a menu.
  *
@@ -430,8 +436,10 @@ int menu_run(action_context *ac,void *menu) {
     form_alert(ns,"No entries in menu.\nDid you 'make install'?");
     ret=NOIR_NOTFOUND; }
   else {
+    menu_loop_depth++;
     while(!action_context_tst_flags(ac,AF_MENUDONE))
       mainloop_once();
+    menu_loop_depth--;
     ret=NOIR_SUCC; }
 
   return ret; }
@@ -507,6 +515,13 @@ typedef struct {
 static int root_menu_switch2_idle(void *data) {
   switch2_req *r=(switch2_req *)data;
   if(r) {
+    if(menu_loop_depth>0) {
+      /* still inside a menu's nested main loop: re-arm until we are back
+         in the plain main loop, exactly like a notebook tab click -- the
+         switch chain can block on loop progress and would deadlock the
+         nested menu loop */
+      idle_enter_add(0,root_menu_switch2_idle,r);
+      return FALSE; }
     notebook_go2view(r->sess,r->view);
     free(r); }
   return FALSE; }
