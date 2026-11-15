@@ -99,13 +99,15 @@ typedef enum {
   TN_MOUSEOVER_SKIP,
   TN_LIVE_SKIP,
   TN_PROTECTED,
-  TN_WORKERS
+  TN_WORKERS,
+  TN_LIVE,
+  TN_LIVE_SOUND
 } tn_tag_type;
 
 
 
 struct _tn_param {
-  int   mute,protected,workers;
+  int   mute,protected,workers,live,live_sound;
   char *icons_skip,*mouseover_skip,*live_skip;
 } tn_param;
 
@@ -193,6 +195,12 @@ static int thumbnail_num_listener(noir_prop_bag *b,noir_prop *e,int tag,void *da
       tnp->workers=val;
       if(tnp->workers<0)     tnp->workers=0;   /* 0 = auto */
       if(tnp->workers>THUMB_POOL_MAX) tnp->workers=THUMB_POOL_MAX;
+      break;
+    case TN_LIVE:
+      tnp->live=val?1:0;
+      break;
+    case TN_LIVE_SOUND:
+      tnp->live_sound=val?1:0;
       break;
     case TN_PROTECTED:
       tnp->protected=val;
@@ -1762,6 +1770,11 @@ int thumbnail_init(const char *setup) {
   if(!(thumbnails_complete=thumbnailer_new()))
     return NOIR_FAIL;
 
+  /* defaults for the live-thumbnail switches (prop defaults below fire the
+     listeners as well, but don't rely on ordering) */
+  tn_param.live=1;
+  tn_param.live_sound=1;
+
   /* imlib_mutex is statically initialized (PTHREAD_MUTEX_INITIALIZER) */
 
   do {
@@ -1796,6 +1809,8 @@ int thumbnail_init(const char *setup) {
 #endif
   prop_bag_prop_default(props_global,"thumbnail-mute",             "0",0,1,1);
   prop_bag_prop_default(props_global,"thumbnail-workers",          "0",0,1,THUMB_POOL_MAX);
+  prop_bag_prop_default(props_global,"thumbnail-live",             "1",0,1,1);
+  prop_bag_prop_default(props_global,"thumbnail-live-sound",       "1",0,1,1);
   prop_bag_prop_default(props_global,"thumbnail-icons-skip",       "audio/*",0,0,0);
   prop_bag_prop_default(props_global,"thumbnail-mouseover-skip",   "",0,0,0);
   prop_bag_prop_default(props_global,"thumbnail-live-skip",        "image/*,application/x-font-ttf",0,0,0);
@@ -1805,6 +1820,8 @@ int thumbnail_init(const char *setup) {
 #endif
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-mute",          thumbnail_num_listener,TN_MUTE,          &tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-workers",       thumbnail_num_listener,TN_WORKERS,       &tn_param);
+  prop_bag_prop_listen(props_global,LISTENER,"thumbnail-live",          thumbnail_num_listener,TN_LIVE,         &tn_param);
+  prop_bag_prop_listen(props_global,LISTENER,"thumbnail-live-sound",    thumbnail_num_listener,TN_LIVE_SOUND,   &tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-icons-skip",    thumbnail_str_listener,TN_ICONS_SKIP,    &tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-mouseover-skip",thumbnail_str_listener,TN_MOUSEOVER_SKIP,&tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-live-skip",     thumbnail_str_listener,TN_LIVE_SKIP,     &tn_param);
@@ -2518,9 +2535,17 @@ Evas_Object *evas_thumbnail_live(void *t,Evas *evas,file_info *fi,int w,int h) {
   const char       *mime=NULL,*tag;
   thumbnail_plugin *tp;
   int               ret;
-  thumbnail_plugin_capabilities what_we_want=(TP_VIDEO|TP_AUDIO); /* create with sound. this should be a global setting. ### FIXME */
+  thumbnail_plugin_capabilities what_we_want=(TP_VIDEO|TP_AUDIO);
 
 E(0,"A\n");
+
+  /* global switches: "thumbnail-live" 0 = no video playback in tooltips at
+     all (static thumbnail only); "thumbnail-live-sound" 0 = play muted */
+  if(!tn_param.live) {
+    E(2,"live thumbnails disabled (thumbnail-live=0), static only for \"%s\"\n",fi?file_info_get_tag(fi):"?");
+    return NULL; }
+  if(!tn_param.live_sound)
+    what_we_want&=~TP_AUDIO;
 
   if(!fi)
     return NULL;
