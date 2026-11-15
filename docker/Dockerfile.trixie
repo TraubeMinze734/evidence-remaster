@@ -1,0 +1,41 @@
+# Build and smoke-test evidence-remaster on Debian Trixie (base of Elive).
+#
+#   docker build -f docker/Dockerfile.trixie -t evidence-trixie .
+#   docker run --rm evidence-trixie
+#
+# or simply: ./docker/test-trixie.sh
+FROM debian:trixie
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Build deps (pkg-config modules match configure.sh's detect list) plus
+# xvfb for a GUI smoke test. id3lib is gone from Trixie -- configure.sh
+# auto-detects it as optional, so the mp3 metadata provider is skipped.
+# The EFL meta package was renamed libefl-all-dev -> libefl-dev between
+# bookworm and trixie, so probe which one exists.
+RUN apt-get update \
+    && if apt-cache show libefl-dev >/dev/null 2>&1; then EFL_PKG=libefl-dev; else EFL_PKG=libefl-all-dev; fi \
+    && apt-get install -y --no-install-recommends \
+    build-essential pkg-config make git ca-certificates \
+    libgtk2.0-dev libglib2.0-dev libcairo2-dev \
+    "$EFL_PKG" libemotion-dev \
+    libimlib2-dev libpng-dev libjpeg-dev libpcre3-dev \
+    libmagic-dev libextractor-dev libcurl4-openssl-dev \
+    libx11-dev libacl1-dev libvorbis-dev libtag1-dev \
+    libfreetype-dev libreadline-dev \
+    xvfb xauth \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src/evidence
+COPY . .
+
+# Pre-build the GTK2 backend during image build so a plain
+# `docker run` only has to execute the smoke tests.
+RUN ./configure.sh --without-gtk3 --with-gtk2 \
+    && make -j"$(nproc)" \
+    && make install
+
+COPY docker/smoke-test.sh /usr/local/bin/evidence-smoke-test
+RUN chmod +x /usr/local/bin/evidence-smoke-test
+
+CMD ["evidence-smoke-test"]
