@@ -73,6 +73,8 @@ static void print_help(char *name) {
   printf("-f, --without-border\tDo not \"decorate\" window (-F)\n");
   printf("-w, --without-tooltips\twhen mouse rests on a file-icon, don't open info box --\n\t \t \twait for a click of the middle mouse-button\n");
   puts("");
+  printf("--with-live-thumbnails\tplay videos inside tooltips (default)\n");
+  printf("--without-live-thumbnails\tdon't play videos inside tooltips,\n\t \t \tshow static thumbnail only\n");
 #ifdef HAVE_EVAS_GL
   printf("-E         \t \tset evas rendering engine (software_x11, gl_x11, ...)\n");
 #endif
@@ -103,6 +105,11 @@ static char *make_abs(noir_sess *ns,char *path) {
   else if(file_if_local(path))
     return file_compose_path(noir_sess_get_cwd(ns),path,NULL);
   return strdup(path); }
+
+
+
+/* long-only options (vals must not collide with chars returned by getopt) */
+enum { OPT_LIVE_THUMBS=256, OPT_NO_LIVE_THUMBS };
 
 
 
@@ -181,6 +188,14 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 
     {"without-tooltips",        0, 0, 'w'},
     {"disable-tooltips",        0, 0, 'w'},
+
+    {"with-live-thumbnails",     0, 0, OPT_LIVE_THUMBS},
+    {"live-thumbnails",          0, 0, OPT_LIVE_THUMBS},
+    {"enable-live-thumbnails",   0, 0, OPT_LIVE_THUMBS},
+
+    {"without-live-thumbnails",  0, 0, OPT_NO_LIVE_THUMBS},
+    {"no-live-thumbnails",       0, 0, OPT_NO_LIVE_THUMBS},
+    {"disable-live-thumbnails",  0, 0, OPT_NO_LIVE_THUMBS},
 
 
 
@@ -326,6 +341,16 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
       break;
     case 'w':
       ns->with_tooltips=0;
+      break;
+
+    case OPT_LIVE_THUMBS:
+      /* set before thumbnail_init(): the default registered there will not
+         override an existing prop and the listener fires immediately, so
+         this value survives for the whole session */
+      prop_bag_prop_set(props_global,"thumbnail-live","1");
+      break;
+    case OPT_NO_LIVE_THUMBS:
+      prop_bag_prop_set(props_global,"thumbnail-live","0");
       break;
 
 

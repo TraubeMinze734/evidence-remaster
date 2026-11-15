@@ -372,6 +372,16 @@ Do create a "shelf" area (temporary work area beneath the actual view).
 When mouse rests on a file-icon, open info box without waiting for a click
 of the middle mouse-button.
 .TP
+.B \-\-with\-live\-thumbnails
+Play videos inside tooltips (default).  May also be changed at runtime with
+"evsh set 0 thumbnail-live 1".
+.TP
+.B \-\-without\-live\-thumbnails
+Don't play videos inside tooltips; show the static thumbnail only.
+Equivalent to "evsh set 0 thumbnail-live 0", but permanent when given on
+the command line (e.g. in the desktop starter) -- properties are runtime-only
+otherwise and return to their defaults on each start.
+.TP
 .B \-Z, \-\-select
 Preselect a given file.  "evidence --select /foo/fonts --select /foo/src" will
 open a view on directory foo and preselects the items fonts and src.  This

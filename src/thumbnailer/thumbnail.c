@@ -67,6 +67,29 @@ pthread_mutex_t       imlib_mutex=PTHREAD_MUTEX_INITIALIZER;
 #  include "epeg/Epeg.h"
 #endif
 
+/* tn_param and the tags for its property listeners are needed whenever
+   HAVE_EVAS2 is set (the tooltip live-preview gates on tn_param.live), so
+   they must not live inside the HAVE_LIBPNG block below */
+typedef enum {
+  TN_MUTE,
+  TN_ICONS_SKIP,
+  TN_MOUSEOVER_SKIP,
+  TN_LIVE_SKIP,
+  TN_PROTECTED,
+  TN_WORKERS,
+  TN_LIVE,
+  TN_LIVE_SOUND
+} tn_tag_type;
+
+
+
+struct _tn_param {
+  int   mute,protected,workers,live,live_sound;
+  char *icons_skip,*mouseover_skip,*live_skip;
+} tn_param;
+
+
+
 #ifdef HAVE_LIBPNG
 #  include "evidence.h"
 #  include "md5.h"
@@ -90,26 +113,6 @@ pthread_mutex_t       imlib_mutex=PTHREAD_MUTEX_INITIALIZER;
 
 
 /*****************************************************************************/
-
-
-
-typedef enum {
-  TN_MUTE,
-  TN_ICONS_SKIP,
-  TN_MOUSEOVER_SKIP,
-  TN_LIVE_SKIP,
-  TN_PROTECTED,
-  TN_WORKERS,
-  TN_LIVE,
-  TN_LIVE_SOUND
-} tn_tag_type;
-
-
-
-struct _tn_param {
-  int   mute,protected,workers,live,live_sound;
-  char *icons_skip,*mouseover_skip,*live_skip;
-} tn_param;
 
 
 
