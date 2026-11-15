@@ -81,7 +81,9 @@ char *ipc_prop_list(const long serial) {
  */
 char *ipc_prop_desc(const long serial,const char *key) {
   noir_theme    *theme=noir_sess_get_theme(noir_sess_get_by_serial(serial));
-  noir_prop     *e=prop_bag_prop_get(theme->data,key);
+  noir_prop_bag *b=NULL;
+  /* global props (thumbnail-*, ...) live in props_global, not the theme bag */
+  noir_prop     *e=prop_bags_prop_get(2,&b,key,props_global,theme?theme->data:NULL);
   char          *ret;
 
   if(e&&(ret=prop_desc(e)))
@@ -99,7 +101,9 @@ char *ipc_prop_desc(const long serial,const char *key) {
 char *ipc_prop_get(const long serial,const char *key) {
   char          *v=NULL;
   noir_theme    *theme=noir_sess_get_theme(noir_sess_get_by_serial(serial));
-  noir_prop     *e=prop_bag_prop_get(theme->data,key);
+  noir_prop_bag *b=NULL;
+  /* global props (thumbnail-*, ...) live in props_global, not the theme bag */
+  noir_prop     *e=prop_bags_prop_get(2,&b,key,props_global,theme?theme->data:NULL);
 
   if(!e)
     return strdup("<no_such_property>");
@@ -122,9 +126,18 @@ char *ipc_prop_get(const long serial,const char *key) {
 int ipc_prop_set(const long serial,const char *key,const char *val) {
 #ifdef HAVE_EVAS2
   int ret;
-  noir_theme *theme=noir_sess_get_theme(noir_sess_get_by_serial(serial));
-  ret=prop_bag_prop_set(theme->data,key,(char *)val);
-  E(1,"set(%s->%s,\"%s\") => %d\n",theme->name,key,val,ret);
+  noir_theme    *theme=noir_sess_get_theme(noir_sess_get_by_serial(serial));
+  noir_prop_bag *b=NULL;
+  /* if the prop exists in the global bag, set it THERE so the global
+     listeners fire (thumbnail-live etc.); only fall back to the theme bag
+     for theme-local or unknown props */
+  noir_prop     *e=prop_bags_prop_get(2,&b,key,props_global,theme?theme->data:NULL);
+  if(e&&b==props_global) {
+    ret=prop_bag_prop_set(props_global,key,(char *)val);
+    E(1,"set(global->%s,\"%s\") => %d\n",key,val,ret); }
+  else {
+    ret=prop_bag_prop_set(theme->data,key,(char *)val);
+    E(1,"set(%s->%s,\"%s\") => %d\n",theme?theme->name:"?",key,val,ret); }
   return ret;
 #else
   return NOIR_NOTSUPP;

@@ -600,6 +600,12 @@ reconnect:
   if((ret=ev_ipc_init(&server,&cs))!=NOIR_SUCC)
     E(0,"%sconnect to " ECORE_IPC_PIPE " failed: %d\n",(cc>1)?"re":"",ret);
   else {
+    /* wait until the connection is actually up -- otherwise the first
+       command is written into a half-open socket (ENOTCONN ERR storm from
+       ecore_con, reply lost, looks like 'evsh is broken') */
+    { int i;
+      for(i=0;(i<500)&&(cs!=ONLINE);i++)
+        ecore_main_loop_iterate(); }
     while(1) {
       p=NULL;
       ecore_main_loop_iterate();
