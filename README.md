@@ -1,6 +1,6 @@
 # evidence-remaster
 
-Current version: **10.4** (remaster of the original evidence 0.9.8).
+Current version: **10.4.1** (remaster of the original evidence 0.9.8).
 
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
@@ -30,6 +30,12 @@ make install
 ```
 
 ## Release notes
+
+### 10.4.1 (2026-11-15)
+
+- Cold-start thumbnailer fixes: plugin init (emotion/gstreamer) is dispatched to the GUI thread instead of running in a worker (was: `Eo ID not valid` EINA errors, broken decoding, only a few thumbnails on a cold cache); pool mutexes are robust (a GC-cancelled worker can no longer wedge the pool); advisory file lock is non-blocking with cancel cleanup; emotion make-handshake is bounded and shutdown-aware — **quitting no longer hangs** in the worker join; video makes overlap instead of serializing
+- Fix garbage MIME-types from a libmagic result race (concurrent worker lookups overwrote the shared result buffer): affected files got a `.bin` icon and no thumbnail
+- New command-line options `--with-live-thumbnails` / `--without-live-thumbnails` (aliases: `--live-thumbnails`, `--enable-live-thumbnails`, `--no-live-thumbnails`, `--disable-live-thumbnails`) so `thumbnail-live` can be set persistently across starts (properties are runtime-only by design)
 
 ### 10.4 (2026-11-15)
 
