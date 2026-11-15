@@ -2646,6 +2646,13 @@ Evas_Object *evas_thumbnail_dead_or_alive(void *t,Evas *evas,file_info *fi,int w
       tag?tag:"?",mime?mime:"unknown");
     return NULL; }
 
+  /* live playback disabled (thumbnail-live=0)?  then no big preview at all
+     in the tooltip -- not even the static fallback, which would just cover
+     the meta-data text behind a wall of pixels */
+  if(!tn_param.live) {
+    E(4,"no big preview for \"%s\" in tooltip -- thumbnail-live=0\n",tag?tag:"?");
+    return NULL; }
+
   { Evas_Object *result=evas_thumbnail_live(t,evas,fi,w,h);
   if(result) {
     E(0,"have live thumb...\n");
