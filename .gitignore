@@ -4,3 +4,7 @@ config.h
 config.mk
 *.o
 evidence
+PROJECT_STATUS.md
+context.txt
+reference/
+docker/
