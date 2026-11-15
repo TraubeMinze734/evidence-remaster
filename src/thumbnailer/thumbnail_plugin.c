@@ -67,6 +67,55 @@ static void *ht_plugins=NULL;
    is thread-safe, but the check-then-init below is not (double init()) */
 static pthread_mutex_t plugin_load_mutex=PTHREAD_MUTEX_INITIALIZER;
 
+/* set by thumbnail_exit() before workers are joined (declared in
+   thumbnail_plugin.h) */
+int thumbnail_plugins_shutting_down=0;
+
+/* robust lock for plugin_load_mutex (EOWNERDEAD recovery, see
+   imlib_mutex_lock in thumbnail.c) */
+static void plugin_load_lock(void) {
+  int r=pthread_mutex_lock(&plugin_load_mutex);
+  if(r==EOWNERDEAD)
+    pthread_mutex_consistent(&plugin_load_mutex);
+  else if(r)
+    E(0,"pthread_mutex_lock(plugin_load_mutex): #%d - %s\n",r,strerror(r)); }
+
+#ifdef HAVE_EVAS2
+#  include <Ecore.h>
+#  include "evidence.h"   /* main_thread */
+
+/* handshake for running a plugin load in the GUI thread: plugin init()
+   (e.g. emotion_init() -> gstreamer/ecore EO objects) must happen in the
+   main thread's EO domain -- a worker doing it showed up as
+   "Eo ID ... is not a valid object" EINA errors and broken decoding.
+   heap-allocated: if the waiter times out (main loop dead at shutdown) and
+   leaves, the dispatched callback frees the struct via "abandoned". */
+typedef struct {
+  thumbnail_plugin *tp;
+  int               ret;
+  pthread_mutex_t   mtx;
+  pthread_cond_t    cond;
+  int               done;
+  int               abandoned;
+} plugin_load_hs;
+
+static void _plugin_load_in_main(void *data) {
+  plugin_load_hs *hs=(plugin_load_hs *)data;
+  int             ret;
+  pthread_mutex_lock(&hs->mtx);
+  if(hs->abandoned) {               /* waiter gave up: nobody will read ret */
+    pthread_mutex_unlock(&hs->mtx);
+    free(hs);
+    return; }
+  pthread_mutex_unlock(&hs->mtx);
+  ret=thumbnail_plugin_load(hs->tp);   /* recursion is safe: we ARE main now */
+  pthread_mutex_lock(&hs->mtx);
+  hs->ret=ret;
+  hs->done=1;
+  pthread_cond_signal(&hs->cond);
+  pthread_mutex_unlock(&hs->mtx); }
+#endif
+
 
 
 /*****************************************************************************/
@@ -106,7 +155,56 @@ int thumbnail_plugin_load(thumbnail_plugin *tp) {
   if(tp->lib)
     return NOIR_IGNORED;
 
-  pthread_mutex_lock(&plugin_load_mutex);
+#ifdef HAVE_EVAS2
+  if(!pthread_equal(pthread_self(),main_thread)) {
+    /* called from a thumbnailer worker: dispatch the load (dlopen + init)
+       to the GUI thread and wait for it.  plugin init may create EO
+       objects (emotion_init/gstreamer), which must live in the main
+       thread's domain -- done inline here it produced EINA "Eo ID not
+       valid" errors and left decoding broken for the whole session. */
+    plugin_load_hs *hs;
+    struct timespec wto;
+    int             i;
+
+    if(thumbnail_plugins_shutting_down)
+      return NOIR_FAIL;   /* exiting: main loop will never dispatch this */
+
+    if(!(hs=calloc(1,sizeof(plugin_load_hs))))
+      return NOIR_OOM;
+    hs->tp=tp;
+    pthread_mutex_init(&hs->mtx,NULL);
+    pthread_cond_init(&hs->cond,NULL);
+
+    ecore_main_loop_thread_safe_call_async(_plugin_load_in_main,hs);
+
+    /* wait in slices so we notice thumbnail_plugins_shutting_down (set at
+       exit, when the queued call will never run) without hanging */
+    clock_gettime(CLOCK_REALTIME,&wto);
+    wto.tv_sec+=30;
+    pthread_mutex_lock(&hs->mtx);
+    for(i=0;!hs->done&&!thumbnail_plugins_shutting_down;i++) {
+      struct timespec slice=wto;
+      slice.tv_sec=time(NULL)+1;   /* wake at least once a second */
+      if(slice.tv_sec>wto.tv_sec)
+        slice=wto;
+      if(pthread_cond_timedwait(&hs->cond,&hs->mtx,&slice)==ETIMEDOUT&&
+         slice.tv_nsec==wto.tv_nsec&&slice.tv_sec==wto.tv_sec)
+        break; }
+    if(hs->done) {
+      ret=hs->ret;
+      pthread_mutex_unlock(&hs->mtx);
+      pthread_mutex_destroy(&hs->mtx);
+      pthread_cond_destroy(&hs->cond);
+      free(hs);
+      return ret; }
+    /* timed out or shutting down: leave -- the dispatched callback (if it
+       ever runs) frees hs via "abandoned" */
+    hs->abandoned=1;
+    pthread_mutex_unlock(&hs->mtx);
+    return NOIR_FAIL; }
+#endif
+
+  plugin_load_lock();
 
   if(tp->lib) {   /* another worker loaded it while we waited */
     pthread_mutex_unlock(&plugin_load_mutex);
@@ -484,6 +582,16 @@ static int thumbnail_plugins_setup_load(const char *path,const char *file,thumbn
  * @param setup  the directory containing the setup
  */
 int thumbnail_plugins_init(const char *setup) {
+  /* robust plugin_load_mutex (a GC-cancelled worker must not leave it
+     locked forever); runs in the GUI thread before any worker exists */
+  {
+    pthread_mutexattr_t pattr;
+    pthread_mutexattr_init(&pattr);
+    pthread_mutexattr_setrobust(&pattr,PTHREAD_MUTEX_ROBUST);
+    pthread_mutex_destroy(&plugin_load_mutex);
+    pthread_mutex_init(&plugin_load_mutex,&pattr);
+    pthread_mutexattr_destroy(&pattr); }
+
   if(!(ht_plugins=hash_table_new(NULL,NULL)))
     return NOIR_OOM;
 
@@ -503,6 +611,8 @@ int thumbnail_plugins_init(const char *setup) {
  */
 int thumbnail_plugins_exit(void) {
   int               c=0;
+
+  thumbnail_plugins_shutting_down=1;   /* belt & braces: also set by thumbnail_exit() */
 
   for(c=0;c<TP_COUNT;c++)
     if(ht_mappings[c])

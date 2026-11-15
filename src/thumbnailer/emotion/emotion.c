@@ -138,6 +138,8 @@ typedef struct {
   pthread_cond_t  cond;
   int             done;
   int             finishing;   /* re-entrancy guard, see below */
+  int             abandoned;   /* worker gave up waiting (timeout/shutdown):
+                                  main side frees the heap ctx in finish() */
 } emotion_make_ctx;
 
 static void _emotion_make_finish(emotion_make_ctx *c) {
@@ -171,6 +173,13 @@ static void _emotion_make_finish(emotion_make_ctx *c) {
     evas_free(c->evas);
     c->evas=NULL; }
   pthread_mutex_lock(&c->mtx);
+  if(c->abandoned) {
+    /* the worker already gave up and will not touch c anymore -- we own it */
+    pthread_mutex_unlock(&c->mtx);
+    pthread_mutex_destroy(&c->mtx);
+    pthread_cond_destroy(&c->cond);
+    free(c);
+    return; }
   c->done=1;
   pthread_cond_signal(&c->cond);
   pthread_mutex_unlock(&c->mtx); }
@@ -183,6 +192,13 @@ static Eina_Bool _emotion_make_timer(void *data) {
      (see guard there): the object is already being torn down */
   if(c->finishing||c->done)
     return ECORE_CALLBACK_CANCEL;
+  { int ab;
+    pthread_mutex_lock(&c->mtx);
+    ab=c->abandoned;
+    pthread_mutex_unlock(&c->mtx);
+    if(ab) {   /* worker gave up: finish() frees the ctx */
+      _emotion_make_finish(c);
+      return ECORE_CALLBACK_CANCEL; } }
   len=emotion_object_play_length_get(c->em);
   if(len<=0.0) {
     /* still opening: give the mainloop time to breathe */
@@ -244,6 +260,16 @@ static Eina_Bool _emotion_make_timer(void *data) {
 
 static void _emotion_make_in_main(void *data) {
   emotion_make_ctx *c=(emotion_make_ctx *)data;
+  /* the worker gave up before we were dispatched (shutdown/timeout):
+     it will not touch c anymore -- we own and free it */
+  pthread_mutex_lock(&c->mtx);
+  if(c->abandoned) {
+    pthread_mutex_unlock(&c->mtx);
+    pthread_mutex_destroy(&c->mtx);
+    pthread_cond_destroy(&c->cond);
+    free(c);
+    return; }
+  pthread_mutex_unlock(&c->mtx);
   /* a private buffer canvas hosts the emotion object */
   if(!(c->evas=evas_new()))
     goto done;
@@ -424,12 +450,17 @@ int thumbnail_plugin_exit(thumbnail_plugin *tp) {
  */
 int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **data) {
 #  ifdef HAVE_EVAS2
-  emotion_make_ctx c;
+  emotion_make_ctx *c;
 
   (void)tp;
 
   if(!e->origfile||!data)
     return NOIR_NODATA;
+
+  /* exiting?  the main loop is gone, a dispatched make-machine would never
+     run and we would wait forever (exit hang).  bail out immediately. */
+  if(thumbnail_plugins_shutting_down)
+    return NOIR_FAIL;
   /* AUDIO GATE: audio files (m4a/mp4-audio & friends) are frequently
      detected as video/mp4 by libmagic since they share the MP4
      container. Emotion opens them, never decodes video, and the 10s
@@ -455,49 +486,90 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
        (l>=7&&!strcasecmp(e->origfile+l-7,".flac")))
       return NOIR_NOTSUPP; }
 
-  memset(&c,0,sizeof(c));
-  c.file=e->origfile;
+  /* heap-allocated: the make-machine (ecore_timer in the GUI thread)
+     dereferences c until it signals done -- if we ever give up waiting
+     (timeout/shutdown), c->abandoned tells the main side to free it, so c
+     must outlive this stack frame */
+  if(!(c=calloc(1,sizeof(emotion_make_ctx))))
+    return NOIR_OOM;
+  c->file=e->origfile;
 
-  pthread_mutex_init(&c.mtx,NULL);
-  pthread_cond_init(&c.cond,NULL);
+  pthread_mutex_init(&c->mtx,NULL);
+  pthread_cond_init(&c->cond,NULL);
 
   /* CANCEL-SAFETY: the make-machine runs an ecore_timer in the GUI
-     thread that dereferences THIS stack frame (c) until it signals
-     c.done.  The thumbnailer GC pthread_cancel()s stuck workers with
-     PTHREAD_CANCEL_ASYNCHRONOUS -- if that hit us mid-handshake, the
-     timer would keep running against a dead stack (futex error /
-     SIGABRT, as seen in the wild).  Deferred cancellation (the POSIX
-     default) makes us die only at well-defined cancellation points,
-     which none of the code below reaches before the handshake
-     completes; the GC's own join() then sees us exit cleanly. */
+     thread that dereferences c until it signals c.done.  The thumbnailer
+     GC pthread_cancel()s stuck workers -- if that hit us mid-handshake,
+     the timer would keep running against a dead thread (SIGABRT seen in
+     the wild).  Deferred cancellation (the POSIX default) makes us die
+     only at well-defined cancellation points, which none of the code
+     below reaches before the wait completes; the GC's own join() then
+     sees us exit cleanly. */
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
   pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED,NULL);
-  /* _emotion_make_in_main only starts the machine; the worker waits here
-     until the main-loop timer finishes (frame grabbed or timed out).  the
-     mainloop stays responsive the whole time, and the timeout bounds the
-     wait so a broken file can never wedge the thumbnailer thread. */
 
-  /* our caller (thumbnailer_generate) holds the imlib mutex while we
-     run.  the GUI thread needs that very mutex for its own imlib work
-     (theme engines like ix_rephormed, loading thumbnails), so waiting
-     for the GUI thread WITH the mutex held is a guaranteed ABBA
-     deadlock:  GUI waits for the mutex, we wait for the GUI.  drop the
-     mutex for the duration of the handshake and re-acquire it after;
-     the frame data is a plain malloc() copy, no imlib state is touched
-     while we don't hold the lock. */
+  /* our caller (thumbnailer_generate) holds video_make_mutex and the
+     imlib mutex while we run.  the GUI thread needs those very mutexes
+     for its own work (theme engines, loading thumbnails), so waiting for
+     the GUI thread WITH them held is a guaranteed ABBA deadlock:  GUI
+     waits for the mutex, we wait for the GUI.  drop both for the
+     duration of the handshake and re-acquire them after; the frame data
+     is a plain malloc() copy, no imlib state is touched while we don't
+     hold the lock.  dropping video_make_mutex also lets several video
+     makes overlap -- each has its own private buffer canvas. */
   IMLIB_RELEASE;
-  emotion_in_main(_emotion_make_in_main,&c);
-  pthread_mutex_lock(&c.mtx);
-  while(!c.done)
-    pthread_cond_wait(&c.cond,&c.mtx);
-  pthread_mutex_unlock(&c.mtx);
+  pthread_mutex_unlock(&video_make_mutex);
+
+  /* start the machine in the GUI thread (no handshake wait: the machine
+     signals c->done itself when finished) */
+  ecore_main_loop_thread_safe_call_async(_emotion_make_in_main,c);
+
+  /* wait until the main-loop timer machine finishes (frame grabbed or its
+     own deadline expired).  bounded: a broken file can never wedge this
+     worker, and at shutdown (main loop gone, machine never dispatched)
+     the shutting_down flag breaks the wait immediately. */
+  {
+    struct timespec wto,now,slice;
+    int             gave_up=0;
+    clock_gettime(CLOCK_REALTIME,&wto);
+    wto.tv_sec+=EMOTION_OPEN_TIMEOUT+5;   /* machine deadline + slack */
+    pthread_mutex_lock(&c->mtx);
+    while(!c->done) {
+      clock_gettime(CLOCK_REALTIME,&now);
+      if(now.tv_sec>wto.tv_sec||(now.tv_sec==wto.tv_sec&&now.tv_nsec>=wto.tv_nsec)||
+         thumbnail_plugins_shutting_down) {
+        gave_up=1;
+        break; }
+      /* wait in 1s slices so shutting_down (exit) is noticed immediately */
+      slice=now;
+      slice.tv_sec+=1;
+      if(slice.tv_sec>wto.tv_sec||(slice.tv_sec==wto.tv_sec&&slice.tv_nsec>wto.tv_nsec))
+        slice=wto;
+      pthread_cond_timedwait(&c->cond,&c->mtx,&slice); }
+    if(gave_up) {
+      /* main side frees c in _emotion_make_finish/_emotion_make_in_main */
+      c->abandoned=1;
+      pthread_mutex_unlock(&c->mtx);
+      /* re-acquire in the caller's lock order (video_make -> imlib) */
+      pthread_mutex_lock(&video_make_mutex);
+      IMLIB_ACQUIRE;
+      /* restore state AND type: the worker's GC-cancel is ASYNCHRONOUS */
+      pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+      pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
+      E(1,"gave up waiting for thumbnail of \"%s\"...\n",e->origfile);
+      return NOIR_FAIL; }
+    pthread_mutex_unlock(&c->mtx); }
+
+  pthread_mutex_lock(&video_make_mutex);
   IMLIB_ACQUIRE;
-  pthread_mutex_destroy(&c.mtx);
-  pthread_cond_destroy(&c.cond);
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
 
 
-  if(!c.frame) {
+  if(!c->frame) {
+    pthread_mutex_destroy(&c->mtx);
+    pthread_cond_destroy(&c->cond);
+    free(c);
     E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
     return NOIR_FAIL; }
   /* build an imlib image from the copied pixels.  we run in the worker
@@ -510,12 +582,15 @@ int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **
      premultiplied BGRA, which is exactly the byte order imlib uses
      internally, so a plain memcpy is also correct.) */
   {
-    Imlib_Image im=imlib_create_image(c.iw,c.ih);
+    Imlib_Image im=imlib_create_image(c->iw,c->ih);
     if(im) {
       imlib_context_set_image(im);
-      memcpy(imlib_image_get_data(),c.frame,(size_t)c.iw*c.ih*4);
+      memcpy(imlib_image_get_data(),c->frame,(size_t)c->iw*c->ih*4);
       imlib_image_set_has_alpha(1); }
-    free(c.frame);
+    free(c->frame);
+    pthread_mutex_destroy(&c->mtx);
+    pthread_cond_destroy(&c->cond);
+    free(c);
     if(!im) {
       E(1,"couldn't create thumbnail of \"%s\"...\n",e->origfile);
       return NOIR_FAIL; }

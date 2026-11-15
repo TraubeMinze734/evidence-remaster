@@ -42,6 +42,8 @@
 #include <pthread.h>
 
 #include <fcntl.h>    /* O_RDONLY */
+#include <sys/file.h> /* flock() */
+#include <unistd.h>  /* usleep() */
 #include <ctype.h>    /* tolower() */
 
 #include "imlib.h"                 /* IMLIB_ACQUIRE/RELEASE (no-ops without HAVE_IMLIB2) */
@@ -54,6 +56,18 @@
  *  threadsafe.  we will always have the mutex, even if evidence proper
  *  is not compiled with imlib2 support. */
 pthread_mutex_t       imlib_mutex=PTHREAD_MUTEX_INITIALIZER;
+
+#ifdef HAVE_IMLIB2
+/** robust variant of pthread_mutex_lock(&imlib_mutex): if the previous
+ *  owner was cancelled while holding the mutex (the thumbnailer GC
+ *  pthread_cancel()s stuck workers), the lock comes back EOWNERDEAD --
+ *  mark it consistent and carry on instead of hanging the whole pool. */
+int imlib_mutex_lock(void) {
+  int r=pthread_mutex_lock(&imlib_mutex);
+  if(r==EOWNERDEAD)
+    return pthread_mutex_consistent(&imlib_mutex)?r:0;
+  return r; }
+#endif
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
 #  include <sys/types.h>
@@ -153,6 +167,12 @@ typedef struct _Evidence_Thumbnailer {
   Evidence_Thumb               *anchor; /**< thumbnails to be processed */
   struct _Evidence_Thumbnailer *next;
 } Evidence_Thumbnailer;
+
+/* robust lock helpers (definitions below): a GC-cancelled worker may have
+   died holding qchg/video_make_mutex -- recover EOWNERDEAD instead of
+   wedging the whole pool */
+static void qchg_lock(Evidence_Thumbnailer *t);
+static void video_make_lock(void);
 
 
 
@@ -965,10 +985,15 @@ Evidence_Thumbnailer *thumbnailer_new(void) {
     return NULL;
   memset(t,0,sizeof(Evidence_Thumbnailer));
 
-  if(pthread_mutex_init(&t->qchg,NULL)) {
-    E(0,"failed to initialize mutex: #%d - %s\n",errno,strerror(errno));
-    free(t);
-    return NULL; }
+  { pthread_mutexattr_t qattr;
+    pthread_mutexattr_init(&qattr);
+    pthread_mutexattr_setrobust(&qattr,PTHREAD_MUTEX_ROBUST);
+    if(pthread_mutex_init(&t->qchg,&qattr)) {
+      E(0,"failed to initialize mutex: #%d - %s\n",errno,strerror(errno));
+      pthread_mutexattr_destroy(&qattr);
+      free(t);
+      return NULL; }
+    pthread_mutexattr_destroy(&qattr); }
   pthread_cond_init(&t->qmore,NULL);
 
   if(!(t->threads=calloc(THUMB_POOL_MAX,sizeof(pthread_t)))||
@@ -1034,7 +1059,7 @@ static int thumbnailer_cxl(Evidence_Thumbnailer *t) {
   if(!t)
     return ret;
 
-  pthread_mutex_lock(&t->qchg);
+  qchg_lock(t);
 
   if(t->flags==QUEUE_NONE)
     goto done;
@@ -1104,7 +1129,7 @@ static int thumbnailer_gc(Evidence_Thumbnailer *t) {
      pool (that mass-cancelled 16 workers mid-handshake and thrashed).
      collect the stuck slots under qchg, cancel after unlocking (a worker
      cancelled while holding qchg would deadlock the queue) */
-  pthread_mutex_lock(&t->qchg);
+  qchg_lock(t);
   if(t->flags&QUEUE_SCANNING)
     for(s=0;s<t->nspawned;s++)
       if(t->current[s]&&t->ts_cur[s]&&(t->ts_cur[s]+THUMBNAILER_TIMEOUT)<now) {
@@ -1179,7 +1204,7 @@ Evidence_Thumbnailer *thumbnailer_dst(Evidence_Thumbnailer *t) {
 int thumbnailer_enqueue(Evidence_Thumbnailer *t,Evidence_Thumb *thumb) {
   Evidence_Thumb *p;
 
-  pthread_mutex_lock(&t->qchg);
+  qchg_lock(t);
 
   if(!(p=t->anchor))   /* append */
     t->anchor=thumb;
@@ -1211,7 +1236,7 @@ static int thumbnailer_queued(Evidence_Thumbnailer *t,const char *origfile) {
   if(!t||!origfile)
     return 0;
 
-  pthread_mutex_lock(&t->qchg);
+  qchg_lock(t);
 
   { int s;
     for(s=0;s<t->nspawned&&!ret;s++)
@@ -1238,7 +1263,7 @@ static int thumbnailer_queued(Evidence_Thumbnailer *t,const char *origfile) {
 Evidence_Thumb *thumbnailer_dequeue(Evidence_Thumbnailer *t) {
   Evidence_Thumb *p=NULL,*e;
 
-  pthread_mutex_lock(&t->qchg);
+  qchg_lock(t);
 
   if((e=t->anchor)) {
     while(e->next) {
@@ -1267,7 +1292,35 @@ Evidence_Thumb *thumbnailer_dequeue(Evidence_Thumbnailer *t) {
    may block on imlib_mutex (e.g. evas_thumbnail_live) -- taking this mutex
    while holding imlib_mutex would close a deadlock cycle
    worker(imlib -> video_make) / worker(video_make -> mainloop) / main(imlib) */
-static pthread_mutex_t video_make_mutex=PTHREAD_MUTEX_INITIALIZER;
+/* not static: the emotion plugin releases it while its make-handshake runs
+   in the GUI thread (see thumbnail_private.h) so video makes can overlap */
+pthread_mutex_t video_make_mutex=PTHREAD_MUTEX_INITIALIZER;
+
+/** robust lock for video_make_mutex (EOWNERDEAD recovery, see
+ *  imlib_mutex_lock) */
+static void video_make_lock(void) {
+  int r=pthread_mutex_lock(&video_make_mutex);
+  if(r==EOWNERDEAD)
+    pthread_mutex_consistent(&video_make_mutex);
+  else if(r)
+    E(0,"pthread_mutex_lock(video_make_mutex): #%d - %s\n",r,strerror(r)); }
+
+/** robust lock for a queue's qchg: a GC-cancelled worker may have died
+ *  holding it -- recover instead of wedging the whole pool */
+static void qchg_lock(Evidence_Thumbnailer *t) {
+  int r=pthread_mutex_lock(&t->qchg);
+  if(r==EOWNERDEAD)
+    pthread_mutex_consistent(&t->qchg);
+  else if(r)
+    E(0,"pthread_mutex_lock(qchg): #%d - %s\n",r,strerror(r)); }
+
+/* cancellation cleanup: release the advisory lock if the GC pthread_cancel()s
+   us while we hold it -- thread death does NOT close the fd, so the flock
+   would stay held and block every other worker on the same file forever */
+static void file_lock_cleanup(void *arg) {
+  int fd=(int)(long)arg;
+  if(fd>=0)
+    file_unlock(fd); }
 
 static int thumbnailer_generate(Evidence_Thumb *thumb) {
   char           *file=thumb->origfile;
@@ -1284,8 +1337,29 @@ static int thumbnailer_generate(Evidence_Thumb *thumb) {
   if(!thumb->tp)
     return ret;
 
-  if((lock=file_lock(file,O_RDONLY,0))<0)
+  /* advisory lock on the original file, serializing against other PROCESSES
+     thumbnailing the same file.  non-blocking with retry: a blocking
+     flock() is not a cancellation point, so a pending cancel (GC watchdog /
+     exit) would never fire and the worker would hang here forever, wedging
+     the join at exit (seen in the wild).  usleep() IS a cancellation point,
+     so a pending cancel fires here, before we hold anything. */
+  lock=-1;
+  while(!thumbnail_plugins_shutting_down) {
+    int fd;
+    if((fd=open(file,O_RDONLY))<0)
+      break;
+    if(!flock(fd,LOCK_EX|LOCK_NB)) {
+      lock=fd;
+      break; }
+    close(fd);
+    usleep(100000); }
+  if(lock<0)
     E(0,"failed to acquire advisory lock on \"%s\"...\n",file);
+
+  /* pushed unconditionally (handler no-ops for fd<0) so that push and pop
+     stay lexically paired at function-body level -- required by the
+     pthread_cleanup_push/pop macros */
+  pthread_cleanup_push(file_lock_cleanup,(void *)(long)lock);
 
  try_thumbnail:
 
@@ -1316,7 +1390,7 @@ static int thumbnailer_generate(Evidence_Thumb *thumb) {
 
   /* video plugins first take video_make_mutex (lock order!), then imlib */
   if((thumb->tp->can&(TP_VIDEO|TP_AUDIO))&&!vlock) {
-    pthread_mutex_lock(&video_make_mutex);
+    video_make_lock();
     vlock=1; }
 
   IMLIB_ACQUIRE;
@@ -1366,8 +1440,7 @@ static int thumbnailer_generate(Evidence_Thumb *thumb) {
  done:
   if(vlock)
     pthread_mutex_unlock(&video_make_mutex);
-  if(lock>=0)
-    file_unlock(lock);
+  pthread_cleanup_pop(lock>=0?1:0);   /* runs file_lock_cleanup -> file_unlock */
 
   E((ret==NOIR_SUCC)?2:1,"%s => %d\n",thumb->origfile,ret);
 
@@ -1485,7 +1558,7 @@ static void *thumbnailer_generator(void *arg) {
   if(pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL))
     E(0,"couldn't set cancel-type, will not be able to cancel stuck thumbnailers the hard way...\n");
 
-  pthread_mutex_lock(&queue->qchg);
+  qchg_lock(queue);
   queue->active++;
   pthread_mutex_unlock(&queue->qchg);
 
@@ -1498,7 +1571,7 @@ static void *thumbnailer_generator(void *arg) {
       struct timespec wto;
       clock_gettime(CLOCK_REALTIME,&wto);
       wto.tv_sec+=2;
-      pthread_mutex_lock(&queue->qchg);
+      qchg_lock(queue);
       if(!queue->anchor)
         pthread_cond_timedwait(&queue->qmore,&queue->qchg,&wto);
       pthread_mutex_unlock(&queue->qchg);
@@ -1512,7 +1585,7 @@ static void *thumbnailer_generator(void *arg) {
        it will get thrown away with the task. */
     thumbnail_plugin_load(thumb->tp);
 
-    pthread_mutex_lock(&queue->qchg);
+    qchg_lock(queue);
     queue->ts=time(NULL);
     queue->ts_cur[slot]=queue->ts;
     queue->current[slot]=thumb;
@@ -1530,7 +1603,7 @@ static void *thumbnailer_generator(void *arg) {
     ret=thumbnailer_generate(thumb);
 #endif
 
-    pthread_mutex_lock(&queue->qchg);
+    qchg_lock(queue);
     queue->current[slot]=NULL;
     queue->ts_cur[slot]=0;
     pthread_mutex_unlock(&queue->qchg);
@@ -1543,7 +1616,7 @@ static void *thumbnailer_generator(void *arg) {
         thumbnail_failinfo_save(thumb->origfile,thumb->tp?file_name(thumb->tp->file):NULL,NULL);
       evidence_thumb_free(thumb); }}
 
-  pthread_mutex_lock(&queue->qchg);
+  qchg_lock(queue);
   queue->active--;
   if(!queue->active)   /* last worker out: queue is drained */
     queue->flags=(queue->flags|QUEUE_ZOMBIE)&(~QUEUE_SCANNING);
@@ -1584,7 +1657,7 @@ file_info *thumbnailer_pending(void) {
 static int thumbnailer_start(Evidence_Thumbnailer *t) {
   int ret=NOIR_SUCC,n,s;
 
-  pthread_mutex_lock(&t->qchg);
+  qchg_lock(t);
 
   if(t->flags&QUEUE_ZOMBIE) {
     /* join the cancelled workers of the previous run before respawning --
@@ -1598,7 +1671,7 @@ static int thumbnailer_start(Evidence_Thumbnailer *t) {
     pthread_mutex_unlock(&t->qchg);
     for(s=0;s<n;s++)
       pthread_join(t->threads[s],NULL);
-    pthread_mutex_lock(&t->qchg); }
+    qchg_lock(t); }
 
   if(t->flags&QUEUE_SCANNING) {
     E(4,"thumbnailer already active (top: \"%s\")...\n",t->anchor?t->anchor->origfile:"<empty>");
@@ -1778,7 +1851,21 @@ int thumbnail_init(const char *setup) {
   tn_param.live=1;
   tn_param.live_sound=1;
 
-  /* imlib_mutex is statically initialized (PTHREAD_MUTEX_INITIALIZER) */
+  /* make the shared mutexes robust: the GC pthread_cancel()s stuck workers,
+     and a worker dying while holding one of these must not leave it locked
+     forever (that wedged the whole pool and hung exit).  safe here: the
+     workers are not started yet and the GUI has not touched imlib either. */
+  {
+    pthread_mutexattr_t rattr;
+    pthread_mutexattr_init(&rattr);
+    pthread_mutexattr_setrobust(&rattr,PTHREAD_MUTEX_ROBUST);
+#ifdef HAVE_IMLIB2
+    pthread_mutex_destroy(&imlib_mutex);
+    pthread_mutex_init(&imlib_mutex,&rattr);
+#endif
+    pthread_mutex_destroy(&video_make_mutex);
+    pthread_mutex_init(&video_make_mutex,&rattr);
+    pthread_mutexattr_destroy(&rattr); }
 
   do {
     if((p=evidence_thumbnail_path(dirs[i],NULL,NULL))) {
@@ -2242,6 +2329,11 @@ static int thumbnail_failinfo_remove(char *fail) {
 int thumbnail_exit(void) {
   Evidence_Thumbnailer *t;
 
+  /* tell workers/plugins first: no new plugin loads, no new emotion
+     handshakes -- the main loop is already gone, so anything dispatched
+     now would never run and the workers would wait forever (exit hang) */
+  thumbnail_plugins_shutting_down=1;
+
   while((t=thumbnailers)) {
     thumbnailers=thumbnailers->next;
     thumbnailer_dst(t); }
@@ -2597,9 +2689,12 @@ E(0,"D  %s\n",tp->file);
      imlib_mutex here -- a worker may hold it while waiting for the main loop
      in an emotion make handshake, which would deadlock the GUI.  if the
      mutex is busy, skip the live thumbnail (the static one suffices). */
-  if(pthread_mutex_trylock(&imlib_mutex)) {
-    E(2,"imlib busy, skipping live thumbnail for \"%s\"\n",tag);
-    return NULL; }
+  { int tr=pthread_mutex_trylock(&imlib_mutex);
+    if(tr==EOWNERDEAD)           /* previous owner was cancelled mid-imlib */
+      pthread_mutex_consistent(&imlib_mutex);
+    else if(tr) {
+      E(2,"imlib busy, skipping live thumbnail for \"%s\"\n",tag);
+      return NULL; } }
 #else
   IMLIB_ACQUIRE;
 #endif

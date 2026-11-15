@@ -85,6 +85,11 @@ typedef struct _thumbnail_plugin {
 
 
 
+/* set by thumbnail_exit() before workers are joined: from then on, no
+   plugin (un)loads and no emotion handshakes may be started anymore (the
+   main loop is already gone and would never run them) */
+extern int thumbnail_plugins_shutting_down;
+
 thumbnail_plugin *thumbnail_plugin_find_by_mime(const char *mime,thumbnail_plugin_register_for type);
 int  thumbnail_plugin_load(thumbnail_plugin *tp);
 

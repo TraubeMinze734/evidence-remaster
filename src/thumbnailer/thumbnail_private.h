@@ -4,9 +4,14 @@
 #  include "config.h"
 
 #  include <time.h>
+#  include <pthread.h>
 
 #  define EXT_JPG  ".jpg"
 #  define EXT_PNG  ".png"
+
+/* serializes video makes; the emotion plugin releases it while its
+   make-handshake runs in the GUI thread, so video makes can overlap */
+extern pthread_mutex_t video_make_mutex;
 
 
 
