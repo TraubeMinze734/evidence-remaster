@@ -1125,12 +1125,21 @@ static inline const char *libmagic_get_mime(const char *file) {
        thumbnailer worker pool, worker threads reach this too (via
        file_get_mime()).  libmagic is NOT thread-safe on a shared handle
        (concurrent magic_file() corrupts its regex state -- seen as SIGABRT
-       inside re_compile_fastmap), so serialize the lookup. */
+       inside re_compile_fastmap), so serialize the lookup.  AND: the
+       returned pointer refers to magic's INTERNAL buffer, which the next
+       magic_file() call (any thread) overwrites -- copying it into a
+       thread-local buffer while still holding the mutex is required, or
+       callers see garbage MIME-strings (shown as "=> c..Z." in the log,
+       file got a .bin icon and no thumbnail). */
+    static __thread char mbuf[512];
     pthread_mutex_lock(&magic_mutex);
     m=libmagic->magic_file(magic,file);
-    pthread_mutex_unlock(&magic_mutex);
-    if(m)
-      return (char *)m; }
+    if(m) {
+      strncpy(mbuf,m,sizeof(mbuf)-1);
+      mbuf[sizeof(mbuf)-1]='\0';
+      pthread_mutex_unlock(&magic_mutex);
+      return mbuf; }
+    pthread_mutex_unlock(&magic_mutex); }
   return MIME_DK_TYPE; }
 #endif
 
