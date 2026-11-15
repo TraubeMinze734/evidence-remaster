@@ -21,6 +21,7 @@
 #include <limits.h>   /* PATH_MAX */
 #include <errno.h>
 #include <time.h>
+#include <pthread.h>
 
 #include "errors.h"
 #include "debug.h"
@@ -61,6 +62,11 @@ typedef struct _tnp_register {
 static void *ht_mappings[TP_COUNT];
 static void *ht_plugins=NULL;
 
+/* serializes thumbnail_plugin_load(): with a worker pool, several workers
+   can lazy-load the same not-yet-loaded plugin at once -- dlopen() itself
+   is thread-safe, but the check-then-init below is not (double init()) */
+static pthread_mutex_t plugin_load_mutex=PTHREAD_MUTEX_INITIALIZER;
+
 
 
 /*****************************************************************************/
@@ -100,6 +106,12 @@ int thumbnail_plugin_load(thumbnail_plugin *tp) {
   if(tp->lib)
     return NOIR_IGNORED;
 
+  pthread_mutex_lock(&plugin_load_mutex);
+
+  if(tp->lib) {   /* another worker loaded it while we waited */
+    pthread_mutex_unlock(&plugin_load_mutex);
+    return NOIR_IGNORED; }
+
   ret=dlmulti("thumbnail-plugin",tp->file,RTLD_NOW|RTLD_GLOBAL,&tp->lib,
               "!thumbnail_plugin_init !thumbnail_plugin_make ?thumbnail_plugin_exit ?thumbnail_plugin_live",
               &tp->init,&tp->make,&tp->exit,&tp->live);
@@ -121,12 +133,14 @@ int thumbnail_plugin_load(thumbnail_plugin *tp) {
 
   if((ret=tp->init(tp))>=0)
     tp->can=ret;
+  pthread_mutex_unlock(&plugin_load_mutex);
   return ret;
 
  fail:
   if(tp->lib) {
     dlclose(tp->lib);
     tp->lib=NULL; }
+  pthread_mutex_unlock(&plugin_load_mutex);
   return ret; }
 
 

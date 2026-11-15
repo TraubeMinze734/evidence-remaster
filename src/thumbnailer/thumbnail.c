@@ -95,15 +95,28 @@ typedef enum {
   TN_ICONS_SKIP,
   TN_MOUSEOVER_SKIP,
   TN_LIVE_SKIP,
-  TN_PROTECTED
+  TN_PROTECTED,
+  TN_WORKERS
 } tn_tag_type;
 
 
 
 struct _tn_param {
-  int   mute,protected;
+  int   mute,protected,workers;
   char *icons_skip,*mouseover_skip,*live_skip;
 } tn_param;
+
+
+
+/** max. worker threads in the thumbnailer pool (property "thumbnail-workers"
+ *  is clamped to this) */
+#define THUMB_POOL_MAX 16
+
+/** per-thread argument for the worker pool */
+typedef struct _thumb_worker_arg {
+  struct _Evidence_Thumbnailer *q;     /**< the queue */
+  int                           slot;  /**< index into threads[]/current[] */
+} thumb_worker_arg;
 
 
 
@@ -111,7 +124,11 @@ typedef struct _Evidence_Thumbnailer {
   pthread_mutex_t               qchg;   /**< frontend and backend shouldn't
                                              modify the Q at the same time */
   queue_flags                   flags;  /**< engaged? */
-  pthread_t                     thumbnailer;
+  pthread_t                    *threads; /**< worker pool (THUMB_POOL_MAX slots) */
+  int                           nspawned; /**< workers spawned in the current run */
+  int                           active;   /**< workers still inside their loop */
+  Evidence_Thumb              **current; /**< per-worker item currently processed */
+  thumb_worker_arg             *wargs;   /**< per-worker thread args */
   time_t                        ts;     /**< when did thumbnailing the current file start? */
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
   Evidence_Thumb               *task_thumbnail; /**< the thumbnail process by the thumbnailer (child-) process.  info is held for debug-info only and refs item in main-queue; item must not be released, only set NULL when done. */
@@ -122,7 +139,6 @@ typedef struct _Evidence_Thumbnailer {
   void                         *sigchld_handler_handle;
 #endif
   Evidence_Thumb               *anchor; /**< thumbnails to be processed */
-  Evidence_Thumb               *current; /**< thumbnails currently processed */
   struct _Evidence_Thumbnailer *next;
 } Evidence_Thumbnailer;
 
@@ -165,6 +181,11 @@ static int thumbnail_num_listener(noir_prop_bag *b,noir_prop *e,int tag,void *da
   switch(tag) {
     case TN_MUTE:
       tnp->mute=val;
+      break;
+    case TN_WORKERS:
+      tnp->workers=val;
+      if(tnp->workers<0)     tnp->workers=0;   /* 0 = auto */
+      if(tnp->workers>THUMB_POOL_MAX) tnp->workers=THUMB_POOL_MAX;
       break;
     case TN_PROTECTED:
       tnp->protected=val;
@@ -931,6 +952,17 @@ Evidence_Thumbnailer *thumbnailer_new(void) {
     free(t);
     return NULL; }
 
+  if(!(t->threads=calloc(THUMB_POOL_MAX,sizeof(pthread_t)))||
+     !(t->current=calloc(THUMB_POOL_MAX,sizeof(Evidence_Thumb *)))||
+     !(t->wargs=calloc(THUMB_POOL_MAX,sizeof(thumb_worker_arg)))) {
+    E(0,"failed to allocate worker-pool arrays: #%d - %s\n",errno,strerror(errno));
+    free(t->threads);
+    free(t->current);
+    free(t->wargs);
+    pthread_mutex_destroy(&t->qchg);
+    free(t);
+    return NULL; }
+
   t->ts=time(NULL);
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
@@ -941,6 +973,32 @@ Evidence_Thumbnailer *thumbnailer_new(void) {
 #endif
 
   return t; }
+
+
+
+/**
+ * how many worker threads to spawn for a queue run?
+ * @return pool size (>=1, <=THUMB_POOL_MAX)
+ */
+static int thumbnailer_pool_size(void) {
+  int n;
+
+#ifdef THUMBNAIL_IN_PROTECTED_MODE
+  /* protected mode forks one child per item and tracks it in single-slot
+     task_* state -- a pool would clobber it, so stay single-threaded there */
+  if(tn_param.protected)
+    return 1;
+#endif
+
+  if(tn_param.workers>0)
+    n=tn_param.workers;
+  else {
+    long c=sysconf(_SC_NPROCESSORS_ONLN);
+    n=(c>0)?(int)c:1; }
+
+  if(n<1) n=1;
+  if(n>THUMB_POOL_MAX) n=THUMB_POOL_MAX;
+  return n; }
 
 
 
@@ -968,20 +1026,29 @@ static int thumbnailer_cxl(Evidence_Thumbnailer *t) {
         E(0,"error %d \"%s\" killing thumbnailer task\n",errno,strerror(errno));
         ret=NOIR_FAIL; }
       else {
-        E(0,"sent SIGKILL to thumbnailer task for \"%s\"...\n",t->current?t->current->origfile:"???");
+        int s;
+        for(s=0;s<t->nspawned;s++)
+          if(t->current&&t->current[s])
+            break;
+        E(0,"sent SIGKILL to thumbnailer task for \"%s\"...\n",
+          (s<t->nspawned&&t->current)?t->current[s]->origfile:"???");
         ret=NOIR_PARTIAL; }
       goto done; }
 #endif
 
-    if(pthread_cancel(t->thumbnailer)) {
-      E(0,"failed to send cancel to thumbnailer!?\n");
-      ret=NOIR_FAIL;
-      goto done; }
-    else
-      t->flags=QUEUE_ZOMBIE; }
+    { int s,fail=0;
+      for(s=0;s<t->nspawned;s++)
+        if(pthread_cancel(t->threads[s]))
+          fail=1;
+      if(fail) {
+        E(0,"failed to send cancel to (some) thumbnailer thread(s)!?\n");
+        ret=NOIR_FAIL;
+        goto done; }
+      else
+        t->flags=QUEUE_ZOMBIE; } }
 
   if(t->flags&QUEUE_ZOMBIE) {
-    E(0,"sent cxl to thumbnailer @ %p/%lu/$%x...\n",t,(long)t->thumbnailer,t->flags);  /* ,t->current?t->current->origfile:"" */
+    E(0,"sent cxl to thumbnailer @ %p/%d workers/$%x...\n",t,t->nspawned,t->flags);
     /* DO NOT join here. The Emotion plugin defers cancellation while it
        handshakes with an ecore_timer in THIS (GUI/main) thread: blocking
        on pthread_join() would deadlock the very loop that must fire the
@@ -1045,12 +1112,12 @@ Evidence_Thumbnailer *thumbnailer_dst(Evidence_Thumbnailer *t) {
   thumbnailer_cxl(t);  /* check if thumbnailer is stuck; if so, kill it */
 
   if(t->flags&(QUEUE_ZOMBIE|QUEUE_SCANNING)) {
-    int ret;
-    E(1,"waiting for thumbnailer @ %p/%lu/$%x to finish...\n",t,(long)t->thumbnailer,t->flags);
-    if((ret=pthread_join(t->thumbnailer,NULL)))
-      E(0,"failed to join thread (%ld:%d): #%d - %s\n",(long)t->thumbnailer,t->flags,ret,strerror(ret));
-    else
-      t->flags=QUEUE_NONE; }
+    int s,ret;
+    E(1,"waiting for thumbnailer @ %p/%d workers/$%x to finish...\n",t,t->nspawned,t->flags);
+    for(s=0;s<t->nspawned;s++)
+      if((ret=pthread_join(t->threads[s],NULL)))
+        E(0,"failed to join worker %d (%d): #%d - %s\n",s,t->flags,ret,strerror(ret));
+    t->flags=QUEUE_NONE; }
 
   pthread_mutex_destroy(&t->qchg);
 
@@ -1059,19 +1126,15 @@ Evidence_Thumbnailer *thumbnailer_dst(Evidence_Thumbnailer *t) {
   pthread_cond_destroy(&t->task_waiting);
 #endif
 
-#if 0
-  if(t->current) {  /* put current item back into Q so it is free()'d properly */
-    t->current->next=t->anchor;
-    t->anchor=t->current;
-    t->current=NULL; }
-#endif
-
   if(t->anchor) {
     Evidence_Thumb *o;
     E(0,"thumbnailer still has items on-Q!?\n");
     while((o=t->anchor)) {
       t->anchor=o->next;
       evidence_thumb_free(o); }}
+  free(t->threads);
+  free(t->current);
+  free(t->wargs);
   free(t);
 
   return NULL; }
@@ -1119,9 +1182,12 @@ static int thumbnailer_queued(Evidence_Thumbnailer *t,const char *origfile) {
 
   pthread_mutex_lock(&t->qchg);
 
-  if(t->current&&t->current->origfile&&!strcmp(t->current->origfile,origfile))
-    ret=1;
-  else
+  { int s;
+    for(s=0;s<t->nspawned&&!ret;s++)
+      if(t->current[s]&&t->current[s]->origfile&&!strcmp(t->current[s]->origfile,origfile))
+        ret=1; }
+
+  if(!ret)
     for(e=t->anchor;e;e=e->next)
       if(e->origfile&&!strcmp(e->origfile,origfile)) {
         ret=1;
@@ -1194,7 +1260,13 @@ static int thumbnailer_generate(Evidence_Thumb *thumb) {
 
   /* we don't need no stinking imlib-wrapper!! */
   if(!(thumb->tp->can&TP_IMLIB)) {
+    /* TP_FILE plugins (e.g. epeg) use imlib2 internally without going
+       through the TP_IMLIB path, so they must hold imlib_mutex as well --
+       with a worker pool, two such makes would otherwise race each other
+       (and the GUI thread) inside imlib2, which is not threadsafe. */
+    IMLIB_ACQUIRE;
     ret=thumb->tp->make(thumb->tp,thumb,&im);
+    IMLIB_RELEASE;
     goto fallback; }
 
 #  ifdef HAVE_IMLIB2
@@ -1350,22 +1422,28 @@ static inline int thumbnailer_protected_generate(Evidence_Thumbnailer *t,Evidenc
 
 
 /**
- * the thumbnailing thread.
- * @param q - the queue of items to create thumbnails for
+ * one thumbnailing worker thread of the pool.
+ * @param arg - thumb_worker_arg (queue + slot)
  */
-static void *thumbnailer_generator(void *q) {
-  Evidence_Thumbnailer *queue=(Evidence_Thumbnailer *)q;
+static void *thumbnailer_generator(void *arg) {
+  thumb_worker_arg     *wa=(thumb_worker_arg *)arg;
+  Evidence_Thumbnailer *queue=wa->q;
+  int                   slot=wa->slot;
   Evidence_Thumb       *thumb;
   int                   ret;
 
-  E(3,"starts ------------------------\n");
+  E(3,"worker %d starts ------------------------\n",slot);
 
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,NULL);
   if(pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL))
     E(0,"couldn't set cancel-type, will not be able to cancel stuck thumbnailers the hard way...\n");
 
+  pthread_mutex_lock(&queue->qchg);
+  queue->active++;
+  pthread_mutex_unlock(&queue->qchg);
+
   while((thumb=thumbnailer_dequeue(queue))) {
-    E(3,"thumbnailing \"%s\"...\n",thumb->origfile);
+    E(3,"worker %d thumbnailing \"%s\"...\n",slot,thumb->origfile);
 
     /* if the thumbnailer-plugin hasn't been loaded yet, do it now --
        the generator might run in another task, if we load it there,
@@ -1374,7 +1452,7 @@ static void *thumbnailer_generator(void *q) {
 
     pthread_mutex_lock(&queue->qchg);
     queue->ts=time(NULL);
-    queue->current=thumb;
+    queue->current[slot]=thumb;
     pthread_mutex_unlock(&queue->qchg);
 
 #ifdef THUMBNAIL_IN_PROTECTED_MODE
@@ -1390,19 +1468,23 @@ static void *thumbnailer_generator(void *q) {
 #endif
 
     pthread_mutex_lock(&queue->qchg);
-    queue->ts=0;
+    queue->current[slot]=NULL;
     pthread_mutex_unlock(&queue->qchg);
 
     if(ret==NOIR_SUCC) {
-      E(3,"thumbnailed \"%s\"\n",thumb->origfile);
+      E(3,"worker %d thumbnailed \"%s\"\n",slot,thumb->origfile);
       thumbnailer_enqueue(thumbnails_complete,thumb); }
     else {
       if(ret!=NOIR_IGNORED)
         thumbnail_failinfo_save(thumb->origfile,thumb->tp?file_name(thumb->tp->file):NULL,NULL);
       evidence_thumb_free(thumb); }}
 
-  queue->flags=(queue->flags|QUEUE_ZOMBIE)&(~QUEUE_SCANNING);
-  E(3,"ends --------------------------\n");
+  pthread_mutex_lock(&queue->qchg);
+  queue->active--;
+  if(!queue->active)   /* last worker out: queue is drained */
+    queue->flags=(queue->flags|QUEUE_ZOMBIE)&(~QUEUE_SCANNING);
+  pthread_mutex_unlock(&queue->qchg);
+  E(3,"worker %d ends --------------------------\n",slot);
 
   return NULL; }
 
@@ -1432,27 +1514,48 @@ file_info *thumbnailer_pending(void) {
 
 
 /**
- * start thumbnailing thread (unless already running).
+ * start the thumbnailing worker pool (unless already running).
  * @param t - instance to start
  */
 static int thumbnailer_start(Evidence_Thumbnailer *t) {
-  int ret=NOIR_SUCC;
+  int ret=NOIR_SUCC,n,s;
 
   pthread_mutex_lock(&t->qchg);
 
   if(t->flags&QUEUE_ZOMBIE) {
-    pthread_join(t->thumbnailer,NULL);
-    t->flags&=(~(QUEUE_ZOMBIE|QUEUE_SCANNING)); }
+    /* join the cancelled workers of the previous run before respawning --
+       but NOT under qchg: a worker takes qchg once more on its way out
+       (active--), so joining while holding the lock would deadlock.
+       start() is only ever called from the GUI thread, so nothing can
+       interleave between unlock and relock here. */
+    n=t->nspawned;
+    t->nspawned=0;
+    t->flags&=(~(QUEUE_ZOMBIE|QUEUE_SCANNING));
+    pthread_mutex_unlock(&t->qchg);
+    for(s=0;s<n;s++)
+      pthread_join(t->threads[s],NULL);
+    pthread_mutex_lock(&t->qchg); }
 
   if(t->flags&QUEUE_SCANNING) {
     E(4,"thumbnailer already active (top: \"%s\")...\n",t->anchor?t->anchor->origfile:"<empty>");
     ret=NOIR_IGNORED; }
-  else if(pthread_create(&t->thumbnailer,NULL,thumbnailer_generator,t)) {
-    E(0,"couldn't start thumbnailer!?\n");
-    ret=NOIR_FAIL; }
   else {
-    E(2,"starting thumbnailer (top: \"%s\")...\n",t->anchor?t->anchor->origfile:"<empty>");
-    t->flags|=QUEUE_SCANNING; }
+    n=thumbnailer_pool_size();
+    for(s=0;s<n;s++) {
+      t->wargs[s].q=t;
+      t->wargs[s].slot=s;
+      if(pthread_create(&t->threads[s],NULL,thumbnailer_generator,&t->wargs[s])) {
+        E(0,"couldn't start thumbnailer worker %d/%d!?\n",s,n);
+        break; } }
+    if(!s) {
+      E(0,"couldn't start thumbnailer pool!?\n");
+      ret=NOIR_FAIL; }
+    else {
+      t->nspawned=s;
+      t->active=0;   /* workers increment this on entry */
+      E(2,"starting thumbnailer pool (%d worker%s, top: \"%s\")...\n",
+        s,(s==1)?"":"s",t->anchor?t->anchor->origfile:"<empty>");
+      t->flags|=QUEUE_SCANNING; } }
 
   t->ts=time(NULL);
 
@@ -1639,6 +1742,7 @@ int thumbnail_init(const char *setup) {
   prop_bag_prop_default(props_global,"thumbnail-protected-mode",   "0",0,1,1);
 #endif
   prop_bag_prop_default(props_global,"thumbnail-mute",             "0",0,1,1);
+  prop_bag_prop_default(props_global,"thumbnail-workers",          "0",0,1,THUMB_POOL_MAX);
   prop_bag_prop_default(props_global,"thumbnail-icons-skip",       "audio/*",0,0,0);
   prop_bag_prop_default(props_global,"thumbnail-mouseover-skip",   "",0,0,0);
   prop_bag_prop_default(props_global,"thumbnail-live-skip",        "image/*,application/x-font-ttf",0,0,0);
@@ -1647,6 +1751,7 @@ int thumbnail_init(const char *setup) {
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-protected-mode",thumbnail_num_listener,TN_PROTECTED,     &tn_param);
 #endif
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-mute",          thumbnail_num_listener,TN_MUTE,          &tn_param);
+  prop_bag_prop_listen(props_global,LISTENER,"thumbnail-workers",       thumbnail_num_listener,TN_WORKERS,       &tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-icons-skip",    thumbnail_str_listener,TN_ICONS_SKIP,    &tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-mouseover-skip",thumbnail_str_listener,TN_MOUSEOVER_SKIP,&tn_param);
   prop_bag_prop_listen(props_global,LISTENER,"thumbnail-live-skip",     thumbnail_str_listener,TN_LIVE_SKIP,     &tn_param);
