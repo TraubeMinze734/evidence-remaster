@@ -711,7 +711,9 @@ static void *backend_job_do(void *data) {
 /*    E(1,"unknown job type %d!?  id %ld, \"%s\", \"%s\"\n",job->type,job->id,job->srcs,job->dst_path?job->dst_path:""); */
       break; }
 
-  file_job_update(job,NOIR_JOB_DONE,NOIR_SUCC,NULL,NULL);
+  /* a canceled job reports NOIR_CANCELED, so the GUI can tell it apart
+     from a successful finish */
+  file_job_update(job,NOIR_JOB_DONE,job->canceled?NOIR_CANCELED:NOIR_SUCC,NULL,NULL);
 
   return NULL; }
 

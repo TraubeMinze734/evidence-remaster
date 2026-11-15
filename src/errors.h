@@ -2,6 +2,7 @@
 
 #  define ERRORS_H
 
+#  define NOIR_CANCELED    (-17)
 #  define NOIR_NOTSUPP     (-16)
 #  define NOIR_NOFILE      (-15)
 #  define NOIR_META_DLFAIL (-14)

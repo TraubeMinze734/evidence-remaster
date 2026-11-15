@@ -113,6 +113,7 @@ struct _noir_job {
   noir_job_type     type;        /**< job-type: copy/move/delete/... */
   int               status,      /**< job asks: show progress/ask/... */
                     err;         /**< error-code */
+  volatile int      canceled;    /**< user pressed Cancel in the progress window; backend polls this */
   action_flags      flags;       /**< UI flags: yes-to-all, cancel-all, ... */
   int               reply;       /**< UI says: skip/cancel/... */
   job_ui            callback;    /**< progress indicator */
@@ -140,7 +141,8 @@ struct _noir_job {
                    *user3,       /**< the progress indicator plugin can save state here, default GTK2 PI: label */
                    *user4,       /**< the progress indicator plugin can save state here, default GTK2 PI: progress-bar 1, bytes in file */
                    *user5,       /**< the progress indicator plugin can save state here, default GTK2 PI: progress-bar 2, bytes in job */
-                   *user6;       /**< the progress indicator plugin can save state here, default GTK2 PI: progress-bar 3, files in job */
+                   *user6,       /**< the progress indicator plugin can save state here, default GTK2 PI: progress-bar 3, files in job */
+                   *user7;       /**< the progress indicator plugin can save state here, default GTK2 PI: cancel-button (user1..user7 stay contiguous for form_modeless_destroyed) */
   char             *challenge;   /**< challenge text ("this file-name is taken!") */
   const char       *buttons;     /**< buttons for dialog box (NOIR_JOB_QUESTION only) */
   char            **edit;        /**< a file-name to edit (NOIR_JOB_EDIT only) */
@@ -247,6 +249,7 @@ int              file_job_stats(noir_job *job,ulong fbt,ulong fbc,ulong fno,ulon
 int              file_job_progress_show_all(void);
 int              file_job_edt(noir_job *,const char *,char **);
 int              file_job_ask(noir_job *,const char *,const char *,...);
+int              file_job_cancel(noir_job *);
 
 /* init/exit */
 int              file_init(q_head *,const char *);

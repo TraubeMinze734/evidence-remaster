@@ -187,6 +187,10 @@ static inline int posix_copy_data(noir_job *job,const char *src_path,struct stat
     int  num_read;
     char write_hole=FALSE;
 
+    if(job&&job->canceled) {   /* Cancel pressed in the progress window */
+      ret=NOIR_CANCELED;
+      goto done; }
+
     if((num_read=read(src_fd,buf,block_size))<0) {
       if(errno==EINTR)
         continue;
@@ -260,9 +264,11 @@ static inline int posix_copy_data(noir_job *job,const char *src_path,struct stat
     free(buf);
   if(src_fd>=0)
     close(src_fd);
-  if(dst_fd>=0)
+  if(dst_fd>=0) {
     close(dst_fd);
-  
+    if(ret==NOIR_CANCELED)
+      unlink(dst_path); }   /* drop the partial copy on cancel */
+
   return ret; }
   }  /* end of last_stats scope */
 
@@ -484,6 +490,9 @@ static int file_copy(noir_job *job,const char *src_path,struct stat *src_st,cons
 
   E(1,"\"%s\" to \"%s\"\n",src_path,dst_path);
 
+  if(job&&job->canceled)
+    D_RETURN_(FALSE);
+
   if(backend_exists(dst_path)&&
       posix_files_identical(src_path,dst_path)==TRUE) {
     E(0,"files identical, aborting.\n");
@@ -617,6 +626,10 @@ static int dir_copy(noir_job *job,const char *src_path,struct stat *src_st,const
     if(!strcmp(de_ptr->d_name,".")||!strcmp(de_ptr->d_name,".."))
       continue;
 
+    if(job&&job->canceled) {
+      success=FALSE;
+      break; }
+
     snprintf(src_ptr,MAXPATHLEN-src_len,"%s",de_ptr->d_name);
     snprintf(dst_ptr,MAXPATHLEN-dst_len,"%s",de_ptr->d_name);
 
@@ -731,6 +744,10 @@ static int dir_move(noir_job *job,const char *src_path,const char *dst_path) {
     if(!strcmp(de_ptr->d_name,".")||!strcmp(de_ptr->d_name,".."))
       continue;
 
+    if(job&&job->canceled) {
+      E(1,"canceled.\n");
+      goto error_exit; }
+
     snprintf(src_ptr,MAXPATHLEN-src_len,"%s",de_ptr->d_name);
     snprintf(dst_ptr,MAXPATHLEN-dst_len,"%s",de_ptr->d_name);
 
@@ -779,7 +796,7 @@ static int dir_move(noir_job *job,const char *src_path,const char *dst_path) {
 
 
 
-static int  file_remove(const char *path,struct stat *st) {
+static int  file_remove(noir_job *job,const char *path,struct stat *st) {
   char           s[MAXPATHLEN];
   char          *s_ptr;
   int            s_len;
@@ -814,7 +831,11 @@ static int  file_remove(const char *path,struct stat *st) {
     for(READDIR(dir,de,de_ptr);de_ptr;READDIR(dir,de,de_ptr)) {
       if(!strcmp(de_ptr->d_name,".")||!strcmp(de_ptr->d_name,".."))
         continue;
-  
+
+      if(job&&job->canceled) {
+        closedir(dir);
+        return NOIR_CANCELED; }
+
       snprintf(s_ptr,MAXPATHLEN-s_len,"%s",de_ptr->d_name);
   
       if(posix_remove(s)==NOIR_SUCC) {
@@ -829,7 +850,7 @@ static int  file_remove(const char *path,struct stat *st) {
       if(S_ISDIR(st2.st_mode)) {
         int r2;
         /* It's a directoy -- remove recursively */
-        if((r2=file_remove(s,&st2))!=NOIR_SUCC) {
+        if((r2=file_remove(job,s,&st2))!=NOIR_SUCC) {
           closedir(dir);
           return r2; }}
       else {
@@ -878,11 +899,14 @@ int cp_fs_obj(noir_job *job,int num_files,const char **paths,FsOpt ops) {
   if((num_files>2)&&orig_dst_stat_succeeded&&!S_ISDIR(dst_st.st_mode)) {
     errno=EINVAL;
     D_RETURN_(FALSE); }
-  
+
   /* Go through all files and copy to target (which
      is the last file in the char** array). */
 
-  for(i=0;i<num_files-1;i++) {     
+  for(i=0;i<num_files-1;i++) {
+    if(job&&job->canceled)
+      D_RETURN_(FALSE);
+
     src_path=paths[i];
     dst_path=paths[num_files-1]; /* Yes -- need to set this every time. */
 
@@ -990,7 +1014,10 @@ int mv_fs_obj(noir_job *job,int num_files,const char **paths,FsOpt ops) {
   /* Go through all files and copy to target (which
      is the last file in the char** array). */
 
-  for(i=0;i<num_files-1;i++) {     
+  for(i=0;i<num_files-1;i++) {
+    if(job&&job->canceled)
+      D_RETURN_(FALSE);
+
     src_path=paths[i];
     dst_path=paths[num_files-1]; /* Yes -- need to set this every time. */
 
@@ -1090,10 +1117,13 @@ int rm_fs_obj(noir_job *job,const char *path,FsOpt ops) {
     errno=EINVAL;
     return NOIR_NOFILE; }
 
+  if(job&&job->canceled)
+    return NOIR_CANCELED;
+
   file_job_update(job,NOIR_JOB_PROGRESS,NOIR_NOERRORCODE,NULL,path);
 
   /* Otherwise, try to remove and report result. */
-  return file_remove(path,&st); }
+  return file_remove(job,path,&st); }
 
 
 

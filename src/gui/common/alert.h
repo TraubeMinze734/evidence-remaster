@@ -36,3 +36,4 @@ int       form_modeless_label_update(void *,const char *);
 int       form_modeless_label_new(void *,void **,const char *);
 int       form_modeless_new(void **,void **);
 int       form_modeless_show(void *);
+int       form_modeless_button_new(void *,void **,const char *,void (*)(void *,void *),void *);

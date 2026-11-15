@@ -67,6 +67,9 @@ GtkWidget *about_init(noir_sess *ns,char *about) {
     "debugged by catalyst and creepy.\n"
     "special greetings to chimou and #e.\n\n"
 
+    "<b>evidence-remaster</b>: this is a continuation of the original\n"
+    "program, further developed and modernized with AI assistance.\n\n"
+
     "may contain parts of efsd by cK.\n"
 #ifdef HAVE_EVAS2
     "may contain traces of gevas2 by monkeyIQ.\n"

@@ -62,6 +62,9 @@ void form_file_edit(const char *file,char **err) {
 
 int form_modeless_new(void **window,void **data) { (void)window; (void)data; return NOIR_NOTSUPP; }
 int form_modeless_dst(void **window)             { (void)window; return NOIR_NOTSUPP; }
+int form_modeless_button_new(void *box,void **btn,const char *label,void (*cb)(void *,void *),void *data) {
+  (void)box; (void)btn; (void)label; (void)cb; (void)data;
+  return NOIR_NOTSUPP; }
 int form_modeless_show(void *window)             { (void)window; return NOIR_NOTSUPP; }
 int form_modeless_bar_new(void *window,void **bar) { (void)window; (void)bar; return NOIR_NOTSUPP; }
 int form_modeless_bar_update(void *bar,const char *label,double done) { (void)bar; (void)label; (void)done; return NOIR_NOTSUPP; }

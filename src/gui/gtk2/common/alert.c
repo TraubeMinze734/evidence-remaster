@@ -66,15 +66,15 @@ void form_threads_leave(void) {
 /**
  * modeless info-box was destroyed, invalidate ref to it
  */
-/* user1..user6 of a noir_job hold win,box,label,bar1,bar2,bar3; the
-   window only knows &job->user1, the remaining five pointers follow
+/* user1..user7 of a noir_job hold win,box,label,bar1,bar2,bar3,cancel-button;
+   the window only knows &job->user1, the remaining six pointers follow
    contiguously right behind it (see struct _noir_job in file.h) */
 static void form_modeless_destroyed(GtkWidget *w,void **win) {
   if(win) {
     void **u;
     int    n;
     *win=NULL;
-    for(u=win+1,n=0;n<5;n++,u++)
+    for(u=win+1,n=0;n<6;n++,u++)
       *u=NULL; } }
 
 /**
@@ -237,6 +237,48 @@ int form_modeless_show(void *win) {
     form_threads_leave();
     return NOIR_SUCC; }
   return NOIR_FAIL; }
+
+
+
+/**
+ * create a modeless dial
+ * @return an error-code
+ * @param win  where the handle of the window is returned
+ * @param box  where the handle of the container is returned
+ */
+/**
+ * add a button to a modeless dial
+ * @return an error-code
+ * @param box   the container to add the button to
+ * @param btn   where the handle of the button is returned
+ * @param label the button label (mnemonic with '_'), or NULL for "_Cancel"
+ * @param cb    "clicked" callback, called as cb(GtkWidget *,data)
+ * @param data  user-data handed to the callback
+ */
+int form_modeless_button_new(void *box,void **btn,const char *label,void (*cb)(void *,void *),void *data) {
+  GtkWidget *b=NULL;
+  int        ret=NOIR_IGNORED;
+
+  if(!box||!btn)
+    return NOIR_FAIL;
+
+  form_threads_enter();
+
+  if((b=gtk_button_new_with_label(label?label:"_Cancel"))) {
+    gtk_box_pack_start(GTK_BOX(box),b,FALSE,FALSE,4);
+    if(cb)
+      g_signal_connect(G_OBJECT(b),"clicked",G_CALLBACK(cb),data);
+    gtk_widget_set_name(b,"button");
+    gtk_widget_show_all(box);
+    ret=NOIR_SUCC; }
+  else
+    ret=NOIR_OOM;
+
+  form_threads_leave();
+
+  *btn=b;
+
+  return ret; }
 
 
 

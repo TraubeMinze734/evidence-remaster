@@ -2554,6 +2554,39 @@ static char *file_job_bytes(const char *item,unsigned long long part,unsigned lo
  * @return an error-code
  * @param job  the job to show info about
  */
+/**
+ * cancel a running job (called from the progress window's Cancel button).
+ * plain volatile store: the backend polls job->canceled in its copy/move/
+ * delete loops without holding datalock, so no lock is taken here (the GUI
+ * pulse may hold it while showing progress).
+ * @return an error-code
+ */
+int file_job_cancel(noir_job *job) {
+  if(!job)
+    return NOIR_FAIL;
+  job->canceled=1;
+  E(1,"job %ld canceled by user\n",job->id);
+  return NOIR_SUCC; }
+
+
+
+/**
+ * "clicked" callback of the progress window's Cancel button
+ * @param widget  the button (unused)
+ * @param data    the noir_job
+ */
+static void file_job_cancel_cb(void *widget,void *data) {
+  noir_job *job=(noir_job *)data;
+  (void)widget;
+  if(!job)
+    return;
+  file_job_cancel(job);
+  /* visual feedback; the backend will DONE the job (and close the window)
+     within one block/entry */
+  form_modeless_label_update(job->user3,"Canceling..."); }
+
+
+
 int file_job_progress_show(noir_job *job) {
   int   ret=NOIR_SUCC;
   char *src=job->src?job->src:"???",
@@ -2579,6 +2612,7 @@ int file_job_progress_show(noir_job *job) {
       form_modeless_new(&job->user1,&job->user2);
       form_modeless_label_new(job->user2,&job->user3,"Initializing...");
       form_modeless_bar_new(job->user2,&job->user4);
+      form_modeless_button_new(job->user2,&job->user7,"_Cancel",file_job_cancel_cb,job);
       form_modeless_show(job->user1);
       break;
 
@@ -2996,6 +3030,10 @@ int file_job_ask(noir_job *job,const char *buttons,const char *fmt,...) {
   if(job->challenge)
     free(job->challenge);
   job->challenge=NULL;   /* clear in any case (if realloc() fails later) */
+
+  if(job->canceled) {    /* don't ask questions on a canceled job */
+    job->reply=NOIR_CANCELED;
+    goto done; }
 
   if(!(n=(char*)malloc(have=512))) {  /* can't go before if(job), must hold lock */
     job->reply=NOIR_OOM;
