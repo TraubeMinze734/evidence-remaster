@@ -609,6 +609,13 @@ gint gevas_view_redraw(gpointer data) {
   GtkgEvas *ev=(GtkgEvas *)data;
   GdkRectangle area;
 
+  /* the source is destroyed once we return FALSE, no matter which path we
+     take -- clear the handle up front.  otherwise an unmapped widget (e.g.
+     after a notebook page-switch) would leave a stale id behind and the
+     next gevas_queue_redraw() would g_source_remove() it => GLib-CRITICAL
+     "Source ID was not found" */
+  ev->current_idle=0;
+
   if(!gtk_widget_get_mapped(GTK_WIDGET(ev)))
     return FALSE;
 
@@ -616,7 +623,6 @@ gint gevas_view_redraw(gpointer data) {
   area.width=ev->pixels_w;
   area.height=ev->pixels_h;
   gevas_paint(ev,&area);
-  ev->current_idle=0;
   return FALSE; }
 
 

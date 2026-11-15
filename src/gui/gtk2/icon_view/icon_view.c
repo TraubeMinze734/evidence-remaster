@@ -682,7 +682,13 @@ static int icon_view_evt_do(file_info *fi,model_event type,file_flags changed,no
  done:
 
 #ifdef HAVE_EVAS2
-  evas_damage_rectangle_add(get_evas_from_iconlist(il),0,0,il->vis_w,il->vis_h);
+  /* coalesce damage: one queued redraw per main-loop iteration instead of
+     one full-canvas damage rect per model event (a dir with n files used
+     to enqueue n full-canvas rects into evas' damage list).  the idle
+     paint (gevas_view_redraw) adds the full area as damage itself before
+     rendering, so nothing is lost. */
+  if(il)
+    gevas_queue_redraw((GtkgEvas *)il->canvas);
 #endif
 
 #if 1
