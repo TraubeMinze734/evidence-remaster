@@ -1,6 +1,6 @@
 # evidence-remaster
 
-Current version: **10.3** (remaster of the original evidence 0.9.8).
+Current version: **10.4** (remaster of the original evidence 0.9.8).
 
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
@@ -30,6 +30,14 @@ make install
 ```
 
 ## Release notes
+
+### 10.4 (2026-11-15)
+
+- Thumbnailer worker pool (default: #CPUs, property `thumbnail-workers`): image thumbnails are generated in parallel; video thumbnails stay serialized (libemotion has global engine state)
+- Fix UI freeze at 100% CPU: gevas paint/render/expose feedback loop broken (`in_paint` guard)
+- Fix crashes (SIGABRT/SIGSEGV) on video folders: libmagic and libextractor calls serialized (not thread-safe), emotion make re-entrancy guarded, imlib_mutex deadlock cycle broken (lock order video_make -> imlib, GUI uses trylock in live-thumbnail path)
+- Fix stale plugin load errors at startup (e.g. id3.so without libid3): `make install` prunes stale plugins; missing-dependency loads logged at level 1
+- New properties `thumbnail-live` / `thumbnail-live-sound`: turn off (or mute) live video playback in tooltips
 
 ### 10.3 (2026-11-15)
 
