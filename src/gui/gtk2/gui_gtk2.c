@@ -1024,12 +1024,15 @@ long noir_sess_create(sn_mode sm,noir_sess *template,const char *dir) {
   if(ns->fullscreen)
     ns->start_in=START_IN_ICONVIEW;
 
-  if(ns->start_in==START_IN_ICONVIEW)
+  if(ns->start_in==START_IN_ICONVIEW) {
+    noir_iconview *iv=(noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW);
+    if(iv&&iv->icon_view)
 #if GTK_CHECK_VERSION(3,0,0)
-    icon_view_exposed(((noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW))->icon_view,(cairo_t *)NULL,ns);
+      icon_view_exposed(iv->icon_view,(cairo_t *)NULL,ns);
 #else
-    icon_view_exposed(((noir_iconview *)noir_sess_client_get_data(ns,CLIENT_ICONVIEW))->icon_view,NULL,ns);
+      icon_view_exposed(iv->icon_view,NULL,ns);
 #endif
+  }
 #endif
 
   notebook_go2view(ns,template->start_in);

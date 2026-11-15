@@ -76,6 +76,7 @@ int menu_run(action_context *ac,void *menu) { (void)ac; (void)menu; return NOIR_
 void *menu_selection_create(action_context *ac) { (void)ac; return NULL; }
 
 long noir_sess_create(sn_mode sm,noir_sess *tmpl,const char *dir) { (void)sm; (void)tmpl; (void)dir; return -1; }
+noir_sess *noir_sess_close(noir_sess *ns) { (void)ns; return NULL; }
 int noir_sess_present(noir_sess *ns) { (void)ns; return NOIR_NOTSUPP; }
 int noir_sess_set_window_title(noir_sess *ns,char *utf8) { (void)ns; (void)utf8; return NOIR_NOTSUPP; }
 int noir_sess_uidata_new(struct _noir_sess *ns) { (void)ns; return NOIR_SUCC; }
