@@ -1,6 +1,6 @@
 # evidence-remaster
 
-Current version: **10.1** (remaster of the original evidence 0.9.8).
+Current version: **10.2** (remaster of the original evidence 0.9.8).
 
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
@@ -30,6 +30,12 @@ make install
 ```
 
 ## Release notes
+
+### 10.2 (2026-11-15)
+
+- Tree-view: right-click on the empty area now opens the root menu (view-switch entries included), like icon and browser views
+- View-switch from the right-click menu no longer runs inside the menu's nested main loop (deferred until the plain main loop), fixing intermittent UI freezes
+- Thumbnailer plugin init is deferred until the main loop is running — fixes intermittent `Eo ID not valid` errors and a startup SIGSEGV on a cold plugin cache
 
 ### 10.1 (2026-11-15)
 
