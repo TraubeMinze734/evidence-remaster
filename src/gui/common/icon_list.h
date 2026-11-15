@@ -139,6 +139,7 @@ typedef struct _icon {
   void            *user1,     /**< evidence stores fi->intrinsic (posixmd) here */
                   *user2;     /**< evidence stores fi (file_info) here */
   struct _icon    *next;      /**< next icon in this icon-list */
+  struct _icon    *hnext;     /**< next icon in the same file-hash bucket */
 } icon;
 
 
@@ -185,6 +186,10 @@ typedef struct _icon_list {
   void            *user2;         /**< not used in evidence */
 
   icon            *icons;         /**< linked list of icons in this icon-list */
+
+  icon            **fhash;        /**< file -> icon hash table (chaining), for O(1) lookup by file */
+  int              fhash_n;      /**< number of buckets in fhash */
+  int              fh_count;     /**< number of icons in fhash */
 } icon_list;
 
 

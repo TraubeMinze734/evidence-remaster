@@ -181,6 +181,81 @@ void icon_dst_all(icon *i) {
 
 
 
+/* file -> icon hash, so icon_list_get_icon_by_file() is O(1) instead of a
+   linear scan per model event.  maintained eagerly in icon_list_icon_insert()
+   and icon_list_icon_remove(); icon_list_resort() only relinks, so it does not
+   change membership and needs no update. */
+#define ICON_FHASH_MIN 64
+
+static unsigned int icon_file_hash(const char *s) {
+  unsigned int h=5381;
+  while(*s)
+    h=((h<<5)+h)^(unsigned char)*s++;
+  return h; }
+
+static void icon_fhash_clear(icon_list *il) {
+  if(il->fhash) {
+    free(il->fhash);
+    il->fhash=NULL;
+    il->fhash_n=0;
+    il->fh_count=0; } }
+
+static void icon_fhash_rehash(icon_list *il,int n) {
+  icon **nh=(icon **)calloc(n,sizeof(icon *));
+  icon  *i,*next;
+  int    ob,b;
+
+  if(!nh)
+    return;
+
+  /* redistribute the existing buckets (NOT il->icons -- the icon being
+     added may already be linked into the list but is not in the hash yet) */
+  for(ob=0;ob<il->fhash_n;ob++)
+    for(i=il->fhash[ob];i;i=next) {
+      next=i->hnext;
+      b=icon_file_hash(i->file)%n;
+      i->hnext=nh[b];
+      nh[b]=i; }
+
+  free(il->fhash);
+  il->fhash=nh;
+  il->fhash_n=n; }
+
+static void icon_fhash_add(icon_list *il,icon *i) {
+  unsigned int b;
+
+  if(!il->fhash) {
+    il->fhash=(icon **)calloc(ICON_FHASH_MIN,sizeof(icon *));
+    if(!il->fhash)
+      return;
+    il->fhash_n=ICON_FHASH_MIN; }
+  else if(il->fh_count>=2*il->fhash_n)
+    icon_fhash_rehash(il,il->fhash_n*2);
+
+  if(!il->fhash)
+    return;
+
+  b=icon_file_hash(i->file)%il->fhash_n;
+  i->hnext=il->fhash[b];
+  il->fhash[b]=i;
+  il->fh_count++; }
+
+static void icon_fhash_del(icon_list *il,icon *i) {
+  icon       **pp;
+  unsigned int b;
+
+  if(!il->fhash||!i->file)
+    return;
+
+  b=icon_file_hash(i->file)%il->fhash_n;
+  for(pp=&il->fhash[b];*pp;pp=&(*pp)->hnext)
+    if(*pp==i) {
+      *pp=i->hnext;
+      il->fh_count--;
+      return; } }
+
+
+
 /**
  * destruct an icon-list and all its icons.
  * @param il - the icon-list to release
@@ -189,6 +264,7 @@ void icon_list_destroy(void *il) {
   volatile icon_list *vil=il;
 
   icon_dst_all(vil->icons);
+  icon_fhash_clear((icon_list *)vil);
   if(vil->name)
     free(vil->name);
   if(vil->sep)
@@ -376,6 +452,7 @@ icon *icon_list_icon_insert(icon_list *il,
     i->x=i->y=i->w=i->h=0;
     i->state=IE_DFL;
     i->next=NULL;
+    i->hnext=NULL;
     i->user1=user1;
     i->user2=user2;
     i->els=NULL;
@@ -392,6 +469,8 @@ icon *icon_list_icon_insert(icon_list *il,
         j=j->next;
       i->next=j->next;
       j->next=i; }
+
+    icon_fhash_add(il,i);
 
     if(!i->els) {
       i->w=((noir_theme *)il->theme)->icon_width;
@@ -472,6 +551,7 @@ int icon_list_icon_remove(icon_list *il,icon *i,int redraw) {
       if(!j)
         return NOIR_NOTFOUND;
       j->next=i->next; }
+    icon_fhash_del(il,i);
     icon_dst(i);
     if(redraw)
       icon_list_layout_all(il);
@@ -535,7 +615,13 @@ icon *icon_list_get_icon_by_index(icon_list *il,int in) {
 icon *icon_list_get_icon_by_file(icon_list *il,const char *file) {
   icon *i=NULL;
   if(il&&file) {
-    i=il->icons;
+    if(il->fhash) {   /* O(1) average lookup */
+      unsigned int b=icon_file_hash(file)%il->fhash_n;
+      for(i=il->fhash[b];i;i=i->hnext)
+        if(!strcmp(file,i->file))
+          return i;
+      return NULL; }
+    i=il->icons;      /* hash alloc failed: fall back to linear scan */
     while(i) {
       if(!strcmp(file,i->file))
 	return i;
@@ -765,6 +851,7 @@ icon_list *icon_list_rst(icon_list *il) {
   if(il->icons) {
     icon_dst_all(il->icons);
     il->icons=NULL; }
+  icon_fhash_clear(il);
 
   return il; }
 

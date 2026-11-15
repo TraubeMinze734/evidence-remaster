@@ -1106,6 +1106,34 @@ int thumbnailer_enqueue(Evidence_Thumbnailer *t,Evidence_Thumb *thumb) {
 
 
 /**
+ * check whether a thumbnail for the given file is already queued or being
+ * generated (a scan and a re-visit retry can enqueue the same file twice)
+ * @return 1 if queued/in-progress, 0 otherwise
+ */
+static int thumbnailer_queued(Evidence_Thumbnailer *t,const char *origfile) {
+  Evidence_Thumb *e;
+  int             ret=0;
+
+  if(!t||!origfile)
+    return 0;
+
+  pthread_mutex_lock(&t->qchg);
+
+  if(t->current&&t->current->origfile&&!strcmp(t->current->origfile,origfile))
+    ret=1;
+  else
+    for(e=t->anchor;e;e=e->next)
+      if(e->origfile&&!strcmp(e->origfile,origfile)) {
+        ret=1;
+        break; }
+
+  pthread_mutex_unlock(&t->qchg);
+
+  return ret; }
+
+
+
+/**
  * pop an item from the Q for a given thumbnailer
  * @return the tail item from the Q
  * @param the thumbnailer
@@ -1521,6 +1549,12 @@ static inline int thumbnail_enqueue_do(void *t,file_info *fi,thumbnail_plugin *t
 
 thumb_do:
   thumb->tp=tp;
+
+  /* dedup: if this file is already queued or being generated, drop the
+     duplicate instead of thumbnailing it twice */
+  if(thumbnailer_queued(thumbnailers,thumb->origfile)) {
+    E(2,"thumbnail for \"%s\" already queued/in progress, skipping duplicate\n",thumb->origfile);
+    goto thumb_done; }
 
   E(2,"(re-)creating thumbnail for \"%s\"...\n",thumb->origfile);
 

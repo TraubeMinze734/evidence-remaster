@@ -609,7 +609,8 @@ int events_pending(void) {
 #elif defined(HAVE_GLIB2)
   return g_main_context_pending(NULL);
 #else
-#  warning uh-oh love has come to town ### FIXME
+  /* no GUI/event library at all (minimal headless build): nothing pending */
+  return 0;
 #endif
 }
 
