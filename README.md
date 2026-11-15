@@ -1,6 +1,6 @@
 # evidence-remaster
 
-Current version: **10.4.1** (remaster of the original evidence 0.9.8).
+Current version: **10.4.2** (remaster of the original evidence 0.9.8).
 
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
@@ -30,6 +30,11 @@ make install
 ```
 
 ## Release notes
+
+### 10.4.2 (2026-11-15)
+
+- Fix headless build (`--without-gtk2 --without-gtk3`): `noir_sess_close()` stub added to `src/gui/headless.c` (was: undefined reference from `monitors.c`)
+- Fix segfault on `./evidence -e` when no theme is installed: guard `icon_view_exposed()` call in `noir_sess_create()` against a NULL iconview (efm/default not found → `icon_view_init()` never ran, but `-e` forces `START_IN_ICONVIEW`)
 
 ### 10.4.1 (2026-11-15)
 
