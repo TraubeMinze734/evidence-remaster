@@ -1,6 +1,6 @@
 # evidence-remaster
 
-Current version: **10.2** (remaster of the original evidence 0.9.8).
+Current version: **10.3** (remaster of the original evidence 0.9.8).
 
 This is an AI rewrite of the Evidence file manager for Enlightenment, which was originally written by Azundris in 2005.
 
@@ -30,6 +30,11 @@ make install
 ```
 
 ## Release notes
+
+### 10.3 (2026-11-15)
+
+- Fix GLib-CRITICAL "Source ID was not found" on notebook page-switch (stale idle handle in `gevas_view_redraw` when the widget is unmapped)
+- Icon-view: per-model-event full-canvas damage rects replaced by one coalesced queued redraw per main-loop iteration (large folders)
 
 ### 10.2 (2026-11-15)
 
