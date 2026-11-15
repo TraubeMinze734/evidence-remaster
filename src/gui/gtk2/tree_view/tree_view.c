@@ -509,7 +509,11 @@ static gboolean tree_clicked(GtkWidget *widget,GdkEventButton *event,gpointer da
             ret=FALSE; }
           g_free(file); }}
       if(path)
-        gtk_tree_path_free(path); }}
+        gtk_tree_path_free(path); }
+    else if((event->button==3)&&(event->type==GDK_BUTTON_RELEASE)&&!(event->state&GDK_CONTROL_MASK))
+      /* right-click on empty area: same root-menu (view-switch, sort-order,
+         preferences) that icon-view and browser-view show on their background */
+      menu_root_context(ns,noir_sess_get_cwd(ns),3); }
   return ret; }
 
 
