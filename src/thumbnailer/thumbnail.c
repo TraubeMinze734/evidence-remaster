@@ -1249,9 +1249,18 @@ Evidence_Thumb *thumbnailer_dequeue(Evidence_Thumbnailer *t) {
  * @param thumb - the thumbnail descriptor
  * @return NOIR_SUCC for success, or NOIR_NOTSUPP if the format can not be thumbnailed.
  */
+/* serializes makes of TP_VIDEO/TP_AUDIO-capable plugins (emotion & co. keep
+   global engine state that is not safe for concurrent use).  MUST be taken
+   BEFORE imlib_mutex (lock order video_make -> imlib): a video make waits
+   for the GUI main loop during its emotion handshake while the GUI thread
+   may block on imlib_mutex (e.g. evas_thumbnail_live) -- taking this mutex
+   while holding imlib_mutex would close a deadlock cycle
+   worker(imlib -> video_make) / worker(video_make -> mainloop) / main(imlib) */
+static pthread_mutex_t video_make_mutex=PTHREAD_MUTEX_INITIALIZER;
+
 static int thumbnailer_generate(Evidence_Thumb *thumb) {
   char           *file=thumb->origfile;
-  int             lock,ret=NOIR_NOTSUPP;
+  int             lock,ret=NOIR_NOTSUPP,vlock=0;
 #  ifdef HAVE_IMLIB2
   Imlib_Image     im=NULL;
 #  else
@@ -1293,6 +1302,11 @@ static int thumbnailer_generate(Evidence_Thumb *thumb) {
   /* try to use imlib2... */
 
   thumb->type=TT_PNG;
+
+  /* video plugins first take video_make_mutex (lock order!), then imlib */
+  if((thumb->tp->can&(TP_VIDEO|TP_AUDIO))&&!vlock) {
+    pthread_mutex_lock(&video_make_mutex);
+    vlock=1; }
 
   IMLIB_ACQUIRE;
 
@@ -1339,6 +1353,8 @@ static int thumbnailer_generate(Evidence_Thumb *thumb) {
 #  endif
 
  done:
+  if(vlock)
+    pthread_mutex_unlock(&video_make_mutex);
   if(lock>=0)
     file_unlock(lock);
 
@@ -2548,7 +2564,17 @@ E(0,"D  %s\n",tp->file);
   et.w=w;
   et.h=h;
 
+#ifdef HAVE_IMLIB2
+  /* this runs on the GUI thread (tooltip/icon live-preview): NEVER block on
+     imlib_mutex here -- a worker may hold it while waiting for the main loop
+     in an emotion make handshake, which would deadlock the GUI.  if the
+     mutex is busy, skip the live thumbnail (the static one suffices). */
+  if(pthread_mutex_trylock(&imlib_mutex)) {
+    E(2,"imlib busy, skipping live thumbnail for \"%s\"\n",tag);
+    return NULL; }
+#else
   IMLIB_ACQUIRE;
+#endif
 
   if(!(what_we_want&=(tp->can&(TP_VIDEO|TP_AUDIO))))
     E(0,"won't create empty live %s thumbnail for \"%s\"...\n",mime,tag);

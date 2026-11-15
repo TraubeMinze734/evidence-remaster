@@ -137,9 +137,20 @@ typedef struct {
   pthread_mutex_t mtx;
   pthread_cond_t  cond;
   int             done;
+  int             finishing;   /* re-entrancy guard, see below */
 } emotion_make_ctx;
 
 static void _emotion_make_finish(emotion_make_ctx *c) {
+  /* re-entrancy guard: evas_object_del(c->em) below calls emotion_shutdown(),
+     which pumps the ecore loop (efl_loop_iterate) -- that can dispatch THIS
+     very timer again (it stays armed until our callback returns CANCEL),
+     re-entering _emotion_make_timer/_emotion_make_finish and deadlocking on
+     c->mtx (SIGABRT seen in the wild).  everything here runs in the main
+     thread, so a plain flag suffices. */
+  if(c->finishing)
+    return;
+  c->finishing=1;
+
   if(c->timer) {
     /* If we are called from _emotion_make_timer (which returns
        ECORE_CALLBACK_CANCEL right after us), ecore will already have
@@ -167,7 +178,12 @@ static void _emotion_make_finish(emotion_make_ctx *c) {
 static Eina_Bool _emotion_make_timer(void *data) {
   emotion_make_ctx *c=(emotion_make_ctx *)data;
   double now=ecore_time_get();
-  double len=emotion_object_play_length_get(c->em);
+  double len;
+  /* re-entered via emotion_shutdown()'s loop pump inside _emotion_make_finish
+     (see guard there): the object is already being torn down */
+  if(c->finishing||c->done)
+    return ECORE_CALLBACK_CANCEL;
+  len=emotion_object_play_length_get(c->em);
   if(len<=0.0) {
     /* still opening: give the mainloop time to breathe */
     if(now<c->deadline)
@@ -399,17 +415,6 @@ int thumbnail_plugin_exit(thumbnail_plugin *tp) {
 
 
 #ifdef HAVE_IMLIB2
-/* libemotion keeps global state (engine/module registry with its own lock,
-   gstreamer backend) that is not safe for concurrent use -- with the
-   thumbnailer worker pool, several workers can be inside make() at once,
-   each driving an emotion object in the main thread; that raced the module
-   registry (EINA lock EINVAL storm in emotion_engine_instance_new) and
-   intermittently crashed the process.  serialize make(): video thumbs go
-   back to sequential, image thumbs (the bulk) stay parallel. */
-static pthread_mutex_t emotion_make_mutex=PTHREAD_MUTEX_INITIALIZER;
-
-static int emotion_make_serialized(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **data);
-
 /**
  * create a static thumbnail image of a movie
  * @return an error-code
@@ -418,13 +423,6 @@ static int emotion_make_serialized(thumbnail_plugin *tp,struct _Evidence_Thumb *
  * @param data returns an Imlib-image (for TP_IMLIB)
  */
 int thumbnail_plugin_make(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **data) {
-  int ret;
-  pthread_mutex_lock(&emotion_make_mutex);
-  ret=emotion_make_serialized(tp,e,data);
-  pthread_mutex_unlock(&emotion_make_mutex);
-  return ret; }
-
-static int emotion_make_serialized(thumbnail_plugin *tp,struct _Evidence_Thumb *e,void **data) {
 #  ifdef HAVE_EVAS2
   emotion_make_ctx c;
 
