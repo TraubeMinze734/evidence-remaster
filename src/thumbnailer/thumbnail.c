@@ -1638,6 +1638,11 @@ file_info *thumbnailer_pending(void) {
   Evidence_Thumb *thumb;
   file_info      *fi=NULL;
 
+  /* model_pulse may fire before the deferred thumbnailer init ran --
+     thumbnails_complete is still NULL then (seen on slower machines) */
+  if(!thumbnails_complete)
+    return NULL;
+
   if((thumb=thumbnailer_dequeue(thumbnails_complete))) {
     if(!(fi=file_info_fetch(NULL,thumb->origfile)))
       E(0,"cannot find file-info for \"%s\"!?\n",thumb->origfile);
