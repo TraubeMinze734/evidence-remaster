@@ -156,7 +156,7 @@ detect ecore-ipc ECOREIPC  ecore-ipc
 detect ecore     ECORE     ecore
 detect png       PNG       libpng
 detect jpeg      JPEG      libjpeg
-detect pcre      PCRE      libpcre
+detect pcre      PCRE      libpcre2-8
 detect magic     LIBMAGIC  libmagic
 detect emotion   EMOTION   emotion
 detect curl      LIBCURL   libcurl

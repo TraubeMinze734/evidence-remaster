@@ -39,8 +39,8 @@
 #endif
 
 #ifdef HAVE_PCRE
-#  include <pcre.h>
-#  define RE_ELS  30
+#  define PCRE2_CODE_UNIT_WIDTH 8
+#  include <pcre2.h>
 #endif
 
 
@@ -86,8 +86,8 @@ struct _typebuffer {
   history    *tb_history;
   hist_entry *tb_histlast;
 #ifdef HAVE_PCRE
-  pcre       *tb_re;        /**< typebuffer: regex */
-  pcre_extra *tb_pe;        /**< typebuffer: regex */
+  pcre2_code       *tb_re;  /**< typebuffer: compiled regex */
+  pcre2_match_data *tb_md;  /**< typebuffer: match data (replaces pcre_extra) */
 #endif
 };
 
@@ -212,8 +212,8 @@ int typebuffer_dst(noir_sess *ns) {
     if(tb->tb_tabbed)  free(tb->tb_tabbed);
 #ifdef HAVE_PCRE
     if(tb->tb_pcre)    free(tb->tb_pcre);
-    if(tb->tb_pe)      free(tb->tb_pe);
-    if(tb->tb_re)      free(tb->tb_re);
+    if(tb->tb_md)      pcre2_match_data_free(tb->tb_md);
+    if(tb->tb_re)      pcre2_code_free(tb->tb_re);
 #endif
 #ifdef HAVE_EVAS2
     if(tb->tb_obj) {
@@ -242,7 +242,7 @@ int typebuffer_dst(noir_sess *ns) {
 
 #ifdef HAVE_PCRE
 
-static int re_opts=PCRE_DOTALL;
+static int re_opts=PCRE2_DOTALL;
 
 
 
@@ -251,11 +251,11 @@ static int re_opts=PCRE_DOTALL;
  */
 int re_init(void) {
   int have_utf8=0;
-  pcre_config(PCRE_CONFIG_UTF8,&have_utf8);
+  pcre2_config(PCRE2_CONFIG_UNICODE,&have_utf8);
   if(have_utf8)
-    re_opts|=PCRE_UTF8|PCRE_NO_UTF8_CHECK;
+    re_opts|=PCRE2_UTF|PCRE2_NO_UTF_CHECK;
   else
-    E(2,"PCRE (regular expression library) built without support for UTF-8, emulating it so type-to-find won't only work for the western alphabet...\n");
+    E(2,"PCRE2 (regular expression library) built without support for UTF-8, emulating it so type-to-find won't only work for the western alphabet...\n");
   return re_opts; }
 
 
@@ -268,10 +268,9 @@ int re_init(void) {
  * @param mode    glob or RE?
  */
 int re_add(noir_sess *ns,const char *re_txt,re_mode mode) {
-  const char *error;
-  int         erroffset,opts=re_opts;
-  pcre       *re;
-  pcre_extra *pe;
+  int         errcode,erroffset,opts=re_opts;
+  pcre2_code       *re;
+  pcre2_match_data *md;
   char       *n;
   typebuffer *tb;
 
@@ -307,28 +306,30 @@ int re_add(noir_sess *ns,const char *re_txt,re_mode mode) {
       return NOIR_NOTSUPP; }
 
   if(ns->sortflags&SORT_CASEFOLD)   /* if sort is case-insensitive, then so */
-    opts|=PCRE_CASELESS;            /* type-to-find */
+    opts|=PCRE2_CASELESS;           /* type-to-find */
 
-  if(opts&PCRE_UTF8) {
+  if(opts&PCRE2_UTF) {
     char *utf8=e2utf8(n);
     free(n);
     if(!(n=utf8))
       return NOIR_FAIL; }
 
-  if(!(re=pcre_compile(n,opts,&error,&erroffset,NULL))) {
-    form_alert(ns,"Invalid regular expression \"%s\".\nPerl-compatible syntax applies.",n);
+  if(!(re=pcre2_compile((PCRE2_SPTR)n,PCRE2_ZERO_TERMINATED,opts,&errcode,&erroffset,NULL))) {
+    PCRE2_UCHAR msg[256];
+    pcre2_get_error_message(errcode,msg,sizeof(msg));
+    form_alert(ns,"Invalid regular expression \"%s\".\nPerl-compatible syntax applies.\n(%s at offset %d)",n,(char *)msg,erroffset);
     free(n);
     return NOIR_FAIL; }
 
-  pe=pcre_study(re,0,&error);
+  md=pcre2_match_data_create_from_pattern(re,NULL);
 
   if(tb->tb_pcre)  free(tb->tb_pcre);
-  if(tb->tb_re)    free(tb->tb_re);
-  if(tb->tb_pe)    free(tb->tb_pe);
+  if(tb->tb_re)    pcre2_code_free(tb->tb_re);
+  if(tb->tb_md)    pcre2_match_data_free(tb->tb_md);
 
   tb->tb_pcre=n;
   tb->tb_re=re;
-  tb->tb_pe=pe;
+  tb->tb_md=md;
 
   return NOIR_SUCC; }
 
@@ -342,25 +343,24 @@ int re_add(noir_sess *ns,const char *re_txt,re_mode mode) {
  */
 int re_match(noir_sess *ns,const char *fn) {
   int         rc;
-  int         ovector[RE_ELS];
   char       *lcl=NULL;
   typebuffer *tb;
 
   if(!ns||!(tb=noir_sess_get_typebuffer(ns)))
     return NOIR_FAIL;
 
-  if(!(re_opts&PCRE_UTF8)) {
+  if(!(re_opts&PCRE2_UTF)) {
     if((lcl=e2locale(fn)))
       fn=lcl; }
 
-  rc=pcre_exec(tb->tb_re,tb->tb_pe,fn,strlen(fn),0,0,ovector,RE_ELS);
+  rc=pcre2_match(tb->tb_re,(PCRE2_SPTR)fn,strlen(fn),0,0,tb->tb_md,NULL);
 
   if(lcl)
     free(lcl);
 
   if(rc<0) {
     switch(rc) {
-    case PCRE_ERROR_NOMATCH:
+    case PCRE2_ERROR_NOMATCH:
       return NOIR_NOTFOUND;
       break;
     default:

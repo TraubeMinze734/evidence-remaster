@@ -46,7 +46,7 @@
 #include "model_private.h"  /* ### FIXME (DIR_PARENT, DIR_DOT) */
 
 #ifdef HAVE_PCRE
-#  include <pcre.h>
+#  include "gui/common/typebuffer.h"   /* re_add(), re_match() -- PCRE2 API lives in typebuffer.c */
 #endif
 
 
