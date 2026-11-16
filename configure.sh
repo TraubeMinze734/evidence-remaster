@@ -132,7 +132,26 @@ if [ "$GTK2" = no ] && [ "$EFL" = yes ]; then
   EVAS_CFLAGS=
   EVAS_LIBS=
 fi
-detect imlib2    IMLIB2    imlib2
+# imlib2: pkg-config first; if only the runtime lib is installed (no -dev,
+# e.g. Elive with E16 but without libimlib2-dev headers) we still cannot
+# build -- but if the header exists without a .pc (rare), link the versioned
+# soname directly via -l:libImlib2.so.1
+IMLIB2=no; IMLIB2_CFLAGS=; IMLIB2_LIBS=
+if [ "$(feat imlib2)" != off ]; then
+  if have_pc imlib2; then
+    IMLIB2=yes; IMLIB2_CFLAGS=$(pc_cflags imlib2); IMLIB2_LIBS=$(pc_libs imlib2)
+  elif [ -f /usr/include/Imlib2.h ] || [ -f /usr/local/include/Imlib2.h ]; then
+    if ld -l:libImlib2.so.1 --shared -o /dev/null 2>/dev/null || \
+       echo 'int main(){return 0;}' | cc -x c - -l:libImlib2.so.1 -o /tmp/evidence_imlibtest.$$ 2>/dev/null; then
+      IMLIB2=yes; IMLIB2_LIBS="-l:libImlib2.so.1"
+      say "note: imlib2 found without pkg-config (header + libImlib2.so.1), using -l:libImlib2.so.1"
+      rm -f /tmp/evidence_imlibtest.$$
+    fi
+  fi
+  if [ "$IMLIB2" = no ] && [ "$(feat imlib2)" = on ]; then
+    die "--with-imlib2 was requested, but neither pkg-config imlib2 nor Imlib2.h + libImlib2.so.1 were found."
+  fi
+fi
 detect ecore-ipc ECOREIPC  ecore-ipc
 detect ecore     ECORE     ecore
 detect png       PNG       libpng
