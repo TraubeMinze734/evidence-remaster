@@ -356,6 +356,9 @@ PREFIX ?= /usr/local
 install: all
 	$(MAKE) do-install
 
+uninstall:
+	PREFIX="$(PREFIX)" DESTDIR="$(DESTDIR)" ./uninstall.sh
+
 do-install:
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m 0755 evidence $(DESTDIR)$(PREFIX)/bin/evidence
@@ -404,4 +407,4 @@ do-install:
 	cp -r lib/evidence/* $(DESTDIR)$(PREFIX)/lib/evidence/
 	cd $(DESTDIR)$(PREFIX)/lib/evidence/backend && ln -sfn posix.so fsxs.so
 
-.PHONY: all clean distclean plugins install do-install
+.PHONY: all clean distclean plugins install uninstall do-install
