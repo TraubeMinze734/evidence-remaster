@@ -8,3 +8,4 @@ PROJECT_STATUS.md
 context.txt
 reference/
 docker/
+.dockerignore
