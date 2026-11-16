@@ -514,7 +514,7 @@ static int file_copy(noir_job *job,const char *src_path,struct stat *src_st,cons
       char realcopy[MAXPATHLEN];
       char *lastslash;
 
-      snprintf(realcopy,MAXPATHLEN,src_path);
+      snprintf(realcopy,MAXPATHLEN,"%s",src_path);
       lastslash=strrchr(realcopy,'/');
 
       if(!lastslash) {
@@ -522,7 +522,7 @@ static int file_copy(noir_job *job,const char *src_path,struct stat *src_st,cons
         D_RETURN_(FALSE); }
 
       snprintf(lastslash+1,MAXPATHLEN-(lastslash-realcopy),"%s",realfile);
-      snprintf(realfile,MAXPATHLEN,realcopy); }
+      snprintf(realfile,MAXPATHLEN,"%s",realcopy); }
 
     if(symlink(realfile,dst_path)<0) {
       E(0,"Error symlinking from \"%s\" to \"%s\"...\n",realfile,dst_path);
