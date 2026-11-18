@@ -723,6 +723,7 @@ void evas_open_folder(noir_sess *ns,icon_list *il,icon *i,Evas *evas) {
     noir_theme *t=(noir_theme *)il->theme;
     int         ret=NOIR_SUCC;
 
+    E(1,"evas_open_folder: file=%s\n",file?file:"(null)");
     if(!file)
       return;
 

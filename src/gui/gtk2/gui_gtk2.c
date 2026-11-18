@@ -5,6 +5,9 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <stdio.h>                      /* vsnprintf() */
+#include <string.h>                     /* strstr() */
+#include <stdarg.h>                     /* va_list */
 
 #include "model.h"          /* for mode_private.h */
 #include "model_private.h"  /* client_funs */
@@ -126,7 +129,16 @@ Window get_root_window(void) {
  * @param w - the widget
  */
 Window get_widget_window(void *w) {
-  return GDK_WINDOW_XID(gtk_widget_get_window((GtkWidget *)w)); }
+#if GTK_CHECK_VERSION(3,0,0)
+  GdkWindow *gw=gtk_widget_get_window((GtkWidget *)w);
+  if(!gw||!GDK_IS_X11_WINDOW(gw))   /* Wayland: no XID, GDK_WINDOW_XID would
+                                       only spam a Gdk-CRITICAL and return 0 */
+    return None;
+  return gdk_x11_window_get_xid(gw);
+#else
+  return GDK_WINDOW_XID(gtk_widget_get_window((GtkWidget *)w));
+#endif
+}
 
 #endif
 
@@ -1098,6 +1110,22 @@ static int set_app_icon(noir_sess *ns) {
 static gboolean ecore_glib_pump(gpointer data) {
   ecore_main_loop_iterate();
   return TRUE; }
+
+/* eina print filter: drop the known-harmless "ecore_main_loop_glib_integrate()
+   No glib support" notice (ecore built without glib mainloop support) --
+   ecore prints it (plus a multi-line eina_btlog block) on EVERY GTK3 start
+   otherwise.  everything else is forwarded to the default stderr printer. */
+static void eina_print_filter(const Eina_Log_Domain *d,Eina_Log_Level level,
+                              const char *file,const char *fnc,int line,
+                              const char *fmt,void *data,va_list args) {
+  char    buf[2048];
+  va_list aq;
+  va_copy(aq,args);
+  vsnprintf(buf,sizeof(buf),fmt,aq);
+  va_end(aq);
+  if((file&&strstr(file,"ecore_glib.c"))||strstr(buf,"No glib support"))
+    return;
+  eina_log_print_cb_stderr(d,level,file,fnc,line,fmt,data,args); }
 #endif
 
 static Eina_Bool ecore_gtk_event_handler(void *data,Ecore_Fd_Handler *fd_handler) {
@@ -1176,6 +1204,9 @@ noir_sess *gui_init(int argc,char *argv[]) {
   ecore_init();
   ecore_app_args_set(argc,(const char **)argv);
 #if GTK_CHECK_VERSION(3,0,0)
+  /* silence the known-harmless "No glib support" notice from the integrate
+     call below before it happens */
+  eina_log_print_cb_set(eina_print_filter,NULL);
   /* we run gtk_main() under GTK3 (the old ecore-fd-hijack trick is
      X11-only), so ecore's timers/idlers/fds must ride the GLib loop
      -- otherwise the Emotion video thumbnailer (ecore_timer +
@@ -1188,7 +1219,7 @@ noir_sess *gui_init(int argc,char *argv[]) {
        pump ecore manually from a GLib timer so ecore_timer-driven
        machinery (Emotion thumbnails, live video) still makes
        progress and thread-safe calls get dispatched. */
-    E(0,"ecore GLib integration failed; installing manual pump\n");
+    E(2,"ecore GLib integration failed; installing manual pump\n");
     g_timeout_add(10,ecore_glib_pump,NULL); }
 #endif
   prop_bag_prop_set(props_global,"feature-ecore","engaged");

@@ -9,3 +9,4 @@ context.txt
 reference/
 docker/
 .dockerignore
+evsh

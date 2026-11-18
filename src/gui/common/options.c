@@ -12,6 +12,7 @@
 
 #include "options.h"
 #include "setup.h"
+#include "settings.h"      /* settings_load(), settings_get() */
 #include "util.h"
 #include "file_lcl.h"
 
@@ -125,6 +126,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
   int             c,longopt_idx,ret=NOIR_SUCC;
   struct stat     stat_buffer;
   action_context *sel=NULL,*dirs=NULL;
+  int             theme_cli=0,view_cli=0;  /* theme/view given on the command line? */
 
   static struct option longopts[]={
 
@@ -249,6 +251,13 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 
   ns->with_tooltips=0; /* TOOLTIP_ENABLE; */
 
+  /* persistent settings (~/.evidence/evidence.conf) are loaded FIRST, so
+     that command-line options below override them.  props set here keep
+     their value: later prop_bag_prop_default() calls don't override an
+     existing prop, and listeners registered later fire immediately for
+     props that already have a value (see thumbnail-live). */
+  settings_load();
+
   for(;;) {
     if((c=getopt_long(argc,argv,"MqwWmfFenNsISatibT:P:hHqvVc:D:g:Z:E:",longopts,&longopt_idx))==-1)
       break;
@@ -259,6 +268,8 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
       ns->without_notebook=TRUE;
       ns->without_shelf=TRUE;
       ns->start_in=START_IN_ICONVIEW;
+      theme_cli=1;
+      view_cli=1;
       ((noir_theme *)ns->theme)->name=strdup("efm");
       if(ns->iconset)
         free(ns->iconset);
@@ -384,6 +395,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 #else
       E(0,"tree-view not available, as evidence was compiled without it.\n");
 #endif
+      view_cli=1;
       break;
     case 'b':
 #ifdef WITH_BROWSERVIEW
@@ -391,6 +403,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 #else
       E(0,"browser-view not available, as evidence was compiled without it.\n");
 #endif
+      view_cli=1;
       break;
     case 'i':
 #if defined(HAVE_EVAS2)
@@ -398,9 +411,11 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 #else
       E(0,"icon-view not available, as evidence was compiled without it.\n");
 #endif
+      view_cli=1;
       break;
     case 'a':
       ns->start_in=START_IN_CREDITS;
+      view_cli=1;
       break;
 
 
@@ -416,6 +431,7 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
 
     case 'T':
 #if defined(HAVE_EVAS2)
+      theme_cli=1;
       /* want theme-dir. if theme-dir/theme-setup was given, cut. */
       if(((noir_theme *)ns->theme)) {
         size_t l;
@@ -474,6 +490,16 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
   E(1,"verbosity set to %d...\n",debug);
 
 #if defined(HAVE_EVAS2)
+  /* theme from the settings file, unless -T/--theme (or -e) was given */
+  if(!theme_cli&&((noir_theme *)ns->theme)) {
+    char *t=settings_get("theme");
+    if(t&&*t) {
+      E(1,"theme from settings: \"%s\"\n",t);
+      ((noir_theme *)ns->theme)->name=t;  /* hand the buffer over */
+      t=NULL; }
+    if(t)
+      free(t); }
+
   if(((noir_theme *)ns->theme)&&!((noir_theme *)ns->theme)->name)
     ((noir_theme *)ns->theme)->name="default";
 
@@ -482,6 +508,18 @@ int parse_options(noir_sess *ns,int argc,char **argv,action_context **dir_,actio
   else
     E(1,"theme \"%s\" selected...\n",((noir_theme *)ns->theme)->name?((noir_theme *)ns->theme)->name:"<null>");
 #endif
+
+  /* start-view from the settings file, unless -i/-b/-t/-a (or -e) was given */
+  if(!view_cli) {
+    char *v=settings_get("view");
+    if(v) {
+      int i;
+      for(i=0;i<=START_IN_CREDITS;i++)
+        if(!strcmp(v,view_name[i])) {
+          ns->start_in=(noir_viewtype)i;
+          E(1,"start-view from settings: %s\n",view_name[i]);
+          break; }
+      free(v); } }
 
   E(1,"starting in %s...\n",view_name[ns->start_in]);
 

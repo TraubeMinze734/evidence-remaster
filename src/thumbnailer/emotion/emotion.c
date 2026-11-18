@@ -20,6 +20,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <glib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -311,9 +312,11 @@ static void _emotion_make_in_main(void *data) {
 
 static void _live_frame(void *data,Evas_Object *o,void *einfo) {
   Evas *evas=(Evas *)data;
-  (void)o; (void)einfo;
+  (void)einfo;
   static ulong last=0;   /* single live object at a time in practice */
   ulong t=now(0);
+
+  (void)o;
   if(evas&&(t-last)>=LIVE_FRAME_INTERVAL) {
     last=t;
     E(4,"_live_frame: evas=%p\n",evas);
@@ -324,6 +327,7 @@ typedef struct {
   Evas        *evas;
   const char  *file;
   int          w,h;
+  int          mute;   /* no TP_AUDIO requested (thumbnail-live-sound=0) */
   Evas_Object *result;
 } emotion_live_ctx;
 
@@ -338,6 +342,21 @@ static void _emotion_live_del_cb(void *data,Evas *e,Evas_Object *o,void *einfo) 
   emotion_object_play_set(o,0);
   efl_file_unload(o); }
 
+/* deferred fixup of the pulse stream's mute/volume (see _emotion_live_in_main):
+   toggle opposite->target so the sink writes OUR value onto the stream,
+   beating any stale per-app state restored at stream creation */
+static Eina_Bool _live_audio_fixup(void *data) {
+  emotion_live_ctx *d=(emotion_live_ctx *)data;
+  Evas_Object *o=d->result;
+  if(o) {
+    emotion_object_audio_mute_set(o,!d->mute);
+    emotion_object_audio_mute_set(o,d->mute);
+    emotion_object_audio_volume_set(o,d->mute?1.0:0.0);
+    emotion_object_audio_volume_set(o,d->mute?0.0:1.0);
+    E(1,"live audio: forced mute=%d vol=%s onto stream\n",d->mute,d->mute?"0":"1"); }
+  free(d);
+  return EINA_FALSE; }
+
 static void _emotion_live_in_main(void *data) {
   emotion_live_ctx *c=(emotion_live_ctx *)data;
   Evas_Object *o;
@@ -350,9 +369,27 @@ static void _emotion_live_in_main(void *data) {
     evas_object_move(o,0,0);
     evas_object_resize(o,320,240);
     emotion_object_smooth_scale_set(o,1);
+    emotion_object_audio_mute_set(o,c->mute);   /* set BEFORE file/play, so
+                                                   it applies from the first frame */
     evas_object_show(o);
     emotion_object_file_set(o,c->file);
     emotion_object_play_set(o,1);
+    /* The playbin (and with it the pulse stream) is built at play time.
+       A stale per-app mute/volume restored by module-stream-restore can
+       override a mute_set issued only BEFORE play (no change => no notify
+       => stream keeps the restored value).  Force a change AFTER play by
+       toggling to the opposite value first, so the sink re-writes the
+       stream state to OUR setting. */
+    emotion_object_audio_mute_set(o,c->mute);
+    /* the pulse stream is created when the pipeline prerolls, i.e. shortly
+       AFTER play_set returns; a stale per-app mute/volume restored by
+       module-stream-restore would override anything we set now.  defer a
+       toggle (opposite value first, then ours) to force a change notification
+       onto the stream once it exists. */
+    { emotion_live_ctx *d=malloc(sizeof(*d));
+      if(d) {
+        d->evas=c->evas; d->result=o; d->mute=c->mute;
+        g_timeout_add(300,_live_audio_fixup,d);   /* GLib loop: guaranteed under GTK3 (gtk_main), unlike ecore timers when the manual pump is used */ } }
 
     emotion_object_size_get(o,&w,&h);
     evas_object_resize(o,c->w,c->h);  /* fill the icon */
@@ -405,7 +442,10 @@ int thumbnail_plugin_init(thumbnail_plugin *tp) {
     E(1,"\n*** engaged Emotion movie thumbnailer. this may use a lot of RAM and CPU;\n"
          "*** if you prefer a 'light' file-manager, you may want to disable this...\n\n"); }
 
-  return (TP_IMAGE|TP_VIDEO
+  /* TP_AUDIO: we can play the sound track along with the video -- declared
+     so that "thumbnail-live-sound"=0 (TP_AUDIO stripped from the request in
+     evas_thumbnail_live) reaches thumbnail_plugin_live() and mutes us */
+  return (TP_IMAGE|TP_VIDEO|TP_AUDIO
 #ifdef HAVE_IMLIB2
           |TP_IMLIB
 #endif
@@ -627,6 +667,10 @@ int thumbnail_plugin_live(thumbnail_plugin *tp,struct _Evidence_Thumb *e,thumbna
   c.file=e->origfile;
   c.w=e->w;
   c.h=e->h;
+  /* "thumbnail-live-sound"=0 strips TP_AUDIO in thumbnail.c before the call
+     (masked against our capabilities below) -- play the video muted then */
+  c.mute=(what&TP_AUDIO)?0:1;
+  E(1,"live thumb for \"%s\": %s\n",e->origfile?e->origfile:"?",c.mute?"muted":"with sound");
 
   emotion_in_main(_emotion_live_in_main,&c);
 

@@ -15,8 +15,14 @@
 #include "gui/common/menu_private.h"    /* struct selection_action */
 #include "gui/common/alert.h"           /* form_alert() */
 #include "gui/common/tooltip.h"         /* tooltip_cancel() */
+#include "gui/common/options.h"         /* view_name[] */
+#include "gui/common/settings.h"        /* settings_get/set/save, settings_theme_list */
 
 #include "gui/gtk2/common/notebook.h"   /* notebook_go2view() */
+#include "session_gtk2.h"                /* noir_sess_get_window/notebook() */
+
+#include "properties.h"                 /* props_global, prop_bag_prop_get() */
+#include "gui/efl/common/theme.h"       /* noir_theme */
 
 #include "mime.h"
 #include "meta.h"            /* meta_in_group(), meta_add(), meta_del_all() */
@@ -580,6 +586,194 @@ static gint root_menu_preferences(GtkWidget *item,gpointer data) {
 
 
 
+/******************************************************************************/
+/* settings dialog (persistent configuration, called up from the root-menu) */
+
+
+
+/* labels for the view radio-buttons, in noir_viewtype order */
+static const char *settings_view_labels[]={ "_Tree-view","_Browser","_Icon-view","_Credits" };
+
+
+
+/**
+ * the view a session currently shows, as noir_viewtype.
+ * falls back to ns->start_in if there is no notebook.
+ */
+static int settings_current_view(noir_sess *ns) {
+  int        v;
+  GtkWidget *nb=noir_sess_get_notebook(ns);
+
+  if(nb) {
+    int page=gtk_notebook_get_current_page(GTK_NOTEBOOK(nb));
+    for(v=0;v<=START_IN_CREDITS;v++)
+      if(go2view_mapping[v]==page)
+        return v; }
+
+  return ns->start_in; }
+
+
+
+/**
+ * open the settings dialog.
+ *
+ * offers the view-switch (applied live, deferred like the root-menu
+ * view-switch), the theme (persisted, applied at next start -- a live
+ * theme switch would have to rebuild every view) and the live-thumbnail
+ * switches (applied immediately via their property listeners).  "OK"
+ * stores everything permanently in ~/.evidence/evidence.conf.
+ *
+ * @param item  the GTK menu-item that was activated (unused)
+ * @param data  the session (noir_sess **)
+ */
+static gint root_menu_settings(GtkWidget *item,gpointer data) {
+  noir_sess **sess=(noir_sess **)data;
+  noir_sess  *ns=sess?*sess:NULL;
+  GtkWidget  *dlg,*content,*frame,*box,*note;
+  GtkWidget  *rb[START_IN_CREDITS+1];
+  GtkWidget  *group=NULL,*combo=NULL,*chk_live=NULL,*chk_sound=NULL;
+  int         v,cur,res;
+
+  if(!ns)
+    return FALSE;
+
+  cur=settings_current_view(ns);
+
+  dlg=gtk_dialog_new_with_buttons("Settings",
+      GTK_WINDOW(noir_sess_get_window(ns)),
+      GTK_DIALOG_DESTROY_WITH_PARENT|GTK_DIALOG_MODAL,
+      "_Cancel",GTK_RESPONSE_CANCEL,
+      "_OK",GTK_RESPONSE_OK,
+      NULL);
+  gtk_window_set_default_size(GTK_WINDOW(dlg),380,-1);
+
+#if GTK_CHECK_VERSION(3,0,0)
+  content=gtk_dialog_get_content_area(GTK_DIALOG(dlg));
+#else
+  content=GTK_DIALOG(dlg)->vbox;
+#endif
+  gtk_container_set_border_width(GTK_CONTAINER(content),8);
+
+  /* -- view ------------------------------------------------------------- */
+  frame=gtk_frame_new("View");
+  box=gtk_vbox_new(FALSE,2);
+  gtk_container_set_border_width(GTK_CONTAINER(box),6);
+  for(v=0;v<=START_IN_CREDITS;v++) {
+    rb[v]=NULL;
+    if(go2view_mapping[v]<0)
+      continue;
+    if(!group)
+      rb[v]=gtk_radio_button_new_with_mnemonic(NULL,settings_view_labels[v]);
+    else
+      rb[v]=gtk_radio_button_new_with_mnemonic_from_widget(GTK_RADIO_BUTTON(group),settings_view_labels[v]);
+    group=rb[v];
+    if(v==cur)
+      gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(rb[v]),TRUE);
+    gtk_box_pack_start(GTK_BOX(box),rb[v],FALSE,FALSE,0); }
+  gtk_container_add(GTK_CONTAINER(frame),box);
+  gtk_box_pack_start(GTK_BOX(content),frame,FALSE,FALSE,4);
+
+#ifdef HAVE_EVAS2
+  /* -- theme ------------------------------------------------------------ */
+  frame=gtk_frame_new("Theme");
+  box=gtk_vbox_new(FALSE,2);
+  gtk_container_set_border_width(GTK_CONTAINER(box),6);
+
+  combo=gtk_combo_box_text_new();
+  { int         n=0,i,act=-1;
+    char      **themes=settings_theme_list(&n);
+    noir_theme *t=(noir_theme *)noir_sess_get_theme(ns);
+    const char *cur_name=(t&&t->name)?t->name:"default";
+
+    for(i=0;i<n;i++) {
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo),themes[i]);
+      if(!strcmp(themes[i],cur_name))
+        act=i; }
+    E(1,"settings: %d themes found (current: \"%s\")\n",n,cur_name);
+    settings_theme_list_free(themes,n);
+
+    if(act<0) {  /* current theme not found in the list (e.g. given as
+                    path on the command line): offer it, too */
+      gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(combo),cur_name);
+      act=0; }
+    gtk_combo_box_set_active(GTK_COMBO_BOX(combo),act); }
+
+  note=gtk_label_new("(theme changes take effect at the next start)");
+  gtk_misc_set_alignment(GTK_MISC(note),0.0,0.5);
+
+  gtk_box_pack_start(GTK_BOX(box),combo,FALSE,FALSE,0);
+  gtk_box_pack_start(GTK_BOX(box),note,FALSE,FALSE,0);
+  gtk_container_add(GTK_CONTAINER(frame),box);
+  gtk_box_pack_start(GTK_BOX(content),frame,FALSE,FALSE,4);
+#endif
+
+  /* -- thumbnails --------------------------------------------------------- */
+  frame=gtk_frame_new("Thumbnails");
+  box=gtk_vbox_new(FALSE,2);
+  gtk_container_set_border_width(GTK_CONTAINER(box),6);
+
+  chk_live=gtk_check_button_new_with_mnemonic("_Live thumbnails (play videos in tooltips)");
+  { noir_prop *e=prop_bag_prop_get(props_global,"thumbnail-live");
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk_live),(e&&prop_get_int(e))?TRUE:FALSE); }
+
+  chk_sound=gtk_check_button_new_with_mnemonic("Live thumbnails with _sound");
+  { noir_prop *e=prop_bag_prop_get(props_global,"thumbnail-live-sound");
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chk_sound),(e&&prop_get_int(e))?TRUE:FALSE); }
+
+  gtk_box_pack_start(GTK_BOX(box),chk_live,FALSE,FALSE,0);
+  gtk_box_pack_start(GTK_BOX(box),chk_sound,FALSE,FALSE,0);
+  gtk_container_add(GTK_CONTAINER(frame),box);
+  gtk_box_pack_start(GTK_BOX(content),frame,FALSE,FALSE,4);
+
+  gtk_widget_show_all(dlg);
+
+  res=gtk_dialog_run(GTK_DIALOG(dlg));
+
+  if(res==GTK_RESPONSE_OK) {
+    /* view: persist, and switch live -- deferred to an idle in the plain
+       main loop, exactly like the root-menu view-switch (we are inside
+       the menu's nested main loop here, switching now would deadlock) */
+    for(v=0;v<=START_IN_CREDITS;v++)
+      if(rb[v]&&gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(rb[v])))
+        break;
+    if(v<=START_IN_CREDITS) {
+      settings_set("view",view_name[v]);
+      if(v!=cur) {
+        switch2_req *r=malloc(sizeof(switch2_req));
+        if(r) {
+          r->sess=ns;
+          r->view=v;
+          idle_enter_add(0,root_menu_switch2_idle,r); }
+        else
+          E(0,"out of memory!?\n"); } }
+
+#ifdef HAVE_EVAS2
+    /* theme: persist only; a live theme switch would have to rebuild
+       every view, so it takes effect at the next start */
+    { char *t=combo?gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo)):NULL;
+      if(t&&*t)
+        settings_set("theme",t);
+      if(t)
+        free(t); }
+#endif
+
+    /* live thumbnails: the prop listeners fire immediately */
+    settings_set("thumbnail-live",gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chk_live))?"1":"0");
+    settings_set("thumbnail-live-sound",gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chk_sound))?"1":"0");
+
+    /* make it permanent */
+    { char *fn=settings_file_path();
+      if((settings_save()!=NOIR_SUCC)&&fn)
+        form_alert(ns,"Could not save settings to \"%s\"?",fn);
+      if(fn)
+        free(fn); } }
+
+  gtk_widget_destroy(dlg);
+
+  return FALSE; }
+
+
+
 /**
  * add an item to a "root-menu".
  * @param sess     the session
@@ -700,6 +894,9 @@ int menu_root_context(noir_sess *ns,const char *cwd,int mb) {
       if(exa) {
         free(exa);
         root_menu_add(&sess,menu,"_Preferences",(gpointer)ns,root_menu_preferences); } }
+    /* built-in settings dialog: view-switch, theme, live-thumbnails,
+       persisted in ~/.evidence/evidence.conf */
+    root_menu_add(&sess,menu,"_Settings",(gpointer)ns,root_menu_settings);
 
     if(af) {
       root_menu_add(&sess,menu,NULL,NULL,NULL);

@@ -200,7 +200,13 @@ gboolean gevas_exposed(GtkWidget *widget,GdkEventExpose *ev,gpointer data) {
         E(3,"no scrollbar factory\n"); }
 
     gtk_widget_grab_focus(widget);
-    gevas_queue_redraw((GtkgEvas *)widget); }
+#if !GTK_CHECK_VERSION(3,0,0)
+    /* GTK3: the draw vfunc (gevas_draw -> gevas_paint) already repainted
+       during this very draw -- queueing another redraw here would schedule
+       a new draw from every draw = self-sustaining repaint loop. */
+    gevas_queue_redraw((GtkgEvas *)widget);
+#endif
+  }
   return FALSE; }
 #if GTK_CHECK_VERSION(3,0,0)
 #undef ev
@@ -895,6 +901,16 @@ gboolean gevas_scrolled(GtkWidget *widget,GdkEventScroll *ev,gpointer data) {
       break;
     case GDK_SCROLL_RIGHT:
       scroll(il,w,0);
+      break;
+#if GTK_CHECK_VERSION(3,4,0)
+    case GDK_SCROLL_SMOOTH:
+      /* Wayland delivers smooth scrolling as deltas, not as button 4/5
+         events -- without this, the wheel appears dead on Wayland */
+      icon_list_scroll_rel(il,(int)(ev->delta_x*t->icon_width),
+                              (int)(ev->delta_y*t->icon_height));
+      break;
+#endif
+    default:
       break; }
 
   return TRUE; }
@@ -950,7 +966,7 @@ static gboolean gevas_clicked(GtkWidget *widget,GdkEventButton *ev,gpointer data
 
     m=gevas_modifier_xlate(ev->state);
 
-/*  E(0,"click: buttons %d, type %d\n",ev->button,t); */
+    E(1,"gevas_clicked: raw_type=%d btn=%d @%d,%d -> t=%d\n",ev->type,ev->button,(int)ev->x,(int)ev->y,t);
 
     if((t!=EV_NONE)&&
        (evas_ext_evt(il,ev->x,ev->y,ev->button,t,m,ns,NULL,NULL)!=NOIR_NOTFOUND)) {
@@ -1028,6 +1044,7 @@ static gboolean gevas_clicked(GtkWidget *widget,GdkEventButton *ev,gpointer data
           il->mb=0;
 
           if(file&&(isdir=file_exists(file))) {
+            E(1,"double-click: file=%s isdir=%o label=%d\n",file,isdir,pointer_on_iconlabel_p(i,ev->x+il->sx,ev->y+il->sy));
             if(pointer_on_iconlabel_p(i,ev->x+il->sx,ev->y+il->sy))
               evas_rename_icon(ns,i);
             else if(S_ISDIR(isdir)) {

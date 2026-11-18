@@ -155,8 +155,14 @@ static void gevas_render_flush(void *data,Evas *e,void *event_info) {
                  here would start the paint/render/expose feedback loop */
   if(gtk_widget_get_realized(GTK_WIDGET(ev))) {
     gtk_widget_queue_draw(GTK_WIDGET(ev));
+#if !GTK_CHECK_VERSION(3,0,0)
+    /* GTK3: queue_draw() alone is reliable here (draw vfunc runs in the
+       frame and commits); the direct blit idle is only needed on GTK2/X11,
+       where expose events could stop arriving after a resize. */
     if(!ev->flush_idle)
-      ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev); } }
+      ev->flush_idle=(void *)(uintptr_t)g_idle_add(gevas_flush_blit,ev);
+#endif
+  } }
 
 
 /* allocate the backing-store and attach it to the buffer engine */
@@ -628,10 +634,18 @@ gint gevas_view_redraw(gpointer data) {
   if(!gtk_widget_get_mapped(GTK_WIDGET(ev)))
     return FALSE;
 
+#if GTK_CHECK_VERSION(3,0,0)
+  /* GTK3/Wayland: a direct cairo blit outside the frame cycle does not get
+     committed reliably (the view then only updates on the next input
+     event).  go through gtk_widget_queue_draw() so the draw vfunc
+     (gevas_draw -> gevas_paint) runs inside GTK's frame and commits. */
+  gtk_widget_queue_draw(GTK_WIDGET(ev));
+#else
   area.x=area.y=0;
   area.width=ev->pixels_w;
   area.height=ev->pixels_h;
   gevas_paint(ev,&area);
+#endif
   return FALSE; }
 
 

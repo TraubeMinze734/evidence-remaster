@@ -99,6 +99,21 @@ static Evas_Object *transparency_get_pixmap(icon_list *il,Evas_Object *old,
   Window          win=get_widget_window(il->canvas);
   Window          desk=get_desk(win);
 
+  if(!get_display()) {
+    /* not on X11 (GTK3 on Wayland): the XInternAtom()/XGetWindowProperty()
+       calls below would run with a NULL Display* and crash -- use a plain
+       background rectangle instead (same fallback as "no root pixmap") */
+    E(2,"no X11 display, pseudo-transparency not available...\n");
+    if(old)
+      evas_object_del(old);
+    new=evas_object_rectangle_add(evas);
+    evas_object_resize(new,w,h);
+    evas_object_move(new,0,0);
+    evas_object_layer_set(new,-9999);
+    evas_object_color_set(new,127,127,127,255);
+    evas_object_show(new);
+    return new; }
+
   if(xpixmap==None)
     xpixmap=XInternAtom(get_display(),"_XROOTPMAP_ID",False);
   if(xcolor==None)
